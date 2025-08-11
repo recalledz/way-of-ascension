@@ -296,6 +296,17 @@ const defaultState=()=>({
   stones:0, herbs:0, ore:0, wood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
   hp:100, hpMax:100, atkBase:5, defBase:2, tempAtk:0, tempDef:0,
+  // Expanded Stat System
+  stats: {
+    physique: 10,        // Physical power, mining yield
+    mind: 10,            // Spell power, alchemy, learning speed
+    dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
+    comprehension: 10,   // Foundation gain, learning speed
+    criticalChance: 0.05, // 5% base crit chance (50% extra damage)
+    attackSpeed: 1.0,    // Base attack speed multiplier
+    cooldownReduction: 0, // Cooldown reduction percentage
+    adventureSpeed: 1.0  // Adventure speed multiplier
+  },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
@@ -308,7 +319,6 @@ const defaultState=()=>({
   // Enhanced Cultivation System
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
-    comprehension: 1.0, // Comprehension multiplier for foundation gain
     foundationMult: 1.0, // Foundation gain multiplier from various sources
     pillMult: 1.0, // Pill effectiveness multiplier
     buildingMult: 1.0 // Building effectiveness multiplier
@@ -486,8 +496,27 @@ function updateAll(){
   setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
   setFill('hpFill', S.hp / S.hpMax);
   
-  // Stats
-  setText('atkVal', fmt(calcAtk())); setText('defVal', fmt(calcDef()));
+  // Combat stats
+  setText('atkVal', calcAtk()); setText('defVal', calcDef());
+  setText('atkVal2', calcAtk()); setText('defVal2', calcDef());
+  
+  // Expanded stat system display
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
+  
+  const statEffects = getStatEffects();
+  setText('physiqueVal', S.stats.physique);
+  setText('mindVal', S.stats.mind);
+  setText('dexterityVal', S.stats.dexterity);
+  setText('comprehensionVal', S.stats.comprehension);
+  setText('critChanceVal', (statEffects.totalCritChance * 100).toFixed(1) + '%');
+  setText('atkSpeedVal', statEffects.totalAttackSpeed.toFixed(1) + 'x');
+  setText('cooldownRedVal', (statEffects.totalCooldownReduction * 100).toFixed(0) + '%');
+  setText('advSpeedVal', statEffects.totalAdventureSpeed.toFixed(1) + 'x');
   
   // Resources
   setText('stonesVal', fmt(S.stones)); setText('stonesValL', fmt(S.stones));
@@ -807,31 +836,47 @@ function renderSkillTrees(){
 
 /* Mechanics */
 function qCap(){
+  const realm = REALMS[S.realm.tier];
+  const baseQi = realm.cap;
+  // Each stage within a realm increases qi capacity by 12%
+  const stageMultiplier = 1 + (S.realm.stage - 1) * 0.12;
   const lawBonuses = getLawBonuses();
-  return REALMS[S.realm.tier].cap * (1 + S.qiCapMult) * lawBonuses.qiCap;
+  return Math.floor(baseQi * stageMultiplier * (1 + S.qiCapMult) * lawBonuses.qiCap);
 }
 function qiRegenPerSec(){
   const lawBonuses = getLawBonuses();
   return (REALMS[S.realm.tier].baseRegen + S.karma.qiRegen*10) * (1 + S.qiRegenMult) * lawBonuses.qiRegen;
 }
-function fCap(){ return REALMS[S.realm.tier].fcap; }
+function fCap(){ 
+  const realm = REALMS[S.realm.tier];
+  const baseFoundation = realm.fcap;
+  // Each stage within a realm increases foundation requirement by 15%
+  const stageMultiplier = 1 + (S.realm.stage - 1) * 0.15;
+  return Math.floor(baseFoundation * stageMultiplier);
+}
 function foundationGainPerSec(){
   // Base foundation gain from meditation
   const baseGain = qiRegenPerSec() * 0.8;
   
-  // Ensure cultivation object exists
+  // Ensure cultivation and stats objects exist
   if (!S.cultivation) {
     S.cultivation = {
       talent: 1.0,
-      comprehension: 1.0,
       foundationMult: 1.0,
       pillMult: 1.0,
       buildingMult: 1.0
     };
   }
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
   
-  // Apply cultivation multipliers
-  const cultivationMult = S.cultivation.talent * S.cultivation.comprehension * S.cultivation.foundationMult;
+  // Apply cultivation multipliers with new comprehension stat
+  const comprehensionMult = 1 + (S.stats.comprehension - 10) * 0.05; // 5% per point above 10
+  const cultivationMult = S.cultivation.talent * comprehensionMult * S.cultivation.foundationMult;
   
   // Apply law bonuses
   const lawBonuses = getLawBonuses();
@@ -851,12 +896,82 @@ function foundationGainPerSec(){
 
 function foundationGainPerMeditate(){ return foundationGainPerSec() * 2.5; }
 function calcAtk(){
+  const realm = REALMS[S.realm.tier];
+  const baseAtk = realm.atk;
+  // Each stage within a realm increases attack by 8%
+  const stageBonus = Math.floor(baseAtk * (S.realm.stage - 1) * 0.08);
+  
+  // Ensure stats exist
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
+  
+  // Physique affects physical damage (5% per point above 10)
+  const physiqueMult = 1 + (S.stats.physique - 10) * 0.05;
+  
   const lawBonuses = getLawBonuses();
-  return (S.atkBase + S.tempAtk + REALMS[S.realm.tier].atk + S.karma.atk*100) * lawBonuses.atk;
+  return Math.floor((S.atkBase + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
 }
 function calcDef(){
+  const realm = REALMS[S.realm.tier];
+  const baseDef = realm.def;
+  // Each stage within a realm increases defense by 8%
+  const stageBonus = Math.floor(baseDef * (S.realm.stage - 1) * 0.08);
+  
+  // Ensure stats exist
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
+  
+  // Physique also affects physical defense (3% per point above 10)
+  const physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
+  
   const lawBonuses = getLawBonuses();
-  return (S.defBase + S.tempDef + REALMS[S.realm.tier].def + S.karma.def*100) * lawBonuses.def;
+  return Math.floor((S.defBase + S.tempDef + baseDef + stageBonus + S.karma.def*100) * lawBonuses.def * physiqueMult);
+}
+
+// Stat calculation helper functions
+function getStatEffects() {
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
+  
+  return {
+    // Physique effects
+    physicalDamageMult: 1 + (S.stats.physique - 10) * 0.05,
+    physicalDefenseMult: 1 + (S.stats.physique - 10) * 0.03,
+    miningYieldMult: 1 + (S.stats.physique - 10) * 0.03,
+    
+    // Mind effects
+    spellPowerMult: 1 + (S.stats.mind - 10) * 0.06,
+    alchemySuccessMult: 1 + (S.stats.mind - 10) * 0.04,
+    learningSpeedMult: 1 + (S.stats.mind - 10) * 0.05,
+    
+    // Dexterity effects
+    attackSpeedMult: 1 + (S.stats.dexterity - 10) * 0.04,
+    cooldownReductionBonus: (S.stats.dexterity - 10) * 0.02,
+    craftingSpeedMult: 1 + (S.stats.dexterity - 10) * 0.03,
+    adventureSpeedMult: 1 + (S.stats.dexterity - 10) * 0.03,
+    
+    // Comprehension effects
+    foundationGainMult: 1 + (S.stats.comprehension - 10) * 0.05,
+    learningSpeedMult2: 1 + (S.stats.comprehension - 10) * 0.04,
+    
+    // Derived stats
+    totalCritChance: S.stats.criticalChance + (S.stats.dexterity - 10) * 0.005,
+    totalAttackSpeed: S.stats.attackSpeed * (1 + (S.stats.dexterity - 10) * 0.04),
+    totalCooldownReduction: S.stats.cooldownReduction + (S.stats.dexterity - 10) * 0.02,
+    totalAdventureSpeed: S.stats.adventureSpeed * (1 + (S.stats.dexterity - 10) * 0.03)
+  };
 }
 
 // Initialize law system on game start
@@ -944,9 +1059,93 @@ function tryBreakthrough(){
 }
 
 function advanceRealm(){
+  const wasRealmAdvancement = S.realm.stage > REALMS[S.realm.tier].stages;
+  const oldRealm = S.realm.tier;
+  
   S.realm.stage++;
   if(S.realm.stage > REALMS[S.realm.tier].stages){ S.realm.tier++; S.realm.stage = 1; }
-  log(`Advanced to ${REALMS[S.realm.tier].name} ${S.realm.stage}!`, 'good');
+  
+  const currentRealm = REALMS[S.realm.tier];
+  log(`Advanced to ${currentRealm.name} ${S.realm.stage}!`, 'good');
+  
+  // Stat bonuses for breakthrough
+  if(wasRealmAdvancement) {
+    // Major realm advancement - significant stat bonuses
+    const realmBonus = Math.max(1, Math.floor(S.realm.tier * 1.5));
+    S.atkBase += realmBonus * 2;
+    S.defBase += realmBonus;
+    S.hpMax += Math.floor(S.hpMax * 0.25); // 25% HP increase
+    S.hp = S.hpMax; // Full heal on realm advancement
+    
+    // Major cultivation stat improvements
+    if (!S.cultivation) {
+      S.cultivation = {
+        talent: 1.0, foundationMult: 1.0, 
+        pillMult: 1.0, buildingMult: 1.0
+      };
+    }
+    if (!S.stats) {
+      S.stats = {
+        physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      };
+    }
+    
+    S.cultivation.talent += 0.15; // +15% talent per realm
+    S.cultivation.foundationMult += 0.08; // +8% foundation multiplier per realm
+    
+    // Major stat point awards for realm breakthrough
+    const realmStatPoints = 3 + S.realm.tier; // 4-12 stat points depending on realm
+    S.stats.physique += Math.ceil(realmStatPoints * 0.3);
+    S.stats.mind += Math.ceil(realmStatPoints * 0.25);
+    S.stats.dexterity += Math.ceil(realmStatPoints * 0.25);
+    S.stats.comprehension += Math.ceil(realmStatPoints * 0.2);
+    S.stats.criticalChance += 0.01; // +1% crit chance per realm
+    
+    // Power multiplier notification
+    const powerGain = currentRealm.power / REALMS[oldRealm].power;
+    log(`Realm breakthrough! Power increased by ${powerGain.toFixed(1)}x! ATK +${realmBonus * 2}, DEF +${realmBonus}, HP +25%`, 'good');
+    log(`Cultivation enhanced! Talent +15%, Comprehension +10%, Foundation Mult +8%`, 'good');
+  } else {
+    // Stage advancement within realm - smaller bonuses
+    const stageBonus = Math.max(1, Math.floor((S.realm.tier + 1) * 0.5));
+    S.atkBase += stageBonus;
+    S.defBase += Math.floor(stageBonus * 0.7);
+    S.hpMax += Math.floor(S.hpMax * 0.08); // 8% HP increase
+    S.hp = Math.min(S.hpMax, S.hp + Math.floor(S.hpMax * 0.5)); // Partial heal
+    
+    // Minor cultivation stat improvements
+    if (!S.cultivation) {
+      S.cultivation = {
+        talent: 1.0, foundationMult: 1.0, 
+        pillMult: 1.0, buildingMult: 1.0
+      };
+    }
+    if (!S.stats) {
+      S.stats = {
+        physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      };
+    }
+    
+    S.cultivation.talent += 0.03; // +3% talent per stage
+    
+    // Minor stat point awards for stage breakthrough
+    const stageStatPoints = 1 + Math.floor(S.realm.tier * 0.5); // 1-5 stat points depending on realm
+    const statDistribution = Math.random();
+    if (statDistribution < 0.4) {
+      S.stats.physique += stageStatPoints;
+    } else if (statDistribution < 0.7) {
+      S.stats.comprehension += stageStatPoints;
+    } else if (statDistribution < 0.85) {
+      S.stats.mind += stageStatPoints;
+    } else {
+      S.stats.dexterity += stageStatPoints;
+    }
+    
+    log(`Stage breakthrough! ATK +${stageBonus}, DEF +${Math.floor(stageBonus * 0.7)}, HP +8%`, 'good');
+    log(`Cultivation improved! Talent +3%, Comprehension +2%`, 'good');
+  }
   
   // Check for law unlocks and award law points
   checkLawUnlocks();
@@ -1278,14 +1477,23 @@ function assign(type, delta){
   updateAll();
 }
 function yieldBase(type){
-  const lawBonuses = getLawBonuses();
-  const base = 0.8 + S.realm.tier*0.3;
-  let multiplier = (1 + S.yieldMult[type] + S.karma.yield*2) * lawBonuses.resourceYield;
+  const base = {herbs:1, ore:0.7, wood:0.5};
   
-  // Apply specific yield bonuses
-  if(type === 'herbs') multiplier *= lawBonuses.herbYield;
+  // Ensure stats exist
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
   
-  return base * multiplier;
+  // Physique affects mining (ore) yield (3% per point above 10)
+  let physiqueMult = 1;
+  if (type === 'ore') {
+    physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
+  }
+  
+  return base[type] * (1 + S.yieldMult[type]) * physiqueMult;
 }
 
 // Alchemy
@@ -1305,7 +1513,20 @@ function addBrew(){
 }
 function collectBrew(i){
   const q=S.alchemy.queue[i]; if(!q || !q.done) return;
-  const r=RECIPES[q.key]; const chance = r.base + S.alchemy.successBonus;
+  const r=RECIPES[q.key]; 
+  
+  // Ensure stats exist
+  if (!S.stats) {
+    S.stats = {
+      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+    };
+  }
+  
+  // Mind affects alchemy success (4% per point above 10)
+  const mindBonus = (S.stats.mind - 10) * 0.04;
+  const chance = r.base + S.alchemy.successBonus + mindBonus;
+  
   if(Math.random()<chance){ r.give(S); log(`Brewed ${q.name} successfully!`,'good'); }
   else { log(`${q.name} failed. You salvage some scraps.`, 'bad'); S.herbs+=Math.floor((r.cost.herbs||0)*0.3); S.ore+=Math.floor((r.cost.ore||0)*0.3); S.wood+=Math.floor((r.cost.wood||0)*0.3); }
   S.alchemy.queue.splice(i,1);
