@@ -977,6 +977,23 @@ function foundationGainPerSec(){
   return totalGain;
 }
 
+function powerMult(){
+  // Calculate power multiplier based on realm advancement
+  const realm = REALMS[S.realm.tier];
+  const baseMultiplier = 1.0;
+  
+  // Each realm tier provides a significant power boost
+  const realmBonus = S.realm.tier * 0.5; // 50% per realm tier
+  
+  // Each stage within a realm provides a smaller boost
+  const stageBonus = (S.realm.stage - 1) * 0.1; // 10% per stage above 1
+  
+  // Total power multiplier
+  const totalMult = baseMultiplier + realmBonus + stageBonus;
+  
+  return totalMult;
+}
+
 function foundationGainPerMeditate(){ return foundationGainPerSec() * 2.5; }
 function calcAtk(){
   const realm = REALMS[S.realm.tier];
@@ -1095,6 +1112,43 @@ function startActivity(activityName) {
   if (S.physique && S.physique.trainingSession) {
     S.physique.trainingSession = false;
     S.physique.timingActive = false;
+  }
+  
+  // Initialize activity data structures only when starting
+  switch(activityName) {
+    case 'physique':
+      if (!S.physique) {
+        S.physique = { 
+          level: 1, 
+          exp: 0, 
+          expMax: 100,
+          stamina: 100,
+          maxStamina: 100,
+          perfectHits: 0,
+          hitStreak: 0,
+          passiveXpGained: 0,
+          trainingSession: false,
+          sessionStamina: 0,
+          sessionHits: 0,
+          sessionXP: 0,
+          timingActive: false,
+          cursorPosition: 0,
+          cursorDirection: 1,
+          cursorSpeed: 5
+        };
+      }
+      break;
+    case 'mining':
+      if (!S.mining) {
+        S.mining = { 
+          level: 1, 
+          exp: 0, 
+          expMax: 100,
+          selectedResource: 'stones',
+          resourcesGained: 0
+        };
+      }
+      break;
   }
   
   // Start the requested activity
@@ -1238,71 +1292,174 @@ function updateActivityCultivation() {
   setText('qiRegenActivity', qiRegenPerSec().toFixed(1));
   setText('foundationRate', foundationGainPerSec().toFixed(1));
   setText('btChanceActivity', (breakthroughChance() * 100).toFixed(1) + '%');
-  setText('powerMultActivity', S.powerMult + 'x');
+  setText('powerMultActivity', powerMult().toFixed(1) + 'x');
   
   const foundFillActivity = document.getElementById('foundFillActivity');
-  const qiFillActivity = document.getElementById('qiFillActivity');
+  if (foundFillActivity) {
+    foundFillActivity.style.width = (S.foundation / fCap() * 100) + '%';
+  }
   
-  if (foundFillActivity) foundFillActivity.style.width = (S.foundation / fCap() * 100) + '%';
-  if (qiFillActivity) qiFillActivity.style.width = (S.qi / qCap() * 100) + '%';
+  const qiFillActivity = document.getElementById('qiFillActivity');
+  if (qiFillActivity) {
+    qiFillActivity.style.width = (S.qi / qCap() * 100) + '%';
+  }
   
   const startBtn = document.getElementById('startCultivationActivity');
   if (startBtn) {
     startBtn.textContent = S.activities.cultivation ? '🛑 Stop Cultivating' : '🧘 Start Cultivating';
     startBtn.onclick = () => S.activities.cultivation ? stopActivity('cultivation') : startActivity('cultivation');
   }
-}
-
-function updateActivityPhysique() {
-  // Ensure physique data structure exists
-  if (!S.physique) {
-    S.physique = { 
-      level: 1, 
-      exp: 0, 
-      expMax: 100,
-      stamina: 100,
-      maxStamina: 100,
-      perfectHits: 0,
-      hitStreak: 0,
-      passiveXpGained: 0,
-      trainingSession: false,
-      sessionStamina: 0,
-      sessionHits: 0,
-      sessionXP: 0,
-      timingActive: false,
-      cursorPosition: 0,
-      cursorDirection: 1
+  
+  const btBtn = document.getElementById('breakthroughBtnActivity');
+  if (btBtn) {
+    // Update button state based on breakthrough progress
+    if (S.breakthrough && S.breakthrough.inProgress) {
+      btBtn.textContent = `⚡ Breakthrough in Progress... (${Math.ceil(S.breakthrough.timeRemaining)}s)`;
+      btBtn.disabled = true;
+      btBtn.classList.add('disabled');
+    } else {
+      btBtn.textContent = '⚡ Attempt Breakthrough';
+      btBtn.disabled = false;
+      btBtn.classList.remove('disabled');
+    }
+    
+    btBtn.onclick = () => {
+      if (typeof tryBreakthrough === 'function') {
+        tryBreakthrough();
+      } else {
+        log('Breakthrough function not available', 'bad');
+      }
     };
   }
   
-  // Ensure all properties exist
-  if (S.physique.stamina === undefined) S.physique.stamina = 100;
-  if (S.physique.maxStamina === undefined) S.physique.maxStamina = 100;
-  if (S.physique.perfectHits === undefined) S.physique.perfectHits = 0;
-  if (S.physique.hitStreak === undefined) S.physique.hitStreak = 0;
-  if (S.physique.passiveXpGained === undefined) S.physique.passiveXpGained = 0;
-  if (S.physique.trainingSession === undefined) S.physique.trainingSession = false;
-  if (S.physique.sessionStamina === undefined) S.physique.sessionStamina = 0;
-  if (S.physique.sessionHits === undefined) S.physique.sessionHits = 0;
-  if (S.physique.sessionXP === undefined) S.physique.sessionXP = 0;
-  if (S.physique.timingActive === undefined) S.physique.timingActive = false;
-  if (S.physique.cursorPosition === undefined) S.physique.cursorPosition = 0;
-  if (S.physique.cursorDirection === undefined) S.physique.cursorDirection = 1;
+  // Show/hide cultivation stats card
+  const statsCard = document.getElementById('cultivationStatsCard');
+  if (statsCard) {
+    statsCard.style.display = S.activities.cultivation ? 'block' : 'none';
+  }
   
-  setText('physiqueLevelActivity', S.physique.level);
-  setText('physiqueExpActivity', Math.floor(S.physique.exp));
-  setText('physiqueExpMaxActivity', S.physique.expMax);
-  setText('currentStamina', Math.floor(S.physique.stamina));
-  setText('maxStamina', S.physique.maxStamina);
+  // Update cultivation stats display
+  if (S.activities.cultivation) {
+    // Ensure cultivation object exists
+    if (!S.cultivation) {
+      S.cultivation = {
+        talent: 1.0,
+        comprehension: 1.0,
+        foundationMult: 1.0,
+        pillMult: 1.0,
+        buildingMult: 1.0
+      };
+    }
+    
+    setText('cultivationTalent', (S.cultivation.talent || 1.0).toFixed(1) + 'x');
+    setText('cultivationComprehension', (S.cultivation.comprehension || 1.0).toFixed(1) + 'x');
+    setText('cultivationFoundationMult', (S.cultivation.foundationMult || 1.0).toFixed(1) + 'x');
+    setText('cultivationPillMult', (S.cultivation.pillMult || 1.0).toFixed(1) + 'x');
+    setText('cultivationBuildingMult', (S.cultivation.buildingMult || 1.0).toFixed(1) + 'x');
+  }
+  
+  // Update cultivation progression tree
+  updateCultivationProgressionTree();
+}
+
+function updateCultivationProgressionTree() {
+  const container = document.getElementById('cultivationProgressionTree');
+  if (!container) return;
+  
+  // Define realm icons and descriptions
+  const realmData = [
+    { icon: '🌱', name: 'Mortal', desc: 'The beginning of your cultivation journey' },
+    { icon: '⚡', name: 'Qi Refining', desc: 'Learning to gather and refine spiritual energy' },
+    { icon: '🏔️', name: 'Foundation', desc: 'Building a solid cultivation foundation' },
+    { icon: '💎', name: 'Core Formation', desc: 'Forming your spiritual core' },
+    { icon: '👶', name: 'Nascent Soul', desc: 'Birth of your nascent soul' },
+    { icon: '🌟', name: 'Soul Transformation', desc: 'Transforming your very essence' },
+    { icon: '🔥', name: 'Void Refining', desc: 'Refining the void within' },
+    { icon: '🌌', name: 'Body Integration', desc: 'Integrating body and soul' },
+    { icon: '🏛️', name: 'Mahayana', desc: 'The great vehicle of cultivation' },
+    { icon: '✨', name: 'Tribulation', desc: 'Facing heavenly tribulation' },
+    { icon: '👑', name: 'True Immortal', desc: 'Achieving true immortality' }
+  ];
+  
+  container.innerHTML = '';
+  
+  realmData.forEach((realm, index) => {
+    const realmNode = document.createElement('div');
+    realmNode.className = 'realm-node';
+    
+    // Determine realm state
+    if (index < S.realm.tier) {
+      realmNode.classList.add('completed');
+    } else if (index === S.realm.tier) {
+      realmNode.classList.add('current');
+    } else {
+      realmNode.classList.add('locked');
+    }
+    
+    // Get realm info from REALMS array if available
+    const realmInfo = REALMS[index];
+    const stages = realmInfo ? realmInfo.stages : 9;
+    
+    realmNode.innerHTML = `
+      <div class="realm-icon">${realm.icon}</div>
+      <div class="realm-info">
+        <div class="realm-name">${realm.name}</div>
+        <div class="realm-description">${realm.desc}</div>
+        <div class="realm-stages">
+          ${Array.from({length: stages}, (_, stageIndex) => {
+            const stageNumber = stageIndex + 1;
+            let stageClass = 'stage-dot';
+            
+            if (index < S.realm.tier) {
+              stageClass += ' completed';
+            } else if (index === S.realm.tier && stageNumber < S.realm.stage) {
+              stageClass += ' completed';
+            } else if (index === S.realm.tier && stageNumber === S.realm.stage) {
+              stageClass += ' current';
+            }
+            
+            return `<div class="${stageClass}" title="Stage ${stageNumber}"></div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+    
+    container.appendChild(realmNode);
+  });
+}
+
+function updateActivityPhysique() {
+  // Only update if physique activity is initialized
+  if (!S.physique) {
+    // Show placeholder values when physique isn't initialized
+    setText('physiqueLevelActivity', '1');
+    setText('physiqueExpActivity', '0');
+    setText('physiqueExpMaxActivity', '100');
+    setText('currentStamina', '100');
+    setText('maxStamina', '100');
+    return;
+  }
+  
+  // Ensure stamina values are valid numbers
+  if (isNaN(S.physique.stamina)) S.physique.stamina = 100;
+  if (isNaN(S.physique.maxStamina)) S.physique.maxStamina = 100;
+  
+  setText('physiqueLevelActivity', S.physique.level || 1);
+  setText('physiqueExpActivity', Math.floor(S.physique.exp || 0));
+  setText('physiqueExpMaxActivity', S.physique.expMax || 100);
+  setText('currentStamina', Math.floor(S.physique.stamina || 100));
+  setText('maxStamina', S.physique.maxStamina || 100);
   
   const physiqueFillActivity = document.getElementById('physiqueFillActivity');
   if (physiqueFillActivity) {
-    physiqueFillActivity.style.width = (S.physique.exp / S.physique.expMax * 100) + '%';
+    const expPercent = ((S.physique.exp || 0) / (S.physique.expMax || 100)) * 100;
+    physiqueFillActivity.style.width = expPercent + '%';
   }
   
   const staminaFill = document.getElementById('staminaFill');
   if (staminaFill) {
-    staminaFill.style.width = (S.physique.stamina / S.physique.maxStamina * 100) + '%';
+    const staminaPercent = ((S.physique.stamina || 100) / (S.physique.maxStamina || 100)) * 100;
+    staminaFill.style.width = staminaPercent + '%';
   }
   
   const startBtn = document.getElementById('startPhysiqueActivity');
@@ -1314,6 +1471,7 @@ function updateActivityPhysique() {
   // Show/hide training cards based on activity state
   const activeCard = document.getElementById('activeTrainingCard');
   const passiveCard = document.getElementById('passiveTrainingCard');
+  const effectsCard = document.getElementById('physiqueEffectsCard');
   
   if (activeCard) {
     activeCard.style.display = S.activities.physique ? 'block' : 'none';
@@ -1321,6 +1479,10 @@ function updateActivityPhysique() {
   
   if (passiveCard) {
     passiveCard.style.display = S.activities.physique ? 'block' : 'none';
+  }
+  
+  if (effectsCard) {
+    effectsCard.style.display = S.activities.physique ? 'block' : 'none';
   }
   
   if (S.activities.physique) {
@@ -1334,9 +1496,9 @@ function updateActivityPhysique() {
         trainingGame.style.display = 'block';
         
         // Update session stats
-        setText('sessionStamina', Math.floor(S.physique.sessionStamina));
-        setText('sessionHits', S.physique.sessionHits);
-        setText('sessionXP', Math.floor(S.physique.sessionXP));
+        setText('sessionStamina', Math.floor(S.physique.sessionStamina || 0));
+        setText('sessionHits', S.physique.sessionHits || 0);
+        setText('sessionXP', Math.floor(S.physique.sessionXP || 0));
       } else {
         sessionControls.style.display = 'block';
         trainingGame.style.display = 'none';
@@ -1351,29 +1513,27 @@ function updateActivityPhysique() {
       startSessionBtn.textContent = canStart ? '🚀 Start Training Session' : '😴 Need 20+ Stamina';
     }
     
-    // Update passive training stats
-    const passiveRate = 2 + (S.physique.level * 0.2);
+    // Update passive training stats (reduced to 1/3)
+    const passiveRate = (2 + (S.physique.level * 0.2)) / 3;
     setText('passiveTrainingRate', `+${passiveRate.toFixed(1)} XP/sec`);
-    setText('passiveXpGained', `${Math.floor(S.physique.passiveXpGained)} XP`);
+    setText('passiveXpGained', `${Math.floor(S.physique.passiveXpGained || 0)} XP`);
+    
+    // Update physique effects display
+    const currentPhysique = S.stats.physique || 10;
+    const miningBonus = Math.floor((currentPhysique - 10) * 2);
+    const combatPower = Math.floor((currentPhysique - 10) * 1.5);
+    const carryCapacity = Math.floor((currentPhysique - 10) * 5);
+    
+    setText('currentPhysiqueStat', currentPhysique);
+    setText('physiqueMiningStat', `+${Math.max(0, miningBonus)}%`);
+    setText('physiqueCombatStat', `+${Math.max(0, combatPower)}`);
+    setText('physiqueCarryStat', `+${Math.max(0, carryCapacity)}`);
   }
 }
 
 function updateActivityMining() {
-  // Ensure mining data structure exists
-  if (!S.mining) {
-    S.mining = { 
-      level: 1, 
-      exp: 0, 
-      expMax: 100,
-      selectedResource: 'stones',
-      resourcesGained: 0
-    };
-  }
-  
-  // Ensure selectedResource exists
-  if (!S.mining.selectedResource) {
-    S.mining.selectedResource = 'stones';
-  }
+  // Only update if mining activity is initialized
+  if (!S.mining) return;
   
   setText('miningLevelActivity', S.mining.level);
   setText('miningExpActivity', Math.floor(S.mining.exp));
@@ -1541,8 +1701,11 @@ function trainPhysique() {
 function updateTimingCursor() {
   if (!S.physique.timingActive || !S.physique.trainingSession) return;
   
-  // Move cursor back and forth across the timing bar (faster movement)
-  S.physique.cursorPosition += S.physique.cursorDirection * 5; // 5% per tick (much faster)
+  // Ensure cursorSpeed exists (for backward compatibility)
+  if (!S.physique.cursorSpeed) S.physique.cursorSpeed = 5;
+  
+  // Move cursor back and forth across the timing bar (accelerating movement)
+  S.physique.cursorPosition += S.physique.cursorDirection * S.physique.cursorSpeed;
   
   if (S.physique.cursorPosition >= 100) {
     S.physique.cursorPosition = 100;
@@ -1569,6 +1732,7 @@ function startTrainingSession() {
   S.physique.sessionXP = 0;
   S.physique.cursorPosition = 0;
   S.physique.cursorDirection = 1;
+  S.physique.cursorSpeed = 7; // Start with faster base speed
   
   log('Training session started! Hit the perfect zone for maximum XP!', 'good');
   updateAll();
@@ -1613,6 +1777,11 @@ function executeHit() {
   S.physique.sessionHits++;
   S.physique.sessionXP += xpGain;
   S.physique.exp += xpGain;
+  
+  // Accelerate cursor with each hit (makes it progressively harder)
+  S.physique.cursorSpeed += 1.5; // Increase speed by 1.5 per hit
+  const maxSpeed = 25; // Cap maximum speed to keep it playable
+  S.physique.cursorSpeed = Math.min(S.physique.cursorSpeed, maxSpeed);
   
   // Show hit feedback
   showHitFeedback(hitMessage, hitColor);
@@ -1766,14 +1935,70 @@ function tryBreakthrough(){
     log(`Requirements: Qi ${Math.floor(100*S.qi/qCap())}% & Foundation ${Math.floor(100*S.foundation/fCap())}%`, 'bad');
     return;
   }
-  const ch = breakthroughChance();
-  if(S.pills.ward>0){ S.pills.ward--; }
-  if(Math.random()<ch){
-    S.qi=0; S.foundation=0; advanceRealm(); log('Breakthrough succeeded! Realm advanced.','good');
-  }else{
-    S.qi=0; S.foundation = Math.max(0, S.foundation - Math.ceil(fCap()*0.25)); S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax*0.2)); log('Tribulation backlash! Breakthrough failed.','bad');
+  
+  // Check if breakthrough is already in progress
+  if(S.breakthrough && S.breakthrough.inProgress) {
+    log('Breakthrough already in progress!', 'bad');
+    return;
   }
+  
+  // Initialize breakthrough object if it doesn't exist
+  if(!S.breakthrough) {
+    S.breakthrough = {
+      inProgress: false,
+      timeRemaining: 0,
+      totalTime: 0
+    };
+  }
+  
+  // Calculate breakthrough duration
+  const minTime = 3; // 3 seconds minimum
+  const maxTimeBase = 10 + (S.realm.tier * 10); // 10 + 10 per realm tier
+  const mindReduction = (S.stats.mind - 10) * 0.02; // 2% reduction per mind point above 10
+  const maxTime = Math.max(minTime + 1, maxTimeBase * (1 - mindReduction));
+  
+  const duration = minTime + Math.random() * (maxTime - minTime);
+  
+  // Start breakthrough process
+  S.breakthrough.inProgress = true;
+  S.breakthrough.timeRemaining = duration;
+  S.breakthrough.totalTime = duration;
+  
+  // Consume ward pill if available
+  if(S.pills.ward>0){ S.pills.ward--; }
+  
+  log(`Breakthrough initiated! Duration: ${duration.toFixed(1)} seconds...`, 'neutral');
   updateAll();
+}
+
+function updateBreakthrough() {
+  if(!S.breakthrough || !S.breakthrough.inProgress) return;
+  
+  S.breakthrough.timeRemaining -= 1; // Decrease by 1 second per tick
+  
+  if(S.breakthrough.timeRemaining <= 0) {
+    // Breakthrough attempt complete
+    const ch = breakthroughChance();
+    
+    if(Math.random() < ch) {
+      S.qi = 0; 
+      S.foundation = 0; 
+      advanceRealm(); 
+      log('Breakthrough succeeded! Realm advanced.', 'good');
+    } else {
+      S.qi = 0; 
+      S.foundation = Math.max(0, S.foundation - Math.ceil(fCap() * 0.25)); 
+      S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax * 0.2)); 
+      log('Tribulation backlash! Breakthrough failed.', 'bad');
+    }
+    
+    // Reset breakthrough state
+    S.breakthrough.inProgress = false;
+    S.breakthrough.timeRemaining = 0;
+    S.breakthrough.totalTime = 0;
+    
+    updateAll();
+  }
 }
 
 function advanceRealm(){
@@ -2417,8 +2642,8 @@ function tick(){
   if(S.activities.physique && S.physique) {
     // Training session stamina drain
     if (S.physique.trainingSession) {
-      S.physique.sessionStamina -= 2; // 2 stamina per second during session
-      S.physique.stamina -= 2;
+      S.physique.sessionStamina -= 6; // 6 stamina per second during session (3x increase)
+      S.physique.stamina -= 6;
       
       // End session when stamina is depleted
       if (S.physique.sessionStamina <= 0 || S.physique.stamina <= 0) {
@@ -2436,9 +2661,9 @@ function tick(){
       }
     }
     
-    // Passive training XP gain (slower than active sessions)
+    // Passive training XP gain (slower than active sessions, reduced to 1/3)
     if (!S.physique.trainingSession) {
-      const passiveRate = 2 + (S.physique.level * 0.2);
+      const passiveRate = (2 + (S.physique.level * 0.2)) / 3;
       S.physique.exp += passiveRate;
       S.physique.passiveXpGained += passiveRate;
     }
@@ -2481,6 +2706,9 @@ function tick(){
 
   // CDs
   for(const k in S.combat.cds){ if(S.combat.cds[k]>0) S.combat.cds[k]--; }
+
+  // Breakthrough progress
+  updateBreakthrough();
 
   if(S.time % 2===0) updateWinEst();
   updateAll();

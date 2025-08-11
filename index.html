@@ -113,6 +113,25 @@
               <button class="btn" id="useWardPillActivity">💊 Use Ward Pill</button>
             </div>
           </div>
+          
+          <div class="card" id="cultivationStatsCard" style="display:none;">
+            <h4>🌟 Cultivation Stats</h4>
+            <p class="muted">Enhanced cultivation abilities and multipliers:</p>
+            <div class="stat"><span>Talent</span><span id="cultivationTalent">1.0x</span></div>
+            <div class="stat"><span>Comprehension</span><span id="cultivationComprehension">1.0x</span></div>
+            <div class="stat"><span>Foundation Mult</span><span id="cultivationFoundationMult">1.0x</span></div>
+            <div class="stat"><span>Pill Mult</span><span id="cultivationPillMult">1.0x</span></div>
+            <div class="stat"><span>Building Mult</span><span id="cultivationBuildingMult">1.0x</span></div>
+            <div class="muted" style="margin-top:8px">These multipliers enhance foundation gain, pill effectiveness, and breakthrough chances</div>
+          </div>
+          
+          <div class="card" id="cultivationProgressionCard">
+            <h4>🏔️ Cultivation Progression</h4>
+            <p class="muted">Your journey through the realms of cultivation:</p>
+            <div id="cultivationProgressionTree" class="progression-tree">
+              <!-- Progression tree will be populated by JavaScript -->
+            </div>
+          </div>
         </div>
       </section>
 
@@ -169,6 +188,16 @@
             <div class="stat"><span>Passive Rate</span><span id="passiveTrainingRate">+2 XP/sec</span></div>
             <div class="stat"><span>Total Gained</span><span id="passiveXpGained">0 XP</span></div>
             <div class="muted" style="margin-top:8px">Passive training provides steady progress while stamina recovers</div>
+          </div>
+          
+          <div class="card" id="physiqueEffectsCard" style="display:none;">
+            <h4> Physique Effects</h4>
+            <p class="muted">Current bonuses from your physique stat:</p>
+            <div class="stat"><span>Current Physique</span><span id="currentPhysiqueStat">10</span></div>
+            <div class="stat"><span>Mining Bonus</span><span id="physiqueMiningStat">+0%</span></div>
+            <div class="stat"><span>Combat Power</span><span id="physiqueCombatStat">+0</span></div>
+            <div class="stat"><span>Carry Capacity</span><span id="physiqueCarryStat">+0</span></div>
+            <div class="muted" style="margin-top:8px">Higher physique improves mining yield, combat effectiveness, and carrying capacity</div>
           </div>
         </div>
       </section>

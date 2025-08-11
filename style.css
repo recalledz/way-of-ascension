@@ -321,38 +321,6 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   animation: perfectZonePulse 2s ease-in-out infinite;
 }
 
-@keyframes perfectZonePulse {
-  0%, 100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
-  50% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.9); }
-}
-
-.timing-cursor {
-  position: absolute;
-  top: -2px;
-  left: 0;
-  width: 4px;
-  height: calc(100% + 4px);
-  background: linear-gradient(180deg, #ffffff, #e2e8f0);
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-  transition: left 0.05s linear;
-}
-
-.training-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.training-stats .stat {
-  background: rgba(15, 23, 42, 0.6);
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  text-align: center;
-}
-
 /* Session-Based Training Interface */
 .session-controls {
   text-align: center;
@@ -527,18 +495,105 @@ nav{display:flex; gap:8px; position:sticky; top:0; background:linear-gradient(18
 
 .learned-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   background: #22c55e;
   color: white;
-  width: 24px;
-  height: 24px;
   border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
   font-weight: bold;
-  font-size: 14px;
+}
+
+.progression-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.realm-node {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.realm-node.completed {
+  background: rgba(34, 197, 94, 0.1);
+  border-left-color: #22c55e;
+}
+
+.realm-node.current {
+  background: rgba(59, 130, 246, 0.1);
+  border-left-color: #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+}
+
+.realm-node.locked {
+  background: rgba(107, 114, 128, 0.05);
+  border-left-color: #6b7280;
+  opacity: 0.6;
+}
+
+.realm-icon {
+  font-size: 1.5em;
+  margin-right: 12px;
+  min-width: 32px;
+  text-align: center;
+}
+
+.realm-info {
+  flex: 1;
+}
+
+.realm-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 4px;
+}
+
+.realm-stages {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.stage-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(107, 114, 128, 0.3);
+  transition: all 0.2s ease;
+}
+
+.stage-dot.completed {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.stage-dot.current {
+  background: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+  animation: realmPulse 2s infinite;
+}
+
+@keyframes realmPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.realm-description {
+  font-size: 0.9em;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 
 /* Building System Styling */
