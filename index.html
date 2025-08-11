@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Way of Ascension — Idle Xianxia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stars"></div><div class="stars2"></div>
+  <header>
+    <div class="brand">
+      <div class="qi-orb" id="qiOrb" aria-hidden="true">
+        <div class="yin-yang">
+          <div class="yang"></div>
+          <div class="yin"></div>
+          <div class="yang-dot"></div>
+          <div class="yin-dot"></div>
+        </div>
+      </div>
+      <div>
+        <h1>Way of Ascension</h1>
+        <div class="sub">Idle xianxia cultivation • autosaves</div>
+      </div>
+    </div>
+    <div class="topbar" id="top-chips">
+      <div class="chip">Realm: <span id="realmName">Mortal 1</span></div>
+      <div class="chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
+      <div class="chip">Stones: <span id="stonesVal">0</span></div>
+      <div class="chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span></div>
+    </div>
+    <div class="right-actions">
+      <button class="btn small ghost" id="saveBtn">💾 Save</button>
+      <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
+      <button class="btn small ghost" id="importBtn">⬆️ Import</button>
+      <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <aside class="left">
+      <div class="panel">
+        <h3>Cultivator</h3>
+        <div class="stat"><span>Qi</span><span><span id="qiValL">0</span>/<span id="qiCapL">100</span> (+<span id="qiRegen">1.0</span>/s)</span></div>
+        <div class="bar"><div class="fill" id="qiFill"></div></div>
+        <div class="stat"><span>Foundation</span><span><span id="foundValL">0</span>/<span id="foundCapL">60</span></span></div>
+        <div class="bar"><div class="fill" id="foundFill"></div></div>
+        <div class="stat"><span>HP</span><span><span id="hpValL">100</span>/<span id="hpMaxL">100</span></span></div>
+        <div class="bar"><div class="fill" id="hpFill" style="background:linear-gradient(90deg,#22c55e,#f59e0b)"></div></div>
+        <div class="stat"><span>Attack</span><span id="atkVal">5</span></div>
+        <div class="stat"><span>Defense</span><span id="defVal">2</span></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="meditateBtn">🧘 Meditate</button>
+          <button class="btn" id="breakthroughBtn" title="Attempt to advance your realm">⚡ Breakthrough</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label class="pill"><input type="checkbox" id="autoMeditate"> Auto-meditate</label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Resources</h3>
+        <div class="stat"><span>Spirit Stones</span><span id="stonesValL">0</span></div>
+        <div class="stat"><span>Herbs</span><span id="herbVal">0</span></div>
+        <div class="stat"><span>Ore</span><span id="oreVal">0</span></div>
+        <div class="stat"><span>Wood</span><span id="woodVal">0</span></div>
+        <div class="stat"><span>Beast Cores</span><span id="coreVal">0</span></div>
+        <div class="stat"><span>Pills</span><span>Qi <span id="pillQi">0</span> • Body <span id="pillBody">0</span> • Ward <span id="pillWard">0</span></span></div>
+      </div>
+
+      <div class="panel">
+        <h3>Automation</h3>
+        <div class="grid">
+          <label class="pill"><input type="checkbox" id="autoBrewQi"> Auto-brew Qi Pills</label>
+          <label class="pill"><input type="checkbox" id="autoHunt"> Auto-hunt</label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Ascension</h3>
+        <div class="stat"><span>Karma</span><span id="karmaVal">0</span></div>
+        <div class="grid">
+          <button class="btn" id="ascendBtn" title="Reset progress for permanent bonuses" disabled>🕯️ Ascend</button>
+          <div class="muted">Ascend after reaching <span class="hint" title="Foundation Realm stage 3">Foundation 3</span>. Earn Karma to buy permanent upgrades.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Karma Upgrades (Permanent)</h3>
+        <div class="grid" id="karmaUpgrades"></div>
+      </div>
+    </aside>
+
+    <section class="content">
+      <nav id="tabs"></nav>
+
+      <section id="tab-cultivation" class="active">
+        <div class="cards">
+          <div class="card">
+            <h4>Cultivation Training</h4>
+            <p class="muted">Meditate to gain <strong>Foundation</strong>. Qi regenerates passively. Both must be full to attempt a breakthrough. Pills can boost success.</p>
+            <div class="progress-wrap" style="margin:10px 0">
+              <span class="badge">Qi</span>
+              <div class="bar" style="flex:1"><div class="fill" id="qiFill2"></div></div>
+              <span id="qiPct">0%</span>
+            </div>
+            <div class="progress-wrap" style="margin:10px 0">
+              <span class="badge">Foundation</span>
+              <div class="bar" style="flex:1"><div class="fill" id="foundFill2"></div></div>
+              <span id="foundPct">0%</span>
+            </div>
+            <div class="row">
+              <button class="btn" id="useQiPill">💊 Use Qi Pill (+25% Qi)</button>
+              <button class="btn" id="useBodyPill">💊 Use Body Pill (+ATK/DEF boost)</button>
+              <button class="btn" id="useWardPill">💊 Use Ward Pill (+Breakthrough chance)</button>
+            </div>
+            <div class="muted" style="margin-top:8px">Breakthrough chance: <span id="btChance">0</span>%</div>
+          </div>
+
+          <div class="card">
+            <h4>Sect Upgrades</h4>
+            <table>
+              <thead><tr><th>Upgrade</th><th>Effect</th><th>Cost</th><th></th></tr></thead>
+              <tbody id="upgradeTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-laws">
+        <div class="cards">
+          <div class="card">
+            <h4>Cultivation Laws</h4>
+            <p class="muted">Choose your cultivation path after reaching Foundation stage. Each law provides unique bonuses and unlocks powerful skill trees.</p>
+            <div class="stat"><span>Law Points</span><span id="lawPoints">0</span></div>
+            <div class="stat"><span>Selected Law</span><span id="selectedLaw">None</span></div>
+          </div>
+
+          <div class="card">
+            <h4>Available Laws</h4>
+            <div id="lawSelection"></div>
+          </div>
+
+          <div class="card" id="skillTreeCard">
+            <div id="skillTrees"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-gathering">
+        <div class="cards">
+          <div class="card">
+            <h4>Disciples</h4>
+            <p class="muted">Assign disciples to gather herbs, ore, and wood. Yields scale with upgrades.</p>
+            <div class="stat"><span>Total Disciples</span><span id="discTotal">1</span></div>
+            <div class="stat"><span>Unassigned</span><span id="discFree">1</span></div>
+          </div>
+          <div class="card">
+            <h4>Bamboo Grove (Herbs)</h4>
+            <div class="stat"><span>Assigned</span><span id="assHerb">0</span></div>
+            <div class="row">
+              <button class="btn small" data-assign="herbs:+1">+1</button>
+              <button class="btn small" data-assign="herbs:-1">-1</button>
+            </div>
+            <div class="muted">Yield: <span id="yieldHerb">0</span>/s</div>
+          </div>
+          <div class="card">
+            <h4>Spirit Mine (Ore)</h4>
+            <div class="stat"><span>Assigned</span><span id="assOre">0</span></div>
+            <div class="row">
+              <button class="btn small" data-assign="ore:+1">+1</button>
+              <button class="btn small" data-assign="ore:-1">-1</button>
+            </div>
+            <div class="muted">Yield: <span id="yieldOre">0</span>/s</div>
+          </div>
+          <div class="card">
+            <h4>Sacred Forest (Wood)</h4>
+            <div class="stat"><span>Assigned</span><span id="assWood">0</span></div>
+            <div class="row">
+              <button class="btn small" data-assign="wood:+1">+1</button>
+              <button class="btn small" data-assign="wood:-1">-1</button>
+            </div>
+            <div class="muted">Yield: <span id="yieldWood">0</span>/s</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-alchemy">
+        <div class="cards">
+          <div class="card">
+            <h4>Alchemy Cauldron</h4>
+            <p class="muted">Brew pills that boost cultivation and breakthroughs. Success grows with Alchemy level.</p>
+            <div class="stat"><span>Level</span><span id="alchLvl">1</span></div>
+            <div class="stat"><span>XP</span><span id="alchXp">0</span></div>
+            <div class="row">
+              <select id="recipeSelect" class="btn">
+                <!-- Recipes populated dynamically based on unlock status -->
+              </select>
+              <button class="btn primary" id="brewBtn">🔥 Brew</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>Queue</h4>
+            <p class="muted">Slots: <span id="slotCount">1</span></p>
+            <table>
+              <thead><tr><th>Item</th><th>Progress</th><th>Status</th><th></th></tr></thead>
+              <tbody id="queueTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-combat">
+        <div class="cards">
+          <div class="card">
+            <h4>Spirit Beast Hunts</h4>
+            <p class="muted">Hunt beasts for stones and loot. Affixes add spice.</p>
+            <div class="row">
+              <select id="beastSelect" class="btn"></select>
+              <button class="btn primary" id="huntBtn">⚔️ Start Hunt</button>
+            </div>
+            <div class="muted" id="huntStatus">No active hunt.</div>
+            <div class="progress-wrap" style="margin-top:10px">
+              <span class="badge">Enemy HP</span>
+              <div class="bar" style="flex:1"><div class="fill" id="enemyFill"></div></div>
+              <span id="enemyHpTxt">—</span>
+            </div>
+            <div class="progress-wrap" style="margin-top:6px">
+              <span class="badge">Your HP</span>
+              <div class="bar" style="flex:1"><div class="fill" id="ourFill"></div></div>
+              <span id="ourHpTxt">—</span>
+            </div>
+            <p class="muted">Affixes: <span id="affixList">None</span></p>
+            <div class="row" style="margin-top:8px">
+              <button class="btn small" id="techSlash">🗡️ Sword Slash</button>
+              <button class="btn small" id="techGuard">🛡️ Guard</button>
+              <button class="btn small" id="techBurst">💥 Qi Burst</button>
+            </div>
+            <p class="muted" id="techStatus"></p>
+          </div>
+
+          <div class="card">
+            <h4>Combat Stats</h4>
+            <div class="stat"><span>Your ATK</span><span id="atkVal2">5</span></div>
+            <div class="stat"><span>Your DEF</span><span id="defVal2">2</span></div>
+            <div class="stat"><span>Estimated Win Chance</span><span id="winEst">—</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-sect">
+        <div class="cards">
+          <div class="card">
+            <h4>Sect Buildings</h4>
+            <p class="muted">Construct and upgrade buildings to enhance your sect's capabilities. Buildings unlock as you advance in cultivation and provide powerful bonuses.</p>
+            <div id="buildingsContainer"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="log" id="log"></div>
+    </section>
+  </main>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
