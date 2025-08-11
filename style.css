@@ -135,6 +135,223 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   border-right:1px solid #1f2937; background:linear-gradient(180deg, #0b1222, #0c1326);
   padding:16px; overflow:auto;
 }
+
+/* Activity Selectors */
+.activity-selector {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.activity-selector:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.activity-selector.active {
+  border-color: #22c55e;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+}
+
+.activity-selector.running {
+  border-color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.activity-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 6px;
+}
+
+.activity-bar {
+  height: 6px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.activity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  width: 0%;
+  transition: width 0.4s ease;
+  border-radius: 3px;
+}
+
+.activity-info {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* Training Dummy */
+.training-dummy {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.dummy-body {
+  font-size: 48px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  user-select: none;
+}
+
+.dummy-body:hover {
+  transform: scale(1.1);
+}
+
+.dummy-body:active {
+  transform: scale(0.95);
+}
+
+/* Activity Content Panels */
+.activity-content {
+  padding: 20px;
+}
+
+.activity-content h2 {
+  margin-bottom: 20px;
+  color: #c7d2fe;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+  padding-bottom: 10px;
+}
+
+/* Mining Resource Selection */
+.mining-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.resource-option {
+  position: relative;
+}
+
+.resource-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.resource-option label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.resource-option label:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.resource-option input[type="radio"]:checked + label {
+  border-color: #22c55e;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.resource-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.resource-name {
+  flex: 1;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.resource-rate {
+  font-size: 12px;
+  color: #22c55e;
+  font-weight: 500;
+}
+
+/* Timing-Based Training Interface */
+.training-interface {
+  margin: 16px 0;
+}
+
+.timing-bar-container {
+  margin: 16px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+  border-radius: 12px;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.timing-bar {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(90deg, #dc2626, #f59e0b, #22c55e, #f59e0b, #dc2626);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.perfect-zone {
+  position: absolute;
+  top: 0;
+  left: 45%;
+  width: 10%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.9));
+  border: 2px solid #22c55e;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+  animation: perfectZonePulse 2s ease-in-out infinite;
+}
+
+@keyframes perfectZonePulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
+  50% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.9); }
+}
+
+.timing-cursor {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 4px;
+  height: calc(100% + 4px);
+  background: linear-gradient(180deg, #ffffff, #e2e8f0);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  transition: left 0.05s linear;
+}
+
+.training-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.training-stats .stat {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  text-align: center;
+}
 .panel{background:linear-gradient(180deg, #111827, #0f172a); border:1px solid #1f2937; border-radius:var(--radius); padding:14px; margin-bottom:14px; box-shadow:var(--shadow)}
 .panel h3{margin:0 0 10px; font-size:14px; color:#c7d2fe; letter-spacing:.3px}
 

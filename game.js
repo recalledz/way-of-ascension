@@ -316,6 +316,26 @@ const defaultState=()=>({
   karmaPts:0, ascensions:0,
   karma:{qiRegen:0, yield:0, atk:0, def:0},
   auto:{meditate:true, brewQi:false, hunt:false}, // Auto-meditate enabled by default
+  // Activity System - only one can be active at a time
+  currentActivity: null, // 'cultivation', 'physique', 'mining', 'adventure', null
+  activities: {
+    physique: {
+      level: 1,
+      exp: 0,
+      expMax: 100
+    },
+    mining: {
+      level: 1,
+      exp: 0,
+      expMax: 100,
+      unlockedResources: ['stones'] // stones, iron, gems, crystals, etc.
+    },
+    adventure: {
+      location: 'Village Outskirts',
+      progress: 0,
+      maxProgress: 100
+    }
+  },
   // Enhanced Cultivation System
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
@@ -441,34 +461,74 @@ function initUI(){
     const d = e.target.dataset.assign; if(!d) return; const [res,op]=d.split(':'); const delta=+op; assign(res, delta);
   });
 
-  // Buttons
-  qs('#meditateBtn').addEventListener('click', meditate);
-  qs('#breakthroughBtn').addEventListener('click', tryBreakthrough);
-  qs('#brewBtn').addEventListener('click', addBrew);
-  qs('#huntBtn').addEventListener('click', startHunt);
-  qs('#useQiPill').addEventListener('click', ()=>usePill('qi'));
-  qs('#useBodyPill').addEventListener('click', ()=>usePill('body'));
-  qs('#useWardPill').addEventListener('click', ()=>usePill('ward'));
+  // Buttons (with safe null checks)
+  const meditateBtn = qs('#meditateBtn');
+  if (meditateBtn) meditateBtn.addEventListener('click', meditate);
+  
+  const breakthroughBtn = qs('#breakthroughBtn');
+  if (breakthroughBtn) breakthroughBtn.addEventListener('click', tryBreakthrough);
+  
+  const brewBtn = qs('#brewBtn');
+  if (brewBtn) brewBtn.addEventListener('click', addBrew);
+  
+  const huntBtn = qs('#huntBtn');
+  if (huntBtn) huntBtn.addEventListener('click', startHunt);
+  
+  const useQiPill = qs('#useQiPill');
+  if (useQiPill) useQiPill.addEventListener('click', ()=>usePill('qi'));
+  
+  const useBodyPill = qs('#useBodyPill');
+  if (useBodyPill) useBodyPill.addEventListener('click', ()=>usePill('body'));
+  
+  const useWardPill = qs('#useWardPill');
+  if (useWardPill) useWardPill.addEventListener('click', ()=>usePill('ward'));
 
-  // Autos
-  qs('#autoMeditate').checked=S.auto.meditate; qs('#autoMeditate').addEventListener('change',e=>S.auto.meditate=e.target.checked);
-  qs('#autoBrewQi').checked=S.auto.brewQi; qs('#autoBrewQi').addEventListener('change',e=>S.auto.brewQi=e.target.checked);
-  qs('#autoHunt').checked=S.auto.hunt; qs('#autoHunt').addEventListener('change',e=>S.auto.hunt=e.target.checked);
+  // Autos (with safe null checks)
+  const autoMeditate = qs('#autoMeditate');
+  if (autoMeditate) {
+    autoMeditate.checked = S.auto.meditate;
+    autoMeditate.addEventListener('change', e => S.auto.meditate = e.target.checked);
+  }
+  
+  const autoBrewQi = qs('#autoBrewQi');
+  if (autoBrewQi) {
+    autoBrewQi.checked = S.auto.brewQi;
+    autoBrewQi.addEventListener('change', e => S.auto.brewQi = e.target.checked);
+  }
+  
+  const autoHunt = qs('#autoHunt');
+  if (autoHunt) {
+    autoHunt.checked = S.auto.hunt;
+    autoHunt.addEventListener('change', e => S.auto.hunt = e.target.checked);
+  }
 
-  // Save/Load
-  qs('#saveBtn').addEventListener('click', save);
-  qs('#resetBtn').addEventListener('click', ()=>{ if(confirm('Hard reset?')){ S=defaultState(); save(); location.reload(); }});
-  qs('#exportBtn').addEventListener('click', ()=>{
-    const blob=new Blob([JSON.stringify(S)],{type:'application/json'}); const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download='way-of-ascension-save.json'; a.click(); URL.revokeObjectURL(url);
-  });
-  qs('#importBtn').addEventListener('click', async()=>{
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-    inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ S=JSON.parse(r.result); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
-    inp.click();
-  });
+  // Save/Load (with safe null checks)
+  const saveBtn = qs('#saveBtn');
+  if (saveBtn) saveBtn.addEventListener('click', save);
+  
+  const resetBtn = qs('#resetBtn');
+  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ S=defaultState(); save(); location.reload(); }});
+  const exportBtn = qs('#exportBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', ()=>{
+      const blob=new Blob([JSON.stringify(S)],{type:'application/json'}); const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='way-of-ascension-save.json'; a.click(); URL.revokeObjectURL(url);
+    });
+  }
+  
+  const importBtn = qs('#importBtn');
+  if (importBtn) {
+    importBtn.addEventListener('click', async()=>{
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ S=JSON.parse(r.result); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
+      inp.click();
+    });
+  }
 
-  renderUpgrades(); renderSect(); renderKarma();
+  // Safe render calls - only call functions that exist
+  if (typeof renderUpgrades === 'function') renderUpgrades();
+  if (typeof renderSect === 'function') renderSect();
+  renderKarma();
   updateAll();
 }
 
@@ -500,23 +560,35 @@ function updateAll(){
   setText('atkVal', calcAtk()); setText('defVal', calcDef());
   setText('atkVal2', calcAtk()); setText('defVal2', calcDef());
   
-  // Expanded stat system display
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+  // Activity system display
+  if (!S.activities) {
+    S.activities = {
+      physique: { level: 1, exp: 0, expMax: 100 },
+      mining: { level: 1, exp: 0, expMax: 100, unlockedResources: ['stones'] },
+      adventure: { location: 'Village Outskirts', progress: 0, maxProgress: 100 }
     };
   }
   
-  const statEffects = getStatEffects();
-  setText('physiqueVal', S.stats.physique);
-  setText('mindVal', S.stats.mind);
-  setText('dexterityVal', S.stats.dexterity);
-  setText('comprehensionVal', S.stats.comprehension);
-  setText('critChanceVal', (statEffects.totalCritChance * 100).toFixed(1) + '%');
-  setText('atkSpeedVal', statEffects.totalAttackSpeed.toFixed(1) + 'x');
-  setText('cooldownRedVal', (statEffects.totalCooldownReduction * 100).toFixed(0) + '%');
-  setText('advSpeedVal', statEffects.totalAdventureSpeed.toFixed(1) + 'x');
+  // Update progression displays
+  setText('realmDisplay', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
+  setText('physiqueLevel', S.activities.physique.level);
+  setText('physiqueExp', S.activities.physique.exp);
+  setText('physiqueExpMax', S.activities.physique.expMax);
+  setFill('physiqueFill', S.activities.physique.exp / S.activities.physique.expMax);
+  
+  setText('miningLevel', S.activities.mining.level);
+  setText('miningExp', S.activities.mining.exp);
+  setText('miningExpMax', S.activities.mining.expMax);
+  setFill('miningFill', S.activities.mining.exp / S.activities.mining.expMax);
+  
+  setText('currentLocation', S.activities.adventure.location);
+  setText('adventureProgress', S.activities.adventure.progress > 0 ? `${S.activities.adventure.progress}%` : 'Ready');
+  
+  setText('buildingCount', Object.values(S.buildings).filter(level => level > 0).length);
+  setText('stonesDisplay', fmt(S.stones));
+  
+  // Safe call to updateActivityUI if it exists
+  if (typeof updateActivityUI === 'function') updateActivityUI();
   
   // Resources
   setText('stonesVal', fmt(S.stones)); setText('stonesValL', fmt(S.stones));
@@ -541,21 +613,29 @@ function updateAll(){
     const stageMultiplier = 1 - (S.realm.stage - 1) * 0.05;
     const realmPenalty = S.realm.tier * 0.02;
     const html = document.getElementById('breakthroughDetails');
-    html.innerHTML = `
-      <small>Base: ${(realm.bt * 100).toFixed(1)}% | Stage penalty: ${((1-stageMultiplier) * 100).toFixed(1)}% | Realm penalty: ${(realmPenalty * 100).toFixed(1)}%</small>
-    `;
+    if (html) {
+      html.innerHTML = `
+        <small>Base: ${(realm.bt * 100).toFixed(1)}% | Stage penalty: ${((1-stageMultiplier) * 100).toFixed(1)}% | Realm penalty: ${(realmPenalty * 100).toFixed(1)}%</small>
+      `;
+    }
   }
   
   // Karma
   setText('karmaVal', S.karmaPts);
-  document.getElementById('ascendBtn').disabled = calcKarmaGain() <= 0;
+  const ascendBtn = document.getElementById('ascendBtn');
+  if (ascendBtn) ascendBtn.disabled = calcKarmaGain() <= 0;
   
   // Laws
-  updateLawsDisplay();
+  if (typeof updateLawsDisplay === 'function') updateLawsDisplay();
   
-  renderKarma(); renderQueue(); renderAlchemyUI(); renderBuildings();
-  updateTabVisibility();
-  updateQiOrbEffect();
+  // Safe render function calls
+  renderKarma(); 
+  if (typeof renderQueue === 'function') renderQueue(); 
+  if (typeof renderAlchemyUI === 'function') renderAlchemyUI(); 
+  if (typeof renderBuildings === 'function') renderBuildings();
+  if (typeof updateTabVisibility === 'function') updateTabVisibility();
+  if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
+  updateActivityCards();
 }
 
 function setText(id, v){const el=document.getElementById(id); if(el) el.textContent=v}
@@ -674,7 +754,10 @@ function icon(resource) {
 }
 
 function renderKarma(){
-  const body=document.getElementById('karmaUpgrades'); body.innerHTML='';
+  const body=document.getElementById('karmaUpgrades'); 
+  if (!body) return; 
+  
+  body.innerHTML='';
   KARMA_UPS.forEach(k=>{
     const cost = k.base * Math.pow(k.mult, S.karma[k.key.slice(2)] || 0);
     const div=document.createElement('div');
@@ -972,6 +1055,597 @@ function getStatEffects() {
     totalCooldownReduction: S.stats.cooldownReduction + (S.stats.dexterity - 10) * 0.02,
     totalAdventureSpeed: S.stats.adventureSpeed * (1 + (S.stats.dexterity - 10) * 0.03)
   };
+}
+
+// Activity Management System
+let currentActivity = null;
+let selectedActivity = 'cultivation'; // Default selected activity
+
+function selectActivity(activityType) {
+  selectedActivity = activityType;
+  
+  // Hide all activity content panels
+  const activityPanels = document.querySelectorAll('.activity-content');
+  activityPanels.forEach(panel => panel.style.display = 'none');
+  
+  // Hide all tabs
+  const tabs = document.querySelectorAll('section[id^="tab-"]');
+  tabs.forEach(tab => tab.style.display = 'none');
+  
+  // Show selected activity panel
+  const selectedPanel = document.getElementById(`activity-${activityType}`);
+  if (selectedPanel) {
+    selectedPanel.style.display = 'block';
+  }
+  
+  // Update sidebar selectors
+  updateActivitySelectors();
+  updateActivityContent();
+}
+
+function startActivity(activityType) {
+  if (currentActivity && currentActivity !== activityType) {
+    stopActivity(currentActivity);
+  }
+  
+  currentActivity = activityType;
+  
+  switch(activityType) {
+    case 'cultivation':
+      S.activities.cultivation = true;
+      log('Started cultivating. Foundation will increase over time.', 'good');
+      break;
+    case 'physique':
+      S.activities.physique = true;
+      log('Started physique training. Click the training dummy to gain experience!', 'good');
+      break;
+    case 'mining':
+      S.activities.mining = true;
+      log('Started mining operations. Extracting resources from the earth.', 'good');
+      break;
+    case 'adventure':
+      S.activities.adventure = true;
+      log('Started exploring. Adventure awaits!', 'good');
+      break;
+  }
+  
+  updateActivitySelectors();
+  updateActivityContent();
+}
+
+function stopActivity(activityType) {
+  switch(activityType) {
+    case 'cultivation':
+      S.activities.cultivation = false;
+      log('Stopped cultivating.', 'neutral');
+      break;
+    case 'physique':
+      S.activities.physique = false;
+      log('Stopped physique training.', 'neutral');
+      break;
+    case 'mining':
+      S.activities.mining = false;
+      log('Stopped mining operations.', 'neutral');
+      break;
+    case 'adventure':
+      S.activities.adventure = false;
+      log('Stopped exploring.', 'neutral');
+      break;
+  }
+  
+  if (currentActivity === activityType) {
+    currentActivity = null;
+  }
+  
+  updateActivitySelectors();
+  updateActivityContent();
+}
+
+function updateActivitySelectors() {
+  // Ensure physique and mining data structures exist
+  if (!S.physique) {
+    S.physique = { level: 1, exp: 0, expMax: 100 };
+  }
+  if (!S.mining) {
+    S.mining = { level: 1, exp: 0, expMax: 100 };
+  }
+  
+  // Update cultivation selector
+  const cultivationSelector = document.getElementById('cultivationSelector');
+  const cultivationFill = document.getElementById('cultivationFill');
+  const cultivationInfo = document.getElementById('cultivationInfo');
+  
+  if (cultivationSelector) {
+    cultivationSelector.classList.toggle('active', selectedActivity === 'cultivation');
+    cultivationSelector.classList.toggle('running', S.activities.cultivation);
+  }
+  
+  if (cultivationFill && cultivationInfo) {
+    const foundationPct = S.foundation / fCap() * 100;
+    cultivationFill.style.width = `${foundationPct}%`;
+    cultivationInfo.textContent = S.activities.cultivation ? 'Cultivating...' : 'Foundation Progress';
+  }
+  
+  // Update physique selector
+  const physiqueSelector = document.getElementById('physiqueSelector');
+  const physiqueFill = document.getElementById('physiqueSelectorFill');
+  const physiqueInfo = document.getElementById('physiqueInfo');
+  
+  if (physiqueSelector) {
+    physiqueSelector.classList.toggle('active', selectedActivity === 'physique');
+    physiqueSelector.classList.toggle('running', S.activities.physique);
+  }
+  
+  if (physiqueFill && physiqueInfo) {
+    const expPct = S.physique.exp / S.physique.expMax * 100;
+    physiqueFill.style.width = `${expPct}%`;
+    physiqueInfo.textContent = S.activities.physique ? 'Training...' : `Level ${S.physique.level}`;
+  }
+  
+  // Update mining selector
+  const miningSelector = document.getElementById('miningSelector');
+  const miningFill = document.getElementById('miningSelectorFill');
+  const miningInfo = document.getElementById('miningInfo');
+  
+  if (miningSelector) {
+    miningSelector.classList.toggle('active', selectedActivity === 'mining');
+    miningSelector.classList.toggle('running', S.activities.mining);
+  }
+  
+  if (miningFill && miningInfo) {
+    const expPct = S.mining.exp / S.mining.expMax * 100;
+    miningFill.style.width = `${expPct}%`;
+    miningInfo.textContent = S.activities.mining ? 'Mining...' : `Level ${S.mining.level}`;
+  }
+  
+  // Update adventure selector
+  const adventureSelector = document.getElementById('adventureSelector');
+  const adventureInfo = document.getElementById('adventureInfo');
+  
+  if (adventureSelector) {
+    adventureSelector.classList.toggle('active', selectedActivity === 'adventure');
+    adventureSelector.classList.toggle('running', S.activities.adventure);
+  }
+  
+  if (adventureInfo) {
+    adventureInfo.textContent = S.activities.adventure ? 'Exploring...' : 'Village Outskirts';
+  }
+  
+  // Update sect selector
+  const sectSelector = document.getElementById('sectSelector');
+  const sectInfo = document.getElementById('sectInfo');
+  
+  if (sectSelector) {
+    sectSelector.classList.toggle('active', selectedActivity === 'sect');
+  }
+  
+  if (sectInfo) {
+    const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
+    sectInfo.textContent = `${buildingCount} Buildings`;
+  }
+}
+
+function updateActivityContent() {
+  // Update cultivation activity content
+  updateActivityCultivation();
+  updateActivityPhysique();
+  updateActivityMining();
+  updateActivityAdventure();
+  updateActivitySect();
+}
+
+function updateActivityCultivation() {
+  setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
+  setText('foundValActivity', Math.floor(S.foundation));
+  setText('foundCapActivity', fCap());
+  setText('qiValActivity', Math.floor(S.qi));
+  setText('qiCapActivity', qCap());
+  setText('qiRegenActivity', qiRegenPerSec().toFixed(1));
+  setText('foundationRate', foundationGainPerSec().toFixed(1));
+  setText('btChanceActivity', (breakthroughChance() * 100).toFixed(1) + '%');
+  setText('powerMultActivity', S.powerMult + 'x');
+  
+  const foundFillActivity = document.getElementById('foundFillActivity');
+  const qiFillActivity = document.getElementById('qiFillActivity');
+  
+  if (foundFillActivity) foundFillActivity.style.width = (S.foundation / fCap() * 100) + '%';
+  if (qiFillActivity) qiFillActivity.style.width = (S.qi / qCap() * 100) + '%';
+  
+  const startBtn = document.getElementById('startCultivationActivity');
+  if (startBtn) {
+    startBtn.textContent = S.activities.cultivation ? '🛑 Stop Cultivating' : '🧘 Start Cultivating';
+    startBtn.onclick = () => S.activities.cultivation ? stopActivity('cultivation') : startActivity('cultivation');
+  }
+}
+
+function updateActivityPhysique() {
+  // Ensure physique data structure exists
+  if (!S.physique) {
+    S.physique = { 
+      level: 1, 
+      exp: 0, 
+      expMax: 100,
+      stamina: 100,
+      maxStamina: 100,
+      perfectHits: 0,
+      hitStreak: 0,
+      passiveXpGained: 0,
+      timingActive: false,
+      cursorPosition: 0,
+      cursorDirection: 1
+    };
+  }
+  
+  // Ensure all properties exist
+  if (S.physique.stamina === undefined) S.physique.stamina = 100;
+  if (S.physique.maxStamina === undefined) S.physique.maxStamina = 100;
+  if (S.physique.perfectHits === undefined) S.physique.perfectHits = 0;
+  if (S.physique.hitStreak === undefined) S.physique.hitStreak = 0;
+  if (S.physique.passiveXpGained === undefined) S.physique.passiveXpGained = 0;
+  if (S.physique.timingActive === undefined) S.physique.timingActive = false;
+  if (S.physique.cursorPosition === undefined) S.physique.cursorPosition = 0;
+  if (S.physique.cursorDirection === undefined) S.physique.cursorDirection = 1;
+  
+  setText('physiqueLevelActivity', S.physique.level);
+  setText('physiqueExpActivity', Math.floor(S.physique.exp));
+  setText('physiqueExpMaxActivity', S.physique.expMax);
+  setText('currentStamina', Math.floor(S.physique.stamina));
+  setText('maxStamina', S.physique.maxStamina);
+  
+  const physiqueFillActivity = document.getElementById('physiqueFillActivity');
+  if (physiqueFillActivity) {
+    physiqueFillActivity.style.width = (S.physique.exp / S.physique.expMax * 100) + '%';
+  }
+  
+  const staminaFill = document.getElementById('staminaFill');
+  if (staminaFill) {
+    staminaFill.style.width = (S.physique.stamina / S.physique.maxStamina * 100) + '%';
+  }
+  
+  const startBtn = document.getElementById('startPhysiqueActivity');
+  if (startBtn) {
+    startBtn.textContent = S.activities.physique ? '🛑 Stop Training' : '💪 Start Training';
+    startBtn.onclick = () => S.activities.physique ? stopActivity('physique') : startActivity('physique');
+  }
+  
+  // Show/hide training cards based on activity state
+  const activeCard = document.getElementById('activeTrainingCard');
+  const passiveCard = document.getElementById('passiveTrainingCard');
+  
+  if (activeCard) {
+    activeCard.style.display = S.activities.physique ? 'block' : 'none';
+  }
+  
+  if (passiveCard) {
+    passiveCard.style.display = S.activities.physique ? 'block' : 'none';
+  }
+  
+  if (S.activities.physique) {
+    // Update training stats
+    setText('perfectHits', S.physique.perfectHits);
+    setText('hitStreak', S.physique.hitStreak);
+    
+    const trainingBonus = Math.min(S.physique.hitStreak * 5, 50);
+    setText('trainingBonus', `+${trainingBonus}%`);
+    
+    // Update passive training stats
+    const passiveRate = 2 + (S.physique.level * 0.2);
+    setText('passiveTrainingRate', `+${passiveRate.toFixed(1)} XP/sec`);
+    setText('passiveXpGained', `${Math.floor(S.physique.passiveXpGained)} XP`);
+    
+    // Update execute training button
+    const executeBtn = document.getElementById('executeTraining');
+    if (executeBtn) {
+      const canTrain = S.physique.stamina >= 10;
+      executeBtn.disabled = !canTrain;
+      executeBtn.textContent = canTrain ? '⚡ Execute Training (10 Stamina)' : '😴 Need Stamina (10 Required)';
+    }
+  }
+}
+
+function updateActivityMining() {
+  // Ensure mining data structure exists
+  if (!S.mining) {
+    S.mining = { 
+      level: 1, 
+      exp: 0, 
+      expMax: 100,
+      selectedResource: 'stones',
+      resourcesGained: 0
+    };
+  }
+  
+  // Ensure selectedResource exists
+  if (!S.mining.selectedResource) {
+    S.mining.selectedResource = 'stones';
+  }
+  
+  setText('miningLevelActivity', S.mining.level);
+  setText('miningExpActivity', Math.floor(S.mining.exp));
+  setText('miningExpMaxActivity', S.mining.expMax);
+  
+  // Update currently mining display
+  const resourceNames = {
+    stones: 'Spirit Stones',
+    iron: 'Iron Ore',
+    ice: 'Ice Crystal'
+  };
+  
+  if (S.activities.mining) {
+    setText('currentlyMining', resourceNames[S.mining.selectedResource] || 'Unknown');
+  } else {
+    setText('currentlyMining', 'Nothing');
+  }
+  
+  const miningFillActivity = document.getElementById('miningFillActivity');
+  if (miningFillActivity) {
+    miningFillActivity.style.width = (S.mining.exp / S.mining.expMax * 100) + '%';
+  }
+  
+  const startBtn = document.getElementById('startMiningActivity');
+  if (startBtn) {
+    startBtn.textContent = S.activities.mining ? '🛑 Stop Mining' : '⛏️ Start Mining';
+    startBtn.onclick = () => S.activities.mining ? stopActivity('mining') : startActivity('mining');
+  }
+  
+  // Update resource selection visibility based on level
+  const ironOption = document.getElementById('ironOption');
+  const iceOption = document.getElementById('iceOption');
+  
+  if (ironOption) {
+    ironOption.style.display = S.mining.level >= 3 ? 'block' : 'none';
+  }
+  
+  if (iceOption) {
+    iceOption.style.display = S.mining.level >= 15 ? 'block' : 'none';
+  }
+  
+  // Update selected resource radio button
+  const selectedRadio = document.querySelector(`input[name="miningResource"][value="${S.mining.selectedResource}"]`);
+  if (selectedRadio) {
+    selectedRadio.checked = true;
+  }
+  
+  // Show/hide mining stats card
+  const miningStatsCard = document.getElementById('miningStatsCard');
+  if (miningStatsCard) {
+    miningStatsCard.style.display = S.activities.mining ? 'block' : 'none';
+  }
+  
+  // Update mining stats
+  if (S.activities.mining) {
+    setText('resourcesGained', S.mining.resourcesGained || 0);
+    
+    const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
+    setText('physiqueYieldBonus', `+${physiqueBonus}%`);
+    
+    const baseRate = getMiningRate(S.mining.selectedResource);
+    const bonusRate = baseRate * (physiqueBonus / 100);
+    const totalRate = baseRate + bonusRate;
+    setText('currentMiningRate', `${totalRate.toFixed(1)}/sec`);
+  }
+  
+  // Update resource rate displays
+  updateMiningRateDisplays();
+}
+
+function getMiningRate(resource) {
+  const baseRates = {
+    stones: 3,
+    iron: 1.5,
+    ice: 0.75
+  };
+  
+  const levelBonus = S.mining.level * 0.1;
+  return (baseRates[resource] || 1) * (1 + levelBonus);
+}
+
+function updateMiningRateDisplays() {
+  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
+  
+  const stonesRate = getMiningRate('stones') * (1 + physiqueBonus / 100);
+  const ironRate = getMiningRate('iron') * (1 + physiqueBonus / 100);
+  const iceRate = getMiningRate('ice') * (1 + physiqueBonus / 100);
+  
+  setText('stonesRate', `+${stonesRate.toFixed(1)}/sec`);
+  setText('ironRate', `+${ironRate.toFixed(1)}/sec`);
+  setText('iceRate', `+${iceRate.toFixed(1)}/sec`);
+}
+
+function updateActivityAdventure() {
+  setText('adventureLocationActivity', 'Village Outskirts');
+  setText('adventureProgressActivity', S.activities.adventure ? 'Exploring...' : 'Ready');
+  
+  const startBtn = document.getElementById('startAdventureActivity');
+  if (startBtn) {
+    startBtn.textContent = S.activities.adventure ? '🛑 Stop Exploring' : '🗺️ Start Exploring';
+    startBtn.onclick = () => S.activities.adventure ? stopActivity('adventure') : startActivity('adventure');
+  }
+}
+
+function updateActivitySect() {
+  const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
+  setText('buildingCountActivity', buildingCount);
+  setText('stonesActivity', Math.floor(S.stones));
+  
+  const goToSectBtn = document.getElementById('goToSectTab');
+  if (goToSectBtn) {
+    goToSectBtn.onclick = () => {
+      if (typeof switchTab === 'function') {
+        switchTab('sect');
+      } else if (typeof showTab === 'function') {
+        showTab('sect');
+      } else {
+        // Fallback: try to manually switch to sect tab
+        selectActivity('sect');
+        log('Switched to sect management', 'good');
+      }
+    };
+  }
+}
+
+// Legacy function for compatibility
+function updateActivityCards() {
+  updateActivitySelectors();
+  updateActivityContent();
+}
+
+function trainPhysique() {
+  if (!S.activities.physique) {
+    log('You must be training physique to use the training dummy!', 'bad');
+    return;
+  }
+  
+  // Simple mini-game: gain exp based on timing/clicking
+  const baseExp = 5 + Math.floor(Math.random() * 10);
+  const expGain = Math.floor(baseExp * (1 + (S.stats.physique - 10) * 0.1));
+  
+  S.physique.exp += expGain;
+  
+  // Level up check
+  if (S.physique.exp >= S.physique.expMax) {
+    S.physique.level++;
+    S.physique.exp = 0;
+    S.physique.expMax = Math.floor(S.physique.expMax * 1.2);
+    
+    // Award physique stat points
+    const statGain = 1 + Math.floor(S.physique.level / 5);
+    S.stats.physique += statGain;
+    
+    log(`Physique training level up! Level ${S.physique.level}. Physique +${statGain}`, 'good');
+  } else {
+    log(`Training session complete! +${expGain} physique exp`, 'good');
+  }
+  
+  updateAll();
+}
+
+// Mining is now passive - no manual mining function needed
+
+// Timing-based physique training functions
+function updateTimingCursor() {
+  if (!S.physique.timingActive) return;
+  
+  // Move cursor back and forth across the timing bar
+  S.physique.cursorPosition += S.physique.cursorDirection * 2; // 2% per tick
+  
+  if (S.physique.cursorPosition >= 100) {
+    S.physique.cursorPosition = 100;
+    S.physique.cursorDirection = -1;
+  } else if (S.physique.cursorPosition <= 0) {
+    S.physique.cursorPosition = 0;
+    S.physique.cursorDirection = 1;
+  }
+  
+  const cursor = document.getElementById('timingCursor');
+  if (cursor) {
+    cursor.style.left = S.physique.cursorPosition + '%';
+  }
+}
+
+function startTimingGame() {
+  if (!S.physique || S.physique.stamina < 10) return;
+  
+  S.physique.timingActive = true;
+  S.physique.cursorPosition = 0;
+  S.physique.cursorDirection = 1;
+  
+  const executeBtn = document.getElementById('executeTraining');
+  if (executeBtn) {
+    executeBtn.textContent = '🎯 Hit Perfect Zone!';
+    executeBtn.onclick = executeTraining;
+  }
+}
+
+function executeTraining() {
+  if (!S.physique || !S.physique.timingActive || S.physique.stamina < 10) return;
+  
+  // Stop the timing game
+  S.physique.timingActive = false;
+  
+  // Calculate hit quality based on cursor position
+  const perfectZoneStart = 45;
+  const perfectZoneEnd = 55;
+  const goodZoneStart = 35;
+  const goodZoneEnd = 65;
+  
+  let hitQuality = 'poor';
+  let xpGain = 3 + Math.random() * 2; // 3-5 XP
+  let hitMessage = 'Poor timing!';
+  
+  if (S.physique.cursorPosition >= perfectZoneStart && S.physique.cursorPosition <= perfectZoneEnd) {
+    hitQuality = 'perfect';
+    xpGain = 15 + Math.random() * 10; // 15-25 XP
+    hitMessage = 'Perfect timing!';
+    S.physique.perfectHits++;
+    S.physique.hitStreak++;
+  } else if (S.physique.cursorPosition >= goodZoneStart && S.physique.cursorPosition <= goodZoneEnd) {
+    hitQuality = 'good';
+    xpGain = 8 + Math.random() * 4; // 8-12 XP
+    hitMessage = 'Good timing!';
+    S.physique.hitStreak = Math.max(0, S.physique.hitStreak - 1);
+  } else {
+    S.physique.hitStreak = 0;
+  }
+  
+  // Apply streak bonus
+  const streakBonus = Math.min(S.physique.hitStreak * 0.05, 0.5); // Max 50% bonus
+  xpGain *= (1 + streakBonus);
+  
+  // Consume stamina
+  S.physique.stamina -= 10;
+  
+  // Add experience
+  S.physique.exp += xpGain;
+  
+  // Log result
+  const bonusText = streakBonus > 0 ? ` (+${Math.floor(streakBonus * 100)}% streak bonus)` : '';
+  log(`${hitMessage} +${Math.floor(xpGain)} physique XP${bonusText}`, hitQuality === 'perfect' ? 'good' : 'neutral');
+  
+  // Reset button
+  const executeBtn = document.getElementById('executeTraining');
+  if (executeBtn) {
+    const canTrain = S.physique.stamina >= 10;
+    executeBtn.textContent = canTrain ? '⚡ Execute Training (10 Stamina)' : '😴 Need Stamina (10 Required)';
+    executeBtn.onclick = canTrain ? startTimingGame : null;
+    executeBtn.disabled = !canTrain;
+  }
+  
+  updateAll();
+}
+
+function updateActivityUI() {
+  // Update activity status displays
+  const activities = ['cultivation', 'physique', 'adventure', 'mining'];
+  
+  activities.forEach(activity => {
+    const statusEl = document.getElementById(`${activity}Status`);
+    const btnEl = document.getElementById(`start${activity.charAt(0).toUpperCase() + activity.slice(1)}`);
+    const panelEl = document.getElementById(`${activity}Panel`);
+    
+    if (statusEl && btnEl && panelEl) {
+      if (S.currentActivity === activity) {
+        statusEl.textContent = 'Active';
+        statusEl.style.background = 'rgba(34, 197, 94, 0.2)';
+        statusEl.style.color = '#22c55e';
+        btnEl.textContent = btnEl.textContent.replace('Start', 'Stop').replace('🧘', '⏹️').replace('💪', '⏹️').replace('🗺️', '⏹️').replace('⛏️', '⏹️');
+        btnEl.classList.add('active');
+        panelEl.classList.add('active');
+      } else {
+        statusEl.textContent = 'Inactive';
+        statusEl.style.background = 'rgba(107, 114, 128, 0.2)';
+        statusEl.style.color = '#9ca3af';
+        btnEl.classList.remove('active');
+        panelEl.classList.remove('active');
+        
+        // Reset button text
+        if (activity === 'cultivation') btnEl.textContent = '🧘 Start Cultivating';
+        if (activity === 'physique') btnEl.textContent = '💪 Train Physique';
+        if (activity === 'adventure') btnEl.textContent = '🗺️ Explore';
+        if (activity === 'mining') btnEl.textContent = '⛏️ Mine Ore';
+      }
+    }
+  });
 }
 
 // Initialize law system on game start
@@ -1622,14 +2296,17 @@ function updateWinEst(){
 function calcKarmaGain(){
   let score = (S.realm.tier*9 + (S.realm.stage-1)) - 3; return Math.max(0, Math.floor(score/6));
 }
-document.getElementById('ascendBtn').addEventListener('click', ()=>{
-  const gain = calcKarmaGain();
-  if(!confirm(`Ascend now and earn ${gain} karma? This resets most progress.`)) return;
-  S.karmaPts += gain; S.ascensions++;
-  const keep = {karmaPts:S.karmaPts, ascensions:S.ascensions, karma:S.karma};
-  S = Object.assign(defaultState(), keep);
-  save(); location.reload();
-});
+const ascendBtn = document.getElementById('ascendBtn');
+if (ascendBtn) {
+  ascendBtn.addEventListener('click', ()=>{
+    const gain = calcKarmaGain();
+    if(!confirm(`Ascend now and earn ${gain} karma? This resets most progress.`)) return;
+    S.karmaPts += gain; S.ascensions++;
+    const keep = {karmaPts:S.karmaPts, ascensions:S.ascensions, karma:S.karma};
+    S = Object.assign(defaultState(), keep);
+    save(); location.reload();
+  });
+}
 
 /* Loop */
 function tick(){
@@ -1648,9 +2325,81 @@ function tick(){
   // Alchemy
   S.alchemy.queue.forEach(q=>{ if(!q.done){ q.t -= 1; if(q.t<=0){ q.t=0; q.done=true; } }});
 
-  // Auto meditation - continuous foundation gain
-  if(S.auto.meditate) {
+  // Activity-based progression
+  if(S.activities.cultivation) {
     const gain = foundationGainPerSec();
+    S.foundation = clamp(S.foundation + gain, 0, fCap());
+  }
+  
+  // Passive mining progression
+  if(S.activities.mining && S.mining && S.mining.selectedResource) {
+    const baseRate = getMiningRate(S.mining.selectedResource);
+    const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
+    const totalRate = baseRate * (1 + physiqueBonus / 100);
+    
+    // Add resources based on selected type
+    switch(S.mining.selectedResource) {
+      case 'stones':
+        S.stones += totalRate;
+        break;
+      case 'iron':
+        if (!S.iron) S.iron = 0;
+        S.iron += totalRate;
+        break;
+      case 'ice':
+        if (!S.ice) S.ice = 0;
+        S.ice += totalRate;
+        break;
+    }
+    
+    // Track resources gained for display
+    if (!S.mining.resourcesGained) S.mining.resourcesGained = 0;
+    S.mining.resourcesGained += totalRate;
+    
+    // Mining experience gain (slower than active training)
+    const expGain = 0.5; // 0.5 exp per second
+    S.mining.exp += expGain;
+    
+    // Level up check
+    if (S.mining.exp >= S.mining.expMax) {
+      S.mining.level++;
+      S.mining.exp = 0;
+      S.mining.expMax = Math.floor(S.mining.expMax * 1.3);
+      log(`Mining level up! Level ${S.mining.level}`, 'good');
+    }
+  }
+  
+  // Physique training progression
+  if(S.activities.physique && S.physique) {
+    // Stamina regeneration (1 stamina per second)
+    if (S.physique.stamina < S.physique.maxStamina) {
+      S.physique.stamina = Math.min(S.physique.stamina + 1, S.physique.maxStamina);
+    }
+    
+    // Passive training XP gain (slower than active)
+    const passiveRate = 2 + (S.physique.level * 0.2);
+    S.physique.exp += passiveRate;
+    S.physique.passiveXpGained += passiveRate;
+    
+    // Update timing cursor if active
+    if (S.physique.timingActive) {
+      updateTimingCursor();
+    }
+    
+    // Level up check
+    if (S.physique.exp >= S.physique.expMax) {
+      S.physique.level++;
+      S.physique.exp = 0;
+      S.physique.expMax = Math.floor(S.physique.expMax * 1.4);
+      S.physique.maxStamina += 10; // Increase max stamina with level
+      S.stats.physique += 1; // Increase physique stat
+      log(`Physique level up! Level ${S.physique.level} (+1 Physique)`, 'good');
+    }
+  }
+  
+  // Auto meditation fallback for old saves
+  if(S.auto.meditate && !S.activities.cultivation) {
+    const gain = foundationGainPerSec() * 0.5; // Reduced when not actively cultivating
     S.foundation = clamp(S.foundation + gain, 0, fCap());
   }
   if(S.auto.brewQi && S.alchemy.queue.length < S.alchemy.maxSlots){ if(canPay(RECIPES.qi.cost)) addBrew(); }
@@ -1688,6 +2437,75 @@ function timeStr(){ const s=S.time; const h=Math.floor(s/3600), m=Math.floor((s%
 function save(){ try{ localStorage.setItem('woa-save', JSON.stringify(S)); }catch(e){} }
 function load(){ try{ const t=localStorage.getItem('woa-save'); return t? JSON.parse(t):null; }catch(e){ return null; } }
 
+// Activity selector event listeners
+function initActivityListeners() {
+  document.getElementById('cultivationSelector')?.addEventListener('click', () => selectActivity('cultivation'));
+  document.getElementById('physiqueSelector')?.addEventListener('click', () => selectActivity('physique'));
+  document.getElementById('miningSelector')?.addEventListener('click', () => selectActivity('mining'));
+  document.getElementById('adventureSelector')?.addEventListener('click', () => selectActivity('adventure'));
+  document.getElementById('sectSelector')?.addEventListener('click', () => selectActivity('sect'));
+  
+  // Activity content event listeners
+  document.getElementById('breakthroughBtnActivity')?.addEventListener('click', () => {
+    if (typeof breakthrough === 'function') {
+      breakthrough();
+    } else if (typeof tryBreakthrough === 'function') {
+      tryBreakthrough();
+    } else {
+      log('Breakthrough function not available', 'bad');
+    }
+  });
+  document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
+  document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
+  
+  // Execute training event listener
+  document.getElementById('executeTraining')?.addEventListener('click', startTimingGame);
+  
+  // Mining resource selection event listeners
+  const miningResourceInputs = document.querySelectorAll('input[name="miningResource"]');
+  miningResourceInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
+      if (S.mining) {
+        S.mining.selectedResource = e.target.value;
+        S.mining.resourcesGained = 0; // Reset counter when switching resources
+        log(`Switched mining to ${e.target.value === 'stones' ? 'Spirit Stones' : e.target.value === 'iron' ? 'Iron Ore' : 'Ice Crystal'}`, 'good');
+        updateActivityMining();
+      }
+    });
+  });
+}
+
+// Add physique training dummy interaction
+function addPhysiqueMinigame() {
+  // Add training dummy button to physique tab when it's implemented
+  // For now, we'll add a simple training button to the cultivation tab
+  const cultivationTab = document.getElementById('tab-cultivation');
+  if (cultivationTab && !document.getElementById('trainDummyBtn')) {
+    const trainingSection = document.createElement('div');
+    trainingSection.innerHTML = `
+      <div class="card" id="physiqueTrainingCard" style="display:none;">
+        <h4>💪 Physique Training</h4>
+        <p class="muted">Train with the training dummy to increase your physical power. Click rapidly to maximize your training effectiveness!</p>
+        <div class="stat"><span>Training Level</span><span id="trainingLevel">1</span></div>
+        <div class="progress-wrap" style="margin:10px 0">
+          <span class="badge">Progress</span>
+          <div class="bar" style="flex:1"><div class="fill" id="trainingFill"></div></div>
+          <span id="trainingPct">0%</span>
+        </div>
+        <button class="btn primary" id="trainDummyBtn">🥊 Train with Dummy</button>
+        <div class="muted" style="margin-top:8px">Requires: Physique Training activity active</div>
+      </div>
+    `;
+    cultivationTab.appendChild(trainingSection);
+    
+    document.getElementById('trainDummyBtn').addEventListener('click', trainPhysique);
+  }
+}
+
+// Mining actions are now handled in the activity panel - no separate function needed
+
+
+
 // Init
 window.addEventListener('load', ()=>{
   // Tabs at boot
@@ -1697,6 +2515,10 @@ window.addEventListener('load', ()=>{
   });
   initUI();
   initLawSystem();
+  initActivityListeners();
+  selectActivity('cultivation'); // Start with cultivation selected
+  updateAll();
+  tick();
   log('Welcome, cultivator.');
   setInterval(tick, 1000);
 });

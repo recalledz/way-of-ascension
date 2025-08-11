@@ -40,74 +40,212 @@
 
   <main>
     <aside class="left">
-      <div class="panel">
-        <h3>Cultivator</h3>
-        <div class="stat"><span>Qi</span><span><span id="qiValL">0</span>/<span id="qiCapL">100</span> (+<span id="qiRegen">1.0</span>/s)</span></div>
-        <div class="bar"><div class="fill" id="qiFill"></div></div>
-        <div class="stat"><span>Foundation</span><span><span id="foundValL">0</span>/<span id="foundCapL">60</span></span></div>
-        <div class="bar"><div class="fill" id="foundFill"></div></div>
-        <div class="stat"><span>HP</span><span><span id="hpValL">100</span>/<span id="hpMaxL">100</span></span></div>
-        <div class="bar"><div class="fill" id="hpFill" style="background:linear-gradient(90deg,#22c55e,#f59e0b)"></div></div>
-        <div class="stat"><span>Attack</span><span id="atkVal">5</span></div>
-        <div class="stat"><span>Defense</span><span id="defVal">2</span></div>
-        <div class="row" style="margin-top:10px">
-          <button class="btn primary" id="meditateBtn">🧘 Meditate</button>
-          <button class="btn" id="breakthroughBtn" title="Attempt to advance your realm">⚡ Breakthrough</button>
+      <h3 style="margin-bottom: 16px; text-align: center; color: #c7d2fe;">Activities</h3>
+      
+      <!-- Cultivation Selector -->
+      <div class="activity-selector" id="cultivationSelector" data-activity="cultivation">
+        <div class="activity-name">🧘 Cultivation</div>
+        <div class="activity-bar">
+          <div class="activity-fill" id="cultivationFill"></div>
         </div>
-        <div class="row" style="margin-top:8px">
-          <label class="pill"><input type="checkbox" id="autoMeditate"> Auto-meditate</label>
+        <div class="activity-info" id="cultivationInfo">Foundation Progress</div>
+      </div>
+
+      <!-- Physique Selector -->
+      <div class="activity-selector" id="physiqueSelector" data-activity="physique">
+        <div class="activity-name">💪 Physique</div>
+        <div class="activity-bar">
+          <div class="activity-fill" id="physiqueSelectorFill"></div>
         </div>
+        <div class="activity-info" id="physiqueInfo">Level 1</div>
       </div>
 
-      <div class="panel">
-        <h3>Cultivation Stats</h3>
-        <div class="stat"><span>Physique</span><span id="physiqueVal">10</span></div>
-        <div class="stat"><span>Mind</span><span id="mindVal">10</span></div>
-        <div class="stat"><span>Dexterity</span><span id="dexterityVal">10</span></div>
-        <div class="stat"><span>Comprehension</span><span id="comprehensionVal">10</span></div>
-        <div class="stat"><span>Critical Chance</span><span id="critChanceVal">5.0%</span></div>
-        <div class="stat"><span>Attack Speed</span><span id="atkSpeedVal">1.0x</span></div>
-        <div class="stat"><span>Cooldown Reduction</span><span id="cooldownRedVal">0%</span></div>
-        <div class="stat"><span>Adventure Speed</span><span id="advSpeedVal">1.0x</span></div>
-      </div>
-
-      <div class="panel">
-        <h3>Resources</h3>
-        <div class="stat"><span>Spirit Stones</span><span id="stonesValL">0</span></div>
-        <div class="stat"><span>Herbs</span><span id="herbVal">0</span></div>
-        <div class="stat"><span>Ore</span><span id="oreVal">0</span></div>
-        <div class="stat"><span>Wood</span><span id="woodVal">0</span></div>
-        <div class="stat"><span>Beast Cores</span><span id="coreVal">0</span></div>
-        <div class="stat"><span>Pills</span><span>Qi <span id="pillQi">0</span> • Body <span id="pillBody">0</span> • Ward <span id="pillWard">0</span></span></div>
-      </div>
-
-      <div class="panel">
-        <h3>Automation</h3>
-        <div class="grid">
-          <label class="pill"><input type="checkbox" id="autoBrewQi"> Auto-brew Qi Pills</label>
-          <label class="pill"><input type="checkbox" id="autoHunt"> Auto-hunt</label>
+      <!-- Mining Selector -->
+      <div class="activity-selector" id="miningSelector" data-activity="mining">
+        <div class="activity-name">⛏️ Mining</div>
+        <div class="activity-bar">
+          <div class="activity-fill" id="miningSelectorFill"></div>
         </div>
+        <div class="activity-info" id="miningInfo">Level 1</div>
       </div>
 
-      <div class="panel">
-        <h3>Ascension</h3>
-        <div class="stat"><span>Karma</span><span id="karmaVal">0</span></div>
-        <div class="grid">
-          <button class="btn" id="ascendBtn" title="Reset progress for permanent bonuses" disabled>🕯️ Ascend</button>
-          <div class="muted">Ascend after reaching <span class="hint" title="Foundation Realm stage 3">Foundation 3</span>. Earn Karma to buy permanent upgrades.</div>
-        </div>
+      <!-- Adventure Selector -->
+      <div class="activity-selector" id="adventureSelector" data-activity="adventure">
+        <div class="activity-name">🗺️ Adventure</div>
+        <div class="activity-info" id="adventureInfo">Village Outskirts</div>
       </div>
 
-      <div class="panel">
-        <h3>Karma Upgrades (Permanent)</h3>
-        <div class="grid" id="karmaUpgrades"></div>
+      <!-- Sect Selector -->
+      <div class="activity-selector" id="sectSelector" data-activity="sect">
+        <div class="activity-name">🏛️ Sect</div>
+        <div class="activity-info" id="sectInfo">0 Buildings</div>
       </div>
     </aside>
 
     <section class="content">
       <nav id="tabs"></nav>
 
-      <section id="tab-cultivation" class="active">
+      <!-- Activity Content Panels -->
+      <section id="activity-cultivation" class="activity-content" style="display:none;">
+        <h2>🧘 Cultivation</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Cultivation Status</h4>
+            <div class="stat"><span>Current Realm</span><span id="realmNameActivity">Mortal 1</span></div>
+            <div class="stat"><span>Foundation</span><span><span id="foundValActivity">0</span>/<span id="foundCapActivity">60</span></span></div>
+            <div class="bar"><div class="fill" id="foundFillActivity"></div></div>
+            <div class="stat"><span>Qi</span><span><span id="qiValActivity">0</span>/<span id="qiCapActivity">100</span> (+<span id="qiRegenActivity">1.0</span>/s)</span></div>
+            <div class="bar"><div class="fill" id="qiFillActivity"></div></div>
+            <div class="row" style="margin-top:12px">
+              <button class="btn primary" id="startCultivationActivity">🧘 Start Cultivating</button>
+              <button class="btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
+            </div>
+            <div class="muted" style="margin-top:8px">Foundation gain rate: <span id="foundationRate">0.0</span>/s</div>
+          </div>
+          
+          <div class="card">
+            <h4>Breakthrough Details</h4>
+            <div class="stat"><span>Success Chance</span><span id="btChanceActivity">0%</span></div>
+            <div class="stat"><span>Power Multiplier</span><span id="powerMultActivity">1x</span></div>
+            <div id="breakthroughDetailsActivity" class="muted"></div>
+            <div class="row" style="margin-top:12px">
+              <button class="btn" id="useQiPillActivity">💊 Use Qi Pill</button>
+              <button class="btn" id="useWardPillActivity">💊 Use Ward Pill</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-physique" class="activity-content" style="display:none;">
+        <h2> Physique Training</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Training Status</h4>
+            <div class="stat"><span>Physique Level</span><span id="physiqueLevelActivity">1</span></div>
+            <div class="stat"><span>Experience</span><span><span id="physiqueExpActivity">0</span>/<span id="physiqueExpMaxActivity">100</span></span></div>
+            <div class="bar"><div class="fill" id="physiqueFillActivity"></div></div>
+            <div class="stat"><span>Stamina</span><span><span id="currentStamina">100</span>/<span id="maxStamina">100</span></span></div>
+            <div class="bar"><div class="fill" id="staminaFill" style="background: linear-gradient(90deg, #22c55e, #16a34a);"></div></div>
+            <button class="btn primary" id="startPhysiqueActivity"> Start Training</button>
+          </div>
+          
+          <div class="card" id="activeTrainingCard" style="display:none;">
+            <h4> Perfect Form Training</h4>
+            <p class="muted">Hit the perfect timing zone for maximum XP. Requires stamina and skill!</p>
+            
+            <div class="training-interface">
+              <div class="timing-bar-container">
+                <div class="timing-bar" id="timingBar">
+                  <div class="perfect-zone" id="perfectZone"></div>
+                  <div class="timing-cursor" id="timingCursor"></div>
+                </div>
+              </div>
+              
+              <div class="training-stats">
+                <div class="stat"><span>Perfect Hits</span><span id="perfectHits">0</span></div>
+                <div class="stat"><span>Hit Streak</span><span id="hitStreak">0</span></div>
+                <div class="stat"><span>Training Bonus</span><span id="trainingBonus">+0%</span></div>
+              </div>
+              
+              <button class="btn primary" id="executeTraining" disabled> Execute Training (10 Stamina)</button>
+              <div class="muted" style="margin-top:8px">Perfect timing: 15-25 XP | Good timing: 8-12 XP | Poor timing: 3-5 XP</div>
+            </div>
+          </div>
+          
+          <div class="card" id="passiveTrainingCard" style="display:none;">
+            <h4> Passive Training</h4>
+            <p class="muted">Steady, continuous training at a slower pace. No stamina required.</p>
+            <div class="stat"><span>Passive Rate</span><span id="passiveTrainingRate">+2 XP/sec</span></div>
+            <div class="stat"><span>Total Gained</span><span id="passiveXpGained">0 XP</span></div>
+            <div class="muted" style="margin-top:8px">Passive training provides steady progress while stamina recovers</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-mining" class="activity-content" style="display:none;">
+        <h2> Mining</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Mining Status</h4>
+            <div class="stat"><span>Mining Level</span><span id="miningLevelActivity">1</span></div>
+            <div class="stat"><span>Experience</span><span><span id="miningExpActivity">0</span>/<span id="miningExpMaxActivity">100</span></span></div>
+            <div class="bar"><div class="fill" id="miningFillActivity"></div></div>
+            <div class="stat"><span>Currently Mining</span><span id="currentlyMining">Nothing</span></div>
+            <button class="btn primary" id="startMiningActivity"> Start Mining</button>
+          </div>
+          
+          <div class="card">
+            <h4>Resource Selection</h4>
+            <p class="muted">Select which resource to mine. Mining is passive - resources are gained automatically over time.</p>
+            <div class="mining-resources" id="miningResourceSelection">
+              <div class="resource-option" data-resource="stones">
+                <input type="radio" name="miningResource" id="mineStones" value="stones" checked>
+                <label for="mineStones">
+                  <span class="resource-icon"></span>
+                  <span class="resource-name">Spirit Stones</span>
+                  <span class="resource-rate" id="stonesRate">+2-4/sec</span>
+                </label>
+              </div>
+              <div class="resource-option" data-resource="iron" id="ironOption" style="display:none;">
+                <input type="radio" name="miningResource" id="mineIron" value="iron">
+                <label for="mineIron">
+                  <span class="resource-icon"></span>
+                  <span class="resource-name">Iron Ore</span>
+                  <span class="resource-rate" id="ironRate">+1-2/sec</span>
+                </label>
+              </div>
+              <div class="resource-option" data-resource="ice" id="iceOption" style="display:none;">
+                <input type="radio" name="miningResource" id="mineIce" value="ice">
+                <label for="mineIce">
+                  <span class="resource-icon"></span>
+                  <span class="resource-name">Ice Crystal</span>
+                  <span class="resource-rate" id="iceRate">+0.5-1/sec</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card" id="miningStatsCard" style="display:none;">
+            <h4> Mining Progress</h4>
+            <div class="stat"><span>Resources Gained</span><span id="resourcesGained">0</span></div>
+            <div class="stat"><span>Mining Rate</span><span id="currentMiningRate">0/sec</span></div>
+            <div class="stat"><span>Physique Bonus</span><span id="physiqueYieldBonus">+0%</span></div>
+            <div class="muted" style="margin-top:8px">Mining grants experience over time</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-adventure" class="activity-content" style="display:none;">
+        <h2> Adventure</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Adventure Status</h4>
+            <div class="stat"><span>Current Location</span><span id="adventureLocationActivity">Village Outskirts</span></div>
+            <div class="stat"><span>Adventure Progress</span><span id="adventureProgressActivity">Ready</span></div>
+            <button class="btn primary" id="startAdventureActivity"> Start Exploring</button>
+          </div>
+          
+          <div class="card">
+            <h4> Exploration</h4>
+            <p class="muted">Explore the world to find resources, encounters, and new locations.</p>
+            <div class="muted">Adventure system coming soon...</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-sect" class="activity-content" style="display:none;">
+        <h2> Sect Management</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Sect Overview</h4>
+            <div class="stat"><span>Buildings</span><span id="buildingCountActivity">0</span></div>
+            <div class="stat"><span>Spirit Stones</span><span id="stonesActivity">0</span></div>
+            <button class="btn primary" id="goToSectTab"> Manage Buildings</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-cultivation">
         <div class="cards">
           <div class="card">
             <h4>Cultivation Training</h4>
@@ -123,9 +261,9 @@
               <span id="foundPct">0%</span>
             </div>
             <div class="row">
-              <button class="btn" id="useQiPill">💊 Use Qi Pill (+25% Qi)</button>
-              <button class="btn" id="useBodyPill">💊 Use Body Pill (+ATK/DEF boost)</button>
-              <button class="btn" id="useWardPill">💊 Use Ward Pill (+Breakthrough chance)</button>
+              <button class="btn" id="useQiPill"> Use Qi Pill (+25% Qi)</button>
+              <button class="btn" id="useBodyPill"> Use Body Pill (+ATK/DEF boost)</button>
+              <button class="btn" id="useWardPill"> Use Ward Pill (+Breakthrough chance)</button>
             </div>
             <div class="muted" style="margin-top:8px">Breakthrough chance: <span id="btChance">0</span>%</div>
           </div>
