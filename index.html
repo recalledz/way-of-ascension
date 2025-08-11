@@ -130,25 +130,36 @@
           </div>
           
           <div class="card" id="activeTrainingCard" style="display:none;">
-            <h4> Perfect Form Training</h4>
-            <p class="muted">Hit the perfect timing zone for maximum XP. Requires stamina and skill!</p>
+            <h4> Training Session</h4>
+            <p class="muted">Start a training session! Stamina drains during training. Hit the perfect zone for maximum XP!</p>
             
             <div class="training-interface">
-              <div class="timing-bar-container">
-                <div class="timing-bar" id="timingBar">
-                  <div class="perfect-zone" id="perfectZone"></div>
-                  <div class="timing-cursor" id="timingCursor"></div>
+              <div class="session-controls" id="sessionControls">
+                <button class="btn primary" id="startTrainingSession"> Start Training Session</button>
+                <div class="muted" style="margin-top:8px">Sessions drain stamina continuously. Hit the green zone for best results!</div>
+              </div>
+              
+              <div class="training-game" id="trainingGame" style="display:none;">
+                <div class="timing-bar-container">
+                  <div class="timing-bar" id="timingBar">
+                    <div class="perfect-zone" id="perfectZone"></div>
+                    <div class="timing-cursor" id="timingCursor"></div>
+                  </div>
+                </div>
+                
+                <div class="game-controls">
+                  <button class="btn primary large" id="hitButton"> HIT!</button>
+                  <div class="session-info">
+                    <div class="stat"><span>Session Stamina</span><span id="sessionStamina">100</span></div>
+                    <div class="stat"><span>Hits This Session</span><span id="sessionHits">0</span></div>
+                    <div class="stat"><span>Session XP</span><span id="sessionXP">0</span></div>
+                  </div>
+                </div>
+                
+                <div class="muted" style="margin-top:8px">
+                  Perfect (Green): 15-25 XP | Good (Yellow): 8-12 XP | Poor (Red): 3-5 XP
                 </div>
               </div>
-              
-              <div class="training-stats">
-                <div class="stat"><span>Perfect Hits</span><span id="perfectHits">0</span></div>
-                <div class="stat"><span>Hit Streak</span><span id="hitStreak">0</span></div>
-                <div class="stat"><span>Training Bonus</span><span id="trainingBonus">+0%</span></div>
-              </div>
-              
-              <button class="btn primary" id="executeTraining" disabled> Execute Training (10 Stamina)</button>
-              <div class="muted" style="margin-top:8px">Perfect timing: 15-25 XP | Good timing: 8-12 XP | Poor timing: 3-5 XP</div>
             </div>
           </div>
           
