@@ -1,5 +1,9 @@
 
 // Way of Ascension — Modular JS
+
+// Global variables
+let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
+
 const TABS = [
   {id:'cultivation', label:'Cultivation'},
   {id:'laws', label:'Laws'},
@@ -289,10 +293,96 @@ const fmt = n=>{
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const qs = sel => document.querySelector(sel);
 
+// Adventure System Data
+const ADVENTURE_ZONES = [
+  {
+    name: 'Peaceful Lands',
+    description: 'A serene area perfect for beginners',
+    unlockReq: { zone: 0, area: 0 },
+    areas: [
+      { name: 'Forest Edge', enemy: 'Forest Rabbit', killReq: 5 },
+      { name: 'Meadow Path', enemy: 'Wild Boar', killReq: 8 },
+      { name: 'Creek Crossing', enemy: 'River Frog', killReq: 10 },
+      { name: 'Flower Field', enemy: 'Honey Bee', killReq: 12 },
+      { name: 'Old Oak Grove', enemy: 'Tree Sprite', killReq: 15 },
+      { name: 'Mossy Rocks', enemy: 'Stone Lizard', killReq: 18 },
+      { name: 'Babbling Brook', enemy: 'Water Snake', killReq: 20 },
+      { name: 'Sunny Clearing', enemy: 'Grass Wolf', killReq: 25 },
+      { name: 'Ancient Ruins', enemy: 'Ruin Guardian', killReq: 30 },
+      { name: 'Forest Heart', enemy: 'Forest Spirit', killReq: 40 }
+    ]
+  },
+  {
+    name: 'Dark Woods',
+    description: 'Twisted trees hide dangerous creatures',
+    unlockReq: { zone: 0, area: 10 },
+    areas: [
+      { name: 'Shadow Path', enemy: 'Shadow Wolf', killReq: 50 },
+      { name: 'Twisted Grove', enemy: 'Dark Treant', killReq: 60 },
+      { name: 'Cursed Pond', enemy: 'Cursed Toad', killReq: 70 },
+      { name: 'Thorn Thicket', enemy: 'Thorn Beast', killReq: 80 },
+      { name: 'Witch\'s Hut', enemy: 'Corrupted Familiar', killReq: 90 },
+      { name: 'Dead Tree Circle', enemy: 'Wraith', killReq: 100 },
+      { name: 'Nightmare Clearing', enemy: 'Nightmare Hound', killReq: 120 },
+      { name: 'Bone Yard', enemy: 'Skeleton Warrior', killReq: 140 },
+      { name: 'Dark Altar', enemy: 'Dark Cultist', killReq: 160 },
+      { name: 'Shadow Lord\'s Lair', enemy: 'Shadow Lord', killReq: 200 }
+    ]
+  },
+  {
+    name: 'Mountain Peaks',
+    description: 'High altitude challenges await the brave',
+    unlockReq: { zone: 1, area: 10 },
+    areas: [
+      { name: 'Rocky Trail', enemy: 'Mountain Goat', killReq: 250 },
+      { name: 'Wind Caves', enemy: 'Wind Elemental', killReq: 300 },
+      { name: 'Ice Fields', enemy: 'Frost Bear', killReq: 350 },
+      { name: 'Crystal Cavern', enemy: 'Crystal Golem', killReq: 400 },
+      { name: 'Eagle\'s Nest', enemy: 'Giant Eagle', killReq: 450 },
+      { name: 'Storm Peak', enemy: 'Lightning Hawk', killReq: 500 },
+      { name: 'Avalanche Zone', enemy: 'Ice Titan', killReq: 600 },
+      { name: 'Dragon\'s Perch', enemy: 'Young Dragon', killReq: 700 },
+      { name: 'Sky Temple', enemy: 'Sky Guardian', killReq: 800 },
+      { name: 'Peak Summit', enemy: 'Mountain King', killReq: 1000 }
+    ]
+  }
+];
+
+const ADVENTURE_ENEMIES = {
+  // Zone 1: Peaceful Lands
+  'Forest Rabbit': { hp: 25, attack: 3, attackRate: 0.8, loot: { spiritStones: 2, wood: 1 }, meatDrop: { chance: 0.6, amount: 1 } },
+  'Wild Boar': { hp: 45, attack: 8, attackRate: 0.6, loot: { spiritStones: 4, wood: 2 }, meatDrop: { chance: 0.8, amount: 2 } },
+  'Forest Wolf': { hp: 60, attack: 12, attackRate: 0.9, loot: { spiritStones: 6, ironOre: 1 }, meatDrop: { chance: 0.7, amount: 1 } },
+  'Bear': { hp: 100, attack: 18, attackRate: 0.5, loot: { spiritStones: 10, wood: 3 }, meatDrop: { chance: 0.9, amount: 3 } },
+  'Forest Guardian': { hp: 150, attack: 25, attackRate: 0.7, loot: { spiritStones: 15, wood: 5, ironOre: 2 } }, // No meat (magical creature)
+  
+  'Bandit': { hp: 35, attack: 6, attackRate: 0.7, loot: { spiritStones: 3, ironOre: 1 } }, // No meat (human)
+  'Bandit Leader': { hp: 80, attack: 15, attackRate: 0.8, loot: { spiritStones: 8, ironOre: 2 } }, // No meat (human)
+  'Rogue Cultivator': { hp: 120, attack: 22, attackRate: 1.0, loot: { spiritStones: 12, ironOre: 3 } }, // No meat (human)
+  'Mercenary': { hp: 90, attack: 20, attackRate: 0.9, loot: { spiritStones: 10, ironOre: 2 } }, // No meat (human)
+  'Bandit King': { hp: 200, attack: 35, attackRate: 1.1, loot: { spiritStones: 25, ironOre: 5 } }, // No meat (human)
+  
+  'Stone Golem': { hp: 180, attack: 30, attackRate: 0.4, loot: { spiritStones: 18, ironOre: 4 } }, // No meat (construct)
+  'Crystal Spider': { hp: 90, attack: 25, attackRate: 1.2, loot: { spiritStones: 12, iceCrystal: 2 } }, // No meat (insect)
+  'Cave Troll': { hp: 250, attack: 40, attackRate: 0.6, loot: { spiritStones: 30, ironOre: 6 }, meatDrop: { chance: 0.5, amount: 2 } },
+  'Earth Elemental': { hp: 300, attack: 45, attackRate: 0.5, loot: { spiritStones: 35, ironOre: 8, iceCrystal: 3 } }, // No meat (elemental)
+  'Mountain Dragon': { hp: 500, attack: 70, attackRate: 0.8, loot: { spiritStones: 60, ironOre: 12, iceCrystal: 6 }, meatDrop: { chance: 1.0, amount: 5 } },
+  
+  'Skeleton Warrior': { hp: 120, attack: 28, attackRate: 0.7, loot: { spiritStones: 15, ironOre: 3 } }, // No meat (undead)
+  'Lich': { hp: 200, attack: 50, attackRate: 1.0, loot: { spiritStones: 25, iceCrystal: 4 } }, // No meat (undead)
+  'Ancient Guardian': { hp: 350, attack: 60, attackRate: 0.6, loot: { spiritStones: 40, ironOre: 8, iceCrystal: 5 } }, // No meat (construct)
+  'Cursed Spirit': { hp: 180, attack: 45, attackRate: 1.1, loot: { spiritStones: 22, iceCrystal: 3 } }, // No meat (spirit)
+  'Ruin Lord': { hp: 600, attack: 85, attackRate: 0.9, loot: { spiritStones: 75, ironOre: 15, iceCrystal: 10 } }, // No meat (undead lord)
+};
+
+
+
 const defaultState=()=>({
   time:0,
-  qi:0, qiCap:100, qiRegen:1, qiRegenMult:0, qiCapMult:0, foundation:0,
-  realm:{tier:0, stage:1},
+  qi: 100, qiMax: 100, qiRegenPerSec: 1,
+  foundation: 0,
+  hp: 100, hpMax: 100,
+  realm: { tier: 0, stage: 1 },
   stones:0, herbs:0, ore:0, wood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
   hp:100, hpMax:100, atkBase:5, defBase:2, tempAtk:0, tempDef:0,
@@ -302,10 +392,27 @@ const defaultState=()=>({
     mind: 10,            // Spell power, alchemy, learning speed
     dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
     comprehension: 10,   // Foundation gain, learning speed
-    criticalChance: 0.05, // 5% base crit chance (50% extra damage)
+    criticalChance: 0.05, // Base critical hit chance
     attackSpeed: 1.0,    // Base attack speed multiplier
     cooldownReduction: 0, // Cooldown reduction percentage
-    adventureSpeed: 1.0  // Adventure speed multiplier
+    adventureSpeed: 1.0  // Adventure/exploration speed multiplier
+  },
+  // Adventure System
+  adventure: {
+    currentZone: 0,
+    currentArea: 0,
+    totalKills: 0,
+    areasCompleted: 0,
+    zonesUnlocked: 1,
+    killsInCurrentArea: 0,
+    inCombat: false,
+    playerHP: 100,
+    enemyHP: 0,
+    enemyMaxHP: 0,
+    currentEnemy: null,
+    lastPlayerAttack: 0,
+    lastEnemyAttack: 0,
+    combatLog: []
   },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
@@ -336,7 +443,6 @@ const defaultState=()=>({
       maxProgress: 100
     }
   },
-  // Enhanced Cultivation System
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
     foundationMult: 1.0, // Foundation gain multiplier from various sources
@@ -1076,10 +1182,18 @@ function getStatEffects() {
 
 // Activity Management System
 let currentActivity = null;
-let selectedActivity = 'cultivation'; // Default selected activity
 
 function selectActivity(activityType) {
   selectedActivity = activityType;
+  
+  // Update activity item styling for new compact sidebar
+  const activityItems = document.querySelectorAll('.activity-item');
+  activityItems.forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.activity === activityType) {
+      item.classList.add('active');
+    }
+  });
   
   // Hide all activity content panels
   const activityPanels = document.querySelectorAll('.activity-content');
@@ -1098,7 +1212,433 @@ function selectActivity(activityType) {
   // Update sidebar selectors
   updateActivitySelectors();
   updateActivityContent();
+  
+  log(`Switched to ${activityType} view`, 'neutral');
 }
+
+// Combat calculation functions
+function calculatePlayerCombatAttack() {
+  const baseAttack = 5;
+  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
+  const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
+  return baseAttack + physiqueBonus + realmBonus;
+}
+
+function calculatePlayerAttackRate() {
+  const baseRate = 1.0; // attacks per second
+  const dexterityBonus = (S.stats.dexterity - 10) * 0.05; // 5% per point above 10
+  const attackSpeedBonus = S.stats.attackSpeed || 0;
+  return baseRate + dexterityBonus + (attackSpeedBonus / 100);
+}
+
+// Adventure zone and area UI functions
+function updateZoneButtons() {
+  // Initialize adventure data if needed
+  if (!S.adventure) {
+    S.adventure = {
+      currentZone: 0,
+      currentArea: 0,
+      selectedZone: 0,
+      selectedArea: 0,
+      totalKills: 0,
+      areasCompleted: 0,
+      zonesUnlocked: 1,
+      killsInCurrentArea: 0,
+      inCombat: false
+    };
+  }
+  
+  // Update zone selection buttons (if they exist in the UI)
+  const zoneContainer = document.getElementById('zoneButtons');
+  if (zoneContainer && ADVENTURE_ZONES) {
+    zoneContainer.innerHTML = '';
+    ADVENTURE_ZONES.forEach((zone, index) => {
+      if (index < (S.adventure.zonesUnlocked || 1)) {
+        const button = document.createElement('button');
+        button.className = 'btn zone-btn' + (index === (S.adventure.selectedZone || 0) ? ' active' : '');
+        button.textContent = zone.name;
+        button.onclick = () => selectZone(index);
+        zoneContainer.appendChild(button);
+      }
+    });
+  }
+}
+
+function updateAreaGrid() {
+  // Initialize adventure data if needed
+  if (!S.adventure) return;
+  
+  // Update area selection grid (if it exists in the UI)
+  const areaContainer = document.getElementById('areaGrid');
+  if (areaContainer && ADVENTURE_ZONES) {
+    const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+    if (currentZone && currentZone.areas) {
+      areaContainer.innerHTML = '';
+      currentZone.areas.forEach((area, index) => {
+        const button = document.createElement('button');
+        button.className = 'btn area-btn' + (index === (S.adventure.selectedArea || 0) ? ' active' : '');
+        button.textContent = area.name;
+        button.onclick = () => selectArea(index);
+        areaContainer.appendChild(button);
+      });
+    }
+  }
+}
+
+function selectZone(zoneIndex) {
+  if (!S.adventure) return;
+  S.adventure.selectedZone = zoneIndex;
+  S.adventure.selectedArea = 0; // Reset to first area
+  updateZoneButtons();
+  updateAreaGrid();
+  updateActivityAdventure();
+}
+
+function selectArea(areaIndex) {
+  if (!S.adventure) return;
+  S.adventure.selectedArea = areaIndex;
+  updateAreaGrid();
+  updateActivityAdventure();
+}
+
+// Battle display function
+function updateBattleDisplay() {
+  // Initialize adventure data if needed
+  if (!S.adventure) {
+    S.adventure = {
+      currentZone: 0,
+      currentArea: 0,
+      selectedZone: 0,
+      selectedArea: 0,
+      totalKills: 0,
+      areasCompleted: 0,
+      zonesUnlocked: 1,
+      killsInCurrentArea: 0,
+      inCombat: false,
+      playerHP: S.hp || 100,
+      enemyHP: 0,
+      enemyMaxHP: 0,
+      currentEnemy: null,
+      combatLog: []
+    };
+  }
+  
+  // Update player HP display
+  setText('adventurePlayerHP', S.adventure.playerHP || S.hp || 100);
+  setText('adventurePlayerMaxHP', S.hpMax || 100);
+  
+  // Update enemy display if in combat
+  if (S.adventure.inCombat && S.adventure.currentEnemy) {
+    setText('adventureEnemyName', S.adventure.currentEnemy.name || 'Unknown Enemy');
+    setText('adventureEnemyHP', S.adventure.enemyHP || 0);
+    setText('adventureEnemyMaxHP', S.adventure.enemyMaxHP || 0);
+    
+    // Show enemy info
+    const enemyDisplay = document.getElementById('adventureEnemyDisplay');
+    if (enemyDisplay) {
+      enemyDisplay.style.display = 'block';
+    }
+  } else {
+    // Hide enemy info when not in combat
+    const enemyDisplay = document.getElementById('adventureEnemyDisplay');
+    if (enemyDisplay) {
+      enemyDisplay.style.display = 'none';
+    }
+    
+    setText('adventureEnemyName', 'No Enemy');
+    setText('adventureEnemyHP', 0);
+    setText('adventureEnemyMaxHP', 0);
+  }
+  
+  // Update combat log if it exists
+  const combatLog = document.getElementById('adventureCombatLog');
+  if (combatLog && S.adventure.combatLog) {
+    // Show last 5 combat log entries
+    const recentLogs = S.adventure.combatLog.slice(-5);
+    combatLog.innerHTML = recentLogs.map(log => `<div class="combat-log-entry">${log}</div>`).join('');
+    combatLog.scrollTop = combatLog.scrollHeight;
+  }
+}
+
+// Adventure combat system functions
+function updateAdventureCombat() {
+  // Initialize adventure data if needed
+  if (!S.adventure) return;
+  
+  // Only update combat if we're in combat
+  if (!S.adventure.inCombat) return;
+  
+  // Basic combat logic - this is a placeholder for the full combat system
+  if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
+    // Combat is ongoing
+    const playerAttack = calculatePlayerCombatAttack();
+    const playerAttackRate = calculatePlayerAttackRate();
+    
+    // Simple combat tick (this would be more complex in a full implementation)
+    const now = Date.now();
+    if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
+    if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
+    
+    // Player attacks
+    if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
+      S.adventure.enemyHP = Math.max(0, S.adventure.enemyHP - playerAttack);
+      S.adventure.lastPlayerAttack = now;
+      
+      if (!S.adventure.combatLog) S.adventure.combatLog = [];
+      S.adventure.combatLog.push(`You deal ${playerAttack} damage to ${S.adventure.currentEnemy.name}`);
+      
+      // Check if enemy is defeated
+      if (S.adventure.enemyHP <= 0) {
+        defeatEnemy();
+      }
+    }
+    
+    // Enemy attacks back (if still alive)
+    if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
+      const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
+      if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
+        const enemyDamage = S.adventure.currentEnemy.attack || 5;
+        S.adventure.playerHP = Math.max(0, S.adventure.playerHP - enemyDamage);
+        S.adventure.lastEnemyAttack = now;
+        
+        S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
+        
+        // Check if player is defeated
+        if (S.adventure.playerHP <= 0) {
+          S.adventure.inCombat = false;
+          S.adventure.combatLog.push('You have been defeated!');
+          log('Defeated in combat! Returning to safety...', 'bad');
+        }
+      }
+    }
+  }
+}
+
+function updateAutoSpawning() {
+  // Initialize adventure data if needed
+  if (!S.adventure) return;
+  
+  // Auto-spawn new enemies if not in combat and auto-spawning is enabled
+  if (!S.adventure.inCombat && S.adventure.autoSpawning && S.adventure.playerHP > 0) {
+    startAdventureCombat();
+  }
+}
+
+function defeatEnemy() {
+  if (!S.adventure || !S.adventure.currentEnemy) return;
+  
+  // Award experience and loot
+  const enemy = S.adventure.currentEnemy;
+  S.adventure.totalKills++;
+  S.adventure.killsInCurrentArea++;
+  
+  if (!S.adventure.combatLog) S.adventure.combatLog = [];
+  S.adventure.combatLog.push(`${enemy.name} defeated!`);
+  
+  // Check for meat drops
+  if (enemy.drops && enemy.drops.meat && Math.random() < enemy.drops.meat) {
+    const meatGained = 1;
+    S.meat = (S.meat || 0) + meatGained;
+    S.adventure.combatLog.push(`Found ${meatGained} raw meat!`);
+  }
+  
+  // End combat
+  S.adventure.inCombat = false;
+  S.adventure.currentEnemy = null;
+  S.adventure.enemyHP = 0;
+  S.adventure.enemyMaxHP = 0;
+  
+  log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
+}
+
+function startAdventureCombat() {
+  if (!S.adventure || !ADVENTURE_ZONES) return;
+  
+  // Always default to first zone and area for simplicity
+  S.adventure.selectedZone = S.adventure.selectedZone || 0;
+  S.adventure.selectedArea = S.adventure.selectedArea || 0;
+  S.adventure.currentZone = S.adventure.selectedZone;
+  S.adventure.currentArea = S.adventure.selectedArea;
+  
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone];
+  if (!currentZone || !currentZone.areas) return;
+  
+  const currentArea = currentZone.areas[S.adventure.selectedArea];
+  if (!currentArea || !currentArea.enemies) return;
+  
+  // Select random enemy from current area
+  const enemyType = currentArea.enemies[Math.floor(Math.random() * currentArea.enemies.length)];
+  const enemyData = ENEMY_DATA[enemyType];
+  
+  if (!enemyData) return;
+  
+  // Start combat
+  S.adventure.inCombat = true;
+  S.adventure.currentEnemy = { ...enemyData, type: enemyType };
+  S.adventure.enemyHP = enemyData.hp;
+  S.adventure.enemyMaxHP = enemyData.hp;
+  S.adventure.lastPlayerAttack = 0;
+  S.adventure.lastEnemyAttack = 0;
+  
+  if (!S.adventure.combatLog) S.adventure.combatLog = [];
+  S.adventure.combatLog.push(`A ${enemyData.name} appears!`);
+  
+  log(`Combat started with ${enemyData.name}!`, 'neutral');
+}
+
+function progressToNextArea() {
+  if (!S.adventure) return;
+  
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  if (!currentZone || !currentZone.areas) return;
+  
+  const currentArea = currentZone.areas[S.adventure.selectedArea || 0];
+  if (!currentArea) return;
+  
+  // Check if current area is cleared
+  if (S.adventure.killsInCurrentArea < currentArea.killReq) {
+    log('Area not yet cleared! Defeat more enemies first.', 'bad');
+    return;
+  }
+  
+  // Progress to next area
+  if (S.adventure.selectedArea < currentZone.areas.length - 1) {
+    S.adventure.selectedArea++;
+    S.adventure.currentArea = S.adventure.selectedArea;
+    S.adventure.killsInCurrentArea = 0;
+    S.adventure.areasCompleted++;
+    
+    const newArea = currentZone.areas[S.adventure.selectedArea];
+    log(`Advanced to ${newArea.name}!`, 'good');
+  } else if (S.adventure.selectedZone < ADVENTURE_ZONES.length - 1) {
+    // Progress to next zone
+    S.adventure.selectedZone++;
+    S.adventure.currentZone = S.adventure.selectedZone;
+    S.adventure.selectedArea = 0;
+    S.adventure.currentArea = 0;
+    S.adventure.killsInCurrentArea = 0;
+    S.adventure.zonesUnlocked = Math.max(S.adventure.zonesUnlocked, S.adventure.selectedZone + 1);
+    
+    const newZone = ADVENTURE_ZONES[S.adventure.selectedZone];
+    log(`Advanced to ${newZone.name}!`, 'excellent');
+  } else {
+    log('You have reached the end of available content!', 'neutral');
+  }
+  
+  updateActivityAdventure();
+}
+
+function selectArea(areaIndex) {
+  if (!S.adventure) return;
+  
+  S.adventure.selectedArea = areaIndex;
+  S.adventure.currentArea = areaIndex;
+  
+  // Reset kills in current area when switching
+  S.adventure.killsInCurrentArea = 0;
+  
+  // Update the UI
+  updateActivityAdventure();
+  
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  if (currentZone && currentZone.areas && currentZone.areas[areaIndex]) {
+    const selectedArea = currentZone.areas[areaIndex];
+    log(`Selected area: ${selectedArea.name}`, 'good');
+  }
+}
+
+function selectZone(zoneIndex) {
+  if (!S.adventure) return;
+  
+  S.adventure.selectedZone = zoneIndex;
+  S.adventure.currentZone = zoneIndex;
+  S.adventure.selectedArea = 0; // Reset to first area in new zone
+  S.adventure.currentArea = 0;
+  S.adventure.killsInCurrentArea = 0;
+  
+  // Update the UI
+  updateActivityAdventure();
+  
+  const selectedZone = ADVENTURE_ZONES[zoneIndex];
+  if (selectedZone) {
+    log(`Selected zone: ${selectedZone.name}`, 'good');
+  }
+}
+
+function retreatFromCombat() {
+  if (!S.adventure) return;
+  
+  if (S.adventure.inCombat) {
+    S.adventure.inCombat = false;
+    S.adventure.currentEnemy = null;
+    S.adventure.enemyHP = 0;
+    S.adventure.enemyMaxHP = 0;
+    
+    if (!S.adventure.combatLog) S.adventure.combatLog = [];
+    S.adventure.combatLog.push('You retreated from combat.');
+    
+    log('Retreated from combat safely.', 'neutral');
+  }
+  
+  // Stop adventure activity
+  stopActivity('adventure');
+}
+
+// Missing adventure UI functions - implementing all at once to end bug cycle
+function updateProgressButton() {
+  // Initialize adventure data if needed
+  if (!S.adventure) return;
+  
+  const progressBtn = document.getElementById('progressToNextStageBtn');
+  if (!progressBtn) return;
+  
+  // Check if current area is cleared
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  if (!currentZone || !currentZone.areas) return;
+  
+  const currentArea = currentZone.areas[S.adventure.selectedArea || 0];
+  if (!currentArea) return;
+  
+  const isAreaCleared = S.adventure.killsInCurrentArea >= currentArea.killReq;
+  
+  progressBtn.disabled = !isAreaCleared;
+  progressBtn.textContent = isAreaCleared ? 'Progress to Next Area' : `Clear Area (${S.adventure.killsInCurrentArea}/${currentArea.killReq})`;
+}
+
+function setupAdventureTabs() {
+  // Setup adventure tab switching if elements exist
+  const tabButtons = document.querySelectorAll('.adventure-tab-btn');
+  
+  tabButtons.forEach(button => {
+    button.onclick = () => {
+      const tabName = button.dataset.tab;
+      
+      // Remove active class from all buttons and contents
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.adventure-tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+      });
+      
+      // Add active class to clicked button and show content
+      button.classList.add('active');
+      const content = document.getElementById(tabName + 'Tab');
+      if (content) {
+        content.classList.add('active');
+        content.style.display = 'block';
+      }
+      
+      // Update food slots when equipment tab is opened
+      if (tabName === 'equipment') {
+        updateFoodSlots();
+      }
+    };
+  });
+}
+
+
+
+
 
 function startActivity(activityName) {
   // Stop all other activities first (strict exclusivity)
@@ -1109,46 +1649,50 @@ function startActivity(activityName) {
   });
   
   // Stop any active physique training session
-  if (S.physique && S.physique.trainingSession) {
-    S.physique.trainingSession = false;
-    S.physique.timingActive = false;
+  if (S.physique && S.physique.training) {
+    S.physique.training.active = false;
   }
   
-  // Initialize activity data structures only when starting
-  switch(activityName) {
-    case 'physique':
-      if (!S.physique) {
-        S.physique = { 
-          level: 1, 
-          exp: 0, 
-          expMax: 100,
-          stamina: 100,
-          maxStamina: 100,
-          perfectHits: 0,
-          hitStreak: 0,
-          passiveXpGained: 0,
-          trainingSession: false,
-          sessionStamina: 0,
-          sessionHits: 0,
-          sessionXP: 0,
-          timingActive: false,
-          cursorPosition: 0,
-          cursorDirection: 1,
-          cursorSpeed: 5
-        };
-      }
-      break;
-    case 'mining':
-      if (!S.mining) {
-        S.mining = { 
-          level: 1, 
-          exp: 0, 
-          expMax: 100,
-          selectedResource: 'stones',
-          resourcesGained: 0
-        };
-      }
-      break;
+  if (activityName === 'physique') {
+    // Initialize physique training data
+    if (!S.physique.training) {
+      S.physique.training = {
+        active: false,
+        stamina: 100,
+        maxStamina: 100,
+        cursor: { position: 50, direction: 1, speed: 2 },
+        streak: 0,
+        sessionXP: 0
+      };
+    }
+  } else if (activityName === 'mining') {
+    // Initialize mining data
+    if (!S.mining.selectedResource) {
+      S.mining.selectedResource = 'spiritStones';
+    }
+  } else if (activityName === 'adventure') {
+    // Initialize adventure and start first combat
+    if (!S.adventure) {
+      S.adventure = {
+        currentZone: 0,
+        currentArea: 0,
+        totalKills: 0,
+        areasCompleted: 0,
+        zonesUnlocked: 1,
+        killsInCurrentArea: 0,
+        inCombat: false,
+        playerHP: S.hp,
+        enemyHP: 0,
+        enemyMaxHP: 0,
+        currentEnemy: null,
+        lastPlayerAttack: 0,
+        lastEnemyAttack: 0,
+        combatLog: []
+      };
+    }
+    
+    // Start first combat encounter
+    setTimeout(() => startAdventureCombat(), 1000);
   }
   
   // Start the requested activity
@@ -1278,9 +1822,17 @@ function updateActivityContent() {
   // Update cultivation activity content
   updateActivityCultivation();
   updateActivityPhysique();
-  updateActivityMining();
-  updateActivityAdventure();
-  updateActivitySect();
+  switch(selectedActivity) {
+    case 'adventure':
+      updateActivityAdventure();
+      break;
+    case 'cooking':
+      updateActivityCooking();
+      break;
+    case 'sect':
+      updateActivitySect();
+      break;
+  }
 }
 
 function updateActivityCultivation() {
@@ -1628,14 +2180,408 @@ function updateMiningRateDisplays() {
 }
 
 function updateActivityAdventure() {
-  setText('adventureLocationActivity', 'Village Outskirts');
-  setText('adventureProgressActivity', S.activities.adventure ? 'Exploring...' : 'Ready');
-  
-  const startBtn = document.getElementById('startAdventureActivity');
-  if (startBtn) {
-    startBtn.textContent = S.activities.adventure ? '🛑 Stop Exploring' : '🗺️ Start Exploring';
-    startBtn.onclick = () => S.activities.adventure ? stopActivity('adventure') : startActivity('adventure');
+  // Initialize adventure data if not exists
+  if (!S.adventure) {
+    S.adventure = {
+      currentZone: 0,
+      currentArea: 0,
+      totalKills: 0,
+      areasCompleted: 0,
+      zonesUnlocked: 1,
+      killsInCurrentArea: 0,
+      inCombat: false,
+      playerHP: S.hp,
+      enemyHP: 0,
+      enemyMaxHP: 0,
+      currentEnemy: null,
+      lastPlayerAttack: 0,
+      lastEnemyAttack: 0,
+      combatLog: ['Select an area to begin your adventure...'],
+      selectedZone: 0,
+      selectedArea: 0,
+      bestiary: {}, // Track enemy kills for bestiary
+      autoSpawning: false // Track if auto-spawning is active
+    };
   }
+  
+  // Initialize bestiary if not exists
+  if (!S.adventure.bestiary) {
+    S.adventure.bestiary = {};
+  }
+  if (S.adventure.autoSpawning === undefined) {
+    S.adventure.autoSpawning = false;
+  }
+  
+  // Update location display
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
+  if (currentZone && currentZone.areas) {
+    const currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
+    if (currentArea) {
+      setText('currentLocationText', `${currentZone.name} - ${currentArea.name}`);
+      setText('killsRequired', `${S.adventure.killsInCurrentArea}/${currentArea.killReq}`);
+    } else {
+      setText('currentLocationText', 'Unknown Area');
+      setText('killsRequired', '0/0');
+    }
+  } else {
+    setText('currentLocationText', 'Unknown Zone');
+    setText('killsRequired', '0/0');
+  }
+  
+  // Update progress stats
+  setText('totalKills', S.adventure.totalKills);
+  setText('areasCompleted', S.adventure.areasCompleted);
+  setText('zonesUnlocked', S.adventure.zonesUnlocked);
+  
+  // Update combat stats
+  const playerAttack = calculatePlayerCombatAttack();
+  const playerAttackRate = calculatePlayerAttackRate();
+  
+  setText('currentWeapon', 'Fists');
+  setText('baseDamage', 5);
+  setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
+  setText('combatAttackRate', playerAttackRate.toFixed(1) + '/s');
+  setText('playerAttack', playerAttack);
+  setText('playerAttackRate', playerAttackRate.toFixed(1) + '/s');
+  
+  // Update zone buttons
+  updateZoneButtons();
+  
+  // Update area grid
+  updateAreaGrid();
+  
+  // Update battle display (always visible)
+  updateBattleDisplay();
+  
+  // Update breakthrough progress
+  updateBreakthrough();
+  
+  // Update adventure combat
+  updateAdventureCombat();
+  
+  // Update auto-spawning
+  updateAutoSpawning();
+  
+  // Update food slots cooldowns
+  updateFoodSlots();
+  
+  // Update sidebar activities
+  updateSidebarActivities();
+  
+  updateProgressButton();
+  
+  // Setup adventure tab switching
+  setupAdventureTabs();
+}
+
+function updateActivityCooking() {
+  // Initialize cooking data if not exists
+  if (!S.cooking) {
+    S.cooking = {
+      level: 1,
+      exp: 0,
+      expMax: 100
+    };
+  }
+  
+  // Initialize food slots if not exists
+  if (!S.foodSlots) {
+    S.foodSlots = {
+      slot1: null,
+      slot2: null,
+      slot3: null,
+      lastUsed: 0,
+      cooldown: 5000
+    };
+  }
+  
+  // Initialize meat if not exists
+  if (S.meat === undefined) S.meat = 0;
+  if (S.cookedMeat === undefined) S.cookedMeat = 0;
+  
+  // Update cooking skill display
+  setText('cookingLevel', S.cooking.level);
+  setText('cookingExp', S.cooking.exp);
+  setText('cookingExpMax', S.cooking.expMax);
+  
+  const yieldBonus = (S.cooking.level - 1) * 10;
+  setText('cookingYieldBonus', yieldBonus + '%');
+  setText('currentYieldBonus', yieldBonus);
+  
+  // Update progress bar
+  const progressFill = document.getElementById('cookingProgressFill');
+  if (progressFill) {
+    progressFill.style.width = (S.cooking.exp / S.cooking.expMax * 100) + '%';
+  }
+  
+  // Update meat counts
+  setText('rawMeatCount', S.meat || 0);
+  setText('inventoryRawMeat', S.meat || 0);
+  setText('inventoryCookedMeat', S.cookedMeat || 0);
+  setText('inventoryRawMeatAdventure', S.meat || 0);
+  setText('inventoryCookedMeatAdventure', S.cookedMeat || 0);
+  
+  // Update cook amount input max
+  const cookInput = document.getElementById('cookAmount');
+  if (cookInput) {
+    cookInput.max = S.meat || 0;
+    if (parseInt(cookInput.value) > (S.meat || 0)) {
+      cookInput.value = Math.max(1, S.meat || 0);
+    }
+  }
+  
+  // Update cook button
+  const cookButton = document.getElementById('cookMeatButton');
+  if (cookButton) {
+    cookButton.disabled = (S.meat || 0) === 0;
+  }
+  
+  // Update food slots
+  updateFoodSlots();
+}
+
+// Food System Functions
+function cookMeat() {
+  const amount = parseInt(document.getElementById('cookAmount').value) || 1;
+  
+  if ((S.meat || 0) < amount) {
+    log('Not enough raw meat!', 'bad');
+    return;
+  }
+  
+  // Calculate yield with cooking bonus
+  const yieldBonus = (S.cooking.level - 1) * 0.1; // 10% per level
+  let cookedAmount = amount;
+  
+  // Apply yield bonus (chance for extra cooked meat)
+  for (let i = 0; i < amount; i++) {
+    if (Math.random() < yieldBonus) {
+      cookedAmount++;
+    }
+  }
+  
+  // Consume raw meat and produce cooked meat
+  S.meat -= amount;
+  S.cookedMeat = (S.cookedMeat || 0) + cookedAmount;
+  
+  // Add cooking experience
+  const expGain = amount * 10; // 10 exp per meat cooked
+  S.cooking.exp += expGain;
+  
+  // Check for level up
+  while (S.cooking.exp >= S.cooking.expMax) {
+    S.cooking.exp -= S.cooking.expMax;
+    S.cooking.level++;
+    S.cooking.expMax = Math.floor(S.cooking.expMax * 1.2); // 20% increase per level
+    log(`Cooking level increased to ${S.cooking.level}!`, 'good');
+  }
+  
+  const bonusText = cookedAmount > amount ? ` (+${cookedAmount - amount} bonus)` : '';
+  log(`Cooked ${amount} meat into ${cookedAmount} cooked meat${bonusText}!`, 'good');
+  
+  updateAll();
+}
+
+function equipFood(foodType, slotNumber) {
+  if (!S.foodSlots) {
+    S.foodSlots = {
+      slot1: null,
+      slot2: null,
+      slot3: null,
+      lastUsed: 0,
+      cooldown: 5000
+    };
+  }
+  
+  const slotKey = `slot${slotNumber}`;
+  
+  // Check if we have the food
+  if (foodType === 'meat' && (S.meat || 0) === 0) {
+    log('No raw meat to equip!', 'bad');
+    return;
+  }
+  if (foodType === 'cookedMeat' && (S.cookedMeat || 0) === 0) {
+    log('No cooked meat to equip!', 'bad');
+    return;
+  }
+  
+  // Equip the food
+  S.foodSlots[slotKey] = foodType;
+  
+  log(`Equipped ${foodType === 'meat' ? 'raw meat' : 'cooked meat'} to slot ${slotNumber}!`, 'good');
+  updateAll();
+}
+
+function useFoodSlot(slotNumber) {
+  if (!S.foodSlots) return;
+  
+  const slotKey = `slot${slotNumber}`;
+  const foodType = S.foodSlots[slotKey];
+  
+  if (!foodType) {
+    log('No food equipped in this slot!', 'bad');
+    return;
+  }
+  
+  // Check cooldown
+  const now = Date.now();
+  if (now - S.foodSlots.lastUsed < S.foodSlots.cooldown) {
+    const remaining = Math.ceil((S.foodSlots.cooldown - (now - S.foodSlots.lastUsed)) / 1000);
+    log(`Food is on cooldown! ${remaining}s remaining.`, 'bad');
+    return;
+  }
+  
+  // Check if we have the food
+  if (foodType === 'meat' && (S.meat || 0) === 0) {
+    log('No raw meat available!', 'bad');
+    return;
+  }
+  if (foodType === 'cookedMeat' && (S.cookedMeat || 0) === 0) {
+    log('No cooked meat available!', 'bad');
+    return;
+  }
+  
+  // Check if HP is full
+  if (S.hp >= S.hpMax) {
+    log('HP is already full!', 'bad');
+    return;
+  }
+  
+  // Consume food and restore HP
+  let healAmount = 0;
+  if (foodType === 'meat') {
+    S.meat--;
+    healAmount = 20;
+  } else if (foodType === 'cookedMeat') {
+    S.cookedMeat--;
+    healAmount = 40;
+  }
+  
+  const oldHP = S.hp;
+  S.hp = Math.min(S.hpMax, S.hp + healAmount);
+  const actualHeal = S.hp - oldHP;
+  
+  S.foodSlots.lastUsed = now;
+  
+  log(`Used ${foodType === 'meat' ? 'raw meat' : 'cooked meat'} and restored ${actualHeal} HP!`, 'good');
+  
+  // Update adventure HP if in combat
+  if (S.adventure && S.adventure.inCombat) {
+    S.adventure.playerHP = S.hp;
+  }
+  
+  updateAll();
+}
+
+function updateFoodSlots() {
+  if (!S.foodSlots) return;
+  
+  const now = Date.now();
+  const cooldownRemaining = Math.max(0, S.foodSlots.cooldown - (now - S.foodSlots.lastUsed));
+  
+  for (let i = 1; i <= 3; i++) {
+    const slotKey = `slot${i}`;
+    const foodType = S.foodSlots[slotKey];
+    
+    const slotElement = document.getElementById(`foodSlot${i}`);
+    const nameElement = slotElement?.querySelector('.food-name');
+    const iconElement = slotElement?.querySelector('.food-icon');
+    const cooldownElement = document.getElementById(`foodCooldown${i}`);
+    
+    if (!slotElement || !nameElement || !iconElement || !cooldownElement) continue;
+    
+    // Update slot appearance
+    slotElement.classList.remove('empty', 'on-cooldown');
+    
+    if (!foodType) {
+      // Empty slot
+      slotElement.classList.add('empty');
+      iconElement.textContent = '🍽️';
+      nameElement.textContent = 'Empty';
+      cooldownElement.textContent = '';
+    } else {
+      // Food equipped
+      if (foodType === 'meat') {
+        iconElement.textContent = '🥩';
+        nameElement.textContent = `Raw Meat (${S.meat || 0})`;
+      } else if (foodType === 'cookedMeat') {
+        iconElement.textContent = '🍖';
+        nameElement.textContent = `Cooked Meat (${S.cookedMeat || 0})`;
+      }
+      
+      // Show cooldown
+      if (cooldownRemaining > 0) {
+        slotElement.classList.add('on-cooldown');
+        cooldownElement.textContent = `${Math.ceil(cooldownRemaining / 1000)}s`;
+      } else {
+        cooldownElement.textContent = '';
+      }
+    }
+  }
+}
+
+function openFoodManager() {
+  // Switch to cooking activity
+  showActivity('cooking');
+}
+
+
+
+// Update sidebar activity displays
+function updateSidebarActivities() {
+  // Update cultivation
+  const currentRealm = REALMS[S.realm.tier];
+  setText('cultivationLevel', `${currentRealm.name} ${S.realm.stage}`);
+  const cultivationFill = document.getElementById('cultivationProgressFill');
+  if (cultivationFill) {
+    const foundationProgress = S.foundation / fCap();
+    cultivationFill.style.width = (foundationProgress * 100) + '%';
+  }
+  
+  // Update physique
+  if (S.physique) {
+    setText('physiqueLevel', `Level ${S.physique.level}`);
+    const physiqueFill = document.getElementById('physiqueProgressFill');
+    if (physiqueFill) {
+      physiqueFill.style.width = (S.physique.exp / S.physique.expMax * 100) + '%';
+    }
+  }
+  
+  // Update mining
+  if (S.mining) {
+    setText('miningLevel', `Level ${S.mining.level}`);
+    const miningFill = document.getElementById('miningProgressFill');
+    if (miningFill) {
+      miningFill.style.width = (S.mining.exp / S.mining.expMax * 100) + '%';
+    }
+  }
+  
+  // Update adventure
+  if (S.adventure) {
+    const currentZone = ADVENTURE_ZONES[S.adventure.currentZone];
+    setText('adventureLevel', currentZone ? currentZone.name : 'Zone 1');
+    const adventureFill = document.getElementById('adventureProgressFill');
+    if (adventureFill && currentZone) {
+      const currentArea = currentZone.areas[S.adventure.currentArea];
+      if (currentArea) {
+        const progress = S.adventure.killsInCurrentArea / currentArea.killReq;
+        adventureFill.style.width = (progress * 100) + '%';
+      }
+    }
+  }
+  
+  // Update cooking
+  if (S.cooking) {
+    setText('cookingLevelSidebar', `Level ${S.cooking.level}`);
+    const cookingFill = document.getElementById('cookingProgressFillSidebar');
+    if (cookingFill) {
+      cookingFill.style.width = (S.cooking.exp / S.cooking.expMax * 100) + '%';
+    }
+  }
+  
+  // Update sect
+  const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
+  setText('sectLevel', `${buildingCount} Buildings`);
 }
 
 function updateActivitySect() {
@@ -2710,6 +3656,11 @@ function tick(){
   // Breakthrough progress
   updateBreakthrough();
 
+  // Adventure combat
+  if(S.activities.adventure && S.adventure && S.adventure.inCombat) {
+    updateAdventureCombat();
+  }
+
   if(S.time % 2===0) updateWinEst();
   updateAll();
 }
@@ -2724,6 +3675,16 @@ function load(){ try{ const t=localStorage.getItem('woa-save'); return t? JSON.p
 
 // Activity selector event listeners
 function initActivityListeners() {
+  // New compact sidebar activity listeners
+  const activityItems = document.querySelectorAll('.activity-item[data-activity]');
+  activityItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const activityType = item.dataset.activity;
+      selectActivity(activityType);
+    });
+  });
+  
+  // Legacy selectors (if they exist)
   document.getElementById('cultivationSelector')?.addEventListener('click', () => selectActivity('cultivation'));
   document.getElementById('physiqueSelector')?.addEventListener('click', () => selectActivity('physique'));
   document.getElementById('miningSelector')?.addEventListener('click', () => selectActivity('mining'));
@@ -2758,6 +3719,50 @@ function initActivityListeners() {
         updateActivityMining();
       }
     });
+  });
+  
+  // Adventure start battle button event listener
+  document.getElementById('startBattleButton')?.addEventListener('click', () => {
+    // Ensure adventure data is initialized
+    if (!S.adventure) {
+      S.adventure = {
+        currentZone: 0,
+        currentArea: 0,
+        selectedZone: 0,
+        selectedArea: 0,
+        totalKills: 0,
+        areasCompleted: 0,
+        zonesUnlocked: 1,
+        killsInCurrentArea: 0,
+        inCombat: false,
+        playerHP: S.hp,
+        enemyHP: 0,
+        enemyMaxHP: 0,
+        currentEnemy: null,
+        lastPlayerAttack: 0,
+        lastEnemyAttack: 0,
+        combatLog: []
+      };
+    }
+    
+    // Start the adventure activity if not already active
+    if (!S.activities.adventure) {
+      startActivity('adventure');
+    }
+    
+    // Start combat immediately
+    startAdventureCombat();
+    updateActivityAdventure();
+  });
+  
+  // Adventure progress button event listener
+  document.getElementById('progressButton')?.addEventListener('click', () => {
+    progressToNextArea();
+  });
+  
+  // Adventure retreat button event listener
+  document.getElementById('retreatButton')?.addEventListener('click', () => {
+    retreatFromCombat();
   });
 }
 

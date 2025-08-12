@@ -42,37 +42,81 @@
     <aside class="left">
       <h3 style="margin-bottom: 16px; text-align: center; color: #c7d2fe;">Activities</h3>
       
-      <!-- Cultivation Selector -->
-      <div class="activity-selector" id="cultivationSelector" data-activity="cultivation">
-        <div class="activity-name">🧘 Cultivation</div>
-        <div class="activity-bar">
-          <div class="activity-fill" id="cultivationFill"></div>
+      <div class="activities">
+        <div class="activity-item" data-activity="cultivation">
+          <div class="activity-header">
+            <div class="activity-icon">🧘</div>
+            <div class="activity-info">
+              <div class="activity-name">Cultivation</div>
+              <div class="activity-level" id="cultivationLevel">Mortal 1</div>
+            </div>
+          </div>
+          <div class="activity-progress-bar">
+            <div class="progress-fill" id="cultivationProgressFill"></div>
+          </div>
         </div>
-        <div class="activity-info" id="cultivationInfo">Foundation Progress</div>
-      </div>
-
-      <!-- Physique Selector -->
-      <div class="activity-selector" id="physiqueSelector" data-activity="physique">
-        <div class="activity-name">💪 Physique</div>
-        <div class="activity-bar">
-          <div class="activity-fill" id="physiqueSelectorFill"></div>
+        
+        <div class="activity-item" data-activity="physique">
+          <div class="activity-header">
+            <div class="activity-icon">💪</div>
+            <div class="activity-info">
+              <div class="activity-name">Physique</div>
+              <div class="activity-level" id="physiqueLevel">Level 1</div>
+            </div>
+          </div>
+          <div class="activity-progress-bar">
+            <div class="progress-fill" id="physiqueProgressFill"></div>
+          </div>
         </div>
-        <div class="activity-info" id="physiqueInfo">Level 1</div>
-      </div>
-
-      <!-- Mining Selector -->
-      <div class="activity-selector" id="miningSelector" data-activity="mining">
-        <div class="activity-name">⛏️ Mining</div>
-        <div class="activity-bar">
-          <div class="activity-fill" id="miningSelectorFill"></div>
+        
+        <div class="activity-item" data-activity="mining">
+          <div class="activity-header">
+            <div class="activity-icon">⛏️</div>
+            <div class="activity-info">
+              <div class="activity-name">Mining</div>
+              <div class="activity-level" id="miningLevel">Level 1</div>
+            </div>
+          </div>
+          <div class="activity-progress-bar">
+            <div class="progress-fill" id="miningProgressFill"></div>
+          </div>
         </div>
-        <div class="activity-info" id="miningInfo">Level 1</div>
-      </div>
-
-      <!-- Adventure Selector -->
-      <div class="activity-selector" id="adventureSelector" data-activity="adventure">
-        <div class="activity-name">🗺️ Adventure</div>
-        <div class="activity-info" id="adventureInfo">Village Outskirts</div>
+        
+        <div class="activity-item" data-activity="adventure">
+          <div class="activity-header">
+            <div class="activity-icon">⚔️</div>
+            <div class="activity-info">
+              <div class="activity-name">Adventure</div>
+              <div class="activity-level" id="adventureLevel">Zone 1</div>
+            </div>
+          </div>
+          <div class="activity-progress-bar">
+            <div class="progress-fill" id="adventureProgressFill"></div>
+          </div>
+        </div>
+        
+        <div class="activity-item" data-activity="cooking">
+          <div class="activity-header">
+            <div class="activity-icon">🍳</div>
+            <div class="activity-info">
+              <div class="activity-name">Cooking</div>
+              <div class="activity-level" id="cookingLevelSidebar">Level 1</div>
+            </div>
+          </div>
+          <div class="activity-progress-bar">
+            <div class="progress-fill" id="cookingProgressFillSidebar"></div>
+          </div>
+        </div>
+        
+        <div class="activity-item" data-activity="sect">
+          <div class="activity-header">
+            <div class="activity-icon">🏛️</div>
+            <div class="activity-info">
+              <div class="activity-name">Sect</div>
+              <div class="activity-level" id="sectLevel">Buildings</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Sect Selector -->
@@ -256,31 +300,238 @@
       </section>
 
       <section id="activity-adventure" class="activity-content" style="display:none;">
-        <h2> Adventure</h2>
+        <h2>🗺️ Adventure</h2>
         <div class="cards">
-          <div class="card">
-            <h4>Adventure Status</h4>
-            <div class="stat"><span>Current Location</span><span id="adventureLocationActivity">Village Outskirts</span></div>
-            <div class="stat"><span>Adventure Progress</span><span id="adventureProgressActivity">Ready</span></div>
-            <button class="btn primary" id="startAdventureActivity"> Start Exploring</button>
+          <!-- Area/Zone Grid Selector -->
+          <div class="card adventure-map-card">
+            <h4>🗺️ Adventure Map</h4>
+            <div class="zone-selector">
+              <div id="zoneButtons" class="zone-buttons"></div>
+            </div>
+            <div class="area-grid">
+              <div id="areaGrid" class="area-grid-container"></div>
+            </div>
+            <div class="adventure-info">
+              <div class="stat"><span>Current</span><span id="currentLocationText">Village Outskirts - Bandit Camp</span></div>
+              <div class="stat"><span>Progress</span><span id="killsRequired">0/5</span> kills</div>
+            </div>
           </div>
           
-          <div class="card">
-            <h4> Exploration</h4>
-            <p class="muted">Explore the world to find resources, encounters, and new locations.</p>
-            <div class="muted">Adventure system coming soon...</div>
+          <!-- Persistent Battle Display -->
+          <div class="card battle-card">
+            <h4>⚔️ Battle Arena</h4>
+            
+            <div class="battle-area" id="battleArea">
+              <div class="area-background" id="areaBackground"></div>
+              
+              <div class="combat-display">
+                <div class="combatant player">
+                  <div class="combatant-name">You</div>
+                  <div class="health-bar">
+                    <div class="health-fill" id="playerHealthFill"></div>
+                    <span class="health-text" id="playerHealthText">100/100</span>
+                  </div>
+                  <div class="combat-stats">
+                    <span>ATK: <span id="playerAttack">10</span></span>
+                    <span>Rate: <span id="playerAttackRate">1.0/s</span></span>
+                  </div>
+                </div>
+                
+                <div class="combat-vs">VS</div>
+                
+                <div class="combatant enemy">
+                  <div class="combatant-name" id="enemyName">Select an area to begin</div>
+                  <div class="health-bar">
+                    <div class="health-fill" id="enemyHealthFill"></div>
+                    <span class="health-text" id="enemyHealthText">--/--</span>
+                  </div>
+                  <div class="combat-stats">
+                    <span>ATK: <span id="enemyAttack">--</span></span>
+                    <span>Rate: <span id="enemyAttackRate">--/s</span></span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Combat Actions -->
+              <div class="combat-controls">
+                <button class="btn primary" id="startBattleButton">⚔️ Start Battle</button>
+                <button class="btn success" id="progressButton" disabled>🚀 Progress to Next Stage</button>
+                <button class="btn warn" id="retreatButton" style="display: none;">🏃 Retreat</button>
+              </div>
+            </div>
+            
+            <!-- Combat Log -->
+            <div class="combat-log" id="combatLog">
+              <div class="log-entry">Select an area to begin your adventure...</div>
+            </div>
+          </div>
+          
+          <!-- Adventure Tabs -->
+          <div class="card adventure-tabs-card">
+            <div class="adventure-tabs">
+              <button class="adventure-tab-btn active" data-tab="progress">📊 Progress</button>
+              <button class="adventure-tab-btn" data-tab="bestiary">📖 Bestiary</button>
+              <button class="adventure-tab-btn" data-tab="equipment">🎒 Equipment</button>
+            </div>
+            
+            <!-- Progress Tab -->
+            <div id="progressTab" class="adventure-tab-content active">
+              <div class="stat"><span>Total Kills</span><span id="totalKills">0</span></div>
+              <div class="stat"><span>Areas Completed</span><span id="areasCompleted">0</span></div>
+              <div class="stat"><span>Zones Unlocked</span><span id="zonesUnlocked">1</span></div>
+              <div class="combat-info">
+                <div class="stat"><span>Weapon</span><span id="currentWeapon">Fists</span></div>
+                <div class="stat"><span>Base Damage</span><span id="baseDamage">5</span></div>
+                <div class="stat"><span>Physique Bonus</span><span id="physiqueDamageBonus">+0</span></div>
+                <div class="stat"><span>Attack Rate</span><span id="combatAttackRate">1.0/s</span></div>
+                <div class="muted" style="margin-top:8px">Damage scales with physique stat. Higher dexterity increases attack rate.</div>
+              </div>
+            </div>
+            
+            <!-- Bestiary Tab -->
+            <div id="bestiaryTab" class="adventure-tab-content" style="display: none;">
+              <div class="bestiary-list" id="bestiaryList">
+                <div class="muted">Defeat enemies to unlock their information...</div>
+              </div>
+            </div>
+            
+            <!-- Equipment Tab -->
+            <div id="equipmentTab" class="adventure-tab-content" style="display: none;">
+              <div class="equipment-section">
+                <h4>🍽️ Food Slots</h4>
+                <div class="food-slots">
+                  <div class="food-slot" id="foodSlot1" onclick="useFoodSlot(1)">
+                    <div class="food-icon">🍽️</div>
+                    <div class="food-name">Empty</div>
+                    <div class="food-cooldown" id="foodCooldown1"></div>
+                  </div>
+                  <div class="food-slot" id="foodSlot2" onclick="useFoodSlot(2)">
+                    <div class="food-icon">🍽️</div>
+                    <div class="food-name">Empty</div>
+                    <div class="food-cooldown" id="foodCooldown2"></div>
+                  </div>
+                  <div class="food-slot" id="foodSlot3" onclick="useFoodSlot(3)">
+                    <div class="food-icon">🍽️</div>
+                    <div class="food-name">Empty</div>
+                    <div class="food-cooldown" id="foodCooldown3"></div>
+                  </div>
+                </div>
+                <div class="food-actions">
+                  <button class="btn small" onclick="showActivity('cooking')">🍳 Go to Cooking</button>
+                </div>
+              </div>
+              
+              <div class="equipment-section">
+                <h4>📦 Food Inventory</h4>
+                <div class="food-inventory">
+                  <div class="food-item">
+                    <div class="food-item-icon">🥩</div>
+                    <div class="food-item-info">
+                      <div class="food-item-name">Raw Meat</div>
+                      <div class="food-item-count"><span id="inventoryRawMeatAdventure">0</span></div>
+                      <div class="food-item-desc">Restores 20 HP</div>
+                    </div>
+                    <button class="btn small" onclick="equipFood('meat', 1)">Equip Slot 1</button>
+                    <button class="btn small" onclick="equipFood('meat', 2)">Equip Slot 2</button>
+                    <button class="btn small" onclick="equipFood('meat', 3)">Equip Slot 3</button>
+                  </div>
+                  <div class="food-item">
+                    <div class="food-item-icon">🍖</div>
+                    <div class="food-item-info">
+                      <div class="food-item-name">Cooked Meat</div>
+                      <div class="food-item-count"><span id="inventoryCookedMeatAdventure">0</span></div>
+                      <div class="food-item-desc">Restores 40 HP</div>
+                    </div>
+                    <button class="btn small" onclick="equipFood('cookedMeat', 1)">Equip Slot 1</button>
+                    <button class="btn small" onclick="equipFood('cookedMeat', 2)">Equip Slot 2</button>
+                    <button class="btn small" onclick="equipFood('cookedMeat', 3)">Equip Slot 3</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="activity-sect" class="activity-content" style="display:none;">
-        <h2> Sect Management</h2>
+        <h2>🏛️ Sect Management</h2>
         <div class="cards">
           <div class="card">
             <h4>Sect Overview</h4>
             <div class="stat"><span>Buildings</span><span id="buildingCountActivity">0</span></div>
-            <div class="stat"><span>Spirit Stones</span><span id="stonesActivity">0</span></div>
-            <button class="btn primary" id="goToSectTab"> Manage Buildings</button>
+            <div class="stat"><span>Disciples</span><span>Coming Soon</span></div>
+            <div class="stat"><span>Sect Power</span><span>Coming Soon</span></div>
+            <button class="btn primary" id="manageSectActivity">🏗️ Manage Buildings</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-cooking" class="activity-content" style="display:none;">
+        <h2>🍳 Cooking</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Cooking Skill</h4>
+            <div class="stat"><span>Level</span><span id="cookingLevel">1</span></div>
+            <div class="stat"><span>Experience</span><span id="cookingExp">0</span> / <span id="cookingExpMax">100</span></div>
+            <div class="stat"><span>Yield Bonus</span><span id="cookingYieldBonus">0%</span></div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="cookingProgressFill"></div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h4>🥩 Cook Meat</h4>
+            <div class="cooking-recipe">
+              <div class="recipe-input">
+                <div class="ingredient">
+                  <div class="ingredient-icon">🥩</div>
+                  <div class="ingredient-info">
+                    <div class="ingredient-name">Raw Meat</div>
+                    <div class="ingredient-count">Available: <span id="rawMeatCount">0</span></div>
+                  </div>
+                </div>
+                <div class="recipe-arrow">→</div>
+                <div class="ingredient">
+                  <div class="ingredient-icon">🍖</div>
+                  <div class="ingredient-info">
+                    <div class="ingredient-name">Cooked Meat</div>
+                    <div class="ingredient-count">Restores 40 HP</div>
+                  </div>
+                </div>
+              </div>
+              <div class="recipe-controls">
+                <input type="number" id="cookAmount" min="1" max="1" value="1" class="cook-input">
+                <button class="btn primary" id="cookMeatButton" onclick="cookMeat()">🍳 Cook Meat</button>
+              </div>
+              <div class="recipe-info">
+                <div class="muted">Cooking meat doubles its healing power and adds cooking experience.</div>
+                <div class="muted">Higher cooking levels increase yield (currently +<span id="currentYieldBonus">0</span>%).</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h4>📦 Food Inventory</h4>
+            <div class="food-inventory">
+              <div class="food-item">
+                <div class="food-item-icon">🥩</div>
+                <div class="food-item-info">
+                  <div class="food-item-name">Raw Meat</div>
+                  <div class="food-item-count"><span id="inventoryRawMeat">0</span></div>
+                  <div class="food-item-desc">Restores 20 HP</div>
+                </div>
+                <button class="btn small" onclick="equipFood('meat', 1)">Equip</button>
+              </div>
+              <div class="food-item">
+                <div class="food-item-icon">🍖</div>
+                <div class="food-item-info">
+                  <div class="food-item-name">Cooked Meat</div>
+                  <div class="food-item-count"><span id="inventoryCookedMeat">0</span></div>
+                  <div class="food-item-desc">Restores 40 HP</div>
+                </div>
+                <button class="btn small" onclick="equipFood('cookedMeat', 2)">Equip</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
