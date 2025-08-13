@@ -396,6 +396,8 @@ const ADVENTURE_ENEMIES = {
 const defaultState=()=>({
   time:0,
   qi: 100, qiMax: 100, qiRegenPerSec: 1,
+  qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
+  qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
   hp: 100, hpMax: 100,
   realm: { tier: 0, stage: 1 },
@@ -479,7 +481,13 @@ const defaultState=()=>({
     }
   },
   // Sect Buildings System
-  buildings: {} // Building levels: {building_key: level}
+  buildings: {}, // Building levels: {building_key: level}
+  // Building bonuses (calculated from building levels)
+  buildingBonuses: {
+    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
+    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
+    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
+  }
 });
 
 let S = load() || defaultState();
@@ -518,6 +526,25 @@ if(!S.cultivation) {
 if(!S.alchemy.hasOwnProperty('unlocked')) {
   S.alchemy.unlocked = true; // Old saves had alchemy unlocked by default
   S.alchemy.knownRecipes = ['qi', 'body', 'ward']; // Old saves knew all recipes
+}
+
+// Migrate old saves to include missing qiCapMult property
+if(typeof S.qiCapMult === 'undefined') {
+  S.qiCapMult = 0;
+}
+
+// Migrate old saves to include missing qiRegenMult property
+if(typeof S.qiRegenMult === 'undefined') {
+  S.qiRegenMult = 0;
+}
+
+// Migrate old saves to include buildingBonuses system
+if(!S.buildingBonuses) {
+  S.buildingBonuses = {
+    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
+    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
+    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
+  };
 }
 
 function updateQiOrbEffect(){
