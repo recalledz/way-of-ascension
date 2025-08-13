@@ -1248,6 +1248,215 @@ tr td:last-child{border-top-right-radius:10px; border-bottom-right-radius:10px}
 .log .good{color:#86efac}
 .log .bad{color:#fca5a5}
 
+/* Enhanced Left Panel Activity Groups */
+.activity-group {
+  margin-bottom: 20px;
+}
+
+.group-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #c7d2fe;
+  margin: 0 0 12px 0;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(59, 130, 246, 0.1));
+  border-radius: 8px;
+  border-left: 3px solid #6366f1;
+  text-align: center;
+}
+
+.activity-separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  opacity: 0.7;
+}
+
+.separator-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #374151, transparent);
+}
+
+.separator-text {
+  margin: 0 12px;
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+/* Enhanced Activity Items */
+.leveling-tab, .management-tab {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.leveling-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.management-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.activity-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+}
+
+.activity-item:hover::before {
+  opacity: 1;
+}
+
+.activity-item.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(59, 130, 246, 0.15));
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.activity-item.active::before {
+  opacity: 1;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.activity-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  width: 28px;
+  text-align: center;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+}
+
+.activity-info {
+  flex: 1;
+}
+
+.activity-name {
+  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.activity-level {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Enhanced Progress Bars */
+.activity-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 8px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: 600;
+  font-size: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+/* Activity Status for Management Tabs */
+.activity-status {
+  margin-top: 8px;
+}
+
+.status-indicator {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 500;
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.status-indicator.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .activity-item {
+    padding: 10px;
+  }
+  
+  .activity-icon {
+    font-size: 18px;
+    width: 24px;
+  }
+  
+  .activity-name {
+    font-size: 13px;
+  }
+}
+
 /* Badges */
 .badge{display:inline-block; padding:3px 8px; font-size:11px; border-radius:999px; border:1px solid #2a3758; color:#bfdbfe; background:#0a1224}
 

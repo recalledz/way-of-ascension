@@ -42,78 +42,103 @@
     <aside class="left">
       <h3 style="margin-bottom: 16px; text-align: center; color: #c7d2fe;">Activities</h3>
       
-      <div class="activities">
-        <div class="activity-item" data-activity="cultivation">
-          <div class="activity-header">
-            <div class="activity-icon">🧘</div>
-            <div class="activity-info">
-              <div class="activity-name">Cultivation</div>
-              <div class="activity-level" id="cultivationLevel">Mortal 1</div>
+      <!-- Leveling Activities Group -->
+      <div class="activity-group">
+        <h4 class="group-title">⚡ Training & Skills</h4>
+        <div class="activities leveling-activities">
+          <div class="activity-item leveling-tab" data-activity="cultivation">
+            <div class="activity-header">
+              <div class="activity-icon">🧘</div>
+              <div class="activity-info">
+                <div class="activity-name">Cultivation</div>
+                <div class="activity-level" id="cultivationLevel">Mortal 1</div>
+              </div>
+            </div>
+            <div class="activity-progress-bar">
+              <div class="progress-fill" id="cultivationProgressFill"></div>
+              <div class="progress-text" id="cultivationProgressText">0%</div>
             </div>
           </div>
-          <div class="activity-progress-bar">
-            <div class="progress-fill" id="cultivationProgressFill"></div>
-          </div>
-        </div>
-        
-        <div class="activity-item" data-activity="physique">
-          <div class="activity-header">
-            <div class="activity-icon">💪</div>
-            <div class="activity-info">
-              <div class="activity-name">Physique</div>
-              <div class="activity-level" id="physiqueLevel">Level 1</div>
+          
+          <div class="activity-item leveling-tab" data-activity="physique">
+            <div class="activity-header">
+              <div class="activity-icon">💪</div>
+              <div class="activity-info">
+                <div class="activity-name">Physique</div>
+                <div class="activity-level" id="physiqueLevel">Level 1</div>
+              </div>
+            </div>
+            <div class="activity-progress-bar">
+              <div class="progress-fill" id="physiqueProgressFill"></div>
+              <div class="progress-text" id="physiqueProgressText">0%</div>
             </div>
           </div>
-          <div class="activity-progress-bar">
-            <div class="progress-fill" id="physiqueProgressFill"></div>
-          </div>
-        </div>
-        
-        <div class="activity-item" data-activity="mining">
-          <div class="activity-header">
-            <div class="activity-icon">⛏️</div>
-            <div class="activity-info">
-              <div class="activity-name">Mining</div>
-              <div class="activity-level" id="miningLevel">Level 1</div>
+          
+          <div class="activity-item leveling-tab" data-activity="mining">
+            <div class="activity-header">
+              <div class="activity-icon">⛏️</div>
+              <div class="activity-info">
+                <div class="activity-name">Mining</div>
+                <div class="activity-level" id="miningLevel">Level 1</div>
+              </div>
+            </div>
+            <div class="activity-progress-bar">
+              <div class="progress-fill" id="miningProgressFill"></div>
+              <div class="progress-text" id="miningProgressText">0%</div>
             </div>
           </div>
-          <div class="activity-progress-bar">
-            <div class="progress-fill" id="miningProgressFill"></div>
-          </div>
-        </div>
-        
-        <div class="activity-item" data-activity="adventure">
-          <div class="activity-header">
-            <div class="activity-icon">⚔️</div>
-            <div class="activity-info">
-              <div class="activity-name">Adventure</div>
-              <div class="activity-level" id="adventureLevel">Zone 1</div>
+          
+          <div class="activity-item leveling-tab" data-activity="cooking">
+            <div class="activity-header">
+              <div class="activity-icon">🍳</div>
+              <div class="activity-info">
+                <div class="activity-name">Cooking</div>
+                <div class="activity-level" id="cookingLevelSidebar">Level 1</div>
+              </div>
+            </div>
+            <div class="activity-progress-bar">
+              <div class="progress-fill" id="cookingProgressFillSidebar"></div>
+              <div class="progress-text" id="cookingProgressTextSidebar">0%</div>
             </div>
           </div>
-          <div class="activity-progress-bar">
-            <div class="progress-fill" id="adventureProgressFill"></div>
-          </div>
         </div>
-        
-        <div class="activity-item" data-activity="cooking">
-          <div class="activity-header">
-            <div class="activity-icon">🍳</div>
-            <div class="activity-info">
-              <div class="activity-name">Cooking</div>
-              <div class="activity-level" id="cookingLevelSidebar">Level 1</div>
+      </div>
+
+      <!-- Separator -->
+      <div class="activity-separator">
+        <div class="separator-line"></div>
+        <div class="separator-text">⚔️</div>
+        <div class="separator-line"></div>
+      </div>
+
+      <!-- Exploration & Management Activities Group -->
+      <div class="activity-group">
+        <h4 class="group-title">🌟 Exploration & Management</h4>
+        <div class="activities management-activities">
+          <div class="activity-item management-tab" data-activity="adventure">
+            <div class="activity-header">
+              <div class="activity-icon">⚔️</div>
+              <div class="activity-info">
+                <div class="activity-name">Adventure</div>
+                <div class="activity-level" id="adventureLevel">Zone 1</div>
+              </div>
+            </div>
+            <div class="activity-progress-bar">
+              <div class="progress-fill" id="adventureProgressFill"></div>
+              <div class="progress-text" id="adventureProgressText">0%</div>
             </div>
           </div>
-          <div class="activity-progress-bar">
-            <div class="progress-fill" id="cookingProgressFillSidebar"></div>
-          </div>
-        </div>
-        
-        <div class="activity-item" data-activity="sect">
-          <div class="activity-header">
-            <div class="activity-icon">🏛️</div>
-            <div class="activity-info">
-              <div class="activity-name">Sect</div>
-              <div class="activity-level" id="sectLevel">Buildings</div>
+          
+          <div class="activity-item management-tab" data-activity="sect">
+            <div class="activity-header">
+              <div class="activity-icon">🏛️</div>
+              <div class="activity-info">
+                <div class="activity-name">Sect</div>
+                <div class="activity-level" id="sectLevel">Buildings</div>
+              </div>
+            </div>
+            <div class="activity-status">
+              <div class="status-indicator" id="sectStatus">Inactive</div>
             </div>
           </div>
         </div>

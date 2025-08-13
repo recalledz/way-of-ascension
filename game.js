@@ -2594,7 +2594,9 @@ function updateSidebarActivities() {
   const cultivationFill = document.getElementById('cultivationProgressFill');
   if (cultivationFill) {
     const foundationProgress = S.foundation / fCap();
-    cultivationFill.style.width = (foundationProgress * 100) + '%';
+    const progressPct = Math.floor(foundationProgress * 100);
+    cultivationFill.style.width = progressPct + '%';
+    setText('cultivationProgressText', progressPct + '%');
   }
   
   // Update physique
@@ -2602,7 +2604,9 @@ function updateSidebarActivities() {
     setText('physiqueLevel', `Level ${S.physique.level}`);
     const physiqueFill = document.getElementById('physiqueProgressFill');
     if (physiqueFill) {
-      physiqueFill.style.width = (S.physique.exp / S.physique.expMax * 100) + '%';
+      const progressPct = Math.floor(S.physique.exp / S.physique.expMax * 100);
+      physiqueFill.style.width = progressPct + '%';
+      setText('physiqueProgressText', progressPct + '%');
     }
   }
   
@@ -2611,7 +2615,9 @@ function updateSidebarActivities() {
     setText('miningLevel', `Level ${S.mining.level}`);
     const miningFill = document.getElementById('miningProgressFill');
     if (miningFill) {
-      miningFill.style.width = (S.mining.exp / S.mining.expMax * 100) + '%';
+      const progressPct = Math.floor(S.mining.exp / S.mining.expMax * 100);
+      miningFill.style.width = progressPct + '%';
+      setText('miningProgressText', progressPct + '%');
     }
   }
   
@@ -2624,7 +2630,9 @@ function updateSidebarActivities() {
       const currentArea = currentZone.areas[S.adventure.currentArea];
       if (currentArea) {
         const progress = S.adventure.killsInCurrentArea / currentArea.killReq;
-        adventureFill.style.width = (progress * 100) + '%';
+        const progressPct = Math.floor(progress * 100);
+        adventureFill.style.width = progressPct + '%';
+        setText('adventureProgressText', progressPct + '%');
       }
     }
   }
@@ -2634,13 +2642,27 @@ function updateSidebarActivities() {
     setText('cookingLevelSidebar', `Level ${S.cooking.level}`);
     const cookingFill = document.getElementById('cookingProgressFillSidebar');
     if (cookingFill) {
-      cookingFill.style.width = (S.cooking.exp / S.cooking.expMax * 100) + '%';
+      const progressPct = Math.floor(S.cooking.exp / S.cooking.expMax * 100);
+      cookingFill.style.width = progressPct + '%';
+      setText('cookingProgressTextSidebar', progressPct + '%');
     }
   }
   
-  // Update sect
+  // Update sect status
   const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
   setText('sectLevel', `${buildingCount} Buildings`);
+  
+  // Update sect status indicator
+  const sectStatus = document.getElementById('sectStatus');
+  if (sectStatus) {
+    if (selectedActivity === 'sect') {
+      sectStatus.textContent = 'Active';
+      sectStatus.classList.add('active');
+    } else {
+      sectStatus.textContent = 'Inactive';
+      sectStatus.classList.remove('active');
+    }
+  }
 }
 
 function updateActivitySect() {
