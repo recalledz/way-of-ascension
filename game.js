@@ -463,6 +463,10 @@ const defaultState=()=>({
       maxProgress: 100
     }
   },
+  // Combat Proficiencies
+  proficiencies: {
+    fist: { level: 1, exp: 0, expMax: 100 }
+  },
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
     foundationMult: 1.0, // Foundation gain multiplier from various sources
@@ -520,6 +524,11 @@ if(!S.cultivation) {
     pillMult: 1.0,
     buildingMult: 1.0
   };
+}
+
+// Migrate old saves to include combat proficiencies
+if(!S.proficiencies) {
+  S.proficiencies = { fist: { level: 1, exp: 0, expMax: 100 } };
 }
 
 // Migrate old saves to include alchemy progression system
@@ -1164,7 +1173,8 @@ function calcAtk(){
   const physiqueMult = 1 + (S.stats.physique - 10) * 0.05;
   
   const lawBonuses = getLawBonuses();
-  return Math.floor((S.atkBase + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
+  const fistBonus = getFistBonuses().damage;
+  return Math.floor((S.atkBase + fistBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
 }
 function calcDef(){
   const realm = REALMS[S.realm.tier];
@@ -1266,14 +1276,47 @@ function calculatePlayerCombatAttack() {
   const baseAttack = 5;
   const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
   const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
-  return baseAttack + physiqueBonus + realmBonus;
+  const fistBonus = getFistBonuses().damage;
+  return baseAttack + fistBonus + physiqueBonus + realmBonus;
 }
 
 function calculatePlayerAttackRate() {
   const baseRate = 1.0; // attacks per second
   const dexterityBonus = (S.stats.dexterity - 10) * 0.05; // 5% per point above 10
   const attackSpeedBonus = S.stats.attackSpeed || 0;
-  return baseRate + dexterityBonus + (attackSpeedBonus / 100);
+  const fistBonus = getFistBonuses().speed;
+  return baseRate + dexterityBonus + (attackSpeedBonus / 100) + fistBonus;
+}
+
+function getFistBonuses() {
+  const prof = S.proficiencies?.fist || { level: 1 };
+  const levels = Math.max(0, prof.level - 1);
+  return {
+    damage: levels * 2,
+    speed: levels * 0.1
+  };
+}
+
+function gainFistXP(amount) {
+  if (!S.proficiencies) return;
+  const prof = S.proficiencies.fist;
+  prof.exp += amount;
+  while (prof.exp >= prof.expMax) {
+    prof.exp -= prof.expMax;
+    prof.level++;
+    prof.expMax = Math.floor(prof.expMax * 1.5);
+    log(`Fist proficiency reached level ${prof.level}!`, 'good');
+  }
+  updateFistProficiencyDisplay();
+}
+
+function updateFistProficiencyDisplay() {
+  if (!S.proficiencies) return;
+  const prof = S.proficiencies.fist;
+  setText('fistLevel', prof.level);
+  setText('fistExp', Math.floor(prof.exp));
+  setText('fistExpMax', prof.expMax);
+  setFill('fistExpFill', prof.exp / prof.expMax);
 }
 
 // Adventure zone and area UI functions
@@ -1369,8 +1412,8 @@ function updateBattleDisplay() {
   }
   
   // Update player attack stats
-  const playerAttack = calcAtk ? calcAtk() : (S.atkBase || 10);
-  const playerAttackRate = 1.0 + (S.stats.dexterity - 10) * 0.02; // Dexterity affects attack rate
+  const playerAttack = calculatePlayerCombatAttack();
+  const playerAttackRate = calculatePlayerAttackRate();
   setText('playerAttack', Math.floor(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   
@@ -1438,7 +1481,10 @@ function updateAdventureCombat() {
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       S.adventure.enemyHP = Math.max(0, S.adventure.enemyHP - playerAttack);
       S.adventure.lastPlayerAttack = now;
-      
+
+      // Gain fist proficiency experience for each attack
+      gainFistXP(playerAttack);
+
       if (!S.adventure.combatLog) S.adventure.combatLog = [];
       S.adventure.combatLog.push(`You deal ${playerAttack} damage to ${S.adventure.currentEnemy.name}`);
       
@@ -2297,11 +2343,15 @@ function updateActivityAdventure() {
   const playerAttackRate = calculatePlayerAttackRate();
   
   setText('currentWeapon', 'Fists');
-  setText('baseDamage', 5);
+  const fistBase = 5 + getFistBonuses().damage;
+  setText('baseDamage', fistBase);
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
   setText('combatAttackRate', playerAttackRate.toFixed(1) + '/s');
   setText('playerAttack', playerAttack);
   setText('playerAttackRate', playerAttackRate.toFixed(1) + '/s');
+
+  // Update fist proficiency display
+  updateFistProficiencyDisplay();
   
   // Update zone buttons
   updateZoneButtons();
