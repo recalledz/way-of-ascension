@@ -2600,22 +2600,22 @@ function updateSidebarActivities() {
   }
   
   // Update physique
-  if (S.physique) {
-    setText('physiqueLevel', `Level ${S.physique.level}`);
+  if (S.activities && S.activities.physique) {
+    setText('physiqueLevel', `Level ${S.activities.physique.level}`);
     const physiqueFill = document.getElementById('physiqueProgressFill');
     if (physiqueFill) {
-      const progressPct = Math.floor(S.physique.exp / S.physique.expMax * 100);
+      const progressPct = Math.floor(S.activities.physique.exp / S.activities.physique.expMax * 100);
       physiqueFill.style.width = progressPct + '%';
       setText('physiqueProgressText', progressPct + '%');
     }
   }
   
   // Update mining
-  if (S.mining) {
-    setText('miningLevel', `Level ${S.mining.level}`);
+  if (S.activities && S.activities.mining) {
+    setText('miningLevel', `Level ${S.activities.mining.level}`);
     const miningFill = document.getElementById('miningProgressFill');
     if (miningFill) {
-      const progressPct = Math.floor(S.mining.exp / S.mining.expMax * 100);
+      const progressPct = Math.floor(S.activities.mining.exp / S.activities.mining.expMax * 100);
       miningFill.style.width = progressPct + '%';
       setText('miningProgressText', progressPct + '%');
     }
@@ -2637,12 +2637,14 @@ function updateSidebarActivities() {
     }
   }
   
-  // Update cooking
-  if (S.cooking) {
-    setText('cookingLevelSidebar', `Level ${S.cooking.level}`);
+  // Update cooking (alchemy system)
+  if (S.alchemy) {
+    setText('cookingLevelSidebar', `Level ${S.alchemy.level}`);
     const cookingFill = document.getElementById('cookingProgressFillSidebar');
     if (cookingFill) {
-      const progressPct = Math.floor(S.cooking.exp / S.cooking.expMax * 100);
+      // Calculate alchemy experience progress (if xp and level system exists)
+      const expRequired = S.alchemy.level * 100; // Basic progression formula
+      const progressPct = S.alchemy.xp ? Math.floor((S.alchemy.xp % expRequired) / expRequired * 100) : 0;
       cookingFill.style.width = progressPct + '%';
       setText('cookingProgressTextSidebar', progressPct + '%');
     }
@@ -3604,6 +3606,7 @@ if (ascendBtn) {
   });
 }
 
+
 /* Loop */
 function tick(){
   S.time++;
@@ -3743,6 +3746,7 @@ function tick(){
   }
 
   if(S.time % 2===0) updateWinEst();
+  updateSidebarActivities(); // Update progress bars every tick
   updateAll();
 }
 

@@ -1391,6 +1391,27 @@ tr td:last-child{border-top-right-radius:10px; border-bottom-right-radius:10px}
   position: relative;
 }
 
+/* Color-coded Progress Bars for Each Activity */
+#cultivationProgressFill {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed) !important; /* Purple for cultivation */
+}
+
+#physiqueProgressFill {
+  background: linear-gradient(90deg, #ef4444, #dc2626) !important; /* Red for physique */
+}
+
+#miningProgressFill {
+  background: linear-gradient(90deg, #f59e0b, #d97706) !important; /* Orange for mining */
+}
+
+#cookingProgressFillSidebar {
+  background: linear-gradient(90deg, #22c55e, #16a34a) !important; /* Green for cooking */
+}
+
+#adventureProgressFill {
+  background: linear-gradient(90deg, #3b82f6, #2563eb) !important; /* Blue for adventure */
+}
+
 .progress-fill::after {
   content: '';
   position: absolute;
