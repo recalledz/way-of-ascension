@@ -86,6 +86,8 @@ const BEASTS = [
   {name:'Dragon Whelp', hp:800, atk:40, def:18, reward:{stones:220, herbs:30, ore:25}}
 ];
 
+
+
 // Sect Buildings System - Progressive unlocks with scaling costs
 const SECT_BUILDINGS = {
   // Basic Infrastructure (Unlocked from start)
@@ -294,6 +296,20 @@ const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const qs = sel => document.querySelector(sel);
 
 // Adventure System Data
+// Enemy data for adventure zones
+const ENEMY_DATA = {
+  'Forest Rabbit': { name: 'Forest Rabbit', hp: 15, attack: 3, attackRate: 1.2, loot: { stones: 2, herbs: 1 } },
+  'Wild Boar': { name: 'Wild Boar', hp: 25, attack: 5, attackRate: 0.9, loot: { stones: 4, ore: 1 } },
+  'River Frog': { name: 'River Frog', hp: 20, attack: 4, attackRate: 1.1, loot: { stones: 3, herbs: 1 } },
+  'Honey Bee': { name: 'Honey Bee', hp: 12, attack: 6, attackRate: 1.5, loot: { stones: 2, herbs: 2 } },
+  'Tree Sprite': { name: 'Tree Sprite', hp: 35, attack: 7, attackRate: 1.0, loot: { stones: 6, wood: 2 } },
+  'Stone Lizard': { name: 'Stone Lizard', hp: 40, attack: 8, attackRate: 0.8, loot: { stones: 7, ore: 2 } },
+  'Water Snake': { name: 'Water Snake', hp: 30, attack: 9, attackRate: 1.3, loot: { stones: 5, herbs: 2 } },
+  'Grass Wolf': { name: 'Grass Wolf', hp: 50, attack: 12, attackRate: 1.1, loot: { stones: 10, wood: 3 } },
+  'Ruin Guardian': { name: 'Ruin Guardian', hp: 80, attack: 15, attackRate: 0.7, loot: { stones: 15, ore: 4 } },
+  'Forest Spirit': { name: 'Forest Spirit', hp: 120, attack: 18, attackRate: 0.9, loot: { stones: 25, herbs: 5, wood: 3 } }
+};
+
 const ADVENTURE_ZONES = [
   {
     name: 'Peaceful Lands',
@@ -401,6 +417,8 @@ const defaultState=()=>({
   adventure: {
     currentZone: 0,
     currentArea: 0,
+    selectedZone: 0,      // Automatically select Peaceful Lands
+    selectedArea: 0,      // Automatically select first area (Forest Edge)
     totalKills: 0,
     areasCompleted: 0,
     zonesUnlocked: 1,
@@ -412,7 +430,7 @@ const defaultState=()=>({
     currentEnemy: null,
     lastPlayerAttack: 0,
     lastEnemyAttack: 0,
-    combatLog: []
+    combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...']
   },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
@@ -1285,21 +1303,9 @@ function updateAreaGrid() {
   }
 }
 
-function selectZone(zoneIndex) {
-  if (!S.adventure) return;
-  S.adventure.selectedZone = zoneIndex;
-  S.adventure.selectedArea = 0; // Reset to first area
-  updateZoneButtons();
-  updateAreaGrid();
-  updateActivityAdventure();
-}
 
-function selectArea(areaIndex) {
-  if (!S.adventure) return;
-  S.adventure.selectedArea = areaIndex;
-  updateAreaGrid();
-  updateActivityAdventure();
-}
+
+
 
 // Battle display function
 function updateBattleDisplay() {
@@ -1324,38 +1330,60 @@ function updateBattleDisplay() {
   }
   
   // Update player HP display
-  setText('adventurePlayerHP', S.adventure.playerHP || S.hp || 100);
-  setText('adventurePlayerMaxHP', S.hpMax || 100);
+  const playerHP = S.adventure.playerHP || S.hp || 100;
+  const playerMaxHP = S.hpMax || 100;
+  setText('playerHealthText', `${playerHP}/${playerMaxHP}`);
+  
+  // Update player health bar
+  const playerHealthFill = document.getElementById('playerHealthFill');
+  if (playerHealthFill) {
+    const playerHealthPct = (playerHP / playerMaxHP) * 100;
+    playerHealthFill.style.width = `${playerHealthPct}%`;
+  }
+  
+  // Update player attack stats
+  const playerAttack = calcAtk ? calcAtk() : (S.atkBase || 10);
+  const playerAttackRate = 1.0 + (S.stats.dexterity - 10) * 0.02; // Dexterity affects attack rate
+  setText('playerAttack', Math.floor(playerAttack));
+  setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   
   // Update enemy display if in combat
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
-    setText('adventureEnemyName', S.adventure.currentEnemy.name || 'Unknown Enemy');
-    setText('adventureEnemyHP', S.adventure.enemyHP || 0);
-    setText('adventureEnemyMaxHP', S.adventure.enemyMaxHP || 0);
+    const enemy = S.adventure.currentEnemy;
+    const enemyHP = S.adventure.enemyHP || 0;
+    const enemyMaxHP = S.adventure.enemyMaxHP || 0;
     
-    // Show enemy info
-    const enemyDisplay = document.getElementById('adventureEnemyDisplay');
-    if (enemyDisplay) {
-      enemyDisplay.style.display = 'block';
+    setText('enemyName', enemy.name || 'Unknown Enemy');
+    setText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
+    setText('enemyAttack', enemy.attack || 0);
+    setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    
+    // Update enemy health bar
+    const enemyHealthFill = document.getElementById('enemyHealthFill');
+    if (enemyHealthFill && enemyMaxHP > 0) {
+      const enemyHealthPct = (enemyHP / enemyMaxHP) * 100;
+      enemyHealthFill.style.width = `${enemyHealthPct}%`;
     }
   } else {
-    // Hide enemy info when not in combat
-    const enemyDisplay = document.getElementById('adventureEnemyDisplay');
-    if (enemyDisplay) {
-      enemyDisplay.style.display = 'none';
-    }
+    // Show default enemy display when not in combat
+    setText('enemyName', 'Select an area to begin');
+    setText('enemyHealthText', '--/--');
+    setText('enemyAttack', '--');
+    setText('enemyAttackRate', '--/s');
     
-    setText('adventureEnemyName', 'No Enemy');
-    setText('adventureEnemyHP', 0);
-    setText('adventureEnemyMaxHP', 0);
+    // Reset enemy health bar
+    const enemyHealthFill = document.getElementById('enemyHealthFill');
+    if (enemyHealthFill) {
+      enemyHealthFill.style.width = '0%';
+    }
   }
   
   // Update combat log if it exists
-  const combatLog = document.getElementById('adventureCombatLog');
+  const combatLog = document.getElementById('combatLog');
   if (combatLog && S.adventure.combatLog) {
     // Show last 5 combat log entries
     const recentLogs = S.adventure.combatLog.slice(-5);
-    combatLog.innerHTML = recentLogs.map(log => `<div class="combat-log-entry">${log}</div>`).join('');
+    combatLog.innerHTML = recentLogs.map(log => `<div class="log-entry">${log}</div>`).join('');
     combatLog.scrollTop = combatLog.scrollHeight;
   }
 }
@@ -1464,26 +1492,30 @@ function startAdventureCombat() {
   if (!currentZone || !currentZone.areas) return;
   
   const currentArea = currentZone.areas[S.adventure.selectedArea];
-  if (!currentArea || !currentArea.enemies) return;
+  if (!currentArea || !currentArea.enemy) return;
   
-  // Select random enemy from current area
-  const enemyType = currentArea.enemies[Math.floor(Math.random() * currentArea.enemies.length)];
+  // Get enemy type from current area (single enemy per area)
+  const enemyType = currentArea.enemy;
   const enemyData = ENEMY_DATA[enemyType];
   
-  if (!enemyData) return;
+  if (!enemyData) {
+    log(`Enemy data not found for ${enemyType}`, 'bad');
+    return;
+  }
   
   // Start combat
   S.adventure.inCombat = true;
   S.adventure.currentEnemy = { ...enemyData, type: enemyType };
   S.adventure.enemyHP = enemyData.hp;
   S.adventure.enemyMaxHP = enemyData.hp;
+  S.adventure.playerHP = S.hp; // Sync player HP
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   
   if (!S.adventure.combatLog) S.adventure.combatLog = [];
   S.adventure.combatLog.push(`A ${enemyData.name} appears!`);
   
-  log(`Combat started with ${enemyData.name}!`, 'neutral');
+  log(`Combat started with ${enemyData.name} in ${currentArea.name}!`, 'neutral');
 }
 
 function progressToNextArea() {
