@@ -1560,16 +1560,6 @@ function updateAdventureCombat() {
   }
 }
 
-function updateAutoSpawning() {
-  // Initialize adventure data if needed
-  if (!S.adventure) return;
-  
-  // Auto-spawn new enemies if not in combat and auto-spawning is enabled
-  if (!S.adventure.inCombat && S.adventure.autoSpawning && S.adventure.playerHP > 0) {
-    startAdventureCombat();
-  }
-}
-
 function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
   
@@ -1593,8 +1583,14 @@ function defeatEnemy() {
   S.adventure.currentEnemy = null;
   S.adventure.enemyHP = 0;
   S.adventure.enemyMaxHP = 0;
-  
+
   log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
+
+  // Automatically spawn a new enemy if we're still adventuring and alive
+  if (S.activities.adventure && S.adventure.playerHP > 0) {
+    startAdventureCombat();
+    updateActivityAdventure();
+  }
 }
 
 function startAdventureCombat() {
@@ -2353,17 +2349,13 @@ function updateActivityAdventure() {
       combatLog: ['Select an area to begin your adventure...'],
       selectedZone: 0,
       selectedArea: 0,
-      bestiary: {}, // Track enemy kills for bestiary
-      autoSpawning: false // Track if auto-spawning is active
+      bestiary: {} // Track enemy kills for bestiary
     };
   }
-  
+
   // Initialize bestiary if not exists
   if (!S.adventure.bestiary) {
     S.adventure.bestiary = {};
-  }
-  if (S.adventure.autoSpawning === undefined) {
-    S.adventure.autoSpawning = false;
   }
   
   // Update location display
@@ -2416,10 +2408,7 @@ function updateActivityAdventure() {
   
   // Update adventure combat
   updateAdventureCombat();
-  
-  // Update auto-spawning
-  updateAutoSpawning();
-  
+
   // Update food slots cooldowns
   updateFoodSlots();
   
