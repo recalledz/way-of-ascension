@@ -1,14 +1,18 @@
+import { initHp } from './helpers.js';
+
 export function load(){
   try{ const t = localStorage.getItem('woa-save'); return t ? JSON.parse(t) : null; }catch{ return null; }
 }
 
-export const defaultState = () => ({
+export const defaultState = () => {
+  const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+  return {
   time:0,
   qi: 100, qiMax: 100, qiRegenPerSec: 1,
   qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
-  hp: 100, hpMax: 100,
+  ...initHp(100),
   realm: { tier: 0, stage: 1 },
   stones:0, herbs:0, ore:0, wood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
@@ -62,8 +66,8 @@ export const defaultState = () => ({
     killsInCurrentArea: 0,
     inCombat: false,
     playerHP: 100,
-    enemyHP: 0,
-    enemyMaxHP: 0,
+    enemyHP,
+    enemyMaxHP,
     currentEnemy: null,
     lastPlayerAttack: 0,
     lastEnemyAttack: 0,
@@ -101,7 +105,8 @@ export const defaultState = () => ({
     alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
     disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
   }
-});
+  };
+};
 
 export let S = load() || defaultState();
 
