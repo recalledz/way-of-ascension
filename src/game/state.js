@@ -1,12 +1,20 @@
 import { initHp } from './helpers.js';
+import { runMigrations, SAVE_VERSION } from './migrations.js';
 
-export function load(){
-  try{ const t = localStorage.getItem('woa-save'); return t ? JSON.parse(t) : null; }catch{ return null; }
+export function loadSave(){
+  try{
+    const t = localStorage.getItem('woa-save');
+    if(!t) return null;
+    const save = JSON.parse(t);
+    runMigrations(save);
+    return save;
+  }catch{ return null; }
 }
 
 export const defaultState = () => {
   const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
   return {
+  ver: SAVE_VERSION,
   time:0,
   qi: 100, qiMax: 100, qiRegenPerSec: 1,
   qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
@@ -108,55 +116,13 @@ export const defaultState = () => {
   };
 };
 
-export let S = load() || defaultState();
-
-// Migrations for old saves
-if(!S.laws) {
-  S.laws = {
-    selected: null,
-    unlocked: [],
-    points: 0,
-    trees: {
-      sword: {},
-      formation: {},
-      alchemy: {}
-    }
-  };
-}
-
-if(!S.buildings) {
-  S.buildings = {};
-}
-
-if(!S.cultivation) {
-  S.cultivation = {
-    talent: 1.0,
-    comprehension: 1.0,
-    foundationMult: 1.0,
-    pillMult: 1.0,
-    buildingMult: 1.0
-  };
-}
-
-if(!S.proficiencies) {
-  S.proficiencies = { fist: { level: 1, exp: 0, expMax: 100 } };
-}
-
-if(!Object.prototype.hasOwnProperty.call(S.alchemy, 'unlocked')) {
-  S.alchemy.unlocked = true; // Old saves had alchemy unlocked by default
-  S.alchemy.knownRecipes = ['qi', 'body', 'ward']; // Old saves knew all recipes
-}
-
-if(typeof S.qiCapMult === 'undefined') {
-  S.qiCapMult = 0;
-}
-
-if(typeof S.qiRegenMult === 'undefined') {
-  S.qiRegenMult = 0;
-}
+export let S = loadSave() || defaultState();
 
 export function save(){
-  try{ localStorage.setItem('woa-save', JSON.stringify(S)); }catch{ /* ignore */ }
+  try{
+    S.ver = SAVE_VERSION;
+    localStorage.setItem('woa-save', JSON.stringify(S));
+  }catch{ /* ignore */ }
 }
 
 export function setState(newState){
