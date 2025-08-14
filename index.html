@@ -157,48 +157,59 @@
       <!-- Activity Content Panels -->
       <section id="activity-cultivation" class="activity-content" style="display:none;">
         <h2>🧘 Cultivation</h2>
-        <div class="cards">
-          <div class="card">
-            <h4>Cultivation Status</h4>
-            <div class="stat"><span>Current Realm</span><span id="realmNameActivity">Mortal 1</span></div>
-            <div class="stat"><span>Foundation</span><span><span id="foundValActivity">0</span>/<span id="foundCapActivity">60</span></span></div>
-            <div class="bar"><div class="fill" id="foundFillActivity"></div></div>
-            <div class="stat"><span>Qi</span><span><span id="qiValActivity">0</span>/<span id="qiCapActivity">100</span> (+<span id="qiRegenActivity">1.0</span>/s)</span></div>
-            <div class="bar"><div class="fill" id="qiFillActivity"></div></div>
-            <div class="row" style="margin-top:12px">
-              <button class="btn primary" id="startCultivationActivity">🧘 Start Cultivating</button>
-              <button class="btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
+        <div class="cultivation-tabs">
+          <button class="cultivation-tab-btn active" data-tab="cultivation">Cultivation</button>
+          <button class="cultivation-tab-btn" data-tab="stats">Stats</button>
+        </div>
+
+        <div id="cultivationSubTab" class="cultivation-tab-content active">
+          <div class="cards">
+            <div class="card">
+              <h4>Cultivation Status</h4>
+              <div class="stat"><span>Current Realm</span><span id="realmNameActivity">Mortal 1</span></div>
+              <div class="stat"><span>Foundation</span><span><span id="foundValActivity">0</span>/<span id="foundCapActivity">60</span></span></div>
+              <div class="bar"><div class="fill" id="foundFillActivity"></div></div>
+              <div class="stat"><span>Qi</span><span><span id="qiValActivity">0</span>/<span id="qiCapActivity">100</span> (+<span id="qiRegenActivity">1.0</span>/s)</span></div>
+              <div class="bar"><div class="fill" id="qiFillActivity"></div></div>
+              <div class="row" style="margin-top:12px">
+                <button class="btn primary" id="startCultivationActivity">🧘 Start Cultivating</button>
+                <button class="btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
+              </div>
+              <div class="muted" style="margin-top:8px">Foundation gain rate: <span id="foundationRate">0.0</span>/s</div>
             </div>
-            <div class="muted" style="margin-top:8px">Foundation gain rate: <span id="foundationRate">0.0</span>/s</div>
-          </div>
-          
-          <div class="card">
-            <h4>Breakthrough Details</h4>
-            <div class="stat"><span>Success Chance</span><span id="btChanceActivity">0%</span></div>
-            <div class="stat"><span>Power Multiplier</span><span id="powerMultActivity">1x</span></div>
-            <div id="breakthroughDetailsActivity" class="muted"></div>
-            <div class="row" style="margin-top:12px">
-              <button class="btn" id="useQiPillActivity">💊 Use Qi Pill</button>
-              <button class="btn" id="useWardPillActivity">💊 Use Ward Pill</button>
+
+            <div class="card" id="cultivationProgressionCard">
+              <h4>🏔️ Cultivation Progression</h4>
+              <p class="muted">Your journey through the realms of cultivation:</p>
+              <div id="cultivationProgressionTree" class="progression-tree">
+                <!-- Progression tree will be populated by JavaScript -->
+              </div>
             </div>
           </div>
-          
-          <div class="card" id="cultivationStatsCard" style="display:none;">
-            <h4>🌟 Cultivation Stats</h4>
-            <p class="muted">Enhanced cultivation abilities and multipliers:</p>
-            <div class="stat"><span>Talent</span><span id="cultivationTalent">1.0x</span></div>
-            <div class="stat"><span>Comprehension</span><span id="cultivationComprehension">1.0x</span></div>
-            <div class="stat"><span>Foundation Mult</span><span id="cultivationFoundationMult">1.0x</span></div>
-            <div class="stat"><span>Pill Mult</span><span id="cultivationPillMult">1.0x</span></div>
-            <div class="stat"><span>Building Mult</span><span id="cultivationBuildingMult">1.0x</span></div>
-            <div class="muted" style="margin-top:8px">These multipliers enhance foundation gain, pill effectiveness, and breakthrough chances</div>
-          </div>
-          
-          <div class="card" id="cultivationProgressionCard">
-            <h4>🏔️ Cultivation Progression</h4>
-            <p class="muted">Your journey through the realms of cultivation:</p>
-            <div id="cultivationProgressionTree" class="progression-tree">
-              <!-- Progression tree will be populated by JavaScript -->
+        </div>
+
+        <div id="statsSubTab" class="cultivation-tab-content" style="display:none;">
+          <div class="cards">
+            <div class="card">
+              <h4>Breakthrough Details</h4>
+              <div class="stat"><span>Success Chance</span><span id="btChanceActivity">0%</span></div>
+              <div class="stat"><span>Power Multiplier</span><span id="powerMultActivity">1x</span></div>
+              <div id="breakthroughDetailsActivity" class="muted"></div>
+              <div class="row" style="margin-top:12px">
+                <button class="btn" id="useQiPillActivity">💊 Use Qi Pill</button>
+                <button class="btn" id="useWardPillActivity">💊 Use Ward Pill</button>
+              </div>
+            </div>
+
+            <div class="card" id="cultivationStatsCard" style="display:none;">
+              <h4>🌟 Cultivation Stats</h4>
+              <p class="muted">Enhanced cultivation abilities and multipliers:</p>
+              <div class="stat"><span>Talent</span><span id="cultivationTalent">1.0x</span></div>
+              <div class="stat"><span>Comprehension</span><span id="cultivationComprehension">1.0x</span></div>
+              <div class="stat"><span>Foundation Mult</span><span id="cultivationFoundationMult">1.0x</span></div>
+              <div class="stat"><span>Pill Mult</span><span id="cultivationPillMult">1.0x</span></div>
+              <div class="stat"><span>Building Mult</span><span id="cultivationBuildingMult">1.0x</span></div>
+              <div class="muted" style="margin-top:8px">These multipliers enhance foundation gain, pill effectiveness, and breakthrough chances</div>
             </div>
           </div>
         </div>
