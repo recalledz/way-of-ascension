@@ -1518,6 +1518,7 @@ function updateAdventureCombat() {
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         const enemyDamage = S.adventure.currentEnemy.attack || 5;
         S.adventure.playerHP = Math.max(0, S.adventure.playerHP - enemyDamage);
+        S.hp = S.adventure.playerHP; // Sync global HP so it persists across fights
         S.adventure.lastEnemyAttack = now;
         
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
