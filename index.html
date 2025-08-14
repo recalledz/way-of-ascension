@@ -160,9 +160,27 @@
         <div class="cards">
           <div class="card">
             <h4>Cultivation Status</h4>
+            
+            <!-- Lotus Pose Silhouette with Foundation Fill -->
+            <div class="lotus-cultivation-container">
+              <div class="lotus-silhouette-cultivation">
+                <div class="lotus-fill-background" id="lotusFoundationFill"></div>
+                <div class="lotus-pose-outline">
+                  <div class="lotus-figure">
+                    <div class="lotus-body"></div>
+                    <div class="lotus-arms"></div>
+                    <div class="lotus-legs"></div>
+                    <div class="lotus-head"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="foundation-display">
+                <span class="foundation-text">Foundation: <span id="foundValActivity">0</span>/<span id="foundCapActivity">60</span></span>
+                <span class="foundation-percent" id="foundPctActivity">0%</span>
+              </div>
+            </div>
+            
             <div class="stat"><span>Current Realm</span><span id="realmNameActivity">Mortal 1</span></div>
-            <div class="stat"><span>Foundation</span><span><span id="foundValActivity">0</span>/<span id="foundCapActivity">60</span></span></div>
-            <div class="bar"><div class="fill" id="foundFillActivity"></div></div>
             <div class="stat"><span>Qi</span><span><span id="qiValActivity">0</span>/<span id="qiCapActivity">100</span> (+<span id="qiRegenActivity">1.0</span>/s)</span></div>
             <div class="bar"><div class="fill" id="qiFillActivity"></div></div>
             <div class="row" style="margin-top:12px">

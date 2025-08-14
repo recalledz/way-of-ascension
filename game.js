@@ -838,9 +838,10 @@ function updateAll(){
   renderKarma(); 
   if (typeof renderQueue === 'function') renderQueue(); 
   if (typeof renderAlchemyUI === 'function') renderAlchemyUI(); 
-  if (typeof renderBuildings === 'function') renderBuildings();
-  if (typeof updateTabVisibility === 'function') updateTabVisibility();
   if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
+  if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
+  if (typeof updateBreathingStats === 'function') updateBreathingStats();
+  if (typeof updateLotusFoundationFill === 'function') updateLotusFoundationFill();
   updateActivityCards();
 }
 
@@ -1201,6 +1202,26 @@ function powerMult(){
 }
 
 function foundationGainPerMeditate(){ return foundationGainPerSec() * 2.5; }
+
+function updateLotusFoundationFill() {
+  const lotusFill = document.getElementById('lotusFoundationFill');
+  const foundPct = document.getElementById('foundPctActivity');
+  
+  if (lotusFill && foundPct) {
+    const foundationProgress = S.foundation / fCap();
+    const fillHeight = Math.min(100, foundationProgress * 100);
+    
+    lotusFill.style.height = `${fillHeight}%`;
+    foundPct.textContent = `${Math.floor(fillHeight)}%`;
+    
+    // Add subtle glow effect when Foundation is high
+    if (foundationProgress > 0.8) {
+      lotusFill.style.boxShadow = `0 0 20px rgba(34, 197, 94, ${foundationProgress * 0.5})`;
+    } else {
+      lotusFill.style.boxShadow = 'none';
+    }
+  }
+}
 function calcAtk(){
   const realm = REALMS[S.realm.tier];
   const baseAtk = realm.atk;
