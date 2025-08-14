@@ -1,73 +1,29 @@
 
 // Way of Ascension — Modular JS
 
+import { REALMS } from '../data/realms.js';
+import { LAWS } from '../data/laws.js';
+import { S, defaultState, save, setState } from '../src/game/state.js';
+import {
+  clamp,
+  qCap,
+  qiRegenPerSec,
+  fCap,
+  foundationGainPerSec,
+  foundationGainPerMeditate,
+  powerMult,
+  calcAtk,
+  calcDef,
+  getStatEffects,
+  getLawBonuses,
+  getFistBonuses,
+  calculatePlayerCombatAttack,
+  calculatePlayerAttackRate
+} from '../src/game/engine.js';
+
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
-const REALMS = [
-  {name:'Mortal', stages:9, cap:100, fcap:60, baseRegen:1, atk:1, def:1, bt:0.60, power:1},
-  {name:'Qi Refining', stages:9, cap:300, fcap:150, baseRegen:2, atk:3, def:2, bt:0.55, power:3},
-  {name:'Foundation', stages:9, cap:800, fcap:400, baseRegen:3, atk:6, def:4, bt:0.50, power:8},
-  {name:'Core', stages:9, cap:2000, fcap:1100, baseRegen:5, atk:12, def:8, bt:0.45, power:20},
-  {name:'Nascent', stages:9, cap:7000, fcap:3000, baseRegen:8, atk:24, def:16, bt:0.40, power:50},
-  {name:'Soul Formation', stages:9, cap:20000, fcap:8000, baseRegen:12, atk:40, def:28, bt:0.35, power:120},
-  {name:'Void Refining', stages:9, cap:60000, fcap:25000, baseRegen:18, atk:70, def:50, bt:0.30, power:300},
-  {name:'Body Integration', stages:9, cap:180000, fcap:80000, baseRegen:25, atk:120, def:85, bt:0.25, power:750},
-  {name:'Mahayana', stages:9, cap:500000, fcap:250000, baseRegen:35, atk:200, def:140, bt:0.20, power:1800},
-  {name:'Tribulation', stages:9, cap:1500000, fcap:800000, baseRegen:50, atk:350, def:250, bt:0.15, power:4500}
-];
-
-// Cultivation Laws - Unlocked at Foundation Stage
-const LAWS = {
-  sword: {
-    name: 'Sword Law',
-    desc: 'The path of the blade - focused on combat mastery and offensive techniques',
-    icon: '⚔️',
-    unlockReq: {realm: 2, stage: 1}, // Foundation 1
-    bonuses: {atk: 1.2, critChance: 0.1, qiEfficiency: 0.9},
-    tree: {
-      'basic_sword': {name: 'Basic Sword Intent', desc: '+15% ATK, +5% crit chance', cost: 10, prereq: null, bonus: {atk: 0.15, critChance: 0.05}},
-      'sharp_edge': {name: 'Sharp Edge', desc: '+20% ATK vs beasts', cost: 25, prereq: 'basic_sword', bonus: {beastDmg: 0.20}},
-      'sword_qi': {name: 'Sword Qi Mastery', desc: '+30% Qi regen, techniques cost 10% less', cost: 40, prereq: 'basic_sword', bonus: {qiRegen: 0.30, qiCost: -0.10}},
-      'cultivation_focus': {name: 'Cultivation Focus', desc: '+25% foundation gain, +10% cultivation talent', cost: 50, prereq: 'sword_qi', bonus: {foundationMult: 0.25, cultivationTalent: 0.10}},
-      'piercing_strike': {name: 'Piercing Strike', desc: 'Unlocks Piercing Strike technique', cost: 60, prereq: 'sharp_edge', bonus: {technique: 'piercing_strike'}},
-      'sword_heart': {name: 'Sword Heart', desc: '+50% ATK, +15% crit chance, +20% foundation gain', cost: 100, prereq: ['cultivation_focus', 'piercing_strike'], bonus: {atk: 0.50, critChance: 0.15, foundationMult: 0.20}},
-      'thousand_cuts': {name: 'Thousand Cuts', desc: 'Unlocks Thousand Cuts ultimate technique', cost: 200, prereq: 'sword_heart', bonus: {technique: 'thousand_cuts'}}
-    }
-  },
-  formation: {
-    name: 'Formation Law',
-    desc: 'The art of arrays and defensive techniques - focused on protection and resource efficiency',
-    icon: '🛡️',
-    unlockReq: {realm: 2, stage: 1}, // Foundation 1
-    bonuses: {def: 1.3, qiRegen: 1.1, resourceYield: 1.05},
-    tree: {
-      'basic_formation': {name: 'Basic Formation Theory', desc: '+20% DEF, +10% resource yield', cost: 10, prereq: null, bonus: {def: 0.20, resourceYield: 0.10}},
-      'qi_gathering': {name: 'Qi Gathering Array', desc: '+25% Qi regen, +15% Qi cap', cost: 25, prereq: 'basic_formation', bonus: {qiRegen: 0.25, qiCap: 0.15}},
-      'protective_ward': {name: 'Protective Ward', desc: '+30% DEF, reduces damage by 5%', cost: 40, prereq: 'basic_formation', bonus: {def: 0.30, dmgReduction: 0.05}},
-      'meditation_array': {name: 'Meditation Array', desc: '+30% foundation gain, +15% comprehension', cost: 50, prereq: 'qi_gathering', bonus: {foundationMult: 0.30, comprehension: 0.15}},
-      'spirit_lock': {name: 'Spirit Lock Formation', desc: 'Unlocks Spirit Lock technique', cost: 60, prereq: 'protective_ward', bonus: {technique: 'spirit_lock'}},
-      'grand_array': {name: 'Grand Defensive Array', desc: '+40% DEF, +20% all yields, +25% foundation gain', cost: 100, prereq: ['meditation_array', 'spirit_lock'], bonus: {def: 0.40, resourceYield: 0.20, foundationMult: 0.25}},
-      'heaven_earth': {name: 'Heaven-Earth Formation', desc: 'Unlocks Heaven-Earth ultimate technique', cost: 200, prereq: 'grand_array', bonus: {technique: 'heaven_earth'}}
-    }
-  },
-  alchemy: {
-    name: 'Alchemy Law',
-    desc: 'The way of pills and elixirs - focused on enhancement and support abilities',
-    icon: '🧪',
-    unlockReq: {realm: 2, stage: 1}, // Foundation 1
-    bonuses: {alchemySuccess: 1.2, pillEffectiveness: 1.15, qiRegen: 1.05},
-    tree: {
-      'basic_alchemy': {name: 'Basic Pill Theory', desc: '+15% alchemy success, +10% pill effects', cost: 10, prereq: null, bonus: {alchemySuccess: 0.15, pillEffect: 0.10}},
-      'herb_mastery': {name: 'Herb Mastery', desc: '+30% herb yield, +1 alchemy slot', cost: 25, prereq: 'basic_alchemy', bonus: {herbYield: 0.30, alchemySlots: 1}},
-      'qi_condensation': {name: 'Qi Condensation', desc: '+20% Qi from pills, +15% Qi regen', cost: 40, prereq: 'basic_alchemy', bonus: {pillQiBonus: 0.20, qiRegen: 0.15}},
-      'pill_mastery': {name: 'Pill Mastery', desc: '+40% pill effectiveness, +20% foundation from pills', cost: 50, prereq: 'qi_condensation', bonus: {pillMult: 0.40, pillFoundation: 0.20}},
-      'transmutation': {name: 'Transmutation Art', desc: 'Unlocks Transmutation technique', cost: 60, prereq: 'herb_mastery', bonus: {technique: 'transmutation'}},
-      'master_alchemist': {name: 'Master Alchemist', desc: '+25% success, +20% pill effects, +1 slot, +15% comprehension', cost: 100, prereq: ['pill_mastery', 'transmutation'], bonus: {alchemySuccess: 0.25, pillEffect: 0.20, alchemySlots: 1, comprehension: 0.15}},
-      'immortal_elixir': {name: 'Immortal Elixir', desc: 'Unlocks Immortal Elixir ultimate technique', cost: 200, prereq: 'master_alchemist', bonus: {technique: 'immortal_elixir'}}
-    }
-  }
-};
 
 const BEASTS = [
   {name:'Wild Rabbit', hp:20, atk:2, def:0, reward:{stones:5, herbs:2}},
@@ -283,7 +239,6 @@ const fmt = n=>{
   if (n>=1e3) return (n/1e3).toFixed(2)+'k';
   return Math.floor(n).toString();
 }
-const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const qs = sel => document.querySelector(sel);
 
 // Adventure System Data
@@ -384,207 +339,6 @@ const ADVENTURE_ENEMIES = {
 
 
 
-const defaultState=()=>({
-  time:0,
-  qi: 100, qiMax: 100, qiRegenPerSec: 1,
-  qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
-  qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
-  foundation: 0,
-  hp: 100, hpMax: 100,
-  realm: { tier: 0, stage: 1 },
-  stones:0, herbs:0, ore:0, wood:0, cores:0,
-  pills:{qi:0, body:0, ward:0},
-  hp:100, hpMax:100, atkBase:5, defBase:2, tempAtk:0, tempDef:0,
-  // Expanded Stat System
-  stats: {
-    physique: 10,        // Physical power, mining yield
-    mind: 10,            // Spell power, alchemy, learning speed
-    dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
-    comprehension: 10,   // Foundation gain, learning speed
-    criticalChance: 0.05, // Base critical hit chance
-    attackSpeed: 1.0,    // Base attack speed multiplier
-    cooldownReduction: 0, // Cooldown reduction percentage
-    adventureSpeed: 1.0  // Adventure/exploration speed multiplier
-  },
-  disciples:1,
-  gather:{herbs:0, ore:0, wood:0},
-  yieldMult:{herbs:0, ore:0, wood:0},
-  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
-  combat:{hunt:null, cds:{slash:0,guard:0,burst:0}, guardUntil:0, techniques:{}},
-  bought:{},
-  karmaPts:0, ascensions:0,
-  karma:{qiRegen:0, yield:0, atk:0, def:0},
-  auto:{meditate:true, brewQi:false, hunt:false}, // Auto-meditate enabled by default
-  // Activity System - only one can be active at a time
-  activities: {
-    cultivation: false,
-    physique: false,
-    mining: false,
-    adventure: false,
-    cooking: false
-  },
-  // Activity data containers
-  physique: { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 },
-  mining: {
-    level: 1,
-    exp: 0,
-    expMax: 100,
-    unlockedResources: ['stones'],
-    selectedResource: 'stones',
-    resourcesGained: 0
-  },
-  adventure: {
-    currentZone: 0,
-    currentArea: 0,
-    selectedZone: 0,      // Automatically select Peaceful Lands
-    selectedArea: 0,      // Automatically select first area (Forest Edge)
-    totalKills: 0,
-    areasCompleted: 0,
-    zonesUnlocked: 1,
-    killsInCurrentArea: 0,
-    inCombat: false,
-    playerHP: 100,
-    enemyHP: 0,
-    enemyMaxHP: 0,
-    currentEnemy: null,
-    lastPlayerAttack: 0,
-    lastEnemyAttack: 0,
-    combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...'],
-    location: 'Village Outskirts',
-    progress: 0,
-    maxProgress: 100
-  },
-  // Combat Proficiencies
-  proficiencies: {
-    fist: { level: 1, exp: 0, expMax: 100 }
-  },
-  cultivation: {
-    talent: 1.0, // Base cultivation talent multiplier
-    foundationMult: 1.0, // Foundation gain multiplier from various sources
-    pillMult: 1.0, // Pill effectiveness multiplier
-    buildingMult: 1.0 // Building effectiveness multiplier
-  },
-  // Cultivation Laws System
-  laws: {
-    selected: null, // Which law is currently selected
-    unlocked: [], // Which laws are available for selection
-    points: 0, // Law points earned through cultivation milestones
-    trees: { // Progress in each law's skill tree
-      sword: {},
-      formation: {},
-      alchemy: {}
-    }
-  },
-  // Sect Buildings System
-  buildings: {}, // Building levels: {building_key: level}
-  // Building bonuses (calculated from building levels)
-  buildingBonuses: {
-    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
-    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
-    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
-  }
-});
-
-let S = load() || defaultState();
-
-// Migrate old saves to include laws system
-if(!S.laws) {
-  S.laws = {
-    selected: null,
-    unlocked: [],
-    points: 0,
-    trees: {
-      sword: {},
-      formation: {},
-      alchemy: {}
-    }
-  };
-}
-
-// Migrate old saves to include buildings system
-if(!S.buildings) {
-  S.buildings = {};
-}
-
-// Migrate old saves to include cultivation system
-if(!S.cultivation) {
-  S.cultivation = {
-    talent: 1.0,
-    comprehension: 1.0,
-    foundationMult: 1.0,
-    pillMult: 1.0,
-    buildingMult: 1.0
-  };
-}
-
-// Migrate old saves to include combat proficiencies
-if(!S.proficiencies) {
-  S.proficiencies = { fist: { level: 1, exp: 0, expMax: 100 } };
-}
-
-// Migrate old saves to include alchemy progression system
-if(!S.alchemy.hasOwnProperty('unlocked')) {
-  S.alchemy.unlocked = true; // Old saves had alchemy unlocked by default
-  S.alchemy.knownRecipes = ['qi', 'body', 'ward']; // Old saves knew all recipes
-}
-
-// Migrate old saves to include missing qiCapMult property
-if(typeof S.qiCapMult === 'undefined') {
-  S.qiCapMult = 0;
-}
-
-// Migrate old saves to include missing qiRegenMult property
-if(typeof S.qiRegenMult === 'undefined') {
-  S.qiRegenMult = 0;
-}
-
-// Migrate old saves to include buildingBonuses system
-if(!S.buildingBonuses) {
-  S.buildingBonuses = {
-    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
-    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
-    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
-  };
-}
-
-// Migrate old saves to new activity system
-if (!S.activities || typeof S.activities.cultivation !== 'boolean') {
-  const oldActs = S.activities || {};
-  S.activities = { cultivation: false, physique: false, mining: false, adventure: false, cooking: false };
-
-  if (oldActs.physique && typeof oldActs.physique === 'object' && !S.physique) {
-    S.physique = oldActs.physique;
-  }
-  if (oldActs.mining && typeof oldActs.mining === 'object' && !S.mining) {
-    S.mining = oldActs.mining;
-  }
-  if (oldActs.adventure && typeof oldActs.adventure === 'object') {
-    S.adventure = Object.assign(oldActs.adventure, S.adventure || {});
-  }
-}
-
-if (!S.physique) {
-  S.physique = { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 };
-}
-if (!S.mining) {
-  S.mining = { level: 1, exp: 0, expMax: 100, unlockedResources: ['stones'], selectedResource: 'stones', resourcesGained: 0 };
-}
-if (!S.adventure) {
-  S.adventure = {
-    currentZone: 0,
-    currentArea: 0,
-    selectedZone: 0,
-    selectedArea: 0,
-    totalKills: 0,
-    areasCompleted: 0,
-    zonesUnlocked: 1,
-    killsInCurrentArea: 0,
-    inCombat: false,
-    playerHP: 100,
-    enemyHP: 0,
-    enemyMaxHP: 0,
-    currentEnemy: null,
-    lastPlayerAttack: 0,
     lastEnemyAttack: 0,
     combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...'],
     location: 'Village Outskirts',
@@ -663,7 +417,7 @@ function initUI(){
   if (saveBtn) saveBtn.addEventListener('click', save);
   
   const resetBtn = qs('#resetBtn');
-  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ S=defaultState(); save(); location.reload(); }});
+  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }});
   const exportBtn = qs('#exportBtn');
   if (exportBtn) {
     exportBtn.addEventListener('click', ()=>{
@@ -676,7 +430,7 @@ function initUI(){
   if (importBtn) {
     importBtn.addEventListener('click', async()=>{
       const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ S=JSON.parse(r.result); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
+      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
       inp.click();
     });
   }
@@ -1077,171 +831,6 @@ function renderSkillTrees(){
 }
 
 /* Mechanics */
-function qCap(){
-  const realm = REALMS[S.realm.tier];
-  const baseQi = realm.cap;
-  // Each stage within a realm increases qi capacity by 12%
-  const stageMultiplier = 1 + (S.realm.stage - 1) * 0.12;
-  const lawBonuses = getLawBonuses();
-  return Math.floor(baseQi * stageMultiplier * (1 + S.qiCapMult) * lawBonuses.qiCap);
-}
-function qiRegenPerSec(){
-  const lawBonuses = getLawBonuses();
-  return (REALMS[S.realm.tier].baseRegen + S.karma.qiRegen*10) * (1 + S.qiRegenMult) * lawBonuses.qiRegen;
-}
-function fCap(){ 
-  const realm = REALMS[S.realm.tier];
-  const baseFoundation = realm.fcap;
-  // Each stage within a realm increases foundation requirement by 15%
-  const stageMultiplier = 1 + (S.realm.stage - 1) * 0.15;
-  return Math.floor(baseFoundation * stageMultiplier);
-}
-function foundationGainPerSec(){
-  // Base foundation gain from meditation
-  const baseGain = qiRegenPerSec() * 0.8;
-  
-  // Ensure cultivation and stats objects exist
-  if (!S.cultivation) {
-    S.cultivation = {
-      talent: 1.0,
-      foundationMult: 1.0,
-      pillMult: 1.0,
-      buildingMult: 1.0
-    };
-  }
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
-    };
-  }
-  
-  // Apply cultivation multipliers with new comprehension stat
-  const comprehensionMult = 1 + (S.stats.comprehension - 10) * 0.05; // 5% per point above 10
-  const cultivationMult = S.cultivation.talent * comprehensionMult * S.cultivation.foundationMult;
-  
-  // Apply law bonuses
-  const lawBonuses = getLawBonuses();
-  const lawMult = lawBonuses.foundationMult || 1;
-  
-  // Apply building multipliers
-  const buildingMult = S.cultivation.buildingMult;
-  
-  // Apply pill multipliers (temporary boost from consumed pills)
-  const pillMult = S.cultivation.pillMult;
-  
-  // Calculate total gain
-  const totalGain = baseGain * cultivationMult * lawMult * buildingMult * pillMult;
-  
-  return totalGain;
-}
-
-function powerMult(){
-  // Calculate power multiplier based on realm advancement
-  const realm = REALMS[S.realm.tier];
-  const baseMultiplier = 1.0;
-  
-  // Each realm tier provides a significant power boost
-  const realmBonus = S.realm.tier * 0.5; // 50% per realm tier
-  
-  // Each stage within a realm provides a smaller boost
-  const stageBonus = (S.realm.stage - 1) * 0.1; // 10% per stage above 1
-  
-  // Total power multiplier
-  const totalMult = baseMultiplier + realmBonus + stageBonus;
-  
-  return totalMult;
-}
-
-function foundationGainPerMeditate(){ return foundationGainPerSec() * 2.5; }
-
-function updateLotusFoundationFill() {
-  const lotusFill = document.getElementById('lotusFoundationFill');
-  const foundPct = document.getElementById('foundPctActivity');
-  
-  if (lotusFill && foundPct) {
-    const foundationProgress = S.foundation / fCap();
-    const fillHeight = Math.min(100, foundationProgress * 100);
-    
-    lotusFill.style.height = `${fillHeight}%`;
-    foundPct.textContent = `${Math.floor(fillHeight)}%`;
-    
-    // Add subtle glow effect when Foundation is high
-    if (foundationProgress > 0.8) {
-      lotusFill.style.boxShadow = `0 0 20px rgba(34, 197, 94, ${foundationProgress * 0.5})`;
-    } else {
-      lotusFill.style.boxShadow = 'none';
-    }
-  }
-}
-function calcAtk(){
-  const realm = REALMS[S.realm.tier];
-  const baseAtk = realm.atk;
-  // Each stage within a realm increases attack by 8%
-  const stageBonus = Math.floor(baseAtk * (S.realm.stage - 1) * 0.08);
-  
-  // Ensure stats exist
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
-    };
-  }
-  
-  // Physique affects physical damage (5% per point above 10)
-  const physiqueMult = 1 + (S.stats.physique - 10) * 0.05;
-  
-  const lawBonuses = getLawBonuses();
-  const fistBonus = getFistBonuses().damage;
-  return Math.floor((S.atkBase + fistBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
-}
-function calcDef(){
-  const realm = REALMS[S.realm.tier];
-  const baseDef = realm.def;
-  // Each stage within a realm increases defense by 8%
-  const stageBonus = Math.floor(baseDef * (S.realm.stage - 1) * 0.08);
-  
-  // Ensure stats exist
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
-    };
-  }
-  
-  // Physique also affects physical defense (3% per point above 10)
-  const physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
-  
-  const lawBonuses = getLawBonuses();
-  return Math.floor((S.defBase + S.tempDef + baseDef + stageBonus + S.karma.def*100) * lawBonuses.def * physiqueMult);
-}
-
-// Stat calculation helper functions
-function getStatEffects() {
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
-    };
-  }
-  
-  return {
-    // Physique effects
-    physicalDamageMult: 1 + (S.stats.physique - 10) * 0.05,
-    physicalDefenseMult: 1 + (S.stats.physique - 10) * 0.03,
-    miningYieldMult: 1 + (S.stats.physique - 10) * 0.03,
-    
-    // Mind effects
-    spellPowerMult: 1 + (S.stats.mind - 10) * 0.06,
-    alchemySuccessMult: 1 + (S.stats.mind - 10) * 0.04,
-    learningSpeedMult: 1 + (S.stats.mind - 10) * 0.05,
-    
-    // Dexterity effects
-    attackSpeedMult: 1 + (S.stats.dexterity - 10) * 0.04,
-    cooldownReductionBonus: (S.stats.dexterity - 10) * 0.02,
-    craftingSpeedMult: 1 + (S.stats.dexterity - 10) * 0.03,
-    adventureSpeedMult: 1 + (S.stats.dexterity - 10) * 0.03,
-    
     // Comprehension effects
     foundationGainMult: 1 + (S.stats.comprehension - 10) * 0.05,
     learningSpeedMult2: 1 + (S.stats.comprehension - 10) * 0.04,
@@ -1290,30 +879,6 @@ function selectActivity(activityType) {
 }
 
 // Combat calculation functions
-function calculatePlayerCombatAttack() {
-  const baseAttack = 5;
-  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-  const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
-  const fistBonus = getFistBonuses().damage;
-  return baseAttack + fistBonus + physiqueBonus + realmBonus;
-}
-
-function calculatePlayerAttackRate() {
-  const baseRate = 1.0; // attacks per second
-  const dexterityBonus = (S.stats.dexterity - 10) * 0.05; // 5% per point above 10
-  const attackSpeedBonus = S.stats.attackSpeed || 0;
-  const fistBonus = getFistBonuses().speed;
-  return baseRate + dexterityBonus + (attackSpeedBonus / 100) + fistBonus;
-}
-
-function getFistBonuses() {
-  const prof = S.proficiencies?.fist || { level: 1 };
-  const levels = Math.max(0, prof.level - 1);
-  return {
-    damage: levels * 2,
-    speed: levels * 0.1
-  };
-}
 
 function gainFistXP(amount) {
   if (!S.proficiencies) return;
@@ -3331,53 +2896,6 @@ function applySkillBonuses(lawKey, skillKey){
   }
 }
 
-function getLawBonuses(){
-  let bonuses = {
-    atk: 1, def: 1, qiRegen: 1, qiCap: 1, resourceYield: 1,
-    alchemySuccess: 1, pillEffect: 1, critChance: 0, dmgReduction: 0,
-    beastDmg: 1, herbYield: 1, pillQiBonus: 1, qiCost: 1
-  };
-  
-  if(!S.laws || !S.laws.selected) return bonuses;
-  
-  const law = LAWS[S.laws.selected];
-  const tree = S.laws.trees[S.laws.selected];
-  
-  // Apply base law bonuses
-  if(law.bonuses.atk) bonuses.atk *= law.bonuses.atk;
-  if(law.bonuses.def) bonuses.def *= law.bonuses.def;
-  if(law.bonuses.qiRegen) bonuses.qiRegen *= law.bonuses.qiRegen;
-  if(law.bonuses.resourceYield) bonuses.resourceYield *= law.bonuses.resourceYield;
-  if(law.bonuses.alchemySuccess) bonuses.alchemySuccess *= law.bonuses.alchemySuccess;
-  if(law.bonuses.pillEffectiveness) bonuses.pillEffect *= law.bonuses.pillEffectiveness;
-  if(law.bonuses.critChance) bonuses.critChance += law.bonuses.critChance;
-  
-  // Apply skill tree bonuses
-  for(const skillKey in tree){
-    if(tree[skillKey]){
-      const skill = law.tree[skillKey];
-      const bonus = skill.bonus;
-      
-      if(bonus.atk) bonuses.atk *= (1 + bonus.atk);
-      if(bonus.def) bonuses.def *= (1 + bonus.def);
-      if(bonus.qiRegen) bonuses.qiRegen *= (1 + bonus.qiRegen);
-      if(bonus.qiCap) bonuses.qiCap *= (1 + bonus.qiCap);
-      if(bonus.resourceYield) bonuses.resourceYield *= (1 + bonus.resourceYield);
-      if(bonus.alchemySuccess) bonuses.alchemySuccess *= (1 + bonus.alchemySuccess);
-      if(bonus.pillEffect) bonuses.pillEffect *= (1 + bonus.pillEffect);
-      if(bonus.critChance) bonuses.critChance += bonus.critChance;
-      if(bonus.dmgReduction) bonuses.dmgReduction += bonus.dmgReduction;
-      if(bonus.beastDmg) bonuses.beastDmg *= (1 + bonus.beastDmg);
-      if(bonus.herbYield) bonuses.herbYield *= (1 + bonus.herbYield);
-      if(bonus.pillQiBonus) bonuses.pillQiBonus *= (1 + bonus.pillQiBonus);
-      if(bonus.qiCost) bonuses.qiCost *= (1 + bonus.qiCost);
-    }
-  }
-  
-  return bonuses;
-}
-
-// Sect Buildings System Functions
 function isBuildingUnlocked(buildingKey) {
   const building = SECT_BUILDINGS[buildingKey];
   if (!building) return false;
@@ -3684,7 +3202,7 @@ if (ascendBtn) {
     if(!confirm(`Ascend now and earn ${gain} karma? This resets most progress.`)) return;
     S.karmaPts += gain; S.ascensions++;
     const keep = {karmaPts:S.karmaPts, ascensions:S.ascensions, karma:S.karma};
-    S = Object.assign(defaultState(), keep);
+    setState(Object.assign(defaultState(), keep));
     save(); location.reload();
   });
 }
@@ -3838,8 +3356,6 @@ function log(msg, cls=''){
 }
 function timeStr(){ const s=S.time; const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60; return `[${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}]`; }
 
-function save(){ try{ localStorage.setItem('woa-save', JSON.stringify(S)); }catch(e){} }
-function load(){ try{ const t=localStorage.getItem('woa-save'); return t? JSON.parse(t):null; }catch(e){ return null; } }
 
 // Activity selector event listeners
 function initActivityListeners() {
