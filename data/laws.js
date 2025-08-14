@@ -1,3 +1,6 @@
+
+//Laws are unlocked at realm 2, they provide unique bonuses and unlock powerful skill trees. Also, they provide unique bonuses to cultivation, physiques, mining, and cooking.
+//
 export const LAWS = {
   sword: {
     name: 'Sword Law',

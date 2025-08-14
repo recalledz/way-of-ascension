@@ -241,21 +241,11 @@ const fmt = n=>{
 }
 const qs = sel => document.querySelector(sel);
 
+// Import enemy data from the enemies module
+import { ENEMY_DATA } from '../data/enemies.js';
+
 // Adventure System Data
 // Enemy data for adventure zones
-const ENEMY_DATA = {
-  'Forest Rabbit': { name: 'Forest Rabbit', hp: 15, attack: 3, attackRate: 1.2, loot: { stones: 2, herbs: 1 } },
-  'Wild Boar': { name: 'Wild Boar', hp: 25, attack: 5, attackRate: 0.9, loot: { stones: 4, ore: 1 } },
-  'River Frog': { name: 'River Frog', hp: 20, attack: 4, attackRate: 1.1, loot: { stones: 3, herbs: 1 } },
-  'Honey Bee': { name: 'Honey Bee', hp: 12, attack: 6, attackRate: 1.5, loot: { stones: 2, herbs: 2 } },
-  'Tree Sprite': { name: 'Tree Sprite', hp: 35, attack: 7, attackRate: 1.0, loot: { stones: 6, wood: 2 } },
-  'Stone Lizard': { name: 'Stone Lizard', hp: 40, attack: 8, attackRate: 0.8, loot: { stones: 7, ore: 2 } },
-  'Water Snake': { name: 'Water Snake', hp: 30, attack: 9, attackRate: 1.3, loot: { stones: 5, herbs: 2 } },
-  'Grass Wolf': { name: 'Grass Wolf', hp: 50, attack: 12, attackRate: 1.1, loot: { stones: 10, wood: 3 } },
-  'Ruin Guardian': { name: 'Ruin Guardian', hp: 80, attack: 15, attackRate: 0.7, loot: { stones: 15, ore: 4 } },
-  'Forest Spirit': { name: 'Forest Spirit', hp: 120, attack: 18, attackRate: 0.9, loot: { stones: 25, herbs: 5, wood: 3 } }
-};
-
 const ADVENTURE_ZONES = [
   {
     name: 'Peaceful Lands',

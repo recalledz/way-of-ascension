@@ -1,3 +1,11 @@
+
+//cap = max QI
+//fcap = max foundation
+//baseRegen = qi regen per second
+//atk = base attack
+//def = base defense
+//bt = base breakthrough chance
+//power = base power
 export const REALMS = [
   {name:'Mortal', stages:9, cap:100, fcap:60, baseRegen:1, atk:1, def:1, bt:0.60, power:1},
   {name:'Qi Refining', stages:9, cap:300, fcap:150, baseRegen:2, atk:3, def:2, bt:0.55, power:3},
