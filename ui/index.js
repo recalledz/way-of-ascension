@@ -3143,24 +3143,6 @@ function resolveHunt(win){
   S.combat.hunt=null; updateAll();
 }
 
-function techSlash(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
-  if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
-  const dmg = calcAtk()*3;
-  S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg);
-  S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
-}
-function techGuard(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
-  if(S.combat.cds.guard>0){ log('Guard on cooldown','bad'); return; }
-  S.combat.guardUntil = S.time + 5; S.combat.cds.guard = 20; log('You assume a guarded stance (5s).','good'); updateHuntUI();
-}
-function techBurst(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
-  if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
-  const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
-}
 
 function updateWinEst(){
   const i= +document.getElementById('beastSelect').value; const b=BEASTS[i]; if(!b){ setText('winEst','—'); return; }
@@ -3300,11 +3282,9 @@ function tick(){
   // Combat step
   if(S.combat.hunt){
     const h=S.combat.hunt;
-    const guardActive = S.time < S.combat.guardUntil;
     const atk = calcAtk(), def = calcDef();
     const ourDPS = Math.max(1, atk - h.eDef*0.6);
     let enemyDPS = Math.max(0, h.eAtk - def*0.7);
-    if(guardActive) enemyDPS *= 0.5;
     h.enemyHP -= ourDPS;
     if(h.regen) h.enemyHP += h.enemyMax * h.regen;
     h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
@@ -3314,8 +3294,6 @@ function tick(){
     updateHuntUI();
   }
 
-  // CDs
-  for(const k in S.combat.cds){ if(S.combat.cds[k]>0) S.combat.cds[k]--; }
 
   // Breakthrough progress
   updateBreakthrough();
