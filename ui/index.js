@@ -3122,12 +3122,11 @@ function startHunt(){
 
 function updateHuntUI(){
   const h=S.combat.hunt; const el=qs('#huntStatus');
-  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); setText('affixList','None'); setText('techStatus',''); return; }
+  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); setText('affixList','None'); return; }
   const b=h.base; el.textContent=`Fighting ${b.name}…`;
   setFill('enemyFill', h.enemyHP/h.enemyMax); setText('enemyHpTxt', `${Math.ceil(h.enemyHP)}/${h.enemyMax}`);
   setFill('ourFill', S.hp/S.hpMax); setText('ourHpTxt', `${Math.ceil(S.hp)}/${S.hpMax}`);
   setText('affixList', h.affixes.length? h.affixes.join(', '): 'None');
-  const cd = S.combat.cds; setText('techStatus', `Slash ${cd.slash||0}s • Guard ${cd.guard||0}s • Burst ${cd.burst||0}s`);
 }
 function resolveHunt(win){
   const h=S.combat.hunt; if(!h) return; const b=h.base;
