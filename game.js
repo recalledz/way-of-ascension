@@ -415,7 +415,33 @@ const defaultState=()=>({
     cooldownReduction: 0, // Cooldown reduction percentage
     adventureSpeed: 1.0  // Adventure/exploration speed multiplier
   },
-  // Adventure System
+  disciples:1,
+  gather:{herbs:0, ore:0, wood:0},
+  yieldMult:{herbs:0, ore:0, wood:0},
+  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
+  combat:{hunt:null, cds:{slash:0,guard:0,burst:0}, guardUntil:0, techniques:{}},
+  bought:{},
+  karmaPts:0, ascensions:0,
+  karma:{qiRegen:0, yield:0, atk:0, def:0},
+  auto:{meditate:true, brewQi:false, hunt:false}, // Auto-meditate enabled by default
+  // Activity System - only one can be active at a time
+  activities: {
+    cultivation: false,
+    physique: false,
+    mining: false,
+    adventure: false,
+    cooking: false
+  },
+  // Activity data containers
+  physique: { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 },
+  mining: {
+    level: 1,
+    exp: 0,
+    expMax: 100,
+    unlockedResources: ['stones'],
+    selectedResource: 'stones',
+    resourcesGained: 0
+  },
   adventure: {
     currentZone: 0,
     currentArea: 0,
@@ -432,36 +458,10 @@ const defaultState=()=>({
     currentEnemy: null,
     lastPlayerAttack: 0,
     lastEnemyAttack: 0,
-    combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...']
-  },
-  disciples:1,
-  gather:{herbs:0, ore:0, wood:0},
-  yieldMult:{herbs:0, ore:0, wood:0},
-  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
-  combat:{hunt:null, cds:{slash:0,guard:0,burst:0}, guardUntil:0, techniques:{}},
-  bought:{},
-  karmaPts:0, ascensions:0,
-  karma:{qiRegen:0, yield:0, atk:0, def:0},
-  auto:{meditate:true, brewQi:false, hunt:false}, // Auto-meditate enabled by default
-  // Activity System - only one can be active at a time
-  currentActivity: null, // 'cultivation', 'physique', 'mining', 'adventure', null
-  activities: {
-    physique: {
-      level: 1,
-      exp: 0,
-      expMax: 100
-    },
-    mining: {
-      level: 1,
-      exp: 0,
-      expMax: 100,
-      unlockedResources: ['stones'] // stones, iron, gems, crystals, etc.
-    },
-    adventure: {
-      location: 'Village Outskirts',
-      progress: 0,
-      maxProgress: 100
-    }
+    combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...'],
+    location: 'Village Outskirts',
+    progress: 0,
+    maxProgress: 100
   },
   // Combat Proficiencies
   proficiencies: {
@@ -553,6 +553,52 @@ if(!S.buildingBonuses) {
     qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
     alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
     disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
+  };
+}
+
+// Migrate old saves to new activity system
+if (!S.activities || typeof S.activities.cultivation !== 'boolean') {
+  const oldActs = S.activities || {};
+  S.activities = { cultivation: false, physique: false, mining: false, adventure: false, cooking: false };
+
+  if (oldActs.physique && typeof oldActs.physique === 'object' && !S.physique) {
+    S.physique = oldActs.physique;
+  }
+  if (oldActs.mining && typeof oldActs.mining === 'object' && !S.mining) {
+    S.mining = oldActs.mining;
+  }
+  if (oldActs.adventure && typeof oldActs.adventure === 'object') {
+    S.adventure = Object.assign(oldActs.adventure, S.adventure || {});
+  }
+}
+
+if (!S.physique) {
+  S.physique = { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 };
+}
+if (!S.mining) {
+  S.mining = { level: 1, exp: 0, expMax: 100, unlockedResources: ['stones'], selectedResource: 'stones', resourcesGained: 0 };
+}
+if (!S.adventure) {
+  S.adventure = {
+    currentZone: 0,
+    currentArea: 0,
+    selectedZone: 0,
+    selectedArea: 0,
+    totalKills: 0,
+    areasCompleted: 0,
+    zonesUnlocked: 1,
+    killsInCurrentArea: 0,
+    inCombat: false,
+    playerHP: 100,
+    enemyHP: 0,
+    enemyMaxHP: 0,
+    currentEnemy: null,
+    lastPlayerAttack: 0,
+    lastEnemyAttack: 0,
+    combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...'],
+    location: 'Village Outskirts',
+    progress: 0,
+    maxProgress: 100
   };
 }
 
@@ -722,27 +768,27 @@ function updateAll(){
   
   // Activity system display
   if (!S.activities) {
-    S.activities = {
-      physique: { level: 1, exp: 0, expMax: 100 },
-      mining: { level: 1, exp: 0, expMax: 100, unlockedResources: ['stones'] },
-      adventure: { location: 'Village Outskirts', progress: 0, maxProgress: 100 }
-    };
+    S.activities = { cultivation: false, physique: false, mining: false, adventure: false, cooking: false };
   }
-  
+
   // Update progression displays
   setText('realmDisplay', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
-  setText('physiqueLevel', S.activities.physique.level);
-  setText('physiqueExp', S.activities.physique.exp);
-  setText('physiqueExpMax', S.activities.physique.expMax);
-  setFill('physiqueFill', S.activities.physique.exp / S.activities.physique.expMax);
-  
-  setText('miningLevel', S.activities.mining.level);
-  setText('miningExp', S.activities.mining.exp);
-  setText('miningExpMax', S.activities.mining.expMax);
-  setFill('miningFill', S.activities.mining.exp / S.activities.mining.expMax);
-  
-  setText('currentLocation', S.activities.adventure.location);
-  setText('adventureProgress', S.activities.adventure.progress > 0 ? `${S.activities.adventure.progress}%` : 'Ready');
+  setText('physiqueLevel', S.physique.level);
+  setText('physiqueExp', S.physique.exp);
+  setText('physiqueExpMax', S.physique.expMax);
+  setFill('physiqueFill', S.physique.exp / S.physique.expMax);
+
+  setText('miningLevel', S.mining.level);
+  setText('miningExp', S.mining.exp);
+  setText('miningExpMax', S.mining.expMax);
+  setFill('miningFill', S.mining.exp / S.mining.expMax);
+
+  const currentZone = ADVENTURE_ZONES[S.adventure.currentZone];
+  const currentArea = currentZone ? currentZone.areas[S.adventure.currentArea] : null;
+  const location = currentArea ? currentArea.name : 'Village Outskirts';
+  const progress = currentArea ? Math.floor((S.adventure.killsInCurrentArea / currentArea.killReq) * 100) : 0;
+  setText('currentLocation', location);
+  setText('adventureProgress', progress > 0 ? `${progress}%` : 'Ready');
   
   setText('buildingCount', Object.values(S.buildings).filter(level => level > 0).length);
   setText('stonesDisplay', fmt(S.stones));
@@ -1236,7 +1282,6 @@ function getStatEffects() {
 }
 
 // Activity Management System
-let currentActivity = null;
 
 function selectActivity(activityType) {
   selectedActivity = activityType;
@@ -1773,7 +1818,7 @@ function startActivity(activityName) {
   } else if (activityName === 'mining') {
     // Initialize mining data
     if (!S.mining.selectedResource) {
-      S.mining.selectedResource = 'spiritStones';
+      S.mining.selectedResource = 'stones';
     }
   } else if (activityName === 'adventure') {
     // Initialize adventure and start first combat
@@ -1816,6 +1861,9 @@ function startActivity(activityName) {
       break;
     case 'adventure':
       log('Started exploring. Adventure awaits!', 'good');
+      break;
+    case 'cooking':
+      log('Started cooking. Prepare your meals carefully.', 'good');
       break;
     default:
       log(`Started ${activityName}`, 'good');
@@ -1906,7 +1954,8 @@ function updateActivitySelectors() {
   }
   
   if (adventureInfo) {
-    adventureInfo.textContent = S.activities.adventure ? 'Exploring...' : 'Village Outskirts';
+    const location = S.adventure && S.adventure.location ? S.adventure.location : 'Village Outskirts';
+    adventureInfo.textContent = S.activities.adventure ? 'Exploring...' : location;
   }
   
   // Update sect selector
@@ -2650,22 +2699,22 @@ function updateSidebarActivities() {
   }
   
   // Update physique
-  if (S.activities && S.activities.physique) {
-    setText('physiqueLevel', `Level ${S.activities.physique.level}`);
+  if (S.physique) {
+    setText('physiqueLevel', `Level ${S.physique.level}`);
     const physiqueFill = document.getElementById('physiqueProgressFill');
     if (physiqueFill) {
-      const progressPct = Math.floor(S.activities.physique.exp / S.activities.physique.expMax * 100);
+      const progressPct = Math.floor(S.physique.exp / S.physique.expMax * 100);
       physiqueFill.style.width = progressPct + '%';
       setText('physiqueProgressText', progressPct + '%');
     }
   }
-  
+
   // Update mining
-  if (S.activities && S.activities.mining) {
-    setText('miningLevel', `Level ${S.activities.mining.level}`);
+  if (S.mining) {
+    setText('miningLevel', `Level ${S.mining.level}`);
     const miningFill = document.getElementById('miningProgressFill');
     if (miningFill) {
-      const progressPct = Math.floor(S.activities.mining.exp / S.activities.mining.expMax * 100);
+      const progressPct = Math.floor(S.mining.exp / S.mining.expMax * 100);
       miningFill.style.width = progressPct + '%';
       setText('miningProgressText', progressPct + '%');
     }
@@ -2908,15 +2957,15 @@ function endTrainingSession() {
 
 function updateActivityUI() {
   // Update activity status displays
-  const activities = ['cultivation', 'physique', 'adventure', 'mining'];
-  
+  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'cooking'];
+
   activities.forEach(activity => {
     const statusEl = document.getElementById(`${activity}Status`);
     const btnEl = document.getElementById(`start${activity.charAt(0).toUpperCase() + activity.slice(1)}`);
     const panelEl = document.getElementById(`${activity}Panel`);
-    
+
     if (statusEl && btnEl && panelEl) {
-      if (S.currentActivity === activity) {
+      if (S.activities[activity]) {
         statusEl.textContent = 'Active';
         statusEl.style.background = 'rgba(34, 197, 94, 0.2)';
         statusEl.style.color = '#22c55e';
@@ -2929,7 +2978,7 @@ function updateActivityUI() {
         statusEl.style.color = '#9ca3af';
         btnEl.classList.remove('active');
         panelEl.classList.remove('active');
-        
+
         // Reset button text
         if (activity === 'cultivation') btnEl.textContent = '🧘 Start Cultivating';
         if (activity === 'physique') btnEl.textContent = '💪 Train Physique';
