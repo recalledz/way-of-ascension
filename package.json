@@ -1,0 +1,25 @@
+{
+  "name": "way-of-ascension",
+  "version": "1.0.0",
+  "description": "Great. I’ll design a robust and captivating gameplay loop that builds on your current structure—focusing on progression through cultivation, skills, and adventure. I’ll draw on lessons from games like NGU Idle, Melvor Idle, and Amazing Cultivation Simulator, and tailor the flow to your hybrid idle/active balance and current UI layout.",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recalledz/way-of-ascension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/recalledz/way-of-ascension/issues"
+  },
+  "homepage": "https://github.com/recalledz/way-of-ascension#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "globals": "^16.3.0"
+  }
+}
