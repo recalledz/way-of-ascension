@@ -20,6 +20,7 @@ import {
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
+import { initHp } from '../src/game/helpers.js';
 
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
@@ -941,6 +942,7 @@ function updateAreaGrid() {
 function updateBattleDisplay() {
   // Initialize adventure data if needed
   if (!S.adventure) {
+    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
     S.adventure = {
       currentZone: 0,
       currentArea: 0,
@@ -952,8 +954,8 @@ function updateBattleDisplay() {
       killsInCurrentArea: 0,
       inCombat: false,
       playerHP: S.hp || 100,
-      enemyHP: 0,
-      enemyMaxHP: 0,
+      enemyHP,
+      enemyMaxHP,
       currentEnemy: null,
       combatLog: []
     };
@@ -1096,8 +1098,11 @@ function defeatEnemy() {
   // End combat
   S.adventure.inCombat = false;
   S.adventure.currentEnemy = null;
-  S.adventure.enemyHP = 0;
-  S.adventure.enemyMaxHP = 0;
+  {
+    const { hp, hpMax } = initHp(0);
+    S.adventure.enemyHP = hp;
+    S.adventure.enemyMaxHP = hpMax;
+  }
 
   log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
 
@@ -1135,8 +1140,9 @@ function startAdventureCombat() {
   // Start combat
   S.adventure.inCombat = true;
   S.adventure.currentEnemy = { ...enemyData, type: enemyType };
-  S.adventure.enemyHP = enemyData.hp;
-  S.adventure.enemyMaxHP = enemyData.hp;
+  const { hp, hpMax } = initHp(enemyData.hp);
+  S.adventure.enemyHP = hp;
+  S.adventure.enemyMaxHP = hpMax;
   S.adventure.playerHP = S.hp; // Sync player HP
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
@@ -1232,8 +1238,11 @@ function retreatFromCombat() {
   if (S.adventure.inCombat) {
     S.adventure.inCombat = false;
     S.adventure.currentEnemy = null;
-    S.adventure.enemyHP = 0;
-    S.adventure.enemyMaxHP = 0;
+    {
+      const { hp, hpMax } = initHp(0);
+      S.adventure.enemyHP = hp;
+      S.adventure.enemyMaxHP = hpMax;
+    }
     
     if (!S.adventure.combatLog) S.adventure.combatLog = [];
     S.adventure.combatLog.push('You retreated from combat.');
@@ -1334,6 +1343,7 @@ function startActivity(activityName) {
   } else if (activityName === 'adventure') {
     // Initialize adventure and start first combat
     if (!S.adventure) {
+      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
       S.adventure = {
         currentZone: 0,
         currentArea: 0,
@@ -1343,8 +1353,8 @@ function startActivity(activityName) {
         killsInCurrentArea: 0,
         inCombat: false,
         playerHP: S.hp,
-        enemyHP: 0,
-        enemyMaxHP: 0,
+        enemyHP,
+        enemyMaxHP,
         currentEnemy: null,
         lastPlayerAttack: 0,
         lastEnemyAttack: 0,
@@ -1870,6 +1880,7 @@ function updateMiningRateDisplays() {
 function updateActivityAdventure() {
   // Initialize adventure data if not exists
   if (!S.adventure) {
+    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
     S.adventure = {
       currentZone: 0,
       currentArea: 0,
@@ -1879,8 +1890,8 @@ function updateActivityAdventure() {
       killsInCurrentArea: 0,
       inCombat: false,
       playerHP: S.hp,
-      enemyHP: 0,
-      enemyMaxHP: 0,
+      enemyHP,
+      enemyMaxHP,
       currentEnemy: null,
       lastPlayerAttack: 0,
       lastEnemyAttack: 0,
@@ -3105,7 +3116,8 @@ function startHunt(){
   const KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
   const aff = [];
   const affCount = Math.floor(Math.random()*3);
-  const h = {i, name:b.name, base:b, affixes:aff, enemyMax:b.hp, enemyHP:b.hp, eAtk:b.atk, eDef:b.def, regen:0};
+  const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
+  const h = {i, name:b.name, base:b, affixes:aff, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0};
   let chosen=[...KEYS];
   for(let k=0;k<affCount;k++){
     const idx=Math.floor(Math.random()*chosen.length); const key=chosen.splice(idx,1)[0]; aff.push(key);
@@ -3386,6 +3398,7 @@ function initActivityListeners() {
   document.getElementById('startBattleButton')?.addEventListener('click', () => {
     // Ensure adventure data is initialized
     if (!S.adventure) {
+      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
       S.adventure = {
         currentZone: 0,
         currentArea: 0,
@@ -3397,8 +3410,8 @@ function initActivityListeners() {
         killsInCurrentArea: 0,
         inCombat: false,
         playerHP: S.hp,
-        enemyHP: 0,
-        enemyMaxHP: 0,
+        enemyHP,
+        enemyMaxHP,
         currentEnemy: null,
         lastPlayerAttack: 0,
         lastEnemyAttack: 0,
