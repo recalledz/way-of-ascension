@@ -1,5 +1,7 @@
 // Enemy data for adventure zones
 export const ENEMY_DATA = {
+  // === PEACEFUL FOREST (Starting Zone) ===
+  // Low-level creatures for beginners
   'Forest Rabbit': { 
     name: 'Forest Rabbit', 
     hp: 15, 
@@ -29,6 +31,9 @@ export const ENEMY_DATA = {
     loot: { herbs: 2 },
     drops: { honey: 0.3 }
   },
+
+  // === ENCHANTED GROVE ===
+  // Magical forest creatures with nature-based loot
   'Tree Sprite': { 
     name: 'Tree Sprite', 
     hp: 30, 
@@ -58,6 +63,9 @@ export const ENEMY_DATA = {
     loot: { meat: 2, pelt: 1 },
     drops: { meat: 0.8 }
   },
+
+  // === ANCIENT RUINS ===
+  // Guardians and spirits protecting old secrets
   'Ruin Guardian': { 
     name: 'Ruin Guardian', 
     hp: 80, 
@@ -72,6 +80,9 @@ export const ENEMY_DATA = {
     attackRate: 0.9, 
     loot: { herbs: 5, ancientRelic: 2, spiritEssence: 1 } 
   },
+
+  // === DARK FOREST ===
+  // Corrupted creatures infused with shadow essence
   'Shadow Wolf': { 
     name: 'Shadow Wolf', 
     hp: 150, 
@@ -136,6 +147,9 @@ export const ENEMY_DATA = {
     attackRate: 1.1, 
     loot: { shadowEssence: 5, arcaneTome: 1 } 
   },
+
+  // === SHADOW REALM ===
+  // Powerful dark entities and nightmare creatures
   'Shadow Lord': { 
     name: 'Shadow Lord', 
     hp: 1000, 
@@ -143,6 +157,9 @@ export const ENEMY_DATA = {
     attackRate: 1.5, 
     loot: { shadowEssence: 10, darkCrystal: 1, ancientRelic: 5 } 
   },
+
+  // === MOUNTAIN PEAKS ===
+  // High-altitude creatures adapted to harsh conditions
   'Mountain Goat': { 
     name: 'Mountain Goat', 
     hp: 800, 
@@ -208,6 +225,9 @@ export const ENEMY_DATA = {
     attackRate: 1.5, 
     loot: { guardianFeather: 5, skyEssence: 3, ancientRelic: 5 } 
   },
+
+  // === CELESTIAL HEIGHTS ===
+  // Legendary beings that rule the highest peaks
   'Mountain King': { 
     name: 'Mountain King', 
     hp: 10000, 
