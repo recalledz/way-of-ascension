@@ -771,14 +771,9 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .btn.small{padding:4px 8px; font-size:12px}
 .grid{display:grid; gap:12px}
 
-/* Nav and content */
+/* Content */
 .content{position:relative; overflow:auto; padding:16px 16px 100px 16px; background: linear-gradient(180deg, #0b0f17, #0a1020 60%, #0b1222)}
-nav{display:flex; gap:8px; position:sticky; top:0; background:linear-gradient(180deg, #0d1426, transparent); padding:8px 0 12px; z-index:1}
-.tab{padding:10px 14px; border:1px solid #1f2b45; background:#0e162a; color:#c7d2fe; border-radius:12px; cursor:pointer; font-size:13px}
-.tab.active{background:linear-gradient(90deg,#3730a3,#0ea5e9); color:white}
-
 .content > section{display:none}
-.content > section.active{display:block}
 
 /* Cards */
 .cards{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px}

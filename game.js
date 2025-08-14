@@ -4,15 +4,6 @@
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
-const TABS = [
-  {id:'cultivation', label:'Cultivation'},
-  {id:'laws', label:'Laws'},
-  {id:'gathering', label:'Gathering'},
-  {id:'alchemy', label:'Alchemy', requiresUnlock: () => S.alchemy.unlocked},
-  {id:'combat', label:'Combat'},
-  {id:'sect', label:'Sect'}
-];
-
 const REALMS = [
   {name:'Mortal', stages:9, cap:100, fcap:60, baseRegen:1, atk:1, def:1, bt:0.60, power:1},
   {name:'Qi Refining', stages:9, cap:300, fcap:150, baseRegen:2, atk:3, def:2, bt:0.55, power:3},
@@ -616,48 +607,7 @@ function updateQiOrbEffect(){
   }
 }
 
-function updateTabVisibility(){
-  const nav = document.getElementById('tabs');
-  const tabs = nav.querySelectorAll('.tab');
-  
-  tabs.forEach(tab => {
-    const tabId = tab.dataset.tab;
-    const tabConfig = TABS.find(t => t.id === tabId);
-    
-    if(tabConfig && tabConfig.requiresUnlock) {
-      const shouldShow = tabConfig.requiresUnlock();
-      tab.style.display = shouldShow ? 'block' : 'none';
-      
-      // If current active tab becomes hidden, switch to cultivation tab
-      if(!shouldShow && tab.classList.contains('active')) {
-        tab.classList.remove('active');
-        document.getElementById('tab-' + tabId).classList.remove('active');
-        
-        // Switch to cultivation tab
-        const cultivationTab = nav.querySelector('[data-tab="cultivation"]');
-        const cultivationSection = document.getElementById('tab-cultivation');
-        if(cultivationTab && cultivationSection) {
-          cultivationTab.classList.add('active');
-          cultivationSection.classList.add('active');
-        }
-      }
-    }
-  });
-}
-
 function initUI(){
-  // Tabs
-  const nav = document.getElementById('tabs');
-  TABS.forEach((t,i)=>{
-    const b=document.createElement('button'); b.className='tab'+(i===0?' active':''); b.textContent=t.label; b.dataset.tab=t.id; nav.appendChild(b);
-  });
-  nav.addEventListener('click',e=>{
-    if(!e.target.classList.contains('tab')) return;
-    [...nav.children].forEach(x=>x.classList.remove('active')); e.target.classList.add('active');
-    document.querySelectorAll('.content > section').forEach(s=>s.classList.remove('active'));
-    document.getElementById('tab-'+e.target.dataset.tab).classList.add('active');
-  });
-
   // Fill beasts
   const bs = document.getElementById('beastSelect');
   BEASTS.forEach((b,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${b.name} (HP ${b.hp})`; bs.appendChild(o)});
@@ -838,6 +788,8 @@ function updateAll(){
   renderKarma(); 
   if (typeof renderQueue === 'function') renderQueue(); 
   if (typeof renderAlchemyUI === 'function') renderAlchemyUI(); 
+  if (typeof renderBuildings === 'function') renderBuildings();
+
   if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
   if (typeof updateBreathingStats === 'function') updateBreathingStats();
@@ -3556,7 +3508,6 @@ function applyBuildingEffects() {
           if (effect === 'alchemyUnlock' && value) {
             S.alchemy.unlocked = true;
             log('Alchemy unlocked! You can now brew pills.', 'good');
-            updateTabVisibility(); // Show alchemy tab
           } else if (effect !== 'desc' && S.buildingBonuses.hasOwnProperty(effect)) {
             S.buildingBonuses[effect] += value;
           }
@@ -4027,11 +3978,6 @@ function addPhysiqueMinigame() {
 
 // Init
 window.addEventListener('load', ()=>{
-  // Tabs at boot
-  const nav = document.getElementById('tabs');
-  TABS.forEach((t,i)=>{
-    // already added in initUI, but ensure content sections exist
-  });
   initUI();
   initLawSystem();
   initActivityListeners();
