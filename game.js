@@ -2087,6 +2087,9 @@ function updateActivityCultivation() {
   
   // Update cultivation progression tree
   updateCultivationProgressionTree();
+
+  // Setup cultivation tab switching
+  setupCultivationTabs();
 }
 
 function updateCultivationProgressionTree() {
@@ -2152,6 +2155,26 @@ function updateCultivationProgressionTree() {
     `;
     
     container.appendChild(realmNode);
+  });
+}
+
+function setupCultivationTabs() {
+  const tabButtons = document.querySelectorAll('.cultivation-tab-btn');
+  tabButtons.forEach(button => {
+    button.onclick = () => {
+      const tabName = button.dataset.tab;
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.cultivation-tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+      });
+      button.classList.add('active');
+      const content = document.getElementById(tabName + 'SubTab');
+      if (content) {
+        content.classList.add('active');
+        content.style.display = 'block';
+      }
+    };
   });
 }
 

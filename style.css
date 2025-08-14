@@ -392,6 +392,47 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: block;
 }
 
+/* Cultivation Sub Tabs */
+.cultivation-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #444;
+  padding-bottom: 10px;
+}
+
+.cultivation-tab-btn {
+  padding: 8px 16px;
+  border: 2px solid #666;
+  background: #333;
+  color: #ccc;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  border-bottom: none;
+}
+
+.cultivation-tab-btn:hover {
+  border-color: #22c55e;
+  background: #444;
+}
+
+.cultivation-tab-btn.active {
+  border-color: #22c55e;
+  background: #22c55e;
+  color: white;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.cultivation-tab-content {
+  display: none;
+}
+
+.cultivation-tab-content.active {
+  display: block;
+}
+
 /* Bestiary Styles */
 .bestiary-list {
   max-height: 300px;
