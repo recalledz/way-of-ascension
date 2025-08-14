@@ -3105,7 +3105,7 @@ function startHunt(){
   const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
   const KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
   const aff = [];
-  const affCount = Math.floor(Math.random()*3);
+  const affCount = Math.floor(Math.random()*3) + 1; // 1-3 affixes
   const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
   const h = {i, name:b.name, base:b, affixes:aff, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0};
   let chosen=[...KEYS];
