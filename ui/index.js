@@ -328,6 +328,34 @@ const ADVENTURE_ENEMIES = {
   'Ruin Lord': { hp: 600, attack: 85, attackRate: 0.9, loot: { spiritStones: 75, ironOre: 15, iceCrystal: 10 } }, // No meat (undead lord)
 };
 
+// Ensure adventure state exists with default values
+function ensureAdventureState() {
+  if (!S.adventure) {
+    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+    S.adventure = {
+      currentZone: 0,
+      currentArea: 0,
+      selectedZone: 0,
+      selectedArea: 0,
+      totalKills: 0,
+      areasCompleted: 0,
+      zonesUnlocked: 1,
+      killsInCurrentArea: 0,
+      inCombat: false,
+      playerHP: S.hp || 100,
+      enemyHP,
+      enemyMaxHP,
+      currentEnemy: null,
+      lastPlayerAttack: 0,
+      lastEnemyAttack: 0,
+      combatLog: ['Select an area to begin your adventure...'],
+      bestiary: {},
+      location: 'Village Outskirts'
+    };
+  }
+  return S.adventure;
+}
+
 function updateQiOrbEffect(){
   const qiOrb = document.getElementById('qiOrb');
   if(!qiOrb) return;
@@ -872,21 +900,9 @@ function updateFistProficiencyDisplay() {
 
 // Adventure zone and area UI functions
 function updateZoneButtons() {
-  // Initialize adventure data if needed
-  if (!S.adventure) {
-    S.adventure = {
-      currentZone: 0,
-      currentArea: 0,
-      selectedZone: 0,
-      selectedArea: 0,
-      totalKills: 0,
-      areasCompleted: 0,
-      zonesUnlocked: 1,
-      killsInCurrentArea: 0,
-      inCombat: false
-    };
-  }
-  
+  // Ensure adventure state exists
+  ensureAdventureState();
+
   // Update zone selection buttons (if they exist in the UI)
   const zoneContainer = document.getElementById('zoneButtons');
   if (zoneContainer && ADVENTURE_ZONES) {
@@ -930,27 +946,9 @@ function updateAreaGrid() {
 
 // Battle display function
 function updateBattleDisplay() {
-  // Initialize adventure data if needed
-  if (!S.adventure) {
-    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-    S.adventure = {
-      currentZone: 0,
-      currentArea: 0,
-      selectedZone: 0,
-      selectedArea: 0,
-      totalKills: 0,
-      areasCompleted: 0,
-      zonesUnlocked: 1,
-      killsInCurrentArea: 0,
-      inCombat: false,
-      playerHP: S.hp || 100,
-      enemyHP,
-      enemyMaxHP,
-      currentEnemy: null,
-      combatLog: []
-    };
-  }
-  
+  // Ensure adventure state exists
+  ensureAdventureState();
+
   // Update player HP display
   const playerHP = S.adventure.playerHP || S.hp || 100;
   const playerMaxHP = S.hpMax || 100;
@@ -1331,27 +1329,9 @@ function startActivity(activityName) {
       S.mining.selectedResource = 'stones';
     }
   } else if (activityName === 'adventure') {
-    // Initialize adventure and start first combat
-    if (!S.adventure) {
-      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
-    }
-    
+    // Ensure adventure state and start first combat
+    ensureAdventureState();
+
     // Start first combat encounter
     setTimeout(() => startAdventureCombat(), 1000);
   }
@@ -1868,35 +1848,14 @@ function updateMiningRateDisplays() {
 }
 
 function updateActivityAdventure() {
-  // Initialize adventure data if not exists
-  if (!S.adventure) {
-    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-    S.adventure = {
-      currentZone: 0,
-      currentArea: 0,
-      totalKills: 0,
-      areasCompleted: 0,
-      zonesUnlocked: 1,
-      killsInCurrentArea: 0,
-      inCombat: false,
-      playerHP: S.hp,
-      enemyHP,
-      enemyMaxHP,
-      currentEnemy: null,
-      lastPlayerAttack: 0,
-      lastEnemyAttack: 0,
-      combatLog: ['Select an area to begin your adventure...'],
-      selectedZone: 0,
-      selectedArea: 0,
-      bestiary: {} // Track enemy kills for bestiary
-    };
-  }
+  // Ensure adventure state exists
+  ensureAdventureState();
 
-  // Initialize bestiary if not exists
+  // Initialize bestiary if not exists (for legacy saves)
   if (!S.adventure.bestiary) {
     S.adventure.bestiary = {};
   }
-  
+
   // Update location display
   const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
   if (currentZone && currentZone.areas) {
@@ -3386,29 +3345,9 @@ function initActivityListeners() {
   
   // Adventure start battle button event listener
   document.getElementById('startBattleButton')?.addEventListener('click', () => {
-    // Ensure adventure data is initialized
-    if (!S.adventure) {
-      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        selectedZone: 0,
-        selectedArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
-    }
-    
+    // Ensure adventure state exists
+    ensureAdventureState();
+
     // Start the adventure activity if not already active
     if (!S.activities.adventure) {
       startActivity('adventure');
