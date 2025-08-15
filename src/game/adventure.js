@@ -351,7 +351,10 @@ export function updateProgressButton() {
   progressBtn.textContent = isAreaCleared ? 'Progress to Next Area' : `Clear Area (${S.adventure.killsInCurrentArea}/${currentArea.killReq})`;
 }
 
+let tabsInitialized = false;
+
 export function setupAdventureTabs() {
+  if (tabsInitialized) return;
   const tabButtons = document.querySelectorAll('.adventure-tab-btn');
   tabButtons.forEach(button => {
     button.onclick = () => {
@@ -372,6 +375,7 @@ export function setupAdventureTabs() {
       }
     };
   });
+  tabsInitialized = true;
 }
 
 export function updateFoodSlots() {
@@ -436,5 +440,4 @@ export function updateActivityAdventure() {
   updateAdventureCombat();
   updateFoodSlots();
   updateProgressButton();
-  setupAdventureTabs();
 }

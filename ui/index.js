@@ -30,7 +30,8 @@ import {
   progressToNextArea,
   retreatFromCombat,
   updateFistProficiencyDisplay,
-  updateFoodSlots
+  updateFoodSlots,
+  setupAdventureTabs
 } from '../src/game/adventure.js';
 
 // Global variables
@@ -2915,6 +2916,7 @@ window.addEventListener('load', ()=>{
   initUI();
   initLawSystem();
   initActivityListeners();
+  setupAdventureTabs();
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();
