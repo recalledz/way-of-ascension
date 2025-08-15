@@ -26,13 +26,6 @@ import { initHp } from '../src/game/helpers.js';
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
 
-const BEASTS = [
-  {name:'Wild Rabbit', hp:20, atk:2, def:0, reward:{stones:5, herbs:2}},
-  {name:'Boar', hp:60, atk:5, def:2, reward:{stones:15, ore:3}},
-  {name:'Spirit Wolf', hp:140, atk:10, def:4, reward:{stones:35, wood:6}},
-  {name:'Tiger', hp:300, atk:18, def:8, reward:{stones:80, ore:12}},
-  {name:'Dragon Whelp', hp:800, atk:40, def:18, reward:{stones:220, herbs:30, ore:25}}
-];
 
 
 
@@ -343,9 +336,6 @@ function updateQiOrbEffect(){
 }
 
 function initUI(){
-  // Fill beasts
-  const bs = document.getElementById('beastSelect');
-  BEASTS.forEach((b,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${b.name} (HP ${b.hp})`; bs.appendChild(o)});
 
   // Assign buttons
   document.getElementById('tab-gathering').addEventListener('click', e=>{
@@ -357,7 +347,6 @@ function initUI(){
     '#meditateBtn': meditate,
     '#breakthroughBtn': tryBreakthrough,
     '#brewBtn': addBrew,
-    '#huntBtn': startHunt,
     '#useQiPill': () => usePill('qi'),
     '#useBodyPill': () => usePill('body'),
     '#useWardPill': () => usePill('ward'),
@@ -391,11 +380,6 @@ function initUI(){
     autoBrewQi.addEventListener('change', e => S.auto.brewQi = e.target.checked);
   }
   
-  const autoHunt = qs('#autoHunt');
-  if (autoHunt) {
-    autoHunt.checked = S.auto.hunt;
-    autoHunt.addEventListener('change', e => S.auto.hunt = e.target.checked);
-  }
 
   // Safe render calls - only call functions that exist
   if (typeof renderUpgrades === 'function') renderUpgrades();
@@ -1044,6 +1028,14 @@ function updateAdventureCombat() {
           S.adventure.inCombat = false;
           S.adventure.combatLog.push('You have been defeated!');
           log('Defeated in combat! Returning to safety...', 'bad');
+        }
+      }
+      
+      // Enemy regeneration (if it has the Regenerating affix)
+      if (S.adventure.currentEnemy.regen && S.adventure.currentEnemy.regen > 0) {
+        const regenAmount = S.adventure.currentEnemy.regen * S.adventure.enemyMaxHP;
+        if (regenAmount > 0) {
+          S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regenAmount);
         }
       }
     }
@@ -3104,59 +3096,8 @@ function usePill(type){
   S.pills[type]--; updateAll();
 }
 
-// Combat
-function startHunt(){
-  if(S.combat.hunt){ log('Already hunting','bad'); return; }
-  const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
-  const KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
-  const aff = [];
-  const affCount = Math.floor(Math.random()*3);
-  const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
-  const h = {i, name:b.name, base:b, affixes:aff, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0};
-  let chosen=[...KEYS];
-  for(let k=0;k<affCount;k++){
-    const idx=Math.floor(Math.random()*chosen.length); const key=chosen.splice(idx,1)[0]; aff.push(key);
-    if(key==='Armored') h.eDef *= 1.4;
-    if(key==='Frenzied') h.eAtk *= 1.35;
-    if(key==='Regenerating') h.regen += 0.02;
-    if(key==='Giant'){ h.enemyMax = Math.floor(h.enemyMax*1.6); h.enemyHP = h.enemyMax; }
-    if(key==='Swift') h.eAtk *= 1.15;
-  }
-  console.log('Generated affixes:', aff, 'Count:', affCount); // Debug log
-  S.combat.hunt = h; updateHuntUI();
-}
-
-function updateHuntUI(){
-  const h=S.combat.hunt; const el=qs('#huntStatus');
-  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); setText('affixList','None'); return; }
-  const b=h.base; el.textContent=`Fighting ${b.name}…`;
-  setFill('enemyFill', h.enemyHP/h.enemyMax); setText('enemyHpTxt', `${Math.ceil(h.enemyHP)}/${h.enemyMax}`);
-  setFill('ourFill', S.hp/S.hpMax); setText('ourHpTxt', `${Math.ceil(S.hp)}/${S.hpMax}`);
-  console.log('Updating affixList with:', h.affixes, 'Length:', h.affixes.length); // Debug log
-  setText('affixList', h.affixes.length? h.affixes.join(', '): 'None');
-}
-function resolveHunt(win){
-  const h=S.combat.hunt; if(!h) return; const b=h.base;
-  if(win){
-    Object.entries(b.reward).forEach(([k,v])=>{ S[k]=(S[k]||0)+v; });
-    S.stones += Math.ceil((S.realm.tier+1)*2);
-    const bonus = h.affixes.length*0.05; const chance = 0.25 + 0.05*b.atk/10 + bonus; if(Math.random()<chance) S.cores += 1;
-    log(`Victory vs ${b.name}! Loot gained.`,'good');
-  }else{
-    S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax*0.25));
-    log(`Defeated by ${b.name}. You limp back, hurt.`,'bad');
-  }
-  S.combat.hunt=null; updateAll();
-}
 
 
-function updateWinEst(){
-  const i= +document.getElementById('beastSelect').value; const b=BEASTS[i]; if(!b){ setText('winEst','—'); return; }
-  const atk = calcAtk(); const def = calcDef(); const ourDPS = Math.max(1, atk - b.def*0.6); const enemyDPS = Math.max(0, b.atk - def*0.7);
-  const tKill = b.hp/ourDPS; const tDie = S.hp / Math.max(0.1, enemyDPS);
-  const p = clamp(0.5 + (tDie - tKill)/ (tDie + tKill + 1e-6), 0, 0.99);
-  setText('winEst', Math.round(p*100)+'%');
-}
 
 /* Ascension */
 function calcKarmaGain(){
@@ -3283,22 +3224,7 @@ function tick(){
     S.foundation = clamp(S.foundation + gain, 0, fCap());
   }
   if(S.auto.brewQi && S.alchemy.queue.length < S.alchemy.maxSlots){ if(canPay(RECIPES.qi.cost)) addBrew(); }
-  if(S.auto.hunt && !S.combat.hunt){ startHunt(); }
 
-  // Combat step
-  if(S.combat.hunt){
-    const h=S.combat.hunt;
-    const atk = calcAtk(), def = calcDef();
-    const ourDPS = Math.max(1, atk - h.eDef*0.6);
-    let enemyDPS = Math.max(0, h.eAtk - def*0.7);
-    h.enemyHP -= ourDPS;
-    if(h.regen) h.enemyHP += h.enemyMax * h.regen;
-    h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
-    S.hp = clamp(S.hp - enemyDPS, 0, S.hpMax);
-    if(h.enemyHP<=0){ resolveHunt(true); }
-    else if(S.hp<=1){ resolveHunt(false); }
-    updateHuntUI();
-  }
 
 
   // Breakthrough progress
@@ -3309,7 +3235,6 @@ function tick(){
     updateAdventureCombat();
   }
 
-  if(S.time % 2===0) updateWinEst();
   updateSidebarActivities(); // Update progress bars every tick
   updateAll();
 }

@@ -40,11 +40,11 @@ export const defaultState = () => {
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
   alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
-  combat:{hunt:null, techniques:{}},
+  combat:{techniques:{}},
   bought:{},
   karmaPts:0, ascensions:0,
   karma:{qiRegen:0, yield:0, atk:0, def:0},
-  auto:{meditate:true, brewQi:false, hunt:false}, // Auto-meditate enabled by default
+  auto:{meditate:true, brewQi:false}, // Auto-meditate enabled by default
   // Activity System - only one can be active at a time
   activities: {
     cultivation: false,
