@@ -135,6 +135,13 @@ function renderSidebarActivities() {
   });
 }
 
+const BEASTS = [
+  {name:'Wild Rabbit', hp:20, atk:2, def:0, reward:{stones:5, herbs:2}},
+  {name:'Boar', hp:60, atk:5, def:2, reward:{stones:15, ore:3}},
+  {name:'Spirit Wolf', hp:140, atk:10, def:4, reward:{stones:35, wood:6}},
+  {name:'Tiger', hp:300, atk:18, def:8, reward:{stones:80, ore:12}},
+  {name:'Dragon Whelp', hp:800, atk:40, def:18, reward:{stones:220, herbs:30, ore:25}}
+];
 
 
 
@@ -445,6 +452,12 @@ function updateQiOrbEffect(){
 }
 
 function initUI(){
+  // Render sidebar activities
+  renderSidebarActivities();
+
+  // Fill beasts
+  const bs = document.getElementById('beastSelect');
+  BEASTS.forEach((b,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${b.name} (HP ${b.hp})`; bs.appendChild(o)});
 
   // Assign buttons
   document.getElementById('tab-gathering').addEventListener('click', e=>{
@@ -452,29 +465,26 @@ function initUI(){
   });
 
   // Buttons (with safe null checks)
-  const listeners = {
-    '#meditateBtn': meditate,
-    '#breakthroughBtn': tryBreakthrough,
-    '#brewBtn': addBrew,
-    '#useQiPill': () => usePill('qi'),
-    '#useBodyPill': () => usePill('body'),
-    '#useWardPill': () => usePill('ward'),
-    '#saveBtn': save,
-    '#resetBtn': () => { if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }},
-    '#exportBtn': () => {
-      const blob=new Blob([JSON.stringify(S)],{type:'application/json'}); const url=URL.createObjectURL(blob);
-      const a=document.createElement('a'); a.href=url; a.download='way-of-ascension-save.json'; a.click(); URL.revokeObjectURL(url);
-    },
-    '#importBtn': async () => {
-      const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
-      inp.click();
-    }
-  };
-
-  Object.entries(listeners).forEach(([selector, handler]) => {
-    qs(selector)?.addEventListener('click', handler);
-  });
+  const meditateBtn = qs('#meditateBtn');
+  if (meditateBtn) meditateBtn.addEventListener('click', meditate);
+  
+  const breakthroughBtn = qs('#breakthroughBtn');
+  if (breakthroughBtn) breakthroughBtn.addEventListener('click', tryBreakthrough);
+  
+  const brewBtn = qs('#brewBtn');
+  if (brewBtn) brewBtn.addEventListener('click', addBrew);
+  
+  const huntBtn = qs('#huntBtn');
+  if (huntBtn) huntBtn.addEventListener('click', startHunt);
+  
+  const useQiPill = qs('#useQiPill');
+  if (useQiPill) useQiPill.addEventListener('click', ()=>usePill('qi'));
+  
+  const useBodyPill = qs('#useBodyPill');
+  if (useBodyPill) useBodyPill.addEventListener('click', ()=>usePill('body'));
+  
+  const useWardPill = qs('#useWardPill');
+  if (useWardPill) useWardPill.addEventListener('click', ()=>usePill('ward'));
 
   // Autos (with safe null checks)
   const autoMeditate = qs('#autoMeditate');
@@ -489,6 +499,34 @@ function initUI(){
     autoBrewQi.addEventListener('change', e => S.auto.brewQi = e.target.checked);
   }
   
+  const autoHunt = qs('#autoHunt');
+  if (autoHunt) {
+    autoHunt.checked = S.auto.hunt;
+    autoHunt.addEventListener('change', e => S.auto.hunt = e.target.checked);
+  }
+
+  // Save/Load (with safe null checks)
+  const saveBtn = qs('#saveBtn');
+  if (saveBtn) saveBtn.addEventListener('click', save);
+  
+  const resetBtn = qs('#resetBtn');
+  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }});
+  const exportBtn = qs('#exportBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', ()=>{
+      const blob=new Blob([JSON.stringify(S)],{type:'application/json'}); const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='way-of-ascension-save.json'; a.click(); URL.revokeObjectURL(url);
+    });
+  }
+  
+  const importBtn = qs('#importBtn');
+  if (importBtn) {
+    importBtn.addEventListener('click', async()=>{
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
+      inp.click();
+    });
+  }
 
   // Safe render calls - only call functions that exist
   if (typeof renderUpgrades === 'function') renderUpgrades();
@@ -1053,7 +1091,6 @@ function updateBattleDisplay() {
     setText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
     setText('enemyAttack', enemy.attack || 0);
     setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
-    setText('enemyAffixes', enemy.affixes && enemy.affixes.length ? enemy.affixes.join(', ') : 'None');
     
     // Update enemy health bar
     const enemyHealthFill = document.getElementById('enemyHealthFill');
@@ -1067,7 +1104,6 @@ function updateBattleDisplay() {
     setText('enemyHealthText', '--/--');
     setText('enemyAttack', '--');
     setText('enemyAttackRate', '--/s');
-    setText('enemyAffixes', 'None');
     
     // Reset enemy health bar
     const enemyHealthFill = document.getElementById('enemyHealthFill');
@@ -1139,14 +1175,6 @@ function updateAdventureCombat() {
           log('Defeated in combat! Returning to safety...', 'bad');
         }
       }
-      
-      // Enemy regeneration (if it has the Regenerating affix)
-      if (S.adventure.currentEnemy.regen && S.adventure.currentEnemy.regen > 0) {
-        const regenAmount = S.adventure.currentEnemy.regen * S.adventure.enemyMaxHP;
-        if (regenAmount > 0) {
-          S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regenAmount);
-        }
-      }
     }
   }
 }
@@ -1211,32 +1239,10 @@ function startAdventureCombat() {
     return;
   }
   
-  // Generate affixes for the enemy
-  const AFFIX_KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
-  const affixes = [];
-  const affixCount = Math.floor(Math.random()*3);
-  let chosen = [...AFFIX_KEYS];
-  
-  // Create enemy with base stats
-  let enemy = { ...enemyData, type: enemyType, affixes: affixes };
-  
-  // Apply affixes
-  for(let k=0; k<affixCount; k++){
-    const idx = Math.floor(Math.random()*chosen.length);
-    const key = chosen.splice(idx,1)[0];
-    affixes.push(key);
-    
-    if(key==='Armored') enemy.defense = (enemy.defense || 0) * 1.4;
-    if(key==='Frenzied') enemy.attack *= 1.35;
-    if(key==='Regenerating') enemy.regen = (enemy.regen || 0) + 0.02;
-    if(key==='Giant') enemy.hp = Math.floor(enemy.hp * 1.6);
-    if(key==='Swift') enemy.attack *= 1.15;
-  }
-  
   // Start combat
   S.adventure.inCombat = true;
-  S.adventure.currentEnemy = enemy;
-  const { hp, hpMax } = initHp(enemy.hp);
+  S.adventure.currentEnemy = { ...enemyData, type: enemyType };
+  const { hp, hpMax } = initHp(enemyData.hp);
   S.adventure.enemyHP = hp;
   S.adventure.enemyMaxHP = hpMax;
   S.adventure.playerHP = S.hp; // Sync player HP
@@ -3205,8 +3211,76 @@ function usePill(type){
   S.pills[type]--; updateAll();
 }
 
+// Combat
+function startHunt(){
+  if(S.combat.hunt){ log('Already hunting','bad'); return; }
+  const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
+  const KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
+  const aff = [];
+  const affCount = Math.floor(Math.random()*3);
+  const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
+  const h = {i, name:b.name, base:b, affixes:aff, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0};
+  let chosen=[...KEYS];
+  for(let k=0;k<affCount;k++){
+    const idx=Math.floor(Math.random()*chosen.length); const key=chosen.splice(idx,1)[0]; aff.push(key);
+    if(key==='Armored') h.eDef *= 1.4;
+    if(key==='Frenzied') h.eAtk *= 1.35;
+    if(key==='Regenerating') h.regen += 0.02;
+    if(key==='Giant'){ h.enemyMax = Math.floor(h.enemyMax*1.6); h.enemyHP = h.enemyMax; }
+    if(key==='Swift') h.eAtk *= 1.15;
+  }
+  S.combat.hunt = h; updateHuntUI();
+}
 
+function updateHuntUI(){
+  const h=S.combat.hunt; const el=qs('#huntStatus');
+  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); setText('affixList','None'); setText('techStatus',''); return; }
+  const b=h.base; el.textContent=`Fighting ${b.name}…`;
+  setFill('enemyFill', h.enemyHP/h.enemyMax); setText('enemyHpTxt', `${Math.ceil(h.enemyHP)}/${h.enemyMax}`);
+  setFill('ourFill', S.hp/S.hpMax); setText('ourHpTxt', `${Math.ceil(S.hp)}/${S.hpMax}`);
+  setText('affixList', h.affixes.length? h.affixes.join(', '): 'None');
+  const cd = S.combat.cds; setText('techStatus', `Slash ${cd.slash||0}s • Guard ${cd.guard||0}s • Burst ${cd.burst||0}s`);
+}
+function resolveHunt(win){
+  const h=S.combat.hunt; if(!h) return; const b=h.base;
+  if(win){
+    Object.entries(b.reward).forEach(([k,v])=>{ S[k]=(S[k]||0)+v; });
+    S.stones += Math.ceil((S.realm.tier+1)*2);
+    const bonus = h.affixes.length*0.05; const chance = 0.25 + 0.05*b.atk/10 + bonus; if(Math.random()<chance) S.cores += 1;
+    log(`Victory vs ${b.name}! Loot gained.`,'good');
+  }else{
+    S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax*0.25));
+    log(`Defeated by ${b.name}. You limp back, hurt.`,'bad');
+  }
+  S.combat.hunt=null; updateAll();
+}
 
+function techSlash(){
+  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
+  if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
+  const dmg = calcAtk()*3;
+  S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg);
+  S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
+}
+function techGuard(){
+  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
+  if(S.combat.cds.guard>0){ log('Guard on cooldown','bad'); return; }
+  S.combat.guardUntil = S.time + 5; S.combat.cds.guard = 20; log('You assume a guarded stance (5s).','good'); updateHuntUI();
+}
+function techBurst(){
+  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
+  if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
+  const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
+  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
+}
+
+function updateWinEst(){
+  const i= +document.getElementById('beastSelect').value; const b=BEASTS[i]; if(!b){ setText('winEst','—'); return; }
+  const atk = calcAtk(); const def = calcDef(); const ourDPS = Math.max(1, atk - b.def*0.6); const enemyDPS = Math.max(0, b.atk - def*0.7);
+  const tKill = b.hp/ourDPS; const tDie = S.hp / Math.max(0.1, enemyDPS);
+  const p = clamp(0.5 + (tDie - tKill)/ (tDie + tKill + 1e-6), 0, 0.99);
+  setText('winEst', Math.round(p*100)+'%');
+}
 
 /* Ascension */
 function calcKarmaGain(){
@@ -3333,8 +3407,27 @@ function tick(){
     S.foundation = clamp(S.foundation + gain, 0, fCap());
   }
   if(S.auto.brewQi && S.alchemy.queue.length < S.alchemy.maxSlots){ if(canPay(RECIPES.qi.cost)) addBrew(); }
+  if(S.auto.hunt && !S.combat.hunt){ startHunt(); }
 
+  // Combat step
+  if(S.combat.hunt){
+    const h=S.combat.hunt;
+    const guardActive = S.time < S.combat.guardUntil;
+    const atk = calcAtk(), def = calcDef();
+    const ourDPS = Math.max(1, atk - h.eDef*0.6);
+    let enemyDPS = Math.max(0, h.eAtk - def*0.7);
+    if(guardActive) enemyDPS *= 0.5;
+    h.enemyHP -= ourDPS;
+    if(h.regen) h.enemyHP += h.enemyMax * h.regen;
+    h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
+    S.hp = clamp(S.hp - enemyDPS, 0, S.hpMax);
+    if(h.enemyHP<=0){ resolveHunt(true); }
+    else if(S.hp<=1){ resolveHunt(false); }
+    updateHuntUI();
+  }
 
+  // CDs
+  for(const k in S.combat.cds){ if(S.combat.cds[k]>0) S.combat.cds[k]--; }
 
   // Breakthrough progress
   updateBreakthrough();
@@ -3344,6 +3437,7 @@ function tick(){
     updateAdventureCombat();
   }
 
+  if(S.time % 2===0) updateWinEst();
   updateSidebarActivities(); // Update progress bars every tick
   updateAll();
 }
@@ -3365,81 +3459,86 @@ function initActivityListeners() {
     });
   });
   
-  // Legacy selectors via delegation
-  document.addEventListener('click', e => {
-    const legacy = e.target.closest('#cultivationSelector,#physiqueSelector,#miningSelector,#adventureSelector,#sectSelector');
-    if (legacy) {
-      selectActivity(legacy.id.replace('Selector',''));
+  // Legacy selectors (if they exist)
+  document.getElementById('cultivationSelector')?.addEventListener('click', () => selectActivity('cultivation'));
+  document.getElementById('physiqueSelector')?.addEventListener('click', () => selectActivity('physique'));
+  document.getElementById('miningSelector')?.addEventListener('click', () => selectActivity('mining'));
+  document.getElementById('adventureSelector')?.addEventListener('click', () => selectActivity('adventure'));
+  document.getElementById('sectSelector')?.addEventListener('click', () => selectActivity('sect'));
+  
+  // Activity content event listeners
+  document.getElementById('breakthroughBtnActivity')?.addEventListener('click', () => {
+    if (typeof breakthrough === 'function') {
+      breakthrough();
+    } else if (typeof tryBreakthrough === 'function') {
+      tryBreakthrough();
+    } else {
+      log('Breakthrough function not available', 'bad');
     }
   });
-
-  // Activity content and session listeners
-  const listeners = {
-    '#breakthroughBtnActivity': () => {
-      if (typeof breakthrough === 'function') {
-        breakthrough();
-      } else if (typeof tryBreakthrough === 'function') {
-        tryBreakthrough();
-      } else {
-        log('Breakthrough function not available', 'bad');
-      }
-    },
-    '#useQiPillActivity': () => usePill('qi'),
-    '#useWardPillActivity': () => usePill('ward'),
-    '#startTrainingSession': startTrainingSession,
-    '#hitButton': executeHit,
-    '#startBattleButton': () => {
-      if (!S.adventure) {
-        const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-        S.adventure = {
-          currentZone: 0,
-          currentArea: 0,
-          selectedZone: 0,
-          selectedArea: 0,
-          totalKills: 0,
-          areasCompleted: 0,
-          zonesUnlocked: 1,
-          killsInCurrentArea: 0,
-          inCombat: false,
-          playerHP: S.hp,
-          enemyHP,
-          enemyMaxHP,
-          currentEnemy: null,
-          lastPlayerAttack: 0,
-          lastEnemyAttack: 0,
-          combatLog: []
-        };
-      }
-
-      if (!S.activities.adventure) {
-        startActivity('adventure');
-      }
-
-      startAdventureCombat();
-      updateActivityAdventure();
-    },
-    '#progressButton': () => {
-      progressToNextArea();
-    },
-    '#retreatButton': () => {
-      retreatFromCombat();
-    }
-  };
-
-  Object.entries(listeners).forEach(([selector, handler]) => {
-    document.querySelector(selector)?.addEventListener('click', handler);
-  });
-
-  // Mining resource selection via delegation
-  document.addEventListener('change', (e) => {
-    if (e.target.matches('input[name="miningResource"]')) {
+  document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
+  document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
+  
+  // Session-based training event listeners
+  document.getElementById('startTrainingSession')?.addEventListener('click', startTrainingSession);
+  document.getElementById('hitButton')?.addEventListener('click', executeHit);
+  
+  // Mining resource selection event listeners
+  const miningResourceInputs = document.querySelectorAll('input[name="miningResource"]');
+  miningResourceInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
       if (S.mining) {
         S.mining.selectedResource = e.target.value;
         S.mining.resourcesGained = 0; // Reset counter when switching resources
         log(`Switched mining to ${e.target.value === 'stones' ? 'Spirit Stones' : e.target.value === 'iron' ? 'Iron Ore' : 'Ice Crystal'}`, 'good');
         updateActivityMining();
       }
+    });
+  });
+  
+  // Adventure start battle button event listener
+  document.getElementById('startBattleButton')?.addEventListener('click', () => {
+    // Ensure adventure data is initialized
+    if (!S.adventure) {
+      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+      S.adventure = {
+        currentZone: 0,
+        currentArea: 0,
+        selectedZone: 0,
+        selectedArea: 0,
+        totalKills: 0,
+        areasCompleted: 0,
+        zonesUnlocked: 1,
+        killsInCurrentArea: 0,
+        inCombat: false,
+        playerHP: S.hp,
+        enemyHP,
+        enemyMaxHP,
+        currentEnemy: null,
+        lastPlayerAttack: 0,
+        lastEnemyAttack: 0,
+        combatLog: []
+      };
     }
+    
+    // Start the adventure activity if not already active
+    if (!S.activities.adventure) {
+      startActivity('adventure');
+    }
+    
+    // Start combat immediately
+    startAdventureCombat();
+    updateActivityAdventure();
+  });
+  
+  // Adventure progress button event listener
+  document.getElementById('progressButton')?.addEventListener('click', () => {
+    progressToNextArea();
+  });
+  
+  // Adventure retreat button event listener
+  document.getElementById('retreatButton')?.addEventListener('click', () => {
+    retreatFromCombat();
   });
 }
 
