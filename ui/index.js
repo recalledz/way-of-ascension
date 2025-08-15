@@ -2818,7 +2818,12 @@ function initActivityListeners() {
   // Session-based training event listeners
   document.getElementById('startTrainingSession')?.addEventListener('click', startTrainingSession);
   document.getElementById('hitButton')?.addEventListener('click', executeHit);
-  
+
+  // Hunt technique event listeners
+  document.getElementById('techSlash')?.addEventListener('click', techSlash);
+  document.getElementById('techGuard')?.addEventListener('click', techGuard);
+  document.getElementById('techBurst')?.addEventListener('click', techBurst);
+
   // Mining resource selection event listeners
   const miningResourceInputs = document.querySelectorAll('input[name="miningResource"]');
   miningResourceInputs.forEach(input => {
