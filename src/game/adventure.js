@@ -2,7 +2,12 @@ import { S } from './state.js';
 import { initHp } from './helpers.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
-import { setText, setFill, log } from './utils.js';
+import { setFill, log } from './utils.js';
+
+function setAdventureText(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = v;
+}
 
 // Adventure zones and enemy data
 export const ADVENTURE_ZONES = [
@@ -76,9 +81,9 @@ export function gainFistXP(amount) {
 export function updateFistProficiencyDisplay() {
   if (!S.proficiencies) return;
   const prof = S.proficiencies.fist;
-  setText('fistLevel', prof.level);
-  setText('fistExp', Math.floor(prof.exp));
-  setText('fistExpMax', prof.expMax);
+  setAdventureText('fistLevel', prof.level);
+  setAdventureText('fistExp', Math.floor(prof.exp));
+  setAdventureText('fistExpMax', prof.expMax);
   setFill('fistExpFill', prof.exp / prof.expMax);
 }
 
@@ -94,7 +99,8 @@ function ensureAdventure() {
       areasCompleted: 0,
       zonesUnlocked: 1,
       killsInCurrentArea: 0,
-      inCombat: false
+      inCombat: false,
+      bestiary: {}
     };
   }
 }
@@ -138,7 +144,7 @@ export function updateBattleDisplay() {
   ensureAdventure();
   const playerHP = S.adventure.playerHP || S.hp || 100;
   const playerMaxHP = S.hpMax || 100;
-  setText('playerHealthText', `${playerHP}/${playerMaxHP}`);
+  setAdventureText('playerHealthText', `${playerHP}/${playerMaxHP}`);
   const playerHealthFill = document.getElementById('playerHealthFill');
   if (playerHealthFill) {
     const playerHealthPct = (playerHP / playerMaxHP) * 100;
@@ -146,26 +152,26 @@ export function updateBattleDisplay() {
   }
   const playerAttack = calculatePlayerCombatAttack();
   const playerAttackRate = calculatePlayerAttackRate();
-  setText('playerAttack', Math.floor(playerAttack));
-  setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
+  setAdventureText('playerAttack', Math.floor(playerAttack));
+  setAdventureText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
     const enemyMaxHP = S.adventure.enemyMaxHP || 0;
-    setText('enemyName', enemy.name || 'Unknown Enemy');
-    setText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
-    setText('enemyAttack', enemy.attack || 0);
-    setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    setAdventureText('enemyName', enemy.name || 'Unknown Enemy');
+    setAdventureText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
+    setAdventureText('enemyAttack', enemy.attack || 0);
+    setAdventureText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill && enemyMaxHP > 0) {
       const enemyHealthPct = (enemyHP / enemyMaxHP) * 100;
       enemyHealthFill.style.width = `${enemyHealthPct}%`;
     }
   } else {
-    setText('enemyName', 'Select an area to begin');
-    setText('enemyHealthText', '--/--');
-    setText('enemyAttack', '--');
-    setText('enemyAttackRate', '--/s');
+    setAdventureText('enemyName', 'Select an area to begin');
+    setAdventureText('enemyHealthText', '--/--');
+    setAdventureText('enemyAttack', '--');
+    setAdventureText('enemyAttackRate', '--/s');
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill) enemyHealthFill.style.width = '0%';
   }
@@ -217,6 +223,7 @@ function defeatEnemy() {
   const enemy = S.adventure.currentEnemy;
   S.adventure.totalKills++;
   S.adventure.killsInCurrentArea++;
+  S.adventure.bestiary[enemy.type] = (S.adventure.bestiary[enemy.type] || 0) + 1;
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`${enemy.name} defeated!`);
   if (enemy.drops && enemy.drops.meat && Math.random() < enemy.drops.meat) {
@@ -230,6 +237,7 @@ function defeatEnemy() {
   S.adventure.enemyHP = hp;
   S.adventure.enemyMaxHP = hpMax;
   log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
+  updateBestiaryList();
   if (S.activities.adventure && S.adventure.playerHP > 0) {
     startAdventureCombat();
     updateActivityAdventure();
@@ -384,11 +392,11 @@ export function updateFoodSlots() {
       cooldown: 5000
     };
   }
-  setText('rawMeatCount', S.meat || 0);
-  setText('inventoryRawMeat', S.meat || 0);
-  setText('inventoryCookedMeat', S.cookedMeat || 0);
-  setText('inventoryRawMeatAdventure', S.meat || 0);
-  setText('inventoryCookedMeatAdventure', S.cookedMeat || 0);
+  setAdventureText('rawMeatCount', S.meat || 0);
+  setAdventureText('inventoryRawMeat', S.meat || 0);
+  setAdventureText('inventoryCookedMeat', S.cookedMeat || 0);
+  setAdventureText('inventoryRawMeatAdventure', S.meat || 0);
+  setAdventureText('inventoryCookedMeatAdventure', S.cookedMeat || 0);
   const cookInput = document.getElementById('cookAmount');
   if (cookInput) {
     cookInput.max = S.meat || 0;
@@ -398,37 +406,84 @@ export function updateFoodSlots() {
   }
 }
 
+function findZoneForEnemy(enemyType) {
+  for (const zone of ADVENTURE_ZONES) {
+    if (zone.areas && zone.areas.some(area => area.enemy === enemyType)) {
+      return zone;
+    }
+  }
+  return null;
+}
+
+function updateBestiaryList() {
+  ensureAdventure();
+  const list = document.getElementById('bestiaryList');
+  if (!list) return;
+  const entries = Object.keys(S.adventure.bestiary || {});
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="muted">Defeat enemies to unlock their information...</div>';
+    return;
+  }
+  list.innerHTML = '';
+  entries.forEach(type => {
+    const data = ENEMY_DATA[type];
+    if (!data) return;
+    const kills = S.adventure.bestiary[type];
+    const zone = findZoneForEnemy(type);
+    const entry = document.createElement('div');
+    entry.className = 'bestiary-entry';
+    const header = document.createElement('div');
+    header.className = 'bestiary-header';
+    header.innerHTML = `<span class="bestiary-name">${data.name}</span><span class="bestiary-kills">Kills: ${kills}</span>`;
+    entry.appendChild(header);
+    const stats = document.createElement('div');
+    stats.className = 'bestiary-stats';
+    stats.innerHTML = `
+      <div class="bestiary-stat"><span>HP</span><span>${data.hp}</span></div>
+      <div class="bestiary-stat"><span>ATK</span><span>${data.attack}</span></div>
+      <div class="bestiary-stat"><span>Rate</span><span>${(data.attackRate || 1).toFixed(1)}/s</span></div>
+    `;
+    entry.appendChild(stats);
+    const info = document.createElement('div');
+    info.className = 'bestiary-info';
+    const loot = data.loot ? Object.keys(data.loot).join(', ') : 'None';
+    info.innerHTML = `
+      <span class="bestiary-zone">${zone ? zone.name : 'Unknown Zone'}</span>
+      <span class="bestiary-loot">Loot: ${loot}</span>
+    `;
+    entry.appendChild(info);
+    list.appendChild(entry);
+  });
+}
+
 export function updateActivityAdventure() {
   ensureAdventure();
-  if (!S.adventure.bestiary) {
-    S.adventure.bestiary = {};
-  }
   const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
   if (currentZone && currentZone.areas) {
     const currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
     if (currentArea) {
-      setText('currentLocationText', `${currentZone.name} - ${currentArea.name}`);
-      setText('killsRequired', `${S.adventure.killsInCurrentArea}/${currentArea.killReq}`);
+      setAdventureText('currentLocationText', `${currentZone.name} - ${currentArea.name}`);
+      setAdventureText('killsRequired', `${S.adventure.killsInCurrentArea}/${currentArea.killReq}`);
     } else {
-      setText('currentLocationText', 'Unknown Area');
-      setText('killsRequired', '0/0');
+      setAdventureText('currentLocationText', 'Unknown Area');
+      setAdventureText('killsRequired', '0/0');
     }
   } else {
-    setText('currentLocationText', 'Unknown Zone');
-    setText('killsRequired', '0/0');
+    setAdventureText('currentLocationText', 'Unknown Zone');
+    setAdventureText('killsRequired', '0/0');
   }
-  setText('totalKills', S.adventure.totalKills);
-  setText('areasCompleted', S.adventure.areasCompleted);
-  setText('zonesUnlocked', S.adventure.zonesUnlocked);
+  setAdventureText('totalKills', S.adventure.totalKills);
+  setAdventureText('areasCompleted', S.adventure.areasCompleted);
+  setAdventureText('zonesUnlocked', S.adventure.zonesUnlocked);
   const playerAttack = calculatePlayerCombatAttack();
   const playerAttackRate = calculatePlayerAttackRate();
-  setText('currentWeapon', 'Fists');
+  setAdventureText('currentWeapon', 'Fists');
   const fistBase = 5 + getFistBonuses().damage;
-  setText('baseDamage', fistBase);
-  setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
-  setText('combatAttackRate', playerAttackRate.toFixed(1) + '/s');
-  setText('playerAttack', playerAttack);
-  setText('playerAttackRate', playerAttackRate.toFixed(1) + '/s');
+  setAdventureText('baseDamage', fistBase);
+  setAdventureText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
+  setAdventureText('combatAttackRate', playerAttackRate.toFixed(1) + '/s');
+  setAdventureText('playerAttack', playerAttack);
+  setAdventureText('playerAttackRate', playerAttackRate.toFixed(1) + '/s');
   updateFistProficiencyDisplay();
   updateZoneButtons();
   updateAreaGrid();
@@ -436,5 +491,6 @@ export function updateActivityAdventure() {
   updateAdventureCombat();
   updateFoodSlots();
   updateProgressButton();
+  updateBestiaryList();
   setupAdventureTabs();
 }
