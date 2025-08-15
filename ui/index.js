@@ -20,6 +20,7 @@ import {
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
 import { initHp } from '../src/game/helpers.js';
+import { applyRandomAffixes } from '../src/game/affixes.js';
 import {
   updateRealmUI,
   updateActivityCultivation,
@@ -2136,20 +2137,9 @@ function usePill(type){
 function startHunt(){
   if(S.combat.hunt){ log('Already hunting','bad'); return; }
   const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
-  const KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
-  const aff = [];
-  const affCount = Math.floor(Math.random()*3);
   const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
-  const h = {i, name:b.name, base:b, affixes:aff, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0};
-  let chosen=[...KEYS];
-  for(let k=0;k<affCount;k++){
-    const idx=Math.floor(Math.random()*chosen.length); const key=chosen.splice(idx,1)[0]; aff.push(key);
-    if(key==='Armored') h.eDef *= 1.4;
-    if(key==='Frenzied') h.eAtk *= 1.35;
-    if(key==='Regenerating') h.regen += 0.02;
-    if(key==='Giant'){ h.enemyMax = Math.floor(h.enemyMax*1.6); h.enemyHP = h.enemyMax; }
-    if(key==='Swift') h.eAtk *= 1.15;
-  }
+  const h = {i, name:b.name, base:b, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0, affixes:[]};
+  applyRandomAffixes(h);
   S.combat.hunt = h; updateHuntUI();
 }
 
