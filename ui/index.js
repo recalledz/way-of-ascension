@@ -25,6 +25,115 @@ import { initHp } from '../src/game/helpers.js';
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
+// Sidebar activities configuration
+const sidebarActivities = [
+  {
+    id: 'cultivation',
+    label: 'Cultivation',
+    icon: '🧘',
+    group: 'leveling',
+    levelId: 'cultivationLevel',
+    initialLevel: 'Mortal 1',
+    progressFillId: 'cultivationProgressFill',
+    progressTextId: 'cultivationProgressText',
+    cost: {}
+  },
+  {
+    id: 'physique',
+    label: 'Physique',
+    icon: '💪',
+    group: 'leveling',
+    levelId: 'physiqueLevel',
+    initialLevel: 'Level 1',
+    progressFillId: 'physiqueProgressFill',
+    progressTextId: 'physiqueProgressText',
+    cost: {}
+  },
+  {
+    id: 'mining',
+    label: 'Mining',
+    icon: '⛏️',
+    group: 'leveling',
+    levelId: 'miningLevel',
+    initialLevel: 'Level 1',
+    progressFillId: 'miningProgressFill',
+    progressTextId: 'miningProgressText',
+    cost: {}
+  },
+  {
+    id: 'cooking',
+    label: 'Cooking',
+    icon: '🍳',
+    group: 'leveling',
+    levelId: 'cookingLevelSidebar',
+    initialLevel: 'Level 1',
+    progressFillId: 'cookingProgressFillSidebar',
+    progressTextId: 'cookingProgressTextSidebar',
+    cost: {}
+  },
+  {
+    id: 'adventure',
+    label: 'Adventure',
+    icon: '⚔️',
+    group: 'management',
+    levelId: 'adventureLevel',
+    initialLevel: 'Zone 1',
+    progressFillId: 'adventureProgressFill',
+    progressTextId: 'adventureProgressText',
+    cost: {}
+  },
+  {
+    id: 'sect',
+    label: 'Sect',
+    icon: '🏛️',
+    group: 'management',
+    levelId: 'sectLevel',
+    initialLevel: 'Buildings',
+    statusId: 'sectStatus',
+    cost: {}
+  }
+];
+
+function renderSidebarActivities() {
+  const levelingContainer = document.getElementById('levelingActivities');
+  const managementContainer = document.getElementById('managementActivities');
+
+  sidebarActivities.forEach(act => {
+    const container = act.group === 'leveling' ? levelingContainer : managementContainer;
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = `activity-item ${act.group === 'leveling' ? 'leveling-tab' : 'management-tab'}`;
+    item.dataset.activity = act.id;
+
+    let html = `
+      <div class="activity-header">
+        <div class="activity-icon">${act.icon}</div>
+        <div class="activity-info">
+          <div class="activity-name">${act.label}</div>
+          <div class="activity-level" id="${act.levelId}">${act.initialLevel}</div>
+        </div>
+      </div>`;
+
+    if (act.progressFillId && act.progressTextId) {
+      html += `
+      <div class="activity-progress-bar">
+        <div class="progress-fill" id="${act.progressFillId}"></div>
+        <div class="progress-text" id="${act.progressTextId}">0%</div>
+      </div>`;
+    }
+
+    if (act.statusId) {
+      html += `
+      <div class="activity-status">
+        <div class="status-indicator" id="${act.statusId}">Inactive</div>
+      </div>`;
+    }
+
+    item.innerHTML = html;
+    container.appendChild(item);
+  });
+}
 
 
 
@@ -320,6 +429,34 @@ const ADVENTURE_ENEMIES = {
   'Cursed Spirit': { hp: 180, attack: 45, attackRate: 1.1, loot: { spiritStones: 22, iceCrystal: 3 } }, // No meat (spirit)
   'Ruin Lord': { hp: 600, attack: 85, attackRate: 0.9, loot: { spiritStones: 75, ironOre: 15, iceCrystal: 10 } }, // No meat (undead lord)
 };
+
+// Ensure adventure state exists with default values
+function ensureAdventureState() {
+  if (!S.adventure) {
+    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+    S.adventure = {
+      currentZone: 0,
+      currentArea: 0,
+      selectedZone: 0,
+      selectedArea: 0,
+      totalKills: 0,
+      areasCompleted: 0,
+      zonesUnlocked: 1,
+      killsInCurrentArea: 0,
+      inCombat: false,
+      playerHP: S.hp || 100,
+      enemyHP,
+      enemyMaxHP,
+      currentEnemy: null,
+      lastPlayerAttack: 0,
+      lastEnemyAttack: 0,
+      combatLog: ['Select an area to begin your adventure...'],
+      bestiary: {},
+      location: 'Village Outskirts'
+    };
+  }
+  return S.adventure;
+}
 
 function updateQiOrbEffect(){
   const qiOrb = document.getElementById('qiOrb');
@@ -837,21 +974,9 @@ function updateFistProficiencyDisplay() {
 
 // Adventure zone and area UI functions
 function updateZoneButtons() {
-  // Initialize adventure data if needed
-  if (!S.adventure) {
-    S.adventure = {
-      currentZone: 0,
-      currentArea: 0,
-      selectedZone: 0,
-      selectedArea: 0,
-      totalKills: 0,
-      areasCompleted: 0,
-      zonesUnlocked: 1,
-      killsInCurrentArea: 0,
-      inCombat: false
-    };
-  }
-  
+  // Ensure adventure state exists
+  ensureAdventureState();
+
   // Update zone selection buttons (if they exist in the UI)
   const zoneContainer = document.getElementById('zoneButtons');
   if (zoneContainer && ADVENTURE_ZONES) {
@@ -895,27 +1020,9 @@ function updateAreaGrid() {
 
 // Battle display function
 function updateBattleDisplay() {
-  // Initialize adventure data if needed
-  if (!S.adventure) {
-    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-    S.adventure = {
-      currentZone: 0,
-      currentArea: 0,
-      selectedZone: 0,
-      selectedArea: 0,
-      totalKills: 0,
-      areasCompleted: 0,
-      zonesUnlocked: 1,
-      killsInCurrentArea: 0,
-      inCombat: false,
-      playerHP: S.hp || 100,
-      enemyHP,
-      enemyMaxHP,
-      currentEnemy: null,
-      combatLog: []
-    };
-  }
-  
+  // Ensure adventure state exists
+  ensureAdventureState();
+
   // Update player HP display
   const playerHP = S.adventure.playerHP || S.hp || 100;
   const playerMaxHP = S.hpMax || 100;
@@ -1328,27 +1435,9 @@ function startActivity(activityName) {
       S.mining.selectedResource = 'stones';
     }
   } else if (activityName === 'adventure') {
-    // Initialize adventure and start first combat
-    if (!S.adventure) {
-      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
-    }
-    
+    // Ensure adventure state and start first combat
+    ensureAdventureState();
+
     // Start first combat encounter
     setTimeout(() => startAdventureCombat(), 1000);
   }
@@ -1865,35 +1954,14 @@ function updateMiningRateDisplays() {
 }
 
 function updateActivityAdventure() {
-  // Initialize adventure data if not exists
-  if (!S.adventure) {
-    const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-    S.adventure = {
-      currentZone: 0,
-      currentArea: 0,
-      totalKills: 0,
-      areasCompleted: 0,
-      zonesUnlocked: 1,
-      killsInCurrentArea: 0,
-      inCombat: false,
-      playerHP: S.hp,
-      enemyHP,
-      enemyMaxHP,
-      currentEnemy: null,
-      lastPlayerAttack: 0,
-      lastEnemyAttack: 0,
-      combatLog: ['Select an area to begin your adventure...'],
-      selectedZone: 0,
-      selectedArea: 0,
-      bestiary: {} // Track enemy kills for bestiary
-    };
-  }
+  // Ensure adventure state exists
+  ensureAdventureState();
 
-  // Initialize bestiary if not exists
+  // Initialize bestiary if not exists (for legacy saves)
   if (!S.adventure.bestiary) {
     S.adventure.bestiary = {};
   }
-  
+
   // Update location display
   const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
   if (currentZone && currentZone.areas) {
@@ -3330,6 +3398,17 @@ function initActivityListeners() {
         log(`Switched mining to ${e.target.value === 'stones' ? 'Spirit Stones' : e.target.value === 'iron' ? 'Iron Ore' : 'Ice Crystal'}`, 'good');
         updateActivityMining();
       }
+    });
+  });
+  
+  // Adventure start battle button event listener
+  document.getElementById('startBattleButton')?.addEventListener('click', () => {
+    // Ensure adventure state exists
+    ensureAdventureState();
+
+    // Start the adventure activity if not already active
+    if (!S.activities.adventure) {
+      startActivity('adventure');
     }
   });
 }
