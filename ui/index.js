@@ -979,6 +979,7 @@ function updateBattleDisplay() {
     setText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
     setText('enemyAttack', enemy.attack || 0);
     setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    setText('enemyAffixes', enemy.affixes && enemy.affixes.length ? enemy.affixes.join(', ') : 'None');
     
     // Update enemy health bar
     const enemyHealthFill = document.getElementById('enemyHealthFill');
@@ -992,6 +993,7 @@ function updateBattleDisplay() {
     setText('enemyHealthText', '--/--');
     setText('enemyAttack', '--');
     setText('enemyAttackRate', '--/s');
+    setText('enemyAffixes', 'None');
     
     // Reset enemy health bar
     const enemyHealthFill = document.getElementById('enemyHealthFill');
@@ -1127,10 +1129,32 @@ function startAdventureCombat() {
     return;
   }
   
+  // Generate affixes for the enemy
+  const AFFIX_KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
+  const affixes = [];
+  const affixCount = Math.floor(Math.random()*3);
+  let chosen = [...AFFIX_KEYS];
+  
+  // Create enemy with base stats
+  let enemy = { ...enemyData, type: enemyType, affixes: affixes };
+  
+  // Apply affixes
+  for(let k=0; k<affixCount; k++){
+    const idx = Math.floor(Math.random()*chosen.length);
+    const key = chosen.splice(idx,1)[0];
+    affixes.push(key);
+    
+    if(key==='Armored') enemy.defense = (enemy.defense || 0) * 1.4;
+    if(key==='Frenzied') enemy.attack *= 1.35;
+    if(key==='Regenerating') enemy.regen = (enemy.regen || 0) + 0.02;
+    if(key==='Giant') enemy.hp = Math.floor(enemy.hp * 1.6);
+    if(key==='Swift') enemy.attack *= 1.15;
+  }
+  
   // Start combat
   S.adventure.inCombat = true;
-  S.adventure.currentEnemy = { ...enemyData, type: enemyType };
-  const { hp, hpMax } = initHp(enemyData.hp);
+  S.adventure.currentEnemy = enemy;
+  const { hp, hpMax } = initHp(enemy.hp);
   S.adventure.enemyHP = hp;
   S.adventure.enemyMaxHP = hpMax;
   S.adventure.playerHP = S.hp; // Sync player HP
@@ -3105,7 +3129,7 @@ function startHunt(){
   const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
   const KEYS = ['Armored','Frenzied','Regenerating','Giant','Swift'];
   const aff = [];
-  const affCount = Math.floor(Math.random()*3) + 1; // 1-3 affixes
+  const affCount = Math.floor(Math.random()*3);
   const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
   const h = {i, name:b.name, base:b, affixes:aff, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0};
   let chosen=[...KEYS];
@@ -3117,6 +3141,7 @@ function startHunt(){
     if(key==='Giant'){ h.enemyMax = Math.floor(h.enemyMax*1.6); h.enemyHP = h.enemyMax; }
     if(key==='Swift') h.eAtk *= 1.15;
   }
+  console.log('Generated affixes:', aff, 'Count:', affCount); // Debug log
   S.combat.hunt = h; updateHuntUI();
 }
 
@@ -3126,6 +3151,7 @@ function updateHuntUI(){
   const b=h.base; el.textContent=`Fighting ${b.name}…`;
   setFill('enemyFill', h.enemyHP/h.enemyMax); setText('enemyHpTxt', `${Math.ceil(h.enemyHP)}/${h.enemyMax}`);
   setFill('ourFill', S.hp/S.hpMax); setText('ourHpTxt', `${Math.ceil(S.hp)}/${S.hpMax}`);
+  console.log('Updating affixList with:', h.affixes, 'Length:', h.affixes.length); // Debug log
   setText('affixList', h.affixes.length? h.affixes.join(', '): 'None');
 }
 function resolveHunt(win){
