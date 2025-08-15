@@ -28,8 +28,7 @@ import {
   initRealmUI,
   getRealmName
 } from './realm.js';
-import { qs, setText, setFill } from './dom.js';
-import { setText, setFill, log } from '../src/game/utils.js';
+import { qs, setText, setFill, log } from './dom.js';
 import {
   ADVENTURE_ZONES,
   updateActivityAdventure,
