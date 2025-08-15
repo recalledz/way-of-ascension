@@ -353,26 +353,30 @@ function initUI(){
   });
 
   // Buttons (with safe null checks)
-  const meditateBtn = qs('#meditateBtn');
-  if (meditateBtn) meditateBtn.addEventListener('click', meditate);
-  
-  const breakthroughBtn = qs('#breakthroughBtn');
-  if (breakthroughBtn) breakthroughBtn.addEventListener('click', tryBreakthrough);
-  
-  const brewBtn = qs('#brewBtn');
-  if (brewBtn) brewBtn.addEventListener('click', addBrew);
-  
-  const huntBtn = qs('#huntBtn');
-  if (huntBtn) huntBtn.addEventListener('click', startHunt);
-  
-  const useQiPill = qs('#useQiPill');
-  if (useQiPill) useQiPill.addEventListener('click', ()=>usePill('qi'));
-  
-  const useBodyPill = qs('#useBodyPill');
-  if (useBodyPill) useBodyPill.addEventListener('click', ()=>usePill('body'));
-  
-  const useWardPill = qs('#useWardPill');
-  if (useWardPill) useWardPill.addEventListener('click', ()=>usePill('ward'));
+  const listeners = {
+    '#meditateBtn': meditate,
+    '#breakthroughBtn': tryBreakthrough,
+    '#brewBtn': addBrew,
+    '#huntBtn': startHunt,
+    '#useQiPill': () => usePill('qi'),
+    '#useBodyPill': () => usePill('body'),
+    '#useWardPill': () => usePill('ward'),
+    '#saveBtn': save,
+    '#resetBtn': () => { if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }},
+    '#exportBtn': () => {
+      const blob=new Blob([JSON.stringify(S)],{type:'application/json'}); const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='way-of-ascension-save.json'; a.click(); URL.revokeObjectURL(url);
+    },
+    '#importBtn': async () => {
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
+      inp.click();
+    }
+  };
+
+  Object.entries(listeners).forEach(([selector, handler]) => {
+    qs(selector)?.addEventListener('click', handler);
+  });
 
   // Autos (with safe null checks)
   const autoMeditate = qs('#autoMeditate');
@@ -391,29 +395,6 @@ function initUI(){
   if (autoHunt) {
     autoHunt.checked = S.auto.hunt;
     autoHunt.addEventListener('change', e => S.auto.hunt = e.target.checked);
-  }
-
-  // Save/Load (with safe null checks)
-  const saveBtn = qs('#saveBtn');
-  if (saveBtn) saveBtn.addEventListener('click', save);
-  
-  const resetBtn = qs('#resetBtn');
-  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }});
-  const exportBtn = qs('#exportBtn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', ()=>{
-      const blob=new Blob([JSON.stringify(S)],{type:'application/json'}); const url=URL.createObjectURL(blob);
-      const a=document.createElement('a'); a.href=url; a.download='way-of-ascension-save.json'; a.click(); URL.revokeObjectURL(url);
-    });
-  }
-  
-  const importBtn = qs('#importBtn');
-  if (importBtn) {
-    importBtn.addEventListener('click', async()=>{
-      const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
-      inp.click();
-    });
   }
 
   // Safe render calls - only call functions that exist
@@ -3350,86 +3331,81 @@ function initActivityListeners() {
     });
   });
   
-  // Legacy selectors (if they exist)
-  document.getElementById('cultivationSelector')?.addEventListener('click', () => selectActivity('cultivation'));
-  document.getElementById('physiqueSelector')?.addEventListener('click', () => selectActivity('physique'));
-  document.getElementById('miningSelector')?.addEventListener('click', () => selectActivity('mining'));
-  document.getElementById('adventureSelector')?.addEventListener('click', () => selectActivity('adventure'));
-  document.getElementById('sectSelector')?.addEventListener('click', () => selectActivity('sect'));
-  
-  // Activity content event listeners
-  document.getElementById('breakthroughBtnActivity')?.addEventListener('click', () => {
-    if (typeof breakthrough === 'function') {
-      breakthrough();
-    } else if (typeof tryBreakthrough === 'function') {
-      tryBreakthrough();
-    } else {
-      log('Breakthrough function not available', 'bad');
+  // Legacy selectors via delegation
+  document.addEventListener('click', e => {
+    const legacy = e.target.closest('#cultivationSelector,#physiqueSelector,#miningSelector,#adventureSelector,#sectSelector');
+    if (legacy) {
+      selectActivity(legacy.id.replace('Selector',''));
     }
   });
-  document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
-  document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
-  
-  // Session-based training event listeners
-  document.getElementById('startTrainingSession')?.addEventListener('click', startTrainingSession);
-  document.getElementById('hitButton')?.addEventListener('click', executeHit);
-  
-  // Mining resource selection event listeners
-  const miningResourceInputs = document.querySelectorAll('input[name="miningResource"]');
-  miningResourceInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
+
+  // Activity content and session listeners
+  const listeners = {
+    '#breakthroughBtnActivity': () => {
+      if (typeof breakthrough === 'function') {
+        breakthrough();
+      } else if (typeof tryBreakthrough === 'function') {
+        tryBreakthrough();
+      } else {
+        log('Breakthrough function not available', 'bad');
+      }
+    },
+    '#useQiPillActivity': () => usePill('qi'),
+    '#useWardPillActivity': () => usePill('ward'),
+    '#startTrainingSession': startTrainingSession,
+    '#hitButton': executeHit,
+    '#startBattleButton': () => {
+      if (!S.adventure) {
+        const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+        S.adventure = {
+          currentZone: 0,
+          currentArea: 0,
+          selectedZone: 0,
+          selectedArea: 0,
+          totalKills: 0,
+          areasCompleted: 0,
+          zonesUnlocked: 1,
+          killsInCurrentArea: 0,
+          inCombat: false,
+          playerHP: S.hp,
+          enemyHP,
+          enemyMaxHP,
+          currentEnemy: null,
+          lastPlayerAttack: 0,
+          lastEnemyAttack: 0,
+          combatLog: []
+        };
+      }
+
+      if (!S.activities.adventure) {
+        startActivity('adventure');
+      }
+
+      startAdventureCombat();
+      updateActivityAdventure();
+    },
+    '#progressButton': () => {
+      progressToNextArea();
+    },
+    '#retreatButton': () => {
+      retreatFromCombat();
+    }
+  };
+
+  Object.entries(listeners).forEach(([selector, handler]) => {
+    document.querySelector(selector)?.addEventListener('click', handler);
+  });
+
+  // Mining resource selection via delegation
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[name="miningResource"]')) {
       if (S.mining) {
         S.mining.selectedResource = e.target.value;
         S.mining.resourcesGained = 0; // Reset counter when switching resources
         log(`Switched mining to ${e.target.value === 'stones' ? 'Spirit Stones' : e.target.value === 'iron' ? 'Iron Ore' : 'Ice Crystal'}`, 'good');
         updateActivityMining();
       }
-    });
-  });
-  
-  // Adventure start battle button event listener
-  document.getElementById('startBattleButton')?.addEventListener('click', () => {
-    // Ensure adventure data is initialized
-    if (!S.adventure) {
-      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        selectedZone: 0,
-        selectedArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
     }
-    
-    // Start the adventure activity if not already active
-    if (!S.activities.adventure) {
-      startActivity('adventure');
-    }
-    
-    // Start combat immediately
-    startAdventureCombat();
-    updateActivityAdventure();
-  });
-  
-  // Adventure progress button event listener
-  document.getElementById('progressButton')?.addEventListener('click', () => {
-    progressToNextArea();
-  });
-  
-  // Adventure retreat button event listener
-  document.getElementById('retreatButton')?.addEventListener('click', () => {
-    retreatFromCombat();
   });
 }
 
