@@ -25,6 +25,115 @@ import { initHp } from '../src/game/helpers.js';
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
+// Sidebar activities configuration
+const sidebarActivities = [
+  {
+    id: 'cultivation',
+    label: 'Cultivation',
+    icon: '🧘',
+    group: 'leveling',
+    levelId: 'cultivationLevel',
+    initialLevel: 'Mortal 1',
+    progressFillId: 'cultivationProgressFill',
+    progressTextId: 'cultivationProgressText',
+    cost: {}
+  },
+  {
+    id: 'physique',
+    label: 'Physique',
+    icon: '💪',
+    group: 'leveling',
+    levelId: 'physiqueLevel',
+    initialLevel: 'Level 1',
+    progressFillId: 'physiqueProgressFill',
+    progressTextId: 'physiqueProgressText',
+    cost: {}
+  },
+  {
+    id: 'mining',
+    label: 'Mining',
+    icon: '⛏️',
+    group: 'leveling',
+    levelId: 'miningLevel',
+    initialLevel: 'Level 1',
+    progressFillId: 'miningProgressFill',
+    progressTextId: 'miningProgressText',
+    cost: {}
+  },
+  {
+    id: 'cooking',
+    label: 'Cooking',
+    icon: '🍳',
+    group: 'leveling',
+    levelId: 'cookingLevelSidebar',
+    initialLevel: 'Level 1',
+    progressFillId: 'cookingProgressFillSidebar',
+    progressTextId: 'cookingProgressTextSidebar',
+    cost: {}
+  },
+  {
+    id: 'adventure',
+    label: 'Adventure',
+    icon: '⚔️',
+    group: 'management',
+    levelId: 'adventureLevel',
+    initialLevel: 'Zone 1',
+    progressFillId: 'adventureProgressFill',
+    progressTextId: 'adventureProgressText',
+    cost: {}
+  },
+  {
+    id: 'sect',
+    label: 'Sect',
+    icon: '🏛️',
+    group: 'management',
+    levelId: 'sectLevel',
+    initialLevel: 'Buildings',
+    statusId: 'sectStatus',
+    cost: {}
+  }
+];
+
+function renderSidebarActivities() {
+  const levelingContainer = document.getElementById('levelingActivities');
+  const managementContainer = document.getElementById('managementActivities');
+
+  sidebarActivities.forEach(act => {
+    const container = act.group === 'leveling' ? levelingContainer : managementContainer;
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = `activity-item ${act.group === 'leveling' ? 'leveling-tab' : 'management-tab'}`;
+    item.dataset.activity = act.id;
+
+    let html = `
+      <div class="activity-header">
+        <div class="activity-icon">${act.icon}</div>
+        <div class="activity-info">
+          <div class="activity-name">${act.label}</div>
+          <div class="activity-level" id="${act.levelId}">${act.initialLevel}</div>
+        </div>
+      </div>`;
+
+    if (act.progressFillId && act.progressTextId) {
+      html += `
+      <div class="activity-progress-bar">
+        <div class="progress-fill" id="${act.progressFillId}"></div>
+        <div class="progress-text" id="${act.progressTextId}">0%</div>
+      </div>`;
+    }
+
+    if (act.statusId) {
+      html += `
+      <div class="activity-status">
+        <div class="status-indicator" id="${act.statusId}">Inactive</div>
+      </div>`;
+    }
+
+    item.innerHTML = html;
+    container.appendChild(item);
+  });
+}
 
 const BEASTS = [
   {name:'Wild Rabbit', hp:20, atk:2, def:0, reward:{stones:5, herbs:2}},
@@ -343,6 +452,9 @@ function updateQiOrbEffect(){
 }
 
 function initUI(){
+  // Render sidebar activities
+  renderSidebarActivities();
+
   // Fill beasts
   const bs = document.getElementById('beastSelect');
   BEASTS.forEach((b,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${b.name} (HP ${b.hp})`; bs.appendChild(o)});
