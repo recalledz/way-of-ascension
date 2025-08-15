@@ -1319,22 +1319,6 @@ function updateActivityCooking() {
     progressFill.style.width = (S.cooking.exp / S.cooking.expMax * 100) + '%';
   }
   
-  // Update meat counts
-  setText('rawMeatCount', S.meat || 0);
-  setText('inventoryRawMeat', S.meat || 0);
-  setText('inventoryCookedMeat', S.cookedMeat || 0);
-  setText('inventoryRawMeatAdventure', S.meat || 0);
-  setText('inventoryCookedMeatAdventure', S.cookedMeat || 0);
-  
-  // Update cook amount input max
-  const cookInput = document.getElementById('cookAmount');
-  if (cookInput) {
-    cookInput.max = S.meat || 0;
-    if (parseInt(cookInput.value) > (S.meat || 0)) {
-      cookInput.value = Math.max(1, S.meat || 0);
-    }
-  }
-  
   // Update cook button
   const cookButton = document.getElementById('cookMeatButton');
   if (cookButton) {
