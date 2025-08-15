@@ -94,6 +94,7 @@ function ensureAdventure() {
       areasCompleted: 0,
       zonesUnlocked: 1,
       killsInCurrentArea: 0,
+      bestiary: {},
       inCombat: false
     };
   }
@@ -218,6 +219,10 @@ function defeatEnemy() {
   const enemy = S.adventure.currentEnemy;
   S.adventure.totalKills++;
   S.adventure.killsInCurrentArea++;
+  S.adventure.bestiary = S.adventure.bestiary || {};
+  const enemyType = enemy.type || enemy.name;
+  S.adventure.bestiary[enemyType] = (S.adventure.bestiary[enemyType] || 0) + 1;
+  updateBestiaryList();
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`${enemy.name} defeated!`);
   if (enemy.drops && enemy.drops.meat && Math.random() < enemy.drops.meat) {
@@ -403,6 +408,39 @@ export function updateFoodSlots() {
   }
 }
 
+function updateBestiaryList() {
+  if (!S.adventure || !S.adventure.bestiary) return;
+  const list = document.getElementById('bestiaryList');
+  if (!list) return;
+  const entries = Object.entries(S.adventure.bestiary);
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="muted">Defeat enemies to unlock their information...</div>';
+    return;
+  }
+  list.innerHTML = '';
+  entries.forEach(([type, kills]) => {
+    const data = ENEMY_DATA[type];
+    const entry = document.createElement('div');
+    entry.className = 'bestiary-entry';
+
+    const header = document.createElement('div');
+    header.className = 'bestiary-header';
+
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'bestiary-name';
+    nameDiv.textContent = data ? data.name : type;
+
+    const killsDiv = document.createElement('div');
+    killsDiv.className = 'bestiary-kills';
+    killsDiv.textContent = `Kills: ${kills}`;
+
+    header.appendChild(nameDiv);
+    header.appendChild(killsDiv);
+    entry.appendChild(header);
+    list.appendChild(entry);
+  });
+}
+
 export function updateActivityAdventure() {
   ensureAdventure();
   if (!S.adventure.bestiary) {
@@ -436,4 +474,5 @@ export function updateActivityAdventure() {
   updateAdventureCombat();
   updateFoodSlots();
   updateProgressButton();
+  updateBestiaryList();
 }

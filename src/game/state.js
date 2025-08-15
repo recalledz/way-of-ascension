@@ -72,6 +72,7 @@ export const defaultState = () => {
     areasCompleted: 0,
     zonesUnlocked: 1,
     killsInCurrentArea: 0,
+    bestiary: {},
     inCombat: false,
     playerHP: 100,
     enemyHP,
