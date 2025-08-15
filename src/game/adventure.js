@@ -175,6 +175,8 @@ export function updateBattleDisplay() {
     combatLog.innerHTML = recentLogs.map(l => `<div class="log-entry">${l}</div>`).join('');
     combatLog.scrollTop = combatLog.scrollHeight;
   }
+  const cd = S.combat.cds;
+  setText('techStatus', S.adventure.inCombat ? `Slash ${cd.slash||0}s • Guard ${cd.guard||0}s • Burst ${cd.burst||0}s` : '');
 }
 
 export function updateAdventureCombat() {
@@ -198,7 +200,8 @@ export function updateAdventureCombat() {
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
-        const enemyDamage = S.adventure.currentEnemy.attack || 5;
+        let enemyDamage = S.adventure.currentEnemy.attack || 5;
+        if (S.time < S.combat.guardUntil) enemyDamage *= 0.5;
         S.adventure.playerHP = Math.max(0, S.adventure.playerHP - enemyDamage);
         S.adventure.lastEnemyAttack = now;
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
@@ -210,9 +213,10 @@ export function updateAdventureCombat() {
       }
     }
   }
+  updateBattleDisplay();
 }
 
-function defeatEnemy() {
+export function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
   const enemy = S.adventure.currentEnemy;
   S.adventure.totalKills++;

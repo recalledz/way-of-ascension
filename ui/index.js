@@ -30,7 +30,9 @@ import {
   progressToNextArea,
   retreatFromCombat,
   updateFistProficiencyDisplay,
-  updateFoodSlots
+  updateFoodSlots,
+  updateBattleDisplay,
+  defeatEnemy
 } from '../src/game/adventure.js';
 
 // Global variables
@@ -2596,22 +2598,25 @@ function resolveHunt(win){
 }
 
 function techSlash(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
+  if(!(S.adventure && S.adventure.inCombat)){ log('No active battle','bad'); return; }
   if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
   const dmg = calcAtk()*3;
-  S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg);
-  S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
+  S.adventure.enemyHP = Math.max(0, S.adventure.enemyHP - dmg);
+  S.combat.cds.slash = 8; log('You unleash Sword Slash!','good');
+  if (S.adventure.enemyHP <= 0) { defeatEnemy(); } else { updateBattleDisplay(); }
 }
 function techGuard(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
+  if(!(S.adventure && S.adventure.inCombat)){ log('No active battle','bad'); return; }
   if(S.combat.cds.guard>0){ log('Guard on cooldown','bad'); return; }
-  S.combat.guardUntil = S.time + 5; S.combat.cds.guard = 20; log('You assume a guarded stance (5s).','good'); updateHuntUI();
+  S.combat.guardUntil = S.time + 5; S.combat.cds.guard = 20; log('You assume a guarded stance (5s).','good'); updateBattleDisplay();
 }
 function techBurst(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
+  if(!(S.adventure && S.adventure.inCombat)){ log('No active battle','bad'); return; }
   if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
   const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
+  S.qi -= need; const dmg = need/3 + calcAtk();
+  S.adventure.enemyHP = Math.max(0, S.adventure.enemyHP - dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good');
+  if (S.adventure.enemyHP <= 0) { defeatEnemy(); } else { updateBattleDisplay(); }
 }
 
 function updateWinEst(){
@@ -2818,7 +2823,12 @@ function initActivityListeners() {
   // Session-based training event listeners
   document.getElementById('startTrainingSession')?.addEventListener('click', startTrainingSession);
   document.getElementById('hitButton')?.addEventListener('click', executeHit);
-  
+
+  // Hunt technique event listeners
+  document.getElementById('techSlash')?.addEventListener('click', techSlash);
+  document.getElementById('techGuard')?.addEventListener('click', techGuard);
+  document.getElementById('techBurst')?.addEventListener('click', techBurst);
+
   // Mining resource selection event listeners
   const miningResourceInputs = document.querySelectorAll('input[name="miningResource"]');
   miningResourceInputs.forEach(input => {
