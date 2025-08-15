@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
-/* global updateYinYangVisual, updateBreathingStats, updateLotusFoundationFill, showActivity, switchTab, showTab, breakthrough */
+/* global updateYinYangVisual, updateBreathingStats, updateLotusFoundationFill, showActivity, switchTab, showTab */
 
 // Way of Ascension — Modular JS
 
-import { REALMS } from '../data/realms.js';
 import { LAWS } from '../data/laws.js';
 import { S, defaultState, save, setState } from '../src/game/state.js';
 import {
@@ -21,6 +20,15 @@ import {
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
 import { initHp } from '../src/game/helpers.js';
+import {
+  updateRealmUI,
+  updateActivityCultivation,
+  updateBreakthrough,
+  checkLawUnlocks,
+  initRealmUI,
+  getRealmName
+} from './realm.js';
+import { qs, setText, setFill } from './dom.js';
 
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
@@ -349,7 +357,6 @@ const fmt = n=>{
   if (n>=1e3) return (n/1e3).toFixed(2)+'k';
   return Math.floor(n).toString();
 }
-const qs = sel => document.querySelector(sel);
 
 // Import enemy data from the enemies module
 import { ENEMY_DATA } from '../data/enemies.js';
@@ -467,9 +474,7 @@ function initUI(){
   // Buttons (with safe null checks)
   const meditateBtn = qs('#meditateBtn');
   if (meditateBtn) meditateBtn.addEventListener('click', meditate);
-  
-  const breakthroughBtn = qs('#breakthroughBtn');
-  if (breakthroughBtn) breakthroughBtn.addEventListener('click', tryBreakthrough);
+  initRealmUI();
   
   const brewBtn = qs('#brewBtn');
   if (brewBtn) brewBtn.addEventListener('click', addBrew);
@@ -536,10 +541,8 @@ function initUI(){
 }
 
 function updateAll(){
-  // Realm display
-  const r = REALMS[S.realm.tier];
-  setText('realmName', `${r.name} ${S.realm.stage}`);
-  
+  updateRealmUI();
+
   // Qi
   setText('qiVal', fmt(S.qi)); setText('qiCap', fmt(qCap()));
   setText('qiValL', fmt(S.qi)); setText('qiCapL', fmt(qCap()));
@@ -569,7 +572,6 @@ function updateAll(){
   }
 
   // Update progression displays
-  setText('realmDisplay', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   setText('physiqueLevel', S.physique.level);
   setText('physiqueExp', S.physique.exp);
   setText('physiqueExpMax', S.physique.expMax);
@@ -606,23 +608,6 @@ function updateAll(){
   // Alchemy
   setText('alchLvl', S.alchemy.level); setText('alchXp', S.alchemy.xp); setText('slotCount', S.alchemy.maxSlots);
   
-  // Breakthrough
-  const btChance = breakthroughChance();
-  setText('btChance', Math.floor(btChance * 100));
-  
-  // Show breakthrough requirements and difficulty factors
-  if (btChance > 0) {
-    const realm = REALMS[S.realm.tier];
-    const stageMultiplier = 1 - (S.realm.stage - 1) * 0.05;
-    const realmPenalty = S.realm.tier * 0.02;
-    const html = document.getElementById('breakthroughDetails');
-    if (html) {
-      html.innerHTML = `
-        <small>Base: ${(realm.bt * 100).toFixed(1)}% | Stage penalty: ${((1-stageMultiplier) * 100).toFixed(1)}% | Realm penalty: ${(realmPenalty * 100).toFixed(1)}%</small>
-      `;
-    }
-  }
-  
   // Karma
   setText('karmaVal', S.karmaPts);
   const ascendBtn = document.getElementById('ascendBtn');
@@ -644,8 +629,6 @@ function updateAll(){
   updateActivityCards();
 }
 
-function setText(id, v){const el=document.getElementById(id); if(el) el.textContent=v}
-function setFill(id, ratio){ratio=clamp(ratio,0,1); const el=document.getElementById(id); if(el) el.style.width=(ratio*100).toFixed(1)+'%'}
 
 function renderUpgrades(){
   // Legacy function - now handled by renderBuildings in sect tab
@@ -717,7 +700,7 @@ function renderBuildings(){
       
       if(!isUnlocked){
         const req = building.unlockReq;
-        const realmName = REALMS[req.realm].name;
+        const realmName = getRealmName(req.realm);
         content += `<div class="unlock-req">Unlocks at ${realmName} ${req.stage}</div>`;
       } else if(isMaxLevel){
         const effect = building.effects[currentLevel];
@@ -1612,174 +1595,6 @@ function updateActivityContent() {
   }
 }
 
-function updateActivityCultivation() {
-  setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
-  setText('foundValActivity', Math.floor(S.foundation));
-  setText('foundCapActivity', fCap());
-  setText('qiValActivity', Math.floor(S.qi));
-  setText('qiCapActivity', qCap());
-  setText('qiRegenActivity', qiRegenPerSec().toFixed(1));
-  setText('foundationRate', foundationGainPerSec().toFixed(1));
-  setText('btChanceActivity', (breakthroughChance() * 100).toFixed(1) + '%');
-  setText('powerMultActivity', powerMult().toFixed(1) + 'x');
-  
-  const foundFillActivity = document.getElementById('foundFillActivity');
-  if (foundFillActivity) {
-    foundFillActivity.style.width = (S.foundation / fCap() * 100) + '%';
-  }
-  
-  const qiFillActivity = document.getElementById('qiFillActivity');
-  if (qiFillActivity) {
-    qiFillActivity.style.width = (S.qi / qCap() * 100) + '%';
-  }
-  
-  const startBtn = document.getElementById('startCultivationActivity');
-  if (startBtn) {
-    startBtn.textContent = S.activities.cultivation ? '🛑 Stop Cultivating' : '🧘 Start Cultivating';
-    startBtn.onclick = () => S.activities.cultivation ? stopActivity('cultivation') : startActivity('cultivation');
-  }
-  
-  const btBtn = document.getElementById('breakthroughBtnActivity');
-  if (btBtn) {
-    // Update button state based on breakthrough progress
-    if (S.breakthrough && S.breakthrough.inProgress) {
-      btBtn.textContent = `⚡ Breakthrough in Progress... (${Math.ceil(S.breakthrough.timeRemaining)}s)`;
-      btBtn.disabled = true;
-      btBtn.classList.add('disabled');
-    } else {
-      btBtn.textContent = '⚡ Attempt Breakthrough';
-      btBtn.disabled = false;
-      btBtn.classList.remove('disabled');
-    }
-    
-    btBtn.onclick = () => {
-      if (typeof tryBreakthrough === 'function') {
-        tryBreakthrough();
-      } else {
-        log('Breakthrough function not available', 'bad');
-      }
-    };
-  }
-  
-  // Show/hide cultivation stats card
-  const statsCard = document.getElementById('cultivationStatsCard');
-  if (statsCard) {
-    statsCard.style.display = S.activities.cultivation ? 'block' : 'none';
-  }
-  
-  // Update cultivation stats display
-  if (S.activities.cultivation) {
-    // Ensure cultivation object exists
-    if (!S.cultivation) {
-      S.cultivation = {
-        talent: 1.0,
-        comprehension: 1.0,
-        foundationMult: 1.0,
-        pillMult: 1.0,
-        buildingMult: 1.0
-      };
-    }
-    
-    setText('cultivationTalent', (S.cultivation.talent || 1.0).toFixed(1) + 'x');
-    setText('cultivationComprehension', (S.cultivation.comprehension || 1.0).toFixed(1) + 'x');
-    setText('cultivationFoundationMult', (S.cultivation.foundationMult || 1.0).toFixed(1) + 'x');
-    setText('cultivationPillMult', (S.cultivation.pillMult || 1.0).toFixed(1) + 'x');
-    setText('cultivationBuildingMult', (S.cultivation.buildingMult || 1.0).toFixed(1) + 'x');
-  }
-  
-  // Update cultivation progression tree
-  updateCultivationProgressionTree();
-
-  // Setup cultivation tab switching
-  setupCultivationTabs();
-}
-
-function updateCultivationProgressionTree() {
-  const container = document.getElementById('cultivationProgressionTree');
-  if (!container) return;
-  
-  // Define realm icons and descriptions
-  const realmData = [
-    { icon: '🌱', name: 'Mortal', desc: 'The beginning of your cultivation journey' },
-    { icon: '⚡', name: 'Qi Refining', desc: 'Learning to gather and refine spiritual energy' },
-    { icon: '🏔️', name: 'Foundation', desc: 'Building a solid cultivation foundation' },
-    { icon: '💎', name: 'Core Formation', desc: 'Forming your spiritual core' },
-    { icon: '👶', name: 'Nascent Soul', desc: 'Birth of your nascent soul' },
-    { icon: '🌟', name: 'Soul Transformation', desc: 'Transforming your very essence' },
-    { icon: '🔥', name: 'Void Refining', desc: 'Refining the void within' },
-    { icon: '🌌', name: 'Body Integration', desc: 'Integrating body and soul' },
-    { icon: '🏛️', name: 'Mahayana', desc: 'The great vehicle of cultivation' },
-    { icon: '✨', name: 'Tribulation', desc: 'Facing heavenly tribulation' },
-    { icon: '👑', name: 'True Immortal', desc: 'Achieving true immortality' }
-  ];
-  
-  container.innerHTML = '';
-  
-  realmData.forEach((realm, index) => {
-    const realmNode = document.createElement('div');
-    realmNode.className = 'realm-node';
-    
-    // Determine realm state
-    if (index < S.realm.tier) {
-      realmNode.classList.add('completed');
-    } else if (index === S.realm.tier) {
-      realmNode.classList.add('current');
-    } else {
-      realmNode.classList.add('locked');
-    }
-    
-    // Get realm info from REALMS array if available
-    const realmInfo = REALMS[index];
-    const stages = realmInfo ? realmInfo.stages : 9;
-    
-    realmNode.innerHTML = `
-      <div class="realm-icon">${realm.icon}</div>
-      <div class="realm-info">
-        <div class="realm-name">${realm.name}</div>
-        <div class="realm-description">${realm.desc}</div>
-        <div class="realm-stages">
-          ${Array.from({length: stages}, (_, stageIndex) => {
-            const stageNumber = stageIndex + 1;
-            let stageClass = 'stage-dot';
-            
-            if (index < S.realm.tier) {
-              stageClass += ' completed';
-            } else if (index === S.realm.tier && stageNumber < S.realm.stage) {
-              stageClass += ' completed';
-            } else if (index === S.realm.tier && stageNumber === S.realm.stage) {
-              stageClass += ' current';
-            }
-            
-            return `<div class="${stageClass}" title="Stage ${stageNumber}"></div>`;
-          }).join('')}
-        </div>
-      </div>
-    `;
-    
-    container.appendChild(realmNode);
-  });
-}
-
-function setupCultivationTabs() {
-  const tabButtons = document.querySelectorAll('.cultivation-tab-btn');
-  tabButtons.forEach(button => {
-    button.onclick = () => {
-      const tabName = button.dataset.tab;
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.cultivation-tab-content').forEach(content => {
-        content.classList.remove('active');
-        content.style.display = 'none';
-      });
-      button.classList.add('active');
-      const content = document.getElementById(tabName + 'SubTab');
-      if (content) {
-        content.classList.add('active');
-        content.style.display = 'block';
-      }
-    };
-  });
-}
-
 function updateActivityPhysique() {
   // Only update if physique activity is initialized
   if (!S.physique) {
@@ -2328,8 +2143,7 @@ function openFoodManager() {
 // Update sidebar activity displays
 function updateSidebarActivities() {
   // Update cultivation
-  const currentRealm = REALMS[S.realm.tier];
-  setText('cultivationLevel', `${currentRealm.name} ${S.realm.stage}`);
+  setText('cultivationLevel', `${getRealmName(S.realm.tier)} ${S.realm.stage}`);
   const cultivationFill = document.getElementById('cultivationProgressFill');
   if (cultivationFill) {
     const foundationProgress = S.foundation / fCap();
@@ -2673,227 +2487,7 @@ function meditate(){
   updateAll();
 }
 
-function breakthroughChance(){
-  if(S.qi < qCap()*0.99 || S.foundation < fCap()*0.99) return 0;
-  
-  // Base chance decreases with each realm and stage
-  const realm = REALMS[S.realm.tier];
-  let base = realm.bt;
-  
-  // Progressive difficulty scaling
-  const stageMultiplier = 1 - (S.realm.stage - 1) * 0.05; // Each stage reduces chance by 5%
-  const realmPenalty = S.realm.tier * 0.02; // Each realm adds 2% penalty
-  
-  base = base * stageMultiplier - realmPenalty;
-  
-  // Bonuses
-  const ward = S.pills.ward>0 ? 0.15 : 0;
-  const alchemyBonus = S.alchemy.successBonus * 0.1; // Reduced from 0.2
-  const buildingBonus = S.buildingBonuses.breakthroughBonus || 0;
-  const cultivationBonus = (S.cultivation.talent - 1) * 0.1; // Talent helps with breakthroughs
-  
-  const totalChance = base + ward + alchemyBonus + buildingBonus + cultivationBonus;
-  
-  return clamp(totalChance, 0.01, 0.95); // Minimum 1%, maximum 95%
-}
-
-function tryBreakthrough(){
-  const haveQi = S.qi >= qCap()*0.99; const haveFound = S.foundation >= fCap()*0.99;
-  if(!haveQi || !haveFound){
-    log(`Requirements: Qi ${Math.floor(100*S.qi/qCap())}% & Foundation ${Math.floor(100*S.foundation/fCap())}%`, 'bad');
-    return;
-  }
-  
-  // Check if breakthrough is already in progress
-  if(S.breakthrough && S.breakthrough.inProgress) {
-    log('Breakthrough already in progress!', 'bad');
-    return;
-  }
-  
-  // Initialize breakthrough object if it doesn't exist
-  if(!S.breakthrough) {
-    S.breakthrough = {
-      inProgress: false,
-      timeRemaining: 0,
-      totalTime: 0
-    };
-  }
-  
-  // Calculate breakthrough duration
-  const minTime = 3; // 3 seconds minimum
-  const maxTimeBase = 10 + (S.realm.tier * 10); // 10 + 10 per realm tier
-  const mindReduction = (S.stats.mind - 10) * 0.02; // 2% reduction per mind point above 10
-  const maxTime = Math.max(minTime + 1, maxTimeBase * (1 - mindReduction));
-  
-  const duration = minTime + Math.random() * (maxTime - minTime);
-  
-  // Start breakthrough process
-  S.breakthrough.inProgress = true;
-  S.breakthrough.timeRemaining = duration;
-  S.breakthrough.totalTime = duration;
-  
-  // Consume ward pill if available
-  if(S.pills.ward>0){ S.pills.ward--; }
-  
-  log(`Breakthrough initiated! Duration: ${duration.toFixed(1)} seconds...`, 'neutral');
-  updateAll();
-}
-
-function updateBreakthrough() {
-  if(!S.breakthrough || !S.breakthrough.inProgress) return;
-  
-  S.breakthrough.timeRemaining -= 1; // Decrease by 1 second per tick
-  
-  if(S.breakthrough.timeRemaining <= 0) {
-    // Breakthrough attempt complete
-    const ch = breakthroughChance();
-    
-    if(Math.random() < ch) {
-      S.qi = 0; 
-      S.foundation = 0; 
-      advanceRealm(); 
-      log('Breakthrough succeeded! Realm advanced.', 'good');
-    } else {
-      S.qi = 0; 
-      S.foundation = Math.max(0, S.foundation - Math.ceil(fCap() * 0.25)); 
-      S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax * 0.2)); 
-      log('Tribulation backlash! Breakthrough failed.', 'bad');
-    }
-    
-    // Reset breakthrough state
-    S.breakthrough.inProgress = false;
-    S.breakthrough.timeRemaining = 0;
-    S.breakthrough.totalTime = 0;
-    
-    updateAll();
-  }
-}
-
-function advanceRealm(){
-  const wasRealmAdvancement = S.realm.stage > REALMS[S.realm.tier].stages;
-  const oldRealm = S.realm.tier;
-  
-  S.realm.stage++;
-  if(S.realm.stage > REALMS[S.realm.tier].stages){ S.realm.tier++; S.realm.stage = 1; }
-  
-  const currentRealm = REALMS[S.realm.tier];
-  log(`Advanced to ${currentRealm.name} ${S.realm.stage}!`, 'good');
-  
-  // Stat bonuses for breakthrough
-  if(wasRealmAdvancement) {
-    // Major realm advancement - significant stat bonuses
-    const realmBonus = Math.max(1, Math.floor(S.realm.tier * 1.5));
-    S.atkBase += realmBonus * 2;
-    S.defBase += realmBonus;
-    S.hpMax += Math.floor(S.hpMax * 0.25); // 25% HP increase
-    S.hp = S.hpMax; // Full heal on realm advancement
-    
-    // Major cultivation stat improvements
-    if (!S.cultivation) {
-      S.cultivation = {
-        talent: 1.0, foundationMult: 1.0, 
-        pillMult: 1.0, buildingMult: 1.0
-      };
-    }
-    if (!S.stats) {
-      S.stats = {
-        physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
-      };
-    }
-    
-    S.cultivation.talent += 0.15; // +15% talent per realm
-    S.cultivation.foundationMult += 0.08; // +8% foundation multiplier per realm
-    
-    // Major stat point awards for realm breakthrough
-    const realmStatPoints = 3 + S.realm.tier; // 4-12 stat points depending on realm
-    S.stats.physique += Math.ceil(realmStatPoints * 0.3);
-    S.stats.mind += Math.ceil(realmStatPoints * 0.25);
-    S.stats.dexterity += Math.ceil(realmStatPoints * 0.25);
-    S.stats.comprehension += Math.ceil(realmStatPoints * 0.2);
-    S.stats.criticalChance += 0.01; // +1% crit chance per realm
-    
-    // Power multiplier notification
-    const powerGain = currentRealm.power / REALMS[oldRealm].power;
-    log(`Realm breakthrough! Power increased by ${powerGain.toFixed(1)}x! ATK +${realmBonus * 2}, DEF +${realmBonus}, HP +25%`, 'good');
-    log(`Cultivation enhanced! Talent +15%, Comprehension +10%, Foundation Mult +8%`, 'good');
-  } else {
-    // Stage advancement within realm - smaller bonuses
-    const stageBonus = Math.max(1, Math.floor((S.realm.tier + 1) * 0.5));
-    S.atkBase += stageBonus;
-    S.defBase += Math.floor(stageBonus * 0.7);
-    S.hpMax += Math.floor(S.hpMax * 0.08); // 8% HP increase
-    S.hp = Math.min(S.hpMax, S.hp + Math.floor(S.hpMax * 0.5)); // Partial heal
-    
-    // Minor cultivation stat improvements
-    if (!S.cultivation) {
-      S.cultivation = {
-        talent: 1.0, foundationMult: 1.0, 
-        pillMult: 1.0, buildingMult: 1.0
-      };
-    }
-    if (!S.stats) {
-      S.stats = {
-        physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
-      };
-    }
-    
-    S.cultivation.talent += 0.03; // +3% talent per stage
-    
-    // Minor stat point awards for stage breakthrough
-    const stageStatPoints = 1 + Math.floor(S.realm.tier * 0.5); // 1-5 stat points depending on realm
-    const statDistribution = Math.random();
-    if (statDistribution < 0.4) {
-      S.stats.physique += stageStatPoints;
-    } else if (statDistribution < 0.7) {
-      S.stats.comprehension += stageStatPoints;
-    } else if (statDistribution < 0.85) {
-      S.stats.mind += stageStatPoints;
-    } else {
-      S.stats.dexterity += stageStatPoints;
-    }
-    
-    log(`Stage breakthrough! ATK +${stageBonus}, DEF +${Math.floor(stageBonus * 0.7)}, HP +8%`, 'good');
-    log(`Cultivation improved! Talent +3%, Comprehension +2%`, 'good');
-  }
-  
-  // Check for law unlocks and award law points
-  checkLawUnlocks();
-  awardLawPoints();
-}
-
 // Law System Functions
-function checkLawUnlocks(){
-  for(const lawKey in LAWS){
-    const law = LAWS[lawKey];
-    if(!S.laws.unlocked.includes(lawKey)){
-      if(S.realm.tier >= law.unlockReq.realm && S.realm.stage >= law.unlockReq.stage){
-        S.laws.unlocked.push(lawKey);
-        log(`${law.name} is now available for selection!`, 'good');
-      }
-    }
-  }
-}
-
-function awardLawPoints(){
-  // Award law points based on realm progression
-  let points = 0;
-  if(S.realm.tier >= 2) points += 2; // Foundation+
-  if(S.realm.tier >= 3) points += 3; // Core+
-  if(S.realm.tier >= 4) points += 5; // Nascent+
-  
-  // Bonus points for major milestones
-  if(S.realm.stage === 1 && S.realm.tier > 0) points += S.realm.tier;
-  if(S.realm.stage === 5) points += 1;
-  if(S.realm.stage === 9) points += 2;
-  
-  if(points > 0){
-    S.laws.points += points;
-    log(`Gained ${points} Law Points!`, 'good');
-  }
-}
-
 function selectLaw(lawKey){
   if(!S.laws.unlocked.includes(lawKey)){
     log('Law not unlocked yet!', 'bad');
@@ -3467,15 +3061,6 @@ function initActivityListeners() {
   document.getElementById('sectSelector')?.addEventListener('click', () => selectActivity('sect'));
   
   // Activity content event listeners
-  document.getElementById('breakthroughBtnActivity')?.addEventListener('click', () => {
-    if (typeof breakthrough === 'function') {
-      breakthrough();
-    } else if (typeof tryBreakthrough === 'function') {
-      tryBreakthrough();
-    } else {
-      log('Breakthrough function not available', 'bad');
-    }
-  });
   document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
   document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
   
