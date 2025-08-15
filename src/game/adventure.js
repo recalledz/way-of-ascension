@@ -149,6 +149,7 @@ export function updateBattleDisplay() {
   const playerAttackRate = calculatePlayerAttackRate();
   setText('playerAttack', Math.floor(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
+  setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
@@ -354,7 +355,10 @@ export function updateProgressButton() {
   progressBtn.textContent = isAreaCleared ? 'Progress to Next Area' : `Clear Area (${S.adventure.killsInCurrentArea}/${currentArea.killReq})`;
 }
 
+let tabsInitialized = false;
+
 export function setupAdventureTabs() {
+  if (tabsInitialized) return;
   const tabButtons = document.querySelectorAll('.adventure-tab-btn');
   tabButtons.forEach(button => {
     button.onclick = () => {
@@ -375,6 +379,7 @@ export function setupAdventureTabs() {
       }
     };
   });
+  tabsInitialized = true;
 }
 
 export function updateFoodSlots() {
@@ -470,15 +475,10 @@ export function updateActivityAdventure() {
   setText('totalKills', S.adventure.totalKills);
   setText('areasCompleted', S.adventure.areasCompleted);
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
-  const playerAttack = calculatePlayerCombatAttack();
-  const playerAttackRate = calculatePlayerAttackRate();
   setText('currentWeapon', 'Fists');
   const fistBase = 5 + getFistBonuses().damage;
   setText('baseDamage', fistBase);
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
-  setText('combatAttackRate', playerAttackRate.toFixed(1) + '/s');
-  setText('playerAttack', playerAttack);
-  setText('playerAttackRate', playerAttackRate.toFixed(1) + '/s');
   updateFistProficiencyDisplay();
   updateZoneButtons();
   updateAreaGrid();
@@ -488,4 +488,5 @@ export function updateActivityAdventure() {
   updateProgressButton();
   updateBestiaryList();
   setupAdventureTabs();
+
 }
