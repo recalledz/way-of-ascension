@@ -94,7 +94,8 @@ function ensureAdventure() {
       areasCompleted: 0,
       zonesUnlocked: 1,
       killsInCurrentArea: 0,
-      inCombat: false
+      inCombat: false,
+      bestiary: {}
     };
   }
 }
@@ -217,6 +218,7 @@ function defeatEnemy() {
   const enemy = S.adventure.currentEnemy;
   S.adventure.totalKills++;
   S.adventure.killsInCurrentArea++;
+  S.adventure.bestiary[enemy.type] = (S.adventure.bestiary[enemy.type] || 0) + 1;
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`${enemy.name} defeated!`);
   if (enemy.drops && enemy.drops.meat && Math.random() < enemy.drops.meat) {
@@ -230,6 +232,7 @@ function defeatEnemy() {
   S.adventure.enemyHP = hp;
   S.adventure.enemyMaxHP = hpMax;
   log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
+  updateBestiaryList();
   if (S.activities.adventure && S.adventure.playerHP > 0) {
     startAdventureCombat();
     updateActivityAdventure();
@@ -398,11 +401,58 @@ export function updateFoodSlots() {
   }
 }
 
+function findZoneForEnemy(enemyType) {
+  for (const zone of ADVENTURE_ZONES) {
+    if (zone.areas && zone.areas.some(area => area.enemy === enemyType)) {
+      return zone;
+    }
+  }
+  return null;
+}
+
+function updateBestiaryList() {
+  ensureAdventure();
+  const list = document.getElementById('bestiaryList');
+  if (!list) return;
+  const entries = Object.keys(S.adventure.bestiary || {});
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="muted">Defeat enemies to unlock their information...</div>';
+    return;
+  }
+  list.innerHTML = '';
+  entries.forEach(type => {
+    const data = ENEMY_DATA[type];
+    if (!data) return;
+    const kills = S.adventure.bestiary[type];
+    const zone = findZoneForEnemy(type);
+    const entry = document.createElement('div');
+    entry.className = 'bestiary-entry';
+    const header = document.createElement('div');
+    header.className = 'bestiary-header';
+    header.innerHTML = `<span class="bestiary-name">${data.name}</span><span class="bestiary-kills">Kills: ${kills}</span>`;
+    entry.appendChild(header);
+    const stats = document.createElement('div');
+    stats.className = 'bestiary-stats';
+    stats.innerHTML = `
+      <div class="bestiary-stat"><span>HP</span><span>${data.hp}</span></div>
+      <div class="bestiary-stat"><span>ATK</span><span>${data.attack}</span></div>
+      <div class="bestiary-stat"><span>Rate</span><span>${(data.attackRate || 1).toFixed(1)}/s</span></div>
+    `;
+    entry.appendChild(stats);
+    const info = document.createElement('div');
+    info.className = 'bestiary-info';
+    const loot = data.loot ? Object.keys(data.loot).join(', ') : 'None';
+    info.innerHTML = `
+      <span class="bestiary-zone">${zone ? zone.name : 'Unknown Zone'}</span>
+      <span class="bestiary-loot">Loot: ${loot}</span>
+    `;
+    entry.appendChild(info);
+    list.appendChild(entry);
+  });
+}
+
 export function updateActivityAdventure() {
   ensureAdventure();
-  if (!S.adventure.bestiary) {
-    S.adventure.bestiary = {};
-  }
   const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
   if (currentZone && currentZone.areas) {
     const currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
@@ -436,5 +486,6 @@ export function updateActivityAdventure() {
   updateAdventureCombat();
   updateFoodSlots();
   updateProgressButton();
+  updateBestiaryList();
   setupAdventureTabs();
 }
