@@ -2223,10 +2223,12 @@ if (ascendBtn) {
 function tick(){
   S.time++;
 
-  // Passive Qi & HP regen
+  // Passive Qi regen and out-of-combat HP regen
   S.qi = clamp(S.qi + qiRegenPerSec(), 0, qCap());
-  const multHeal = 0.01 + S.realm.tier*0.002;
-  S.hp = clamp(S.hp + S.hpMax*multHeal, 0, S.hpMax);
+  if (!(S.adventure?.inCombat) && !S.combat.hunt) {
+    S.hp = clamp(S.hp + 1, 0, S.hpMax);
+    if (S.adventure) S.adventure.playerHP = S.hp;
+  }
 
   // Gathering
   S.herbs += yieldBase('herbs') * S.gather.herbs;
