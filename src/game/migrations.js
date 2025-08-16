@@ -24,8 +24,16 @@ export const migrations = [
         buildingMult: 1.0
       };
     }
-    if(!save.proficiencies){
-      save.proficiencies = { fist: { level: 1, exp: 0, expMax: 100 } };
+    if(!save.proficiency){
+      if(save.proficiencies){
+        save.proficiency = {};
+        for(const [k,v] of Object.entries(save.proficiencies)){
+          save.proficiency[k] = typeof v === 'object' ? (v.level || 0) : v;
+        }
+        delete save.proficiencies;
+      }else{
+        save.proficiency = {};
+      }
     }
     if(save.alchemy && !Object.prototype.hasOwnProperty.call(save.alchemy, 'unlocked')){
       save.alchemy.unlocked = true;

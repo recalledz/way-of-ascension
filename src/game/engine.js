@@ -1,6 +1,7 @@
 import { REALMS } from '../../data/realms.js';
 import { LAWS } from '../../data/laws.js';
 import { S } from './state.js';
+import { getProficiency } from './systems/proficiency.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -162,11 +163,11 @@ export function getStatEffects() {
 }
 
 export function getFistBonuses() {
-  const prof = S.proficiencies?.fist || { level: 1 };
-  const levels = Math.max(0, prof.level - 1);
+  const { bonus } = getProficiency('fist', S);
+  const base = 5;
   return {
-    damage: levels * 2,
-    speed: levels * 0.1
+    damage: Math.round(base * (bonus - 1)),
+    speed: bonus - 1
   };
 }
 

@@ -87,10 +87,8 @@ export const defaultState = () => {
     progress: 0,
     maxProgress: 100
   },
-  // Combat Proficiencies
-  proficiencies: {
-    fist: { level: 1, exp: 0, expMax: 100 }
-  },
+  // Combat Proficiency
+  proficiency: {},
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
     foundationMult: 1.0, // Foundation gain multiplier from various sources
