@@ -139,7 +139,7 @@ export function updateBattleDisplay() {
   ensureAdventure();
   const playerHP = S.adventure.playerHP || S.hp || 100;
   const playerMaxHP = S.hpMax || 100;
-  setText('playerHealthText', `${playerHP}/${playerMaxHP}`);
+  setText('playerHealthText', `${Math.round(playerHP)}/${Math.round(playerMaxHP)}`);
   const playerHealthFill = document.getElementById('playerHealthFill');
   if (playerHealthFill) {
     const playerHealthPct = (playerHP / playerMaxHP) * 100;
@@ -147,7 +147,7 @@ export function updateBattleDisplay() {
   }
   const playerAttack = calculatePlayerCombatAttack();
   const playerAttackRate = calculatePlayerAttackRate();
-  setText('playerAttack', Math.floor(playerAttack));
+  setText('playerAttack', Math.round(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
@@ -155,8 +155,8 @@ export function updateBattleDisplay() {
     const enemyHP = S.adventure.enemyHP || 0;
     const enemyMaxHP = S.adventure.enemyMaxHP || 0;
     setText('enemyName', enemy.name || 'Unknown Enemy');
-    setText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
-    setText('enemyAttack', enemy.attack || 0);
+    setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
+    setText('enemyAttack', Math.round(enemy.attack || 0));
     setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill && enemyMaxHP > 0) {
@@ -188,11 +188,11 @@ export function updateAdventureCombat() {
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
     if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
-      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, playerAttack);
+      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, Math.round(playerAttack));
       S.adventure.lastPlayerAttack = now;
-      gainFistXP(playerAttack);
+      gainFistXP(Math.round(playerAttack));
       S.adventure.combatLog = S.adventure.combatLog || [];
-      S.adventure.combatLog.push(`You deal ${playerAttack} damage to ${S.adventure.currentEnemy.name}`);
+      S.adventure.combatLog.push(`You deal ${Math.round(playerAttack)} damage to ${S.adventure.currentEnemy.name}`);
       if (S.adventure.enemyHP <= 0) {
         defeatEnemy();
       }
@@ -200,7 +200,7 @@ export function updateAdventureCombat() {
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
-        const enemyDamage = S.adventure.currentEnemy.attack || 5;
+        const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
         S.adventure.playerHP = processAttack(S.adventure.playerHP, enemyDamage);
         S.adventure.lastEnemyAttack = now;
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
@@ -263,7 +263,7 @@ export function startAdventureCombat() {
   const { enemyHP, enemyMax } = initializeFight(enemyData);
   S.adventure.enemyHP = enemyHP;
   S.adventure.enemyMaxHP = enemyMax;
-  S.adventure.playerHP = S.hp;
+  S.adventure.playerHP = Math.round(S.hp);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];

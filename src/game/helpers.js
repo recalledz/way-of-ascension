@@ -1,3 +1,4 @@
 export function initHp(hpMax){
-  return { hp: hpMax, hpMax };
+  const max = Math.round(hpMax);
+  return { hp: max, hpMax: max };
 }
