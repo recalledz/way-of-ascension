@@ -502,6 +502,7 @@ function updateAll(){
   if (!S.activities) {
     S.activities = { cultivation: false, physique: false, mining: false, adventure: false, cooking: false };
   }
+  updateCurrentTaskDisplay();
 
   // Update progression displays
   setText('physiqueLevel', S.physique.level);
@@ -988,6 +989,20 @@ function stopActivity(activityName) {
 window.startActivity = startActivity;
 window.stopActivity = stopActivity;
 
+function updateCurrentTaskDisplay() {
+  const el = document.getElementById('currentTask');
+  if (!el) return;
+  const names = {
+    cultivation: 'Cultivating',
+    physique: 'Physique Training',
+    mining: 'Mining',
+    adventure: 'Adventuring',
+    cooking: 'Cooking'
+  };
+  const active = S.activities ? Object.keys(S.activities).find(key => S.activities[key]) : null;
+  el.textContent = active ? (names[active] || 'Idle') : 'Idle';
+}
+
 function updateActivitySelectors() {
   // Ensure physique and mining data structures exist
   if (!S.physique) {
@@ -1071,6 +1086,7 @@ function updateActivitySelectors() {
     const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
     sectInfo.textContent = `${buildingCount} Buildings`;
   }
+  updateCurrentTaskDisplay();
 }
 
 function updateActivityContent() {
