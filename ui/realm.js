@@ -107,6 +107,7 @@ export function updateActivityCultivation() {
   updateCultivationProgressionTree();
   setupCultivationTabs();
   setupProgressToggle();
+  updateCultivationVisualization();
 }
 
 export function updateCultivationProgressionTree() {
@@ -233,6 +234,57 @@ export function updateCurrentRealmHeader() {
 
       return `<div class="${stageClass}" title="Stage ${stageNumber}"></div>`;
     }).join('');
+  }
+}
+
+export function updateCultivationVisualization() {
+  const foundationFill = document.getElementById('foundationFill');
+  const yinYangContainer = document.getElementById('yinYangContainer');
+  const cultivationViz = document.getElementById('cultivationVisualization');
+  
+  if (!foundationFill || !yinYangContainer || !cultivationViz) return;
+
+  // Update foundation fill height based on current foundation
+  const foundationPercent = (S.foundation / fCap()) * 100;
+  foundationFill.style.height = `${foundationPercent}%`;
+
+  // Update realm-based styling
+  const realmClasses = [
+    'realm-mortal', 'realm-qi-refining', 'realm-foundation', 
+    'realm-core-formation', 'realm-nascent-soul', 'realm-soul-transformation'
+  ];
+  
+  // Remove all realm classes
+  realmClasses.forEach(cls => cultivationViz.classList.remove(cls));
+  
+  // Add current realm class
+  const realmNames = ['mortal', 'qi-refining', 'foundation', 'core-formation', 'nascent-soul', 'soul-transformation'];
+  const currentRealmClass = `realm-${realmNames[S.realm.tier] || 'mortal'}`;
+  cultivationViz.classList.add(currentRealmClass);
+
+  // Update breakthrough proximity effects
+  const btChance = breakthroughChance();
+  if (btChance > 0.7) {
+    cultivationViz.classList.add('near-breakthrough');
+  } else {
+    cultivationViz.classList.remove('near-breakthrough');
+  }
+
+  // Adjust pulse speed based on cultivation activity and breakthrough proximity
+  const yinYang = document.getElementById('cultivationYinYang');
+  const innerGlow = document.getElementById('innerGlow');
+  
+  if (yinYang && innerGlow) {
+    if (S.activities.cultivation) {
+      // Faster pulse when actively cultivating
+      const pulseSpeed = btChance > 0.5 ? '2s' : '2.5s';
+      yinYang.style.animationDuration = pulseSpeed;
+      innerGlow.style.animationDuration = pulseSpeed;
+    } else {
+      // Slower pulse when idle
+      yinYang.style.animationDuration = '4s';
+      innerGlow.style.animationDuration = '4s';
+    }
   }
 }
 
