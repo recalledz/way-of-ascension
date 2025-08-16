@@ -42,21 +42,18 @@ export function updateActivityCultivation() {
   // Update foundation display below silhouette
   setText('foundValSilhouette', Math.floor(S.foundation));
   setText('foundCapSilhouette', fCap());
-  setText('qiValActivity', Math.floor(S.qi));
-  setText('qiCapActivity', qCap());
+  // Update qi display below silhouette
+  setText('qiValSilhouette', Math.floor(S.qi));
+  setText('qiCapSilhouette', qCap());
   setText('qiRegenActivity', qiRegenPerSec().toFixed(1));
   setText('foundationRate', foundationGainPerSec().toFixed(1));
   setText('btChanceActivity', (breakthroughChance() * 100).toFixed(1) + '%');
   setText('powerMultActivity', powerMult().toFixed(1) + 'x');
 
-  const foundFillActivity = document.getElementById('foundFillActivity');
-  if (foundFillActivity) {
-    foundFillActivity.style.width = (S.foundation / fCap() * 100) + '%';
-  }
-
-  const qiFillActivity = document.getElementById('qiFillActivity');
-  if (qiFillActivity) {
-    qiFillActivity.style.width = (S.qi / qCap() * 100) + '%';
+  // Update qi fill bar in silhouette
+  const qiFillSilhouette = document.getElementById('qiFillSilhouette');
+  if (qiFillSilhouette) {
+    qiFillSilhouette.style.width = (S.qi / qCap() * 100) + '%';
   }
 
   const startBtn = document.getElementById('startCultivationActivity');

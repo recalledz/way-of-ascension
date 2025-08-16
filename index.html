@@ -166,14 +166,20 @@
                 <div class="foundation-display">
                   <span id="foundationText"><span id="foundValSilhouette">0</span>/<span id="foundCapSilhouette">60</span> Foundation</span>
                 </div>
+                
+                <!-- Qi display below foundation -->
+                <div class="qi-display">
+                  <span id="qiText">Qi <span id="qiValSilhouette">0</span>/<span id="qiCapSilhouette">100</span></span>
+                  <div class="qi-bar-silhouette">
+                    <div class="qi-fill-silhouette" id="qiFillSilhouette"></div>
+                  </div>
+                </div>
               </div>
             </div>
             
             <div class="card cultivation-status-card">
               <h4>Cultivation Status</h4>
-              <!-- Foundation bar removed - now shown below silhouette -->
-              <div class="stat"><span>Qi</span><span><span id="qiValActivity">0</span>/<span id="qiCapActivity">100</span> (+<span id="qiRegenActivity">1.0</span>/s)</span></div>
-              <div class="bar"><div class="fill" id="qiFillActivity"></div></div>
+              <!-- Foundation and Qi bars removed - now shown below silhouette -->
               <div class="row" style="margin-top:12px">
                 <button class="btn primary" id="startCultivationActivity">🧘 Start Cultivating</button>
                 <button class="btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
