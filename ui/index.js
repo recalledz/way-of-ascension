@@ -19,7 +19,7 @@ import {
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
-import { initHp } from '../src/game/helpers.js';
+import { initializeFight, processAttack } from '../src/game/combat.js';
 import { applyRandomAffixes } from '../src/game/affixes.js';
 import {
   updateRealmUI,
@@ -913,7 +913,7 @@ function startActivity(activityName) {
   } else if (activityName === 'adventure') {
     // Initialize adventure and start first combat
     if (!S.adventure) {
-      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+      const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
       S.adventure = {
         currentZone: 0,
         currentArea: 0,
@@ -924,7 +924,7 @@ function startActivity(activityName) {
         inCombat: false,
         playerHP: S.hp,
         enemyHP,
-        enemyMaxHP,
+        enemyMaxHP: enemyMax,
         currentEnemy: null,
         lastPlayerAttack: 0,
         lastEnemyAttack: 0,
@@ -2136,8 +2136,8 @@ function usePill(type){
 function startHunt(){
   if(S.combat.hunt){ log('Already hunting','bad'); return; }
   const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
-  const { hp: enemyHP, hpMax: enemyMax } = initHp(b.hp);
-  const h = {i, name:b.name, base:b, enemyMax, enemyHP, eAtk:b.atk, eDef:b.def, regen:0, affixes:[]};
+  const { enemyHP, enemyMax, atk, def } = initializeFight(b);
+  const h = {i, name:b.name, base:b, enemyMax, enemyHP, eAtk:atk, eDef:def, regen:0, affixes:[]};
   applyRandomAffixes(h);
   S.combat.hunt = h; updateHuntUI();
 }
@@ -2169,7 +2169,7 @@ function techSlash(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
   const dmg = calcAtk()*3;
-  S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg);
+  S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg);
   S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
 }
 function techGuard(){
@@ -2181,7 +2181,7 @@ function techBurst(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
   const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = Math.max(0, S.combat.hunt.enemyHP - dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
+  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
 }
 
 function updateWinEst(){
@@ -2327,10 +2327,10 @@ function tick(){
     const ourDPS = Math.max(1, atk - h.eDef*0.6);
     let enemyDPS = Math.max(0, h.eAtk - def*0.7);
     if(guardActive) enemyDPS *= 0.5;
-    h.enemyHP -= ourDPS;
+    h.enemyHP = processAttack(h.enemyHP, ourDPS);
     if(h.regen) h.enemyHP += h.enemyMax * h.regen;
     h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
-    S.hp = clamp(S.hp - enemyDPS, 0, S.hpMax);
+    S.hp = processAttack(S.hp, enemyDPS);
     if(h.enemyHP<=0){ resolveHunt(true); }
     else if(S.hp<=1){ resolveHunt(false); }
     updateHuntUI();
@@ -2397,7 +2397,7 @@ function initActivityListeners() {
   document.getElementById('startBattleButton')?.addEventListener('click', () => {
     // Ensure adventure data is initialized
     if (!S.adventure) {
-      const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
+      const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
       S.adventure = {
         currentZone: 0,
         currentArea: 0,
@@ -2410,7 +2410,7 @@ function initActivityListeners() {
         inCombat: false,
         playerHP: S.hp,
         enemyHP,
-        enemyMaxHP,
+        enemyMaxHP: enemyMax,
         currentEnemy: null,
         lastPlayerAttack: 0,
         lastEnemyAttack: 0,
