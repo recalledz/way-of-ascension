@@ -3,6 +3,7 @@ import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses 
 import { initializeFight, processAttack } from './combat.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
+import { applyRandomAffixes } from './affixes.js';
 
 // Adventure zones and enemy data
 export const ADVENTURE_ZONES = [
@@ -258,11 +259,14 @@ export function startAdventureCombat() {
     log(`Enemy data not found for ${enemyType}`, 'bad');
     return;
   }
+  const { enemyHP, enemyMax, atk, def } = initializeFight(enemyData);
+  const enemy = { ...enemyData, type: enemyType, enemyMax, enemyHP, eAtk: atk, eDef: def, regen: 0, affixes: [] };
+  applyRandomAffixes(enemy);
+  enemy.attack = enemy.eAtk;
   S.adventure.inCombat = true;
-  S.adventure.currentEnemy = { ...enemyData, type: enemyType };
-  const { enemyHP, enemyMax } = initializeFight(enemyData);
-  S.adventure.enemyHP = enemyHP;
-  S.adventure.enemyMaxHP = enemyMax;
+  S.adventure.currentEnemy = enemy;
+  S.adventure.enemyHP = enemy.enemyHP;
+  S.adventure.enemyMaxHP = enemy.enemyMax;
   S.adventure.playerHP = S.hp;
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
@@ -408,6 +412,17 @@ export function updateFoodSlots() {
   }
 }
 
+function findEnemyAreaInfo(enemyType) {
+  for (const zone of ADVENTURE_ZONES) {
+    for (const area of zone.areas) {
+      if (area.enemy === enemyType) {
+        return { killReq: area.killReq, zone: zone.name };
+      }
+    }
+  }
+  return { killReq: 0, zone: 'Unknown' };
+}
+
 function updateBestiaryList() {
   if (!S.adventure || !S.adventure.bestiary) return;
   const list = document.getElementById('bestiaryList');
@@ -420,6 +435,7 @@ function updateBestiaryList() {
   list.innerHTML = '';
   entries.forEach(([type, kills]) => {
     const data = ENEMY_DATA[type];
+    const { killReq, zone } = findEnemyAreaInfo(type);
     const entry = document.createElement('div');
     entry.className = 'bestiary-entry';
 
@@ -437,6 +453,28 @@ function updateBestiaryList() {
     header.appendChild(nameDiv);
     header.appendChild(killsDiv);
     entry.appendChild(header);
+
+    if (kills >= killReq && data) {
+      const stats = document.createElement('div');
+      stats.className = 'bestiary-stats';
+      stats.innerHTML = `
+        <div class="bestiary-stat"><span>HP</span><span>${data.hp}</span></div>
+        <div class="bestiary-stat"><span>ATK</span><span>${data.attack}</span></div>
+        <div class="bestiary-stat"><span>Rate</span><span>${data.attackRate}</span></div>`;
+      entry.appendChild(stats);
+
+      const lootText = data.loot ? Object.entries(data.loot).map(([k, v]) => `${v} ${k}`).join(', ') : 'None';
+      const info = document.createElement('div');
+      info.className = 'bestiary-info';
+      info.innerHTML = `<span class="bestiary-zone">${zone}</span><span class="bestiary-loot">${lootText}</span>`;
+      entry.appendChild(info);
+    } else if (killReq > 0) {
+      const locked = document.createElement('div');
+      locked.className = 'bestiary-locked';
+      locked.textContent = `Defeat ${Math.max(0, killReq - kills)} more to unlock details`;
+      entry.appendChild(locked);
+    }
+
     list.appendChild(entry);
   });
 }
