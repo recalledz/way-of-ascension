@@ -188,6 +188,71 @@ body{
   66% { transform: translate(-5px, 10px) scale(0.9); }
 }
 
+/* Lotus bloom effect behind silhouette */
+.lotus-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.bloom-petal {
+  position: absolute;
+  width: 60px;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(74, 222, 128, 0.3) 0%, rgba(34, 197, 94, 0.2) 50%, transparent 80%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform-origin: center bottom;
+  opacity: 0;
+  transition: all 1.5s ease-in-out;
+}
+
+.petal-1 { 
+  top: 20%; 
+  left: 50%; 
+  transform: translateX(-50%) rotate(0deg) scale(0.5);
+}
+.petal-2 { 
+  top: 25%; 
+  left: 65%; 
+  transform: translateX(-50%) rotate(45deg) scale(0.5);
+}
+.petal-3 { 
+  top: 40%; 
+  left: 75%; 
+  transform: translateX(-50%) rotate(90deg) scale(0.5);
+}
+.petal-4 { 
+  top: 60%; 
+  left: 65%; 
+  transform: translateX(-50%) rotate(135deg) scale(0.5);
+}
+.petal-5 { 
+  top: 70%; 
+  left: 50%; 
+  transform: translateX(-50%) rotate(180deg) scale(0.5);
+}
+.petal-6 { 
+  top: 60%; 
+  left: 35%; 
+  transform: translateX(-50%) rotate(225deg) scale(0.5);
+}
+.petal-7 { 
+  top: 40%; 
+  left: 25%; 
+  transform: translateX(-50%) rotate(270deg) scale(0.5);
+}
+.petal-8 { 
+  top: 25%; 
+  left: 35%; 
+  transform: translateX(-50%) rotate(315deg) scale(0.5);
+}
+
 /* Lotus silhouette */
 .lotus-silhouette {
   position: absolute;
@@ -274,6 +339,98 @@ body{
   );
   filter: blur(0.5px);
   z-index: 5;
+}
+
+/* Particle halo around head/upper torso */
+.particle-halo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 215, 0, 0.7) 50%, transparent 100%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat 4s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.particle-1 { 
+  top: 15%; 
+  left: 45%; 
+  animation-delay: 0s;
+}
+.particle-2 { 
+  top: 20%; 
+  left: 55%; 
+  animation-delay: -0.5s;
+}
+.particle-3 { 
+  top: 25%; 
+  left: 40%; 
+  animation-delay: -1s;
+}
+.particle-4 { 
+  top: 30%; 
+  left: 60%; 
+  animation-delay: -1.5s;
+}
+.particle-5 { 
+  top: 35%; 
+  left: 35%; 
+  animation-delay: -2s;
+}
+.particle-6 { 
+  top: 40%; 
+  left: 65%; 
+  animation-delay: -2.5s;
+}
+.particle-7 { 
+  top: 45%; 
+  left: 30%; 
+  animation-delay: -3s;
+}
+.particle-8 { 
+  top: 50%; 
+  left: 70%; 
+  animation-delay: -3.5s;
+}
+.particle-9 { 
+  top: 18%; 
+  left: 50%; 
+  animation-delay: -0.8s;
+}
+.particle-10 { 
+  top: 42%; 
+  left: 48%; 
+  animation-delay: -2.2s;
+}
+
+@keyframes particleFloat {
+  0%, 100% { 
+    opacity: 0; 
+    transform: translateY(0px) scale(0.8);
+  }
+  20% { 
+    opacity: 0.6; 
+    transform: translateY(-3px) scale(1);
+  }
+  50% { 
+    opacity: 1; 
+    transform: translateY(-8px) scale(1.2);
+  }
+  80% { 
+    opacity: 0.4; 
+    transform: translateY(-5px) scale(0.9);
+  }
 }
 
 /* Foundation filling animation */
@@ -483,6 +640,127 @@ body{
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* Progressive bloom and particle effects based on foundation progress */
+.foundation-progress-25 .lotus-bloom {
+  opacity: 0.3;
+}
+.foundation-progress-25 .bloom-petal {
+  opacity: 0.4;
+  transform: translateX(-50%) rotate(var(--petal-rotation)) scale(0.7);
+}
+.foundation-progress-25 .particle {
+  opacity: 0.3;
+}
+
+.foundation-progress-50 .lotus-bloom {
+  opacity: 0.5;
+}
+.foundation-progress-50 .bloom-petal {
+  opacity: 0.6;
+  transform: translateX(-50%) rotate(var(--petal-rotation)) scale(0.85);
+}
+.foundation-progress-50 .particle {
+  opacity: 0.5;
+}
+
+.foundation-progress-75 .lotus-bloom {
+  opacity: 0.7;
+}
+.foundation-progress-75 .bloom-petal {
+  opacity: 0.8;
+  transform: translateX(-50%) rotate(var(--petal-rotation)) scale(1);
+}
+.foundation-progress-75 .particle {
+  opacity: 0.7;
+}
+
+.foundation-progress-90 .lotus-bloom {
+  opacity: 0.9;
+}
+.foundation-progress-90 .bloom-petal {
+  opacity: 1;
+  transform: translateX(-50%) rotate(var(--petal-rotation)) scale(1.1);
+  animation: petalGlow 2s ease-in-out infinite;
+}
+.foundation-progress-90 .particle {
+  opacity: 0.9;
+  animation: particleFloatIntense 2s ease-in-out infinite;
+}
+
+/* Near breakthrough effects */
+.near-breakthrough .lotus-bloom {
+  opacity: 1;
+  animation: bloomPulse 1.5s ease-in-out infinite;
+}
+.near-breakthrough .bloom-petal {
+  opacity: 1;
+  transform: translateX(-50%) rotate(var(--petal-rotation)) scale(1.2);
+  animation: petalGlowIntense 1s ease-in-out infinite;
+}
+.near-breakthrough .particle {
+  opacity: 1;
+  animation: particleFloatRapid 1s ease-in-out infinite;
+}
+
+@keyframes petalGlow {
+  0%, 100% { 
+    filter: brightness(1) drop-shadow(0 0 5px rgba(74, 222, 128, 0.3));
+  }
+  50% { 
+    filter: brightness(1.3) drop-shadow(0 0 10px rgba(74, 222, 128, 0.6));
+  }
+}
+
+@keyframes petalGlowIntense {
+  0%, 100% { 
+    filter: brightness(1.2) drop-shadow(0 0 8px rgba(74, 222, 128, 0.5));
+  }
+  50% { 
+    filter: brightness(1.5) drop-shadow(0 0 15px rgba(74, 222, 128, 0.8));
+  }
+}
+
+@keyframes bloomPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes particleFloatIntense {
+  0%, 100% { 
+    opacity: 0.7; 
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  }
+  50% { 
+    opacity: 1; 
+    transform: translateY(-10px) scale(1.3);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+  }
+}
+
+@keyframes particleFloatRapid {
+  0%, 100% { 
+    opacity: 0.9; 
+    transform: translateY(0px) scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  }
+  50% { 
+    opacity: 1; 
+    transform: translateY(-12px) scale(1.4);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 1);
+  }
+}
+
+/* CSS custom properties for petal rotations */
+.petal-1 { --petal-rotation: 0deg; }
+.petal-2 { --petal-rotation: 45deg; }
+.petal-3 { --petal-rotation: 90deg; }
+.petal-4 { --petal-rotation: 135deg; }
+.petal-5 { --petal-rotation: 180deg; }
+.petal-6 { --petal-rotation: 225deg; }
+.petal-7 { --petal-rotation: 270deg; }
+.petal-8 { --petal-rotation: 315deg; }
 
 /* Realm-based color transitions */
 .realm-mortal .inner-glow { background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%); }
