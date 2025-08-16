@@ -1,5 +1,5 @@
-import { WEAPON_CONFIG, WEAPON_FLAGS } from '../../../data/weapons.js';
-import { WEAPON_LOOT_TABLE } from '../../../data/lootTables.js'; // WEAPONS-INTEGRATION
+import { WEAPON_CONFIG, WEAPON_FLAGS } from '../../data/weapons.js';
+import { WEAPON_LOOT_TABLE } from '../../data/lootTables.js'; // WEAPONS-INTEGRATION
 
 export function ensureWeaponProficiency(state, weapon) {
   if (!WEAPON_FLAGS[weapon] || weapon === 'fist') return;

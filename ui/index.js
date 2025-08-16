@@ -30,7 +30,7 @@ import {
   getRealmName
 } from './realm.js';
 import { qs, setText, setFill, log } from './dom.js';
-import { WEAPON_FLAGS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { WEAPON_FLAGS } from '../src/data/weapons.js'; // WEAPONS-INTEGRATION
 import {
   ADVENTURE_ZONES,
   updateActivityAdventure,
