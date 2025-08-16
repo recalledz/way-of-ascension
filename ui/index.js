@@ -2446,9 +2446,9 @@ function initActivityListeners() {
   
   // Adventure Map button event listener - MAP-UI-UPDATE
   document.getElementById('mapButton')?.addEventListener('click', () => {
-    // Toggle between showing zone/area selection (could be a modal or dropdown)
-    // For now, just log that the map was clicked
-    log('Adventure Map opened - Zone/Area selection coming soon!', 'good');
+    import('../src/game/adventure.js').then(({ showMapOverlay }) => {
+      showMapOverlay();
+    });
   });
 
   // Adventure start battle button event listener

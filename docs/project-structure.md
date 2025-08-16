@@ -34,7 +34,8 @@ way-of-ascension/
 ├── data/                         # Static game data
 │   ├── laws.js                   # Law definitions and bonuses
 │   ├── realms.js                 # Realm progression data
-│   └── enemies.js                # Enemy data for adventure zones
+│   ├── enemies.js                # Enemy data for adventure zones
+│   └── zones.js                  # Zone/area data structure with progressive unlock system
 ├── src/                          # Core game logic
 │   ├── game/                     # Game systems
 │   │   ├── state.js              # Game state management & save/load
@@ -135,15 +136,21 @@ S = {
 **When to modify**: Add new calculation functions, modify existing formulas, add bonus systems
 
 #### `adventure.js` - Adventure System
-**Purpose**: Adventure zones, combat, boss challenges, area progression
+**Purpose**: Adventure zones, combat, boss challenges, area progression, map UI
 **Key Functions**:
 - `startAdventureCombat()` - Initialize regular combat
 - `startBossCombat()` - Initialize boss fights
 - `updateActivityAdventure()` - Update adventure UI
 - `progressToNextArea()` - Handle area progression
 - `defeatEnemy()` - Handle enemy defeat and loot
+- `updateAdventureProgressBar()` - Render horizontal progress bar with zone areas
+- `showMapOverlay()`, `hideMapOverlay()` - Map modal display
+- `updateMapContent()` - Populate map accordion with unlocked zones/areas
+- `showTooltip()`, `hideTooltip()` - Progress segment tooltips
+- `selectAreaById()` - Area selection and navigation
 
-**When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system
+**Dependencies**: `data/zones.js` for zone/area data structure
+**When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
@@ -178,6 +185,42 @@ export const REALMS = [
 #### `enemies.js` - Enemy Data
 **Purpose**: Define enemies for combat and adventure systems
 **When to modify**: Add new enemies, adjust combat balance
+
+#### `zones.js` - Zone/Area Data Structure
+**Purpose**: Centralized zone and area definitions with progressive unlock system
+**Key Functions**:
+- `getZoneById()` - Retrieve zone by ID
+- `getAreaById()` - Retrieve area by zone/area ID
+- `isZoneUnlocked()` - Check if zone is accessible
+- `isAreaUnlocked()` - Check if area is accessible
+- `getNextArea()`, `getNextZone()` - Navigation helpers
+
+**Structure**:
+```javascript
+export const ZONES = [
+  {
+    id: 'peaceful-lands',
+    name: 'Peaceful Lands',
+    description: 'A serene area perfect for beginners',
+    element: 'nature',
+    color: '#4ade80',
+    unlockReq: null, // Always unlocked
+    areas: [
+      { 
+        id: 'forest-edge', 
+        name: 'Forest Edge', 
+        enemy: 'Forest Rabbit', 
+        killReq: 5,
+        description: 'Gentle creatures roam the forest edge',
+        loot: { stones: 2, meat: 1 }
+      }
+      // ... more areas
+    ]
+  }
+  // ... more zones
+];
+```
+**When to modify**: Add new zones/areas, modify unlock requirements, adjust loot tables
 
 ### User Interface (`ui/`)
 

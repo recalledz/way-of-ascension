@@ -2337,6 +2337,252 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   transform: translateY(-1px);
 }
 
+/* Map Overlay Modal - MAP-UI-UPDATE */
+.map-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.map-panel {
+  position: relative;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  background: linear-gradient(180deg, #0f172a, #0b1222);
+  border: 2px solid var(--accent-2);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(96, 165, 250, 0.3);
+  overflow: hidden;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1f2937;
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.1), rgba(74, 222, 128, 0.1));
+}
+
+.map-header h3 {
+  margin: 0;
+  color: var(--accent-2);
+  font-size: 18px;
+}
+
+.close-button {
+  padding: 4px 8px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  background: rgba(251, 113, 133, 0.2);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.map-content {
+  padding: 16px 20px;
+  max-height: calc(80vh - 80px);
+  overflow-y: auto;
+}
+
+.zone-accordion {
+  margin-bottom: 12px;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.zone-accordion.locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #1f2937, #374151);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zone-header:hover {
+  background: linear-gradient(135deg, #374151, #4b5563);
+}
+
+.zone-header.expanded {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #0b0f17;
+}
+
+.zone-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zone-element-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.zone-details h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+}
+
+.zone-description {
+  margin: 0;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.zone-expand-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.zone-header.expanded .zone-expand-icon {
+  transform: rotate(90deg);
+}
+
+.zone-areas {
+  display: none;
+  padding: 8px 0;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.zone-areas.expanded {
+  display: block;
+}
+
+.area-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  margin: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.area-item:hover {
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.area-item.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.area-item.locked:hover {
+  background: transparent;
+}
+
+.area-item.current {
+  background: rgba(251, 191, 36, 0.2);
+  border: 1px solid var(--gold);
+}
+
+.area-info h5 {
+  margin: 0 0 2px 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.area-info .area-enemy {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.area-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.area-progress {
+  color: var(--accent);
+}
+
+.area-completed {
+  color: var(--accent);
+}
+
+.area-locked {
+  color: var(--muted);
+}
+
+/* Tooltip Styles - MAP-UI-UPDATE */
+.tooltip {
+  position: absolute;
+  background: linear-gradient(180deg, #0f172a, #0b1222);
+  border: 1px solid var(--accent-2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ink);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1001;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  max-width: 200px;
+}
+
+.tooltip.visible {
+  opacity: 1;
+}
+
+.tooltip h6 {
+  margin: 0 0 4px 0;
+  color: var(--accent-2);
+  font-size: 13px;
+}
+
+.tooltip .tooltip-kills {
+  color: var(--accent);
+  margin: 2px 0;
+}
+
+.tooltip .tooltip-loot {
+  color: var(--gold);
+  margin: 2px 0;
+  font-size: 11px;
+}
+
 /* Responsive Design - MAP-UI-UPDATE */
 @media (max-width: 768px) {
   .adventure-cards {
@@ -2350,6 +2596,15 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   .progress-segment {
     min-width: 50px;
     font-size: 10px;
+  }
+  
+  .map-panel {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .map-content {
+    max-height: calc(90vh - 80px);
   }
 }
 .hint {

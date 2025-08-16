@@ -1,10 +1,12 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
-import { initializeFight, processAttack, computeWeaponDamage } from './combat.js';
+import { initializeFight, processAttack } from './combat.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
 import { gainProficiency, getProficiency } from './systems/proficiency.js';
+import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
+import { save } from './state.js'; // MAP-UI-UPDATE
 
 // Adventure zones and enemy data
 export const ADVENTURE_ZONES = [
@@ -143,39 +145,44 @@ export function updateAreaGrid() {
   }
 }
 
-// MAP-UI-UPDATE: New horizontal progress bar functionality
+// MAP-UI-UPDATE: New horizontal progress bar functionality with progressive reveal
 export function updateAdventureProgressBar() {
   ensureAdventure();
   const progressBar = document.getElementById('adventureProgressBar');
   if (!progressBar) return;
   
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  // Use new zone data structure
+  const currentZoneId = ZONES[S.adventure.selectedZone || 0]?.id;
+  const currentZone = getZoneById(currentZoneId);
   if (!currentZone || !currentZone.areas) return;
   
   progressBar.innerHTML = '';
   
-  // Create segments for each area in the current zone
+  // Create segments for each area in the current zone (progressive reveal)
   currentZone.areas.forEach((area, index) => {
-    const areaKey = `${S.adventure.selectedZone}-${index}`;
-    const isUnlocked = S.adventure.unlockedAreas[areaKey] || false;
+    const areaKey = `${currentZoneId}-${area.id}`;
+    const legacyAreaKey = `${S.adventure.selectedZone}-${index}`; // For backward compatibility
+    const isUnlocked = isAreaUnlocked(currentZoneId, area.id, S) || S.adventure.unlockedAreas?.[legacyAreaKey] || false;
     const isCurrent = index === (S.adventure.currentArea || 0) && (S.adventure.selectedZone === S.adventure.currentZone);
-    const progress = S.adventure.areaProgress[areaKey] || { kills: 0, bossDefeated: false };
+    const progress = S.adventure.areaProgress?.[areaKey] || S.adventure.areaProgress?.[legacyAreaKey] || { kills: 0, bossDefeated: false };
     
     const segment = document.createElement('div');
     segment.className = 'progress-segment';
+    segment.setAttribute('aria-label', `${area.name}: ${isUnlocked ? `${progress.kills}/${area.killReq} kills` : 'Locked'}`);
     
     if (isUnlocked) {
       segment.classList.add('unlocked');
       segment.textContent = area.name.split(' ')[0]; // Show first word of area name
-      segment.title = `${area.name} - ${progress.kills}/${area.killReq} kills`;
+      segment.style.background = `linear-gradient(135deg, ${currentZone.color}88, ${currentZone.color}cc)`;
+      segment.style.borderColor = currentZone.color;
       
       if (progress.bossDefeated) {
-        segment.innerHTML += ' ✓';
+        segment.innerHTML = segment.textContent + ' ✓';
       }
     } else {
       segment.classList.add('locked');
       segment.innerHTML = '<span class="lock-icon">🔒</span>';
-      segment.title = `${area.name} - Locked`;
+      segment.setAttribute('title', `${area.name} - Locked`);
     }
     
     if (isCurrent) {
@@ -188,10 +195,16 @@ export function updateAdventureProgressBar() {
       segment.appendChild(playerIcon);
     }
     
+    // Add tooltip functionality
+    segment.addEventListener('mouseenter', (e) => showTooltip(e, area, progress));
+    segment.addEventListener('mouseleave', hideTooltip);
+    
     // Add click handler for unlocked areas
     if (isUnlocked) {
-      segment.onclick = () => selectArea(index);
+      segment.onclick = () => selectAreaById(currentZoneId, area.id, index);
       segment.style.cursor = 'pointer';
+      segment.setAttribute('tabindex', '0');
+      segment.setAttribute('role', 'button');
     }
     
     progressBar.appendChild(segment);
@@ -199,13 +212,265 @@ export function updateAdventureProgressBar() {
   
   // Update kill progress display
   const currentArea = currentZone.areas[S.adventure.currentArea || 0];
-  const currentAreaKey = `${S.adventure.currentZone}-${S.adventure.currentArea}`;
-  const currentProgress = S.adventure.areaProgress[currentAreaKey] || { kills: 0, bossDefeated: false };
+  const currentAreaKey = `${currentZoneId}-${currentArea?.id}`;
+  const legacyCurrentAreaKey = `${S.adventure.currentZone}-${S.adventure.currentArea}`;
+  const currentProgress = S.adventure.areaProgress?.[currentAreaKey] || S.adventure.areaProgress?.[legacyCurrentAreaKey] || { kills: 0, bossDefeated: false };
   
   const killsDisplay = document.getElementById('killsRequired');
   if (killsDisplay && currentArea) {
     killsDisplay.textContent = `${currentProgress.kills}/${currentArea.killReq}`;
   }
+}
+
+// MAP-UI-UPDATE: Tooltip functionality
+let currentTooltip = null;
+
+function showTooltip(event, area, progress) {
+  hideTooltip(); // Remove any existing tooltip
+  
+  const tooltip = document.createElement('div');
+  tooltip.className = 'tooltip visible';
+  
+  const lootText = area.loot ? Object.entries(area.loot).map(([item, qty]) => `${qty} ${item}`).join(', ') : 'No special loot';
+  
+  tooltip.innerHTML = `
+    <h6>${area.name}</h6>
+    <div class="tooltip-kills">Required: ${area.killReq} kills</div>
+    <div class="tooltip-kills">Progress: ${progress.kills}/${area.killReq}</div>
+    <div class="tooltip-loot">Loot: ${lootText}</div>
+    ${area.description ? `<div style="margin-top: 4px; font-size: 10px; opacity: 0.8;">${area.description}</div>` : ''}
+  `;
+  
+  document.body.appendChild(tooltip);
+  currentTooltip = tooltip;
+  
+  // Position tooltip
+  const rect = event.target.getBoundingClientRect();
+  const tooltipRect = tooltip.getBoundingClientRect();
+  
+  let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+  let top = rect.top - tooltipRect.height - 8;
+  
+  // Adjust if tooltip goes off screen
+  if (left < 8) left = 8;
+  if (left + tooltipRect.width > window.innerWidth - 8) left = window.innerWidth - tooltipRect.width - 8;
+  if (top < 8) top = rect.bottom + 8;
+  
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+}
+
+function hideTooltip() {
+  if (currentTooltip) {
+    currentTooltip.remove();
+    currentTooltip = null;
+  }
+}
+
+// MAP-UI-UPDATE: Area selection by ID with save persistence
+export function selectAreaById(zoneId, areaId, areaIndex) {
+  const zone = getZoneById(zoneId);
+  if (!zone) return;
+  
+  const zoneIndex = ZONES.findIndex(z => z.id === zoneId);
+  if (zoneIndex === -1) return;
+  
+  // Check if area is unlocked
+  if (!isAreaUnlocked(zoneId, areaId, S)) {
+    log('Area is locked!');
+    return;
+  }
+  
+  // Update adventure state
+  S.adventure.selectedZone = zoneIndex;
+  S.adventure.currentZone = zoneIndex;
+  S.adventure.currentArea = areaIndex;
+  
+  // Reset combat state
+  S.adventure.currentEnemy = null;
+  S.adventure.enemyHP = 0;
+  S.adventure.playerHP = S.hpMax;
+  
+  log(`Traveled to ${zone.areas[areaIndex].name} in ${zone.name}`);
+  
+  // Save state persistence
+  save();
+  
+  // Update UI
+  updateActivityAdventure();
+  updateAdventureProgressBar();
+  
+  // Hide map overlay
+  hideMapOverlay();
+}
+
+// MAP-UI-UPDATE: Map overlay functionality
+export function showMapOverlay() {
+  const overlay = document.getElementById('mapOverlay');
+  if (!overlay) return;
+  
+  overlay.style.display = 'flex';
+  updateMapContent();
+  
+  // Add event listeners for closing
+  const backdrop = document.getElementById('mapOverlayBackdrop');
+  const closeButton = document.getElementById('closeMapButton');
+  
+  backdrop?.addEventListener('click', hideMapOverlay);
+  closeButton?.addEventListener('click', hideMapOverlay);
+  
+  // ESC key to close
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      hideMapOverlay();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+}
+
+export function hideMapOverlay() {
+  const overlay = document.getElementById('mapOverlay');
+  if (overlay) {
+    overlay.style.display = 'none';
+  }
+}
+
+function updateMapContent() {
+  ensureAdventure();
+  const mapContent = document.getElementById('mapContent');
+  if (!mapContent) return;
+  
+  mapContent.innerHTML = '';
+  
+  ZONES.forEach((zone, zoneIndex) => {
+    const isZoneUnlockedValue = isZoneUnlocked(zone.id, S);
+    
+    const accordion = document.createElement('div');
+    accordion.className = `zone-accordion ${!isZoneUnlockedValue ? 'locked' : ''}`;
+    
+    // Zone header
+    const header = document.createElement('div');
+    header.className = 'zone-header';
+    header.setAttribute('aria-label', `${zone.name} zone`);
+    
+    const zoneInfo = document.createElement('div');
+    zoneInfo.className = 'zone-info';
+    
+    const elementIcon = document.createElement('div');
+    elementIcon.className = 'zone-element-icon';
+    elementIcon.style.background = zone.color;
+    elementIcon.textContent = getElementIcon(zone.element);
+    
+    const zoneDetails = document.createElement('div');
+    zoneDetails.className = 'zone-details';
+    zoneDetails.innerHTML = `
+      <h4>${zone.name}</h4>
+      <p class="zone-description">${zone.description}</p>
+    `;
+    
+    const expandIcon = document.createElement('div');
+    expandIcon.className = 'zone-expand-icon';
+    expandIcon.textContent = '▶';
+    
+    zoneInfo.appendChild(elementIcon);
+    zoneInfo.appendChild(zoneDetails);
+    header.appendChild(zoneInfo);
+    header.appendChild(expandIcon);
+    
+    // Zone areas
+    const areasContainer = document.createElement('div');
+    areasContainer.className = 'zone-areas';
+    
+    if (isZoneUnlockedValue) {
+      zone.areas.forEach((area, areaIndex) => {
+        const areaKey = `${zone.id}-${area.id}`;
+        const legacyAreaKey = `${zoneIndex}-${areaIndex}`;
+        const isAreaUnlockedValue = isAreaUnlocked(zone.id, area.id, S) || S.adventure.unlockedAreas?.[legacyAreaKey] || false;
+        const progress = S.adventure.areaProgress?.[areaKey] || S.adventure.areaProgress?.[legacyAreaKey] || { kills: 0, bossDefeated: false };
+        const isCurrent = zoneIndex === S.adventure.currentZone && areaIndex === S.adventure.currentArea;
+        
+        const areaItem = document.createElement('div');
+        areaItem.className = `area-item ${!isAreaUnlockedValue ? 'locked' : ''} ${isCurrent ? 'current' : ''}`;
+        
+        const areaInfo = document.createElement('div');
+        areaInfo.className = 'area-info';
+        areaInfo.innerHTML = `
+          <h5>${area.name}</h5>
+          <div class="area-enemy">vs ${area.enemy}</div>
+        `;
+        
+        const areaStatus = document.createElement('div');
+        areaStatus.className = 'area-status';
+        
+        if (!isAreaUnlockedValue) {
+          areaStatus.innerHTML = '<span class="area-locked">🔒 Locked</span>';
+        } else if (progress.bossDefeated) {
+          areaStatus.innerHTML = '<span class="area-completed">✓ Completed</span>';
+        } else {
+          areaStatus.innerHTML = `<span class="area-progress">${progress.kills}/${area.killReq}</span>`;
+        }
+        
+        areaItem.appendChild(areaInfo);
+        areaItem.appendChild(areaStatus);
+        
+        // Add click handler for unlocked areas
+        if (isAreaUnlockedValue) {
+          areaItem.onclick = () => {
+            selectAreaFromMap(zoneIndex, areaIndex, zone.id, area.id);
+            hideMapOverlay();
+          };
+          areaItem.setAttribute('tabindex', '0');
+          areaItem.setAttribute('role', 'button');
+          areaItem.setAttribute('aria-label', `Select ${area.name}`);
+        }
+        
+        areasContainer.appendChild(areaItem);
+      });
+      
+      // Add click handler to toggle zone expansion
+      header.onclick = () => {
+        const isExpanded = header.classList.contains('expanded');
+        header.classList.toggle('expanded');
+        areasContainer.classList.toggle('expanded');
+        expandIcon.textContent = isExpanded ? '▶' : '▼';
+      };
+    }
+    
+    accordion.appendChild(header);
+    accordion.appendChild(areasContainer);
+    mapContent.appendChild(accordion);
+  });
+}
+
+function getElementIcon(element) {
+  const icons = {
+    nature: '🌿',
+    shadow: '🌙',
+    ice: '❄️',
+    fire: '🔥',
+    earth: '🗿',
+    wind: '💨'
+  };
+  return icons[element] || '⚡';
+}
+
+function selectAreaFromMap(zoneIndex, areaIndex, zoneId, areaId) {
+  // Update adventure state
+  S.adventure.selectedZone = zoneIndex;
+  S.adventure.currentZone = zoneIndex;
+  S.adventure.selectedArea = areaIndex;
+  S.adventure.currentArea = areaIndex;
+  
+  // Load area progress
+  const areaKey = `${zoneId}-${areaId}`;
+  const legacyAreaKey = `${zoneIndex}-${areaIndex}`;
+  const progress = S.adventure.areaProgress?.[areaKey] || S.adventure.areaProgress?.[legacyAreaKey] || { kills: 0, bossDefeated: false };
+  S.adventure.killsInCurrentArea = progress.kills;
+  
+  const area = getAreaById(zoneId, areaId);
+  updateActivityAdventure();
+  log(`Selected area from map: ${area?.name || 'Unknown Area'}`, 'good');
 }
 
 export function updateBattleDisplay() {
@@ -280,35 +545,16 @@ export function updateAdventureCombat() {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
-      if (S.flags?.weaponsEnabled) {
-        const result = computeWeaponDamage(S);
-        const attackValue = result.damage;
-        console.log('[weapon]', result.weapon.key, 'roll', result.baseDamage.toFixed(2), 'final', result.damage.toFixed(2));
-        let dmg = Math.max(1, Math.round(attackValue - enemyDef * 0.6));
-        const critChance = S.stats.criticalChance || 0;
-        const isCrit = Math.random() < critChance;
-        if (isCrit) dmg *= 2;
-        S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
-        S.adventure.lastPlayerAttack = now;
-        gainProficiency(result.weapon.proficiencyKey, isCrit ? 2 : 1, S);
-        if (result.weapon.key === 'fist') updateFistProficiencyDisplay();
-        S.adventure.combatLog = S.adventure.combatLog || [];
-        S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
-        if (S.adventure.enemyHP <= 0) {
-          defeatEnemy();
-        }
-      } else {
-        const playerAttack = calculatePlayerCombatAttack();
-        const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
-        S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
-        S.adventure.lastPlayerAttack = now;
-        gainProficiency('fist', Math.round(playerAttack), S);
-        updateFistProficiencyDisplay();
-        S.adventure.combatLog = S.adventure.combatLog || [];
-        S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
-        if (S.adventure.enemyHP <= 0) {
-          defeatEnemy();
-        }
+      const playerAttack = calculatePlayerCombatAttack();
+      const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
+      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
+      S.adventure.lastPlayerAttack = now;
+      gainProficiency('fist', Math.round(playerAttack), S);
+      updateFistProficiencyDisplay();
+      S.adventure.combatLog = S.adventure.combatLog || [];
+      S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
+      if (S.adventure.enemyHP <= 0) {
+        defeatEnemy();
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
