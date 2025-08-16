@@ -5,8 +5,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 1, max: 3, attackRate: 1.0 }, // DPS shape
     scales: { physique: 0.4, agility: 0.3, mind: 0.3 }, // weights sum ~1
-    tags: ['melee'],
-    statusHooks: { onHit: null, onCrit: null }, // no status
+    tags: ['melee'], // STATUS-REFORM removed status hooks
     reqs: { realmMin: 0, proficiencyMin: 0 },
     proficiencyKey: 'fist',
     animations: { fx: ['slashArc'], tint: 'auto' },
@@ -17,8 +16,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 2, max: 4, attackRate: 1.2 },
     scales: { physique: 0.3, agility: 0.5, mind: 0.2 },
-    tags: ['melee'],
-    statusHooks: { onHit: null, onCrit: null },
+    tags: ['melee'], // STATUS-REFORM
     reqs: { realmMin: 0, proficiencyMin: 10 },
     proficiencyKey: 'palm',
     animations: { fx: ['palmStrike'], tint: 'auto' },
@@ -29,8 +27,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 4, max: 8, attackRate: 1.0 },
     scales: { physique: 0.5, agility: 0.3, mind: 0.2 },
-    tags: ['melee'],
-    statusHooks: { onHit: null, onCrit: null },
+    tags: ['melee'], // STATUS-REFORM
     reqs: { realmMin: 1, proficiencyMin: 20 },
     proficiencyKey: 'sword',
     animations: { fx: ['slashArc'], tint: 'auto' },
@@ -41,8 +38,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 3, max: 7, attackRate: 0.9 },
     scales: { physique: 0.4, agility: 0.4, mind: 0.2 },
-    tags: ['melee'],
-    statusHooks: { onHit: null, onCrit: null },
+    tags: ['melee'], // STATUS-REFORM
     reqs: { realmMin: 1, proficiencyMin: 20 },
     proficiencyKey: 'spear',
     animations: { fx: ['pierceThrust'], tint: 'auto' },
@@ -53,8 +49,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 2, max: 5, attackRate: 1.4 },
     scales: { physique: 0.3, agility: 0.5, mind: 0.2 },
-    tags: ['melee'],
-    statusHooks: { onHit: null, onCrit: null }, // TODO: add stun or bleed effect
+    tags: ['melee'], // STATUS-REFORM TODO: add stun or bleed effect
     reqs: { realmMin: 2, proficiencyMin: 30 },
     proficiencyKey: 'nunchaku',
     animations: { fx: ['flurry'], tint: 'auto' },
@@ -65,8 +60,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 3, max: 6, attackRate: 1.2 },
     scales: { physique: 0.2, agility: 0.5, mind: 0.3 },
-    tags: ['ranged'],
-    statusHooks: { onHit: null, onCrit: null },
+    tags: ['ranged'], // STATUS-REFORM
     reqs: { realmMin: 2, proficiencyMin: 30 },
     proficiencyKey: 'chakram',
     animations: { fx: ['spinThrow'], tint: 'auto' },
@@ -77,8 +71,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 2, max: 4, attackRate: 1.1 },
     scales: { physique: 0.1, agility: 0.2, mind: 0.7 },
-    tags: ['magic'],
-    statusHooks: { onHit: 'burn', onCrit: null },
+    tags: ['magic'], // STATUS-REFORM
     reqs: { realmMin: 1, proficiencyMin: 20 },
     proficiencyKey: 'wand',
     animations: { fx: ['magicBolt'], tint: 'auto' },
@@ -89,8 +82,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 1, max: 3, attackRate: 1.0 },
     scales: { physique: 0.1, agility: 0.2, mind: 0.7 },
-    tags: ['magic'],
-    statusHooks: { onHit: 'chill', onCrit: null },
+    tags: ['magic'], // STATUS-REFORM
     reqs: { realmMin: 1, proficiencyMin: 20 },
     proficiencyKey: 'focus',
     animations: { fx: ['magicBolt'], tint: 'blue' },
@@ -101,8 +93,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 6, max: 10, attackRate: 0.8 },
     scales: { physique: 0.6, agility: 0.2, mind: 0.2 },
-    tags: ['melee'],
-    statusHooks: { onHit: null, onCrit: null }, // TODO: add stun effect
+    tags: ['melee'], // STATUS-REFORM TODO: add stun effect
     reqs: { realmMin: 2, proficiencyMin: 30 },
     proficiencyKey: 'hammer',
     animations: { fx: ['smash'], tint: 'auto' },
@@ -113,8 +104,7 @@ export const WEAPONS = {
     slot: 'mainhand',
     base: { min: 3, max: 5, attackRate: 1.0 },
     scales: { physique: 0.2, agility: 0.1, mind: 0.7 },
-    tags: ['magic', 'melee'],
-    statusHooks: { onHit: 'burn', onCrit: null },
+    tags: ['magic', 'melee'], // STATUS-REFORM
     reqs: { realmMin: 3, proficiencyMin: 40 },
     proficiencyKey: 'scepter',
     animations: { fx: ['smite'], tint: 'auto' },
