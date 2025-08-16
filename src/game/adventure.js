@@ -411,6 +411,17 @@ export function updateFoodSlots() {
   }
 }
 
+function findEnemyInfo(type) {
+  for (const zone of ADVENTURE_ZONES) {
+    for (const area of zone.areas) {
+      if (area.enemy === type) {
+        return { zone: zone.name, area: area.name, killReq: area.killReq };
+      }
+    }
+  }
+  return null;
+}
+
 function updateBestiaryList() {
   if (!S.adventure || !S.adventure.bestiary) return;
   const list = document.getElementById('bestiaryList');
@@ -423,6 +434,8 @@ function updateBestiaryList() {
   list.innerHTML = '';
   entries.forEach(([type, kills]) => {
     const data = ENEMY_DATA[type];
+    const info = findEnemyInfo(type);
+    const killReq = info ? info.killReq : 0;
     const entry = document.createElement('div');
     entry.className = 'bestiary-entry';
 
@@ -440,6 +453,55 @@ function updateBestiaryList() {
     header.appendChild(nameDiv);
     header.appendChild(killsDiv);
     entry.appendChild(header);
+
+    if (!killReq || kills >= killReq) {
+      if (data) {
+        const stats = document.createElement('div');
+        stats.className = 'bestiary-stats';
+
+        const hp = document.createElement('div');
+        hp.className = 'bestiary-stat';
+        hp.innerHTML = `<span>HP</span><span>${data.hp}</span>`;
+        stats.appendChild(hp);
+
+        const atk = document.createElement('div');
+        atk.className = 'bestiary-stat';
+        atk.innerHTML = `<span>ATK</span><span>${data.attack}</span>`;
+        stats.appendChild(atk);
+
+        const rate = document.createElement('div');
+        rate.className = 'bestiary-stat';
+        rate.innerHTML = `<span>Rate</span><span>${data.attackRate}/s</span>`;
+        stats.appendChild(rate);
+
+        entry.appendChild(stats);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'bestiary-info';
+
+        const zoneDiv = document.createElement('div');
+        zoneDiv.className = 'bestiary-zone';
+        zoneDiv.textContent = info ? `${info.zone} - ${info.area}` : '';
+        infoDiv.appendChild(zoneDiv);
+
+        const lootDiv = document.createElement('div');
+        lootDiv.className = 'bestiary-loot';
+        if (data.loot) {
+          lootDiv.textContent = Object.entries(data.loot)
+            .map(([k, v]) => `${k}${v ? ` x${v}` : ''}`)
+            .join(', ');
+        }
+        infoDiv.appendChild(lootDiv);
+
+        entry.appendChild(infoDiv);
+      }
+    } else {
+      const locked = document.createElement('div');
+      locked.className = 'bestiary-locked';
+      locked.textContent = `Defeat ${killReq - kills} more to unlock details`;
+      entry.appendChild(locked);
+    }
+
     list.appendChild(entry);
   });
 }
