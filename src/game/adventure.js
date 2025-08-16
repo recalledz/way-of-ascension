@@ -516,6 +516,20 @@ export function updateAdventureCombat() {
           S.adventure.inCombat = false;
           S.adventure.combatLog.push('You have been defeated!');
           log('Defeated in combat! Returning to safety...', 'bad');
+          S.qi = 0;
+          if (typeof globalThis.stopActivity === 'function') {
+            globalThis.stopActivity('adventure');
+          } else {
+            S.activities.adventure = false;
+          }
+          const btn = document.getElementById('startBattleButton');
+          if (btn) {
+            btn.textContent = '⚔️ Start Battle';
+            btn.classList.remove('warn');
+            btn.classList.add('primary');
+            btn.disabled = false;
+          }
+          updateActivityAdventure();
         }
       }
     }
@@ -880,9 +894,9 @@ export function updateProgressButton() {
   
   // Show boss button when area is cleared but boss not defeated
   if (bossBtn) {
-    if (isAreaCleared && !isBossDefeated && !S.adventure.inCombat) {
+    if (isAreaCleared && !isBossDefeated) {
       bossBtn.style.display = 'inline-block';
-      bossBtn.disabled = false;
+      bossBtn.disabled = S.adventure.inCombat;
     } else {
       bossBtn.style.display = 'none';
     }

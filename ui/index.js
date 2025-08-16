@@ -2451,8 +2451,59 @@ function initActivityListeners() {
     });
   });
 
-  // Adventure start battle button event listener
-  document.getElementById('startBattleButton')?.addEventListener('click', () => {
+  function startRetreatCountdown() {
+    const btn = document.getElementById('startBattleButton');
+    if (!S.adventure || !S.adventure.inCombat || !btn) return;
+    let remaining = 5;
+    btn.disabled = true;
+    btn.textContent = `Retreating (${remaining})`;
+    const interval = setInterval(() => {
+      if (S.adventure.playerHP <= 0) {
+        clearInterval(interval);
+        btn.disabled = false;
+        btn.classList.remove('warn');
+        btn.classList.add('primary');
+        btn.textContent = '⚔️ Start Battle';
+        if (typeof globalThis.stopActivity === 'function') {
+          globalThis.stopActivity('adventure');
+        } else {
+          S.activities.adventure = false;
+        }
+        S.qi = 0;
+        updateActivityAdventure();
+        return;
+      }
+      remaining--;
+      if (remaining > 0) {
+        btn.textContent = `Retreating (${remaining})`;
+      } else {
+        clearInterval(interval);
+        retreatFromCombat();
+        if (typeof globalThis.stopActivity === 'function') {
+          globalThis.stopActivity('adventure');
+        } else {
+          S.activities.adventure = false;
+        }
+        const loss = Math.floor(qCap() * 0.25);
+        S.qi = Math.max(0, S.qi - loss);
+        log(`Retreated from combat. Lost ${loss} Qi.`, 'neutral');
+        btn.disabled = false;
+        btn.classList.remove('warn');
+        btn.classList.add('primary');
+        btn.textContent = '⚔️ Start Battle';
+        updateActivityAdventure();
+      }
+    }, 1000);
+  }
+
+  // Adventure start battle / retreat button event listener
+  const startBtn = document.getElementById('startBattleButton');
+  startBtn?.addEventListener('click', () => {
+    if (S.adventure && S.adventure.inCombat) {
+      startRetreatCountdown();
+      return;
+    }
+
     // Ensure adventure data is initialized
     if (!S.adventure) {
       const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
@@ -2475,26 +2526,23 @@ function initActivityListeners() {
         combatLog: []
       };
     }
-    
+
     // Start the adventure activity if not already active
     if (!S.activities.adventure) {
       startActivity('adventure');
     }
-    
+
     // Start combat immediately
     startAdventureCombat();
     updateActivityAdventure();
+    startBtn.textContent = '🏃 Retreat';
+    startBtn.classList.remove('primary');
+    startBtn.classList.add('warn');
   });
-  
+
   // Adventure progress button event listener
   document.getElementById('progressButton')?.addEventListener('click', () => {
     progressToNextArea();
-  });
-  
-  // Adventure retreat button event listener
-  document.getElementById('retreatButton')?.addEventListener('click', () => {
-    retreatFromCombat();
-    stopActivity('adventure');
   });
   
   // Adventure boss challenge button event listener
