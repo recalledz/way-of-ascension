@@ -1,8 +1,4 @@
-
-doc to-do implementation for adventure patch
----
-
-## **1. Status Effects (Elemental + Debuffs)**
+## **Status Effects (Elemental + Debuffs)**
 
 We tie each effect to **damage type** + **secondary gameplay impact**:
 
@@ -19,27 +15,3 @@ We tie each effect to **damage type** + **secondary gameplay impact**:
 | **Ionized (Metal)**          | Lightning manuals, chakram crit | Shields take 2× dmg                                                     | 8s duration                                               |
 
 ⚖️ **Balance hook**: each element/status gets a **natural counter** (enemies immune or resistant by element). Bosses can have “status thresholds” (e.g. takes 3 stuns → gains temporary stun resist).
-
-
----
-
-## **3. Expanded Combat Stats**
-
-New stats interact with both player + enemy:
-
-* **Accuracy** – chance to hit (opposed by Dodge)
-* **Dodge** – chance to evade (Agility heavy)
-* **Defense** – reduces physical damage (flat/%)
-* **Spell Damage** – scales all magical/elemental damage
-* **Status Effect Chance** – raises likelihood of proc (e.g. poison 20% → 35%)
-* **Status Effect Resistance** – lowers proc chance or duration
-* **Cooldown Reduction** – % reduction to ability cooldowns
-* **Casting Speed** – lowers cast time for spells/abilities
-* **Crit Chance & Crit Damage** – self-explanatory
-* **Qi Cost Reduction** – efficiency with abilities
-
-⚖️ These give you **itemization depth** (gear can roll on these) and let different disciples/specs shine.
-
-
-
-
