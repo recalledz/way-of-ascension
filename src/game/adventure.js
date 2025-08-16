@@ -3,6 +3,7 @@ import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses 
 import { initializeFight, processAttack } from './combat.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
+import { applyRandomAffixes, AFFIXES } from './affixes.js';
 
 // Adventure zones and enemy data
 export const ADVENTURE_ZONES = [
@@ -158,6 +159,19 @@ export function updateBattleDisplay() {
     setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
     setText('enemyAttack', Math.round(enemy.attack || 0));
     setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    const affixEl = document.getElementById('enemyAffixes');
+    if (affixEl) {
+      if (enemy.affixes && enemy.affixes.length) {
+        affixEl.innerHTML = enemy.affixes.map(a => {
+          const info = AFFIXES[a] || {};
+          const color = info.color || '#555';
+          const desc = (info.desc || '').replace(/"/g, '&quot;');
+          return `<div class="affix-tile" style="background:${color}" data-desc="${desc}">${a}</div>`;
+        }).join('');
+      } else {
+        affixEl.innerHTML = '';
+      }
+    }
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill && enemyMaxHP > 0) {
       const enemyHealthPct = (enemyHP / enemyMaxHP) * 100;
@@ -170,6 +184,8 @@ export function updateBattleDisplay() {
     setText('enemyAttackRate', '--/s');
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill) enemyHealthFill.style.width = '0%';
+    const affixEl = document.getElementById('enemyAffixes');
+    if (affixEl) affixEl.innerHTML = '';
   }
   const combatLog = document.getElementById('combatLog');
   if (combatLog && S.adventure.combatLog) {
@@ -187,12 +203,18 @@ export function updateAdventureCombat() {
     const now = Date.now();
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
     if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
+    const enemyDef = S.adventure.currentEnemy.defense || 0;
+    const regen = S.adventure.currentEnemy.regen || 0;
+    if (regen) {
+      S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
+    }
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
-      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, Math.round(playerAttack));
+      const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
+      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
       S.adventure.lastPlayerAttack = now;
       gainFistXP(Math.round(playerAttack));
       S.adventure.combatLog = S.adventure.combatLog || [];
-      S.adventure.combatLog.push(`You deal ${Math.round(playerAttack)} damage to ${S.adventure.currentEnemy.name}`);
+      S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
       if (S.adventure.enemyHP <= 0) {
         defeatEnemy();
       }
@@ -273,11 +295,20 @@ export function startAdventureCombat() {
     log(`Enemy data not found for ${enemyType}`, 'bad');
     return;
   }
+  const { enemyHP, enemyMax, atk, def } = initializeFight(enemyData);
+  const h = { enemyHP, enemyMax, eAtk: atk, eDef: def, regen: 0, affixes: [] };
+  applyRandomAffixes(h);
   S.adventure.inCombat = true;
-  S.adventure.currentEnemy = { ...enemyData, type: enemyType };
-  const { enemyHP, enemyMax } = initializeFight(enemyData);
-  S.adventure.enemyHP = enemyHP;
-  S.adventure.enemyMaxHP = enemyMax;
+  S.adventure.currentEnemy = {
+    ...enemyData,
+    type: enemyType,
+    attack: Math.round(h.eAtk),
+    defense: Math.round(h.eDef),
+    regen: h.regen,
+    affixes: h.affixes
+  };
+  S.adventure.enemyHP = h.enemyHP;
+  S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
