@@ -3,6 +3,7 @@ import { initHp } from './helpers.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
+import { applyRandomAffixes } from './affixes.js';
 
 // Adventure zones and enemy data
 export const ADVENTURE_ZONES = [
@@ -158,6 +159,7 @@ export function updateBattleDisplay() {
     setText('enemyHealthText', `${enemyHP}/${enemyMaxHP}`);
     setText('enemyAttack', enemy.attack || 0);
     setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    setText('enemyAffixes', enemy.affixes && enemy.affixes.length ? enemy.affixes.join(', ') : 'None');
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill && enemyMaxHP > 0) {
       const enemyHealthPct = (enemyHP / enemyMaxHP) * 100;
@@ -168,6 +170,7 @@ export function updateBattleDisplay() {
     setText('enemyHealthText', '--/--');
     setText('enemyAttack', '--');
     setText('enemyAttackRate', '--/s');
+    setText('enemyAffixes', 'None');
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill) enemyHealthFill.style.width = '0%';
   }
@@ -259,15 +262,27 @@ export function startAdventureCombat() {
     return;
   }
   S.adventure.inCombat = true;
-  S.adventure.currentEnemy = { ...enemyData, type: enemyType };
   const { hp, hpMax } = initHp(enemyData.hp);
-  S.adventure.enemyHP = hp;
-  S.adventure.enemyMaxHP = hpMax;
+  const h = {
+    enemyMax: hpMax,
+    enemyHP: hp,
+    eAtk: enemyData.attack,
+    eDef: enemyData.def || 0,
+    regen: 0,
+    affixes: []
+  };
+  applyRandomAffixes(h);
+  S.adventure.currentEnemy = { ...enemyData, type: enemyType, attack: h.eAtk, defense: h.eDef, affixes: h.affixes };
+  S.adventure.enemyHP = h.enemyHP;
+  S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = S.hp;
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`A ${enemyData.name} appears!`);
+  if (h.affixes.length) {
+    S.adventure.combatLog.push(`Affixes: ${h.affixes.join(', ')}`);
+  }
   log(`Combat started with ${enemyData.name} in ${currentArea.name}!`, 'neutral');
 }
 
@@ -408,6 +423,14 @@ export function updateFoodSlots() {
   }
 }
 
+function findEnemyArea(type) {
+  for (const zone of ADVENTURE_ZONES) {
+    const area = zone.areas.find(a => a.enemy === type);
+    if (area) return { zone, area };
+  }
+  return null;
+}
+
 function updateBestiaryList() {
   if (!S.adventure || !S.adventure.bestiary) return;
   const list = document.getElementById('bestiaryList');
@@ -420,6 +443,9 @@ function updateBestiaryList() {
   list.innerHTML = '';
   entries.forEach(([type, kills]) => {
     const data = ENEMY_DATA[type];
+    const info = findEnemyArea(type);
+    const required = info ? info.area.killReq : 0;
+    const unlocked = kills >= required;
     const entry = document.createElement('div');
     entry.className = 'bestiary-entry';
 
@@ -437,6 +463,38 @@ function updateBestiaryList() {
     header.appendChild(nameDiv);
     header.appendChild(killsDiv);
     entry.appendChild(header);
+
+    if (unlocked && data) {
+      const statsDiv = document.createElement('div');
+      statsDiv.className = 'bestiary-stats';
+      statsDiv.innerHTML = `
+        <div class="bestiary-stat"><span>HP</span><span>${data.hp}</span></div>
+        <div class="bestiary-stat"><span>ATK</span><span>${data.attack}</span></div>
+        <div class="bestiary-stat"><span>Rate</span><span>${data.attackRate}/s</span></div>
+      `;
+      entry.appendChild(statsDiv);
+
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'bestiary-info';
+      const zoneDiv = document.createElement('div');
+      zoneDiv.className = 'bestiary-zone';
+      zoneDiv.textContent = info ? `${info.zone.name} - ${info.area.name}` : '';
+      const lootDiv = document.createElement('div');
+      lootDiv.className = 'bestiary-loot';
+      lootDiv.textContent = data.loot
+        ? Object.entries(data.loot).map(([k, v]) => `${k} x${v}`).join(', ')
+        : 'No loot';
+      infoDiv.appendChild(zoneDiv);
+      infoDiv.appendChild(lootDiv);
+      entry.appendChild(infoDiv);
+    } else {
+      const lockedDiv = document.createElement('div');
+      lockedDiv.className = 'bestiary-locked';
+      const remaining = Math.max(required - kills, 0);
+      lockedDiv.textContent = `Defeat ${remaining} more to unlock details`;
+      entry.appendChild(lockedDiv);
+    }
+
     list.appendChild(entry);
   });
 }
