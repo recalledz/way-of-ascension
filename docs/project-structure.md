@@ -1,6 +1,4 @@
-# Way of Ascension - Document Structure & AI Guidelines
-
-This document outlines the project structure and coding conventions for the Way of Ascension cultivation game. **AI assistants must update this document when making structural changes.**
+# Way of Ascension - Project Structure
 
 ## Project Overview
 
@@ -58,13 +56,16 @@ way-of-ascension/
 │   ├── realm.js                  # Realm-specific UI components
 │   └── dom.js                    # DOM utility functions
 └── docs/                         # Documentation
-    ├── doc-structure.md          # This file - project structure
+    ├── project-structure.md      # This file - project structure
+    ├── ai-verification-protocol.md # AI assistant verification guidelines
     ├── adventure-patch.md        # Adventure system expansion plans
     ├── combo-system.md           # Combat combo system design
     ├── cultivation-ui-style.md   # UI styling guidelines
-    └── weapons-guidlines.md      # Weapon system design guidelines
-├── eslint.config.mjs      # Linting configuration
-└── README.md              # Project documentation
+    ├── weapons-guidlines.md      # Weapon system design guidelines
+    └── To-dos/                   # Task-specific documentation
+        ├── affixes-expansion.md  # Affix system expansion plans
+        ├── boss-specific-affixes.md # Boss ability specifications
+        └── enemy-weakness.md     # Enemy weakness system
 ```
 
 ## File Responsibilities
@@ -133,9 +134,16 @@ S = {
 
 **When to modify**: Add new calculation functions, modify existing formulas, add bonus systems
 
-#### `helpers.js` - Utility Functions
-**Purpose**: Shared utility functions
-**When to modify**: Add reusable helper functions
+#### `adventure.js` - Adventure System
+**Purpose**: Adventure zones, combat, boss challenges, area progression
+**Key Functions**:
+- `startAdventureCombat()` - Initialize regular combat
+- `startBossCombat()` - Initialize boss fights
+- `updateActivityAdventure()` - Update adventure UI
+- `progressToNextArea()` - Handle area progression
+- `defeatEnemy()` - Handle enemy defeat and loot
+
+**When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
@@ -165,19 +173,6 @@ export const REALMS = [
 
 #### `laws.js` - Cultivation Laws
 **Purpose**: Define cultivation law systems and skill trees
-**Structure**:
-```javascript
-export const LAWS = {
-  sword: {
-    name: 'Sword Law',
-    desc: 'Description',
-    icon: '⚔️',
-    unlockReq: { realm: 2, stage: 1 },
-    bonuses: { atk: 1.2, critChance: 0.1 },
-    tree: { /* skill tree */ }
-  }
-};
-```
 **When to modify**: Add new laws, modify skill trees, adjust bonuses
 
 #### `enemies.js` - Enemy Data
@@ -210,6 +205,10 @@ function updateAll() {
 
 **When to modify**: Add new UI elements, modify display logic, add event handlers
 
+#### `realm.js` - Realm UI Components
+**Purpose**: Realm-specific UI components and cultivation displays
+**When to modify**: Add new realm UI features, modify cultivation interface
+
 ### HTML Structure (`index.html`)
 **Purpose**: Main game interface structure
 **Key Elements**:
@@ -223,112 +222,3 @@ function updateAll() {
 ### Styling (`style.css`)
 **Purpose**: Game visual styling
 **When to modify**: Add new styles, modify visual appearance
-
-## Code Patterns and Conventions
-
-### State Management
-- Global state object `S` imported from `state.js`
-- All state changes should go through the global `S` object
-- Call `save()` after significant state changes
-- Use `defaultState()` pattern for new state properties
-
-### Activity System
-- Only one activity can be active at a time via `S.activities`
-- Each activity has its own data container in state
-- Activities are controlled by boolean flags in `S.activities`
-- Foundation gain happens in `tick()` when `S.activities.cultivation` is true
-
-### UI Updates
-- Use `updateAll()` to refresh entire UI
-- Use `setText(id, value)` and `setFill(id, ratio)` for updates
-- Specialized render functions for complex UI sections
-- Event listeners attached in `initUI()`
-
-### Calculation Functions
-- Pure functions that take state as input
-- Return calculated values without side effects
-- Handle missing state properties gracefully with defaults
-- Use consistent naming: `calcX()`, `getXBonuses()`, `xPerSec()`
-
-### Data Structure
-- Configuration data in separate files under `data/`
-- Use consistent object structures across similar systems
-- Include unlock requirements, costs, and effects
-- Support for scaling costs and progressive unlocks
-
-### Save System
-- Version-based migration system
-- Increment `SAVE_VERSION` when changing save structure
-- Add migration logic in `runMigrations()`
-- Graceful handling of missing or corrupted saves
-
-## Adding New Features
-
-### New Game Systems
-1. **State**: Add state properties to `defaultState()` in `state.js`
-2. **Logic**: Add calculation functions to `engine.js`
-3. **UI**: Add render functions and event handlers to `ui/index.js`
-4. **Data**: Add configuration files to `data/` if needed
-5. **Migration**: Update save version and add migration if needed
-
-### New Activities
-1. Add activity flag to `S.activities` in `defaultState()`
-2. Add activity data container to state
-3. Add activity logic to tick system
-4. Add UI elements and event handlers
-5. Add activity card to HTML structure
-
-### New Resources/Currencies
-1. Add to state in `defaultState()`
-2. Add display elements to UI
-3. Add to resource calculation functions
-4. Add to save/load system
-5. Add icons and formatting
-
-### New Buildings/Upgrades
-1. Add to building configuration (likely in `ui/index.js` SECT_BUILDINGS)
-2. Add unlock requirements and effects
-3. Add to building bonus calculation system
-4. Add to building render system
-
-### New Laws/Skills
-1. Add to `data/laws.js`
-2. Define skill tree structure
-3. Add bonus calculation logic
-4. Add UI rendering for skill trees
-
-## Memory Integration Notes
-
-Based on the provided memory, key implementation details for breathing/meditation features:
-- Foundation gained via `foundationGainPerSec()` in `tick()` function
-- Activities system: `S.activities.cultivation` boolean controls active cultivation
-- UI structure: Single-file build, tabs system, `updateAll()` for UI updates
-- Save/load: `save()` and `load()` functions with localStorage
-- Logging: `log()` function for game events
-- Need to hook exhale events into existing tick system for save/load compatibility
-
-## Best Practices
-
-1. **Consistency**: Follow existing patterns and naming conventions
-2. **State Management**: Always use the global state object `S`
-3. **UI Updates**: Use centralized update functions
-4. **Error Handling**: Handle missing state properties gracefully
-5. **Performance**: Avoid expensive calculations in render loops
-6. **Modularity**: Keep related functionality together
-7. **Documentation**: Comment complex calculations and game mechanics
-8. **Testing**: Test save/load functionality when modifying state
-9. **Migration**: Always provide migration path for save data changes
-10. **Balance**: Consider game balance implications of new features
-
-## Common Locations for Code
-
-- **New calculations**: `src/game/engine.js`
-- **New state properties**: `src/game/state.js` in `defaultState()`
-- **New UI elements**: `ui/index.js` in appropriate render functions
-- **New game data**: `data/` directory in appropriate files
-- **New activities**: Activity logic in tick system, UI in activity cards
-- **New buildings**: SECT_BUILDINGS configuration in `ui/index.js`
-- **Save migrations**: `src/game/migrations.js`
-- **Event handlers**: `ui/index.js` in `initUI()` function
-
-This structure ensures maintainable, consistent code that integrates well with the existing game systems.
