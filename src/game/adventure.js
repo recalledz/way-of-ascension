@@ -143,6 +143,71 @@ export function updateAreaGrid() {
   }
 }
 
+// MAP-UI-UPDATE: New horizontal progress bar functionality
+export function updateAdventureProgressBar() {
+  ensureAdventure();
+  const progressBar = document.getElementById('adventureProgressBar');
+  if (!progressBar) return;
+  
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  if (!currentZone || !currentZone.areas) return;
+  
+  progressBar.innerHTML = '';
+  
+  // Create segments for each area in the current zone
+  currentZone.areas.forEach((area, index) => {
+    const areaKey = `${S.adventure.selectedZone}-${index}`;
+    const isUnlocked = S.adventure.unlockedAreas[areaKey] || false;
+    const isCurrent = index === (S.adventure.currentArea || 0) && (S.adventure.selectedZone === S.adventure.currentZone);
+    const progress = S.adventure.areaProgress[areaKey] || { kills: 0, bossDefeated: false };
+    
+    const segment = document.createElement('div');
+    segment.className = 'progress-segment';
+    
+    if (isUnlocked) {
+      segment.classList.add('unlocked');
+      segment.textContent = area.name.split(' ')[0]; // Show first word of area name
+      segment.title = `${area.name} - ${progress.kills}/${area.killReq} kills`;
+      
+      if (progress.bossDefeated) {
+        segment.innerHTML += ' ✓';
+      }
+    } else {
+      segment.classList.add('locked');
+      segment.innerHTML = '<span class="lock-icon">🔒</span>';
+      segment.title = `${area.name} - Locked`;
+    }
+    
+    if (isCurrent) {
+      segment.classList.add('current');
+      
+      // Add player icon to current segment
+      const playerIcon = document.createElement('div');
+      playerIcon.className = 'player-icon';
+      playerIcon.innerHTML = '🪷'; // Lotus icon
+      segment.appendChild(playerIcon);
+    }
+    
+    // Add click handler for unlocked areas
+    if (isUnlocked) {
+      segment.onclick = () => selectArea(index);
+      segment.style.cursor = 'pointer';
+    }
+    
+    progressBar.appendChild(segment);
+  });
+  
+  // Update kill progress display
+  const currentArea = currentZone.areas[S.adventure.currentArea || 0];
+  const currentAreaKey = `${S.adventure.currentZone}-${S.adventure.currentArea}`;
+  const currentProgress = S.adventure.areaProgress[currentAreaKey] || { kills: 0, bossDefeated: false };
+  
+  const killsDisplay = document.getElementById('killsRequired');
+  if (killsDisplay && currentArea) {
+    killsDisplay.textContent = `${currentProgress.kills}/${currentArea.killReq}`;
+  }
+}
+
 export function updateBattleDisplay() {
   ensureAdventure();
   const playerHP = S.adventure.playerHP || S.hp || 100;
@@ -787,6 +852,7 @@ export function updateActivityAdventure() {
   updateFistProficiencyDisplay();
   updateZoneButtons();
   updateAreaGrid();
+  updateAdventureProgressBar(); // MAP-UI-UPDATE
   updateBattleDisplay();
   updateAdventureCombat();
   updateFoodSlots();

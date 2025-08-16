@@ -356,25 +356,25 @@
 
       <section id="activity-adventure" class="activity-content" style="display:none;">
         <h2>🗺️ Adventure</h2>
-        <div class="cards">
-          <!-- Area/Zone Grid Selector -->
-          <div class="card adventure-map-card">
-            <h4>🗺️ Adventure Map</h4>
-            <div class="zone-selector">
-              <div id="zoneButtons" class="zone-buttons"></div>
+        <div class="adventure-layout"> <!-- MAP-UI-UPDATE -->
+          <!-- Horizontal Progress Bar -->
+          <div class="adventure-progress-container"> <!-- MAP-UI-UPDATE -->
+            <div class="adventure-progress-bar" id="adventureProgressBar"> <!-- MAP-UI-UPDATE -->
+              <!-- Progress segments will be populated by JavaScript -->
             </div>
-            <div class="area-grid">
-              <div id="areaGrid" class="area-grid-container"></div>
-            </div>
-            <div class="adventure-info">
-              <div class="stat"><span>Current</span><span id="currentLocationText">Village Outskirts - Bandit Camp</span></div>
-              <div class="stat"><span>Progress</span><span id="killsRequired">0/5</span> kills</div>
+            <div class="adventure-progress-info"> <!-- MAP-UI-UPDATE -->
+              <div class="progress-kills"><span id="killsRequired">0/5</span> kills</div> <!-- MAP-UI-UPDATE -->
             </div>
           </div>
+        
+        <div class="cards adventure-cards"> <!-- MAP-UI-UPDATE -->
           
           <!-- Persistent Battle Display -->
-          <div class="card battle-card">
-            <h4>⚔️ Battle Arena</h4>
+          <div class="card battle-card expanded-battle"> <!-- MAP-UI-UPDATE -->
+            <div class="card-header battle-header"> <!-- MAP-UI-UPDATE -->
+              <h4>⚔️ Battle Arena</h4>
+              <button class="btn small ghost map-button" id="mapButton" title="Adventure Map">🗺️ Map</button> <!-- MAP-UI-UPDATE -->
+            </div>
             
             <div class="battle-area" id="battleArea">
               <div class="area-background" id="areaBackground"></div>
@@ -516,6 +516,7 @@
             </div>
           </div>
         </div>
+        </div> <!-- MAP-UI-UPDATE -->
       </section>
 
       <section id="activity-sect" class="activity-content" style="display:none;">

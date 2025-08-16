@@ -2444,6 +2444,13 @@ function initActivityListeners() {
     });
   });
   
+  // Adventure Map button event listener - MAP-UI-UPDATE
+  document.getElementById('mapButton')?.addEventListener('click', () => {
+    // Toggle between showing zone/area selection (could be a modal or dropdown)
+    // For now, just log that the map was clicked
+    log('Adventure Map opened - Zone/Area selection coming soon!', 'good');
+  });
+
   // Adventure start battle button event listener
   document.getElementById('startBattleButton')?.addEventListener('click', () => {
     // Ensure adventure data is initialized

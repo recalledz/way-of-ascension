@@ -2196,6 +2196,162 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .card{background:linear-gradient(180deg, #0f172a, #0b1222); border:1px solid #1f2937; border-radius:var(--radius); padding:14px; box-shadow:var(--shadow)}
 .card h4{margin:0 0 8px; font-size:15px}
 .muted{color:var(--muted); font-size:12px}
+
+/* Adventure Layout - MAP-UI-UPDATE */
+.adventure-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 120px);
+}
+
+.adventure-progress-container {
+  background: linear-gradient(180deg, #0f172a, #0b1222);
+  border: 1px solid #1f2937;
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.adventure-progress-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  padding: 4px;
+  min-height: 40px;
+}
+
+.progress-segment {
+  min-width: 60px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  position: relative;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.progress-segment.unlocked {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  border-color: var(--accent);
+  color: #0b0f17;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.3);
+}
+
+.progress-segment.locked {
+  background: linear-gradient(135deg, #374151, #1f2937);
+  border-color: #4b5563;
+  color: var(--muted);
+}
+
+.progress-segment.current {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+  animation: currentGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes currentGlow {
+  from { box-shadow: 0 0 12px rgba(251, 191, 36, 0.5); }
+  to { box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
+}
+
+.progress-segment .lock-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.player-icon {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, var(--gold), #f59e0b);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+  z-index: 10;
+  transition: left 0.5s ease-in-out;
+}
+
+.adventure-progress-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-kills {
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.adventure-cards {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  min-height: 0;
+}
+
+.expanded-battle {
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.battle-header h4 {
+  margin: 0;
+}
+
+.map-button {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--accent-2);
+  color: var(--accent-2);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.map-button:hover {
+  background: rgba(96, 165, 250, 0.1);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design - MAP-UI-UPDATE */
+@media (max-width: 768px) {
+  .adventure-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .adventure-progress-bar {
+    overflow-x: scroll;
+  }
+  
+  .progress-segment {
+    min-width: 50px;
+    font-size: 10px;
+  }
+}
 .hint {
   text-decoration: underline;
   text-decoration-style: dotted;
