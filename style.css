@@ -22,6 +22,63 @@ body{
 .stars2{background-image: radial-gradient(1px 1px at 20px 20px,#ffffff33,transparent 60%), radial-gradient(1px 1px at 60px 50px,#ffffff22,transparent 60%), radial-gradient(1px 1px at 90px 90px,#ffffff33,transparent 60%); background-size:120px 120px; animation: drift 200s linear infinite reverse}
 @keyframes drift{from{transform:translateY(0)} to{transform:translateY(-200px)}}
 
+/* Cultivation Layout Styles */
+.cultivation-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.current-realm {
+  display: inline-block;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: #0b0f17;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+.cultivation-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 200px);
+}
+
+.cultivation-status-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cultivation-progress-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header h4 {
+  margin: 0;
+}
+
 header{
   display:flex; align-items:center; justify-content:space-between; padding:18px 22px; gap:20px;
   background: linear-gradient(100deg, #0f172a 0%, #111827 60%, #0b1324 100%);

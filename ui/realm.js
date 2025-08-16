@@ -38,6 +38,7 @@ export function updateRealmUI() {
 
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
+  setText('currentRealmHeader', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   setText('foundValActivity', Math.floor(S.foundation));
   setText('foundCapActivity', fCap());
   setText('qiValActivity', Math.floor(S.qi));
@@ -105,6 +106,7 @@ export function updateActivityCultivation() {
 
   updateCultivationProgressionTree();
   setupCultivationTabs();
+  setupProgressToggle();
 }
 
 export function updateCultivationProgressionTree() {
@@ -188,6 +190,38 @@ export function setupCultivationTabs() {
       }
     };
   });
+}
+
+export function setupProgressToggle() {
+  const toggleBtn = document.getElementById('toggleProgressBtn');
+  const closeBtn = document.getElementById('closeProgressBtn');
+  const progressCard = document.getElementById('cultivationProgressionCard');
+
+  if (toggleBtn) {
+    toggleBtn.onclick = () => {
+      if (progressCard) {
+        progressCard.style.display = 'block';
+        updateCultivationProgressionTree();
+      }
+    };
+  }
+
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      if (progressCard) {
+        progressCard.style.display = 'none';
+      }
+    };
+  }
+
+  // Close on background click
+  if (progressCard) {
+    progressCard.onclick = (e) => {
+      if (e.target === progressCard) {
+        progressCard.style.display = 'none';
+      }
+    };
+  }
 }
 
 export function breakthroughChance(){

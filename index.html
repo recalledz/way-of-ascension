@@ -73,6 +73,9 @@
 
       <!-- Activity Content Panels -->
       <section id="activity-cultivation" class="activity-content" style="display:none;">
+        <div class="cultivation-header">
+          <span class="current-realm" id="currentRealmHeader">Mortal 1</span>
+        </div>
         <h2>🧘 Cultivation</h2>
         <div class="cultivation-tabs">
           <button class="cultivation-tab-btn active" data-tab="cultivation">Cultivation</button>
@@ -80,10 +83,9 @@
         </div>
 
         <div id="cultivationSubTab" class="cultivation-tab-content active">
-          <div class="cards">
-            <div class="card">
+          <div class="cultivation-layout">
+            <div class="card cultivation-status-card">
               <h4>Cultivation Status</h4>
-              <div class="stat"><span>Current Realm</span><span id="realmNameActivity">Mortal 1</span></div>
               <div class="stat"><span>Foundation</span><span><span id="foundValActivity">0</span>/<span id="foundCapActivity">60</span></span></div>
               <div class="bar"><div class="fill" id="foundFillActivity"></div></div>
               <div class="stat"><span>Qi</span><span><span id="qiValActivity">0</span>/<span id="qiCapActivity">100</span> (+<span id="qiRegenActivity">1.0</span>/s)</span></div>
@@ -93,10 +95,16 @@
                 <button class="btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
               </div>
               <div class="muted" style="margin-top:8px">Foundation gain rate: <span id="foundationRate">0.0</span>/s</div>
+              <div class="row" style="margin-top:12px">
+                <button class="btn secondary" id="toggleProgressBtn">🏔️ View Cultivation Progress</button>
+              </div>
             </div>
 
-            <div class="card" id="cultivationProgressionCard">
-              <h4>🏔️ Cultivation Progression</h4>
+            <div class="card cultivation-progress-card" id="cultivationProgressionCard" style="display:none;">
+              <div class="card-header">
+                <h4>🏔️ Cultivation Progression</h4>
+                <button class="btn small ghost" id="closeProgressBtn">✕</button>
+              </div>
               <p class="muted">Your journey through the realms of cultivation:</p>
               <div id="cultivationProgressionTree" class="progression-tree">
                 <!-- Progression tree will be populated by JavaScript -->
