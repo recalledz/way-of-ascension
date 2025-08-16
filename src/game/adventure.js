@@ -1,6 +1,6 @@
 import { S } from './state.js';
-import { initHp } from './helpers.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
+import { initializeFight, processAttack } from './combat.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes } from './affixes.js';
@@ -191,7 +191,7 @@ export function updateAdventureCombat() {
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
     if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
-      S.adventure.enemyHP = Math.max(0, S.adventure.enemyHP - playerAttack);
+      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, playerAttack);
       S.adventure.lastPlayerAttack = now;
       gainFistXP(playerAttack);
       S.adventure.combatLog = S.adventure.combatLog || [];
@@ -204,7 +204,7 @@ export function updateAdventureCombat() {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         const enemyDamage = S.adventure.currentEnemy.attack || 5;
-        S.adventure.playerHP = Math.max(0, S.adventure.playerHP - enemyDamage);
+        S.adventure.playerHP = processAttack(S.adventure.playerHP, enemyDamage);
         S.adventure.lastEnemyAttack = now;
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
         if (S.adventure.playerHP <= 0) {
@@ -235,9 +235,9 @@ function defeatEnemy() {
   }
   S.adventure.inCombat = false;
   S.adventure.currentEnemy = null;
-  const { hp, hpMax } = initHp(0);
-  S.adventure.enemyHP = hp;
-  S.adventure.enemyMaxHP = hpMax;
+  const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
+  S.adventure.enemyHP = enemyHP;
+  S.adventure.enemyMaxHP = enemyMax;
   log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
   if (S.activities.adventure && S.adventure.playerHP > 0) {
     startAdventureCombat();
@@ -262,7 +262,7 @@ export function startAdventureCombat() {
     return;
   }
   S.adventure.inCombat = true;
-  const { hp, hpMax } = initHp(enemyData.hp);
+  const { enemyHP, enemyMax } = initializeFight(enemyData);
   const h = {
     enemyMax: hpMax,
     enemyHP: hp,
@@ -350,9 +350,9 @@ export function retreatFromCombat() {
   if (S.adventure.inCombat) {
     S.adventure.inCombat = false;
     S.adventure.currentEnemy = null;
-    const { hp, hpMax } = initHp(0);
-    S.adventure.enemyHP = hp;
-    S.adventure.enemyMaxHP = hpMax;
+    const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
+    S.adventure.enemyHP = enemyHP;
+    S.adventure.enemyMaxHP = enemyMax;
     S.adventure.combatLog = S.adventure.combatLog || [];
     S.adventure.combatLog.push('You retreated from combat.');
     log('Retreated from combat safely.', 'neutral');
