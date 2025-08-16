@@ -1,9 +1,9 @@
 export const AFFIX_DEFS = {
-  Armored: h => { h.eDef *= 1.4; },
-  Frenzied: h => { h.eAtk *= 1.35; },
-  Regenerating: h => { h.regen += 0.02; },
-  Giant: h => { h.enemyMax = Math.floor(h.enemyMax * 1.6); h.enemyHP = h.enemyMax; },
-  Swift: h => { h.eAtk *= 1.15; }
+  Armored: h => { h.eDef *= 1.4; },          // +40% defense - reduces incoming damage
+  Frenzied: h => { h.eAtk *= 1.35; },        // +35% attack power - deals more damage
+  Regenerating: h => { h.regen += 0.02; },   // +2% health regeneration per tick
+  Giant: h => { h.enemyMax = Math.floor(h.enemyMax * 1.6); h.enemyHP = h.enemyMax; }, // +60% maximum health
+  Swift: h => { h.eAtk *= 1.15; }            // +15% attack power - minor damage boost
 };
 
 export const AFFIX_KEYS = Object.keys(AFFIX_DEFS);
