@@ -244,9 +244,10 @@ export function updateCultivationVisualization() {
   
   if (!foundationFill || !yinYangContainer || !cultivationViz) return;
 
-  // Update foundation fill height based on current foundation
-  const foundationPercent = (S.foundation / fCap()) * 100;
-  foundationFill.style.height = `${foundationPercent}%`;
+  // Update foundation fill as liquid filling the silhouette
+  const foundationPercent = Math.max(0, Math.min(100, (S.foundation / fCap()) * 100));
+  foundationFill.style.setProperty('--fill-height', `${foundationPercent}%`);
+  foundationFill.style.opacity = '1'; // Always visible when element exists
 
   // Update realm-based styling
   const realmClasses = [
