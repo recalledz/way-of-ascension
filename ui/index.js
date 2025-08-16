@@ -20,7 +20,7 @@ import {
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
 import { initializeFight, processAttack } from '../src/game/combat.js';
-import { applyRandomAffixes } from '../src/game/affixes.js';
+import { applyRandomAffixes, AFFIXES } from '../src/game/affixes.js';
 import {
   updateRealmUI,
   updateActivityCultivation,
@@ -2152,13 +2152,37 @@ function startHunt(){
   S.combat.hunt = h; updateHuntUI();
 }
 
+function renderAffixTiles(list){
+  const el = qs('#affixList');
+  el.innerHTML = '';
+  if (!list || !list.length) {
+    el.textContent = 'None';
+    el.classList.add('muted');
+    return;
+  }
+  el.classList.remove('muted');
+  list.forEach(name => {
+    const info = AFFIXES[name] || {};
+    const div = document.createElement('div');
+    div.className = 'affix-tile';
+    div.textContent = name;
+    if (info.color) {
+      div.style.backgroundColor = info.color + '33';
+      div.style.borderColor = info.color;
+      div.style.color = info.color;
+    }
+    if (info.desc) div.title = info.desc;
+    el.appendChild(div);
+  });
+}
+
 function updateHuntUI(){
   const h=S.combat.hunt; const el=qs('#huntStatus');
-  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); setText('affixList','None'); setText('techStatus',''); return; }
+  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); renderAffixTiles([]); setText('techStatus',''); return; }
   const b=h.base; el.textContent=`Fighting ${b.name}…`;
   setFill('enemyFill', h.enemyHP/h.enemyMax); setText('enemyHpTxt', `${Math.ceil(h.enemyHP)}/${h.enemyMax}`);
   setFill('ourFill', S.hp/S.hpMax); setText('ourHpTxt', `${Math.ceil(S.hp)}/${S.hpMax}`);
-  setText('affixList', h.affixes.length? h.affixes.join(', '): 'None');
+  renderAffixTiles(h.affixes);
   const cd = S.combat.cds; setText('techStatus', `Slash ${cd.slash||0}s • Guard ${cd.guard||0}s • Burst ${cd.burst||0}s`);
 }
 function resolveHunt(win){
