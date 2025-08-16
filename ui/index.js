@@ -35,6 +35,7 @@ import {
   updateActivityAdventure,
   updateAdventureCombat,
   startAdventureCombat,
+  startBossCombat,
   progressToNextArea,
   retreatFromCombat,
   updateFistProficiencyDisplay,
@@ -2465,6 +2466,41 @@ function initActivityListeners() {
   document.getElementById('retreatButton')?.addEventListener('click', () => {
     retreatFromCombat();
     stopActivity('adventure');
+  });
+  
+  // Adventure boss challenge button event listener
+  document.getElementById('challengeBossButton')?.addEventListener('click', () => {
+    // Ensure adventure data is initialized
+    if (!S.adventure) {
+      const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
+      S.adventure = {
+        currentZone: 0,
+        currentArea: 0,
+        selectedZone: 0,
+        selectedArea: 0,
+        totalKills: 0,
+        areasCompleted: 0,
+        zonesUnlocked: 1,
+        killsInCurrentArea: 0,
+        inCombat: false,
+        playerHP: S.hp,
+        enemyHP,
+        enemyMaxHP: enemyMax,
+        currentEnemy: null,
+        lastPlayerAttack: 0,
+        lastEnemyAttack: 0,
+        combatLog: []
+      };
+    }
+    
+    // Start the adventure activity if not already active
+    if (!S.activities.adventure) {
+      startActivity('adventure');
+    }
+    
+    // Start boss combat
+    startBossCombat();
+    updateActivityAdventure();
   });
 }
 

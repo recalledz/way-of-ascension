@@ -240,17 +240,24 @@ export function updateAdventureCombat() {
 function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
   const enemy = S.adventure.currentEnemy;
+  const isBoss = S.adventure.isBossFight;
+  
   S.adventure.totalKills++;
-  S.adventure.killsInCurrentArea++;
+  if (!isBoss) {
+    S.adventure.killsInCurrentArea++;
+  }
+  
   S.adventure.bestiary = S.adventure.bestiary || {};
   const enemyType = enemy.type || enemy.name;
   S.adventure.bestiary[enemyType] = (S.adventure.bestiary[enemyType] || 0) + 1;
   updateBestiaryList();
   S.adventure.combatLog = S.adventure.combatLog || [];
+  
   const lootEntries = enemy.loot ? Object.entries(enemy.loot) : [];
   lootEntries.forEach(([item, qty]) => {
     S[item] = (S[item] || 0) + qty;
   });
+  
   if (enemy.drops) {
     Object.entries(enemy.drops).forEach(([item, chance]) => {
       if (Math.random() < chance) {
@@ -259,24 +266,114 @@ function defeatEnemy() {
       }
     });
   }
+  
+  // Boss bonus rewards
+  if (isBoss) {
+    const bonusXP = Math.floor(enemy.attack * 2);
+    gainFistXP(bonusXP);
+    S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
+  }
+  
   if (lootEntries.length) {
     const lootText = lootEntries.map(([i, q]) => `${q} ${i}`).join(', ');
-    S.adventure.combatLog.push(`${enemy.name} defeated! Loot: ${lootText}`);
-    log(`${enemy.name} defeated! Loot: ${lootText}`, 'good');
+    const prefix = isBoss ? '💀 Boss defeated!' : `${enemy.name} defeated!`;
+    S.adventure.combatLog.push(`${prefix} Loot: ${lootText}`);
+    log(`${prefix} Loot: ${lootText}`, isBoss ? 'excellent' : 'good');
   } else {
-    S.adventure.combatLog.push(`${enemy.name} defeated!`);
-    log(`${enemy.name} defeated!`, 'good');
+    const prefix = isBoss ? '💀 Boss defeated!' : `${enemy.name} defeated!`;
+    S.adventure.combatLog.push(prefix);
+    log(prefix, isBoss ? 'excellent' : 'good');
   }
+  
   S.hp = S.adventure.playerHP;
   S.adventure.inCombat = false;
+  S.adventure.isBossFight = false;
   S.adventure.currentEnemy = null;
   const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
   S.adventure.enemyHP = enemyHP;
   S.adventure.enemyMaxHP = enemyMax;
-  if (S.activities.adventure && S.adventure.playerHP > 0) {
+  
+  if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
     startAdventureCombat();
     updateActivityAdventure();
   }
+}
+
+export function generateBossEnemy() {
+  if (!S.adventure) return null;
+  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  if (!currentZone || !currentZone.areas) return null;
+  
+  // Get all enemies from current zone
+  const zoneEnemies = currentZone.areas.map(area => area.enemy);
+  const randomEnemyType = zoneEnemies[Math.floor(Math.random() * zoneEnemies.length)];
+  const baseEnemyData = ENEMY_DATA[randomEnemyType];
+  
+  if (!baseEnemyData) return null;
+  
+  // Create boss version with 2x stats
+  const bossData = {
+    ...baseEnemyData,
+    name: `${baseEnemyData.name} Boss`,
+    hp: Math.round(baseEnemyData.hp * 2),
+    attack: Math.round(baseEnemyData.attack * 2),
+    attackRate: baseEnemyData.attackRate,
+    // Enhanced loot - double the quantities
+    loot: {},
+    drops: {}
+  };
+  
+  // Double loot quantities
+  if (baseEnemyData.loot) {
+    Object.entries(baseEnemyData.loot).forEach(([item, qty]) => {
+      bossData.loot[item] = qty * 2;
+    });
+  }
+  
+  // Improve drop chances slightly
+  if (baseEnemyData.drops) {
+    Object.entries(baseEnemyData.drops).forEach(([item, chance]) => {
+      bossData.drops[item] = Math.min(1.0, chance * 1.5);
+    });
+  }
+  
+  return { bossData, originalType: randomEnemyType };
+}
+
+export function startBossCombat() {
+  if (!S.adventure) return;
+  const bossInfo = generateBossEnemy();
+  if (!bossInfo) {
+    log('Failed to generate boss enemy!', 'bad');
+    return;
+  }
+  
+  const { bossData, originalType } = bossInfo;
+  const { enemyHP, enemyMax, atk, def } = initializeFight(bossData);
+  const h = { enemyHP, enemyMax, eAtk: atk, eDef: def, regen: 0, affixes: [] };
+  
+  // Bosses get more affixes
+  applyRandomAffixes(h);
+  applyRandomAffixes(h); // Apply twice for more challenge
+  
+  S.adventure.inCombat = true;
+  S.adventure.isBossFight = true;
+  S.adventure.currentEnemy = {
+    ...bossData,
+    type: originalType,
+    attack: Math.round(h.eAtk),
+    defense: Math.round(h.eDef),
+    regen: h.regen,
+    affixes: h.affixes
+  };
+  S.adventure.enemyHP = h.enemyHP;
+  S.adventure.enemyMaxHP = h.enemyMax;
+  S.adventure.playerHP = Math.round(S.hp);
+  S.adventure.lastPlayerAttack = 0;
+  S.adventure.lastEnemyAttack = 0;
+  S.adventure.combatLog = S.adventure.combatLog || [];
+  S.adventure.combatLog.push(`💀 A powerful ${bossData.name} emerges!`);
+  log(`Boss challenge started: ${bossData.name}!`, 'excellent');
 }
 
 export function startAdventureCombat() {
@@ -299,6 +396,7 @@ export function startAdventureCombat() {
   const h = { enemyHP, enemyMax, eAtk: atk, eDef: def, regen: 0, affixes: [] };
   applyRandomAffixes(h);
   S.adventure.inCombat = true;
+  S.adventure.isBossFight = false;
   S.adventure.currentEnemy = {
     ...enemyData,
     type: enemyType,
@@ -392,7 +490,8 @@ export function retreatFromCombat() {
 
 export function updateProgressButton() {
   if (!S.adventure) return;
-  const progressBtn = document.getElementById('progressToNextStageBtn');
+  const progressBtn = document.getElementById('progressButton');
+  const bossBtn = document.getElementById('challengeBossButton');
   if (!progressBtn) return;
   const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
   if (!currentZone || !currentZone.areas) return;
@@ -401,6 +500,16 @@ export function updateProgressButton() {
   const isAreaCleared = S.adventure.killsInCurrentArea >= currentArea.killReq;
   progressBtn.disabled = !isAreaCleared;
   progressBtn.textContent = isAreaCleared ? 'Progress to Next Area' : `Clear Area (${S.adventure.killsInCurrentArea}/${currentArea.killReq})`;
+  
+  // Show boss button when area is cleared
+  if (bossBtn) {
+    if (isAreaCleared && !S.adventure.inCombat) {
+      bossBtn.style.display = 'inline-block';
+      bossBtn.disabled = false;
+    } else {
+      bossBtn.style.display = 'none';
+    }
+  }
 }
 
 let tabsInitialized = false;
