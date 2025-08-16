@@ -30,6 +30,7 @@ import {
   getRealmName
 } from './realm.js';
 import { qs, setText, setFill, log } from './dom.js';
+import { WEAPON_FLAGS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
 import {
   ADVENTURE_ZONES,
   updateActivityAdventure,
@@ -45,6 +46,16 @@ import {
 
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
+
+const weaponFeatureEnabled = Object.keys(WEAPON_FLAGS).some(w => w !== 'fist' && WEAPON_FLAGS[w]);
+
+function updateWeaponChip() {
+  const el = document.getElementById('weaponName');
+  if (el) {
+    el.textContent = S.weapon || 'fist';
+    console.log('[weapon]', 'hud-update', S.weapon || 'fist');
+  }
+}
 
 // Sidebar activities configuration
 const sidebarActivities = [
@@ -395,6 +406,15 @@ function initUI(){
   // Render sidebar activities
   renderSidebarActivities();
 
+  if (weaponFeatureEnabled) {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.id = 'weaponChip';
+    chip.innerHTML = `Weapon: <span id="weaponName">${S.weapon || 'fist'}</span>`;
+    document.getElementById('top-chips').appendChild(chip);
+    console.log('[weapon]', 'hud-init', S.weapon || 'fist');
+  }
+
   // Fill beasts
   const bs = document.getElementById('beastSelect');
   BEASTS.forEach((b,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${b.name} (HP ${b.hp})`; bs.appendChild(o)});
@@ -504,6 +524,8 @@ function updateAll(){
     S.activities = { cultivation: false, physique: false, mining: false, adventure: false, cooking: false };
   }
   updateCurrentTaskDisplay();
+
+  if (weaponFeatureEnabled) updateWeaponChip();
 
   // Update progression displays
   setText('physiqueLevel', S.physique.level);
@@ -2547,3 +2569,5 @@ window.addEventListener('load', ()=>{
   log('Welcome, cultivator.');
   setInterval(tick, 1000);
 });
+
+// CHANGELOG: Added weapon HUD integration.
