@@ -156,11 +156,11 @@ function renderSidebarActivities() {
 }
 
 const BEASTS = [
-  {name:'Wild Rabbit', hp:20, atk:2, def:0, reward:{stones:5, herbs:2}},
-  {name:'Boar', hp:60, atk:5, def:2, reward:{stones:15, ore:3}},
-  {name:'Spirit Wolf', hp:140, atk:10, def:4, reward:{stones:35, wood:6}},
-  {name:'Tiger', hp:300, atk:18, def:8, reward:{stones:80, ore:12}},
-  {name:'Dragon Whelp', hp:800, atk:40, def:18, reward:{stones:220, herbs:30, ore:25}}
+  {name:'Wild Rabbit', hp:60, atk:2, def:0, reward:{stones:5, herbs:2}},
+  {name:'Boar', hp:180, atk:5, def:2, reward:{stones:15, ore:3}},
+  {name:'Spirit Wolf', hp:420, atk:10, def:4, reward:{stones:35, wood:6}},
+  {name:'Tiger', hp:900, atk:18, def:8, reward:{stones:80, ore:12}},
+  {name:'Dragon Whelp', hp:2400, atk:40, def:18, reward:{stones:220, herbs:30, ore:25}}
 ];
 
 
