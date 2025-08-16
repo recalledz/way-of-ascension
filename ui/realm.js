@@ -39,9 +39,31 @@ export function updateRealmUI() {
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   updateCurrentRealmHeader();
-  // Update foundation display below silhouette
-  setText('foundValSilhouette', Math.floor(S.foundation));
-  setText('foundCapSilhouette', fCap());
+  
+  // Update foundation seal
+  const prevFoundation = parseInt(document.getElementById('foundValSilhouette').textContent) || 0;
+  const currentFoundation = Math.floor(S.foundation);
+  const maxFoundation = fCap();
+  
+  setText('foundValSilhouette', currentFoundation);
+  setText('foundCapSilhouette', maxFoundation);
+  
+  // Flash effect when foundation increases
+  const foundationNumbers = document.getElementById('foundationNumbers');
+  if (foundationNumbers && currentFoundation > prevFoundation) {
+    foundationNumbers.classList.add('flash');
+    setTimeout(() => foundationNumbers.classList.remove('flash'), 600);
+  }
+  
+  // Pulse effect when at max foundation
+  if (foundationNumbers) {
+    if (currentFoundation >= maxFoundation) {
+      foundationNumbers.classList.add('pulse-max');
+    } else {
+      foundationNumbers.classList.remove('pulse-max');
+    }
+  }
+  
   // Update qi display below silhouette
   setText('qiValSilhouette', Math.floor(S.qi));
   setText('qiCapSilhouette', qCap());
