@@ -544,6 +544,11 @@ body{
   position: absolute;
   inset: -20px;
   background: 
+    /* Aurora borealis base layers */
+    radial-gradient(ellipse 300px 200px at 30% 50%, rgba(74, 222, 128, 0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 250px 150px at 70% 30%, rgba(34, 197, 94, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 200px 100px at 50% 70%, rgba(16, 185, 129, 0.35) 0%, transparent 50%),
+    /* Main liquid gradient */
     radial-gradient(ellipse at 50% 100%, rgba(74, 222, 128, 0.9) 0%, rgba(34, 197, 94, 0.8) 40%, rgba(16, 185, 129, 0.7) 80%),
     linear-gradient(0deg,
       rgba(74, 222, 128, 1.0) 0%,
@@ -639,6 +644,7 @@ body{
       transparent calc(var(--fill-height, 0%) + 1%)
     );
   transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: auroraShimmer 6s ease-in-out infinite;
 }
 
 .foundation-fill::before {
@@ -740,6 +746,29 @@ body{
   75% { 
     opacity: 0.5;
     transform: translateY(1px) translateX(0.5px) scale(1.01);
+  }
+}
+
+@keyframes auroraShimmer {
+  0%, 100% { 
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%, 0% 0%;
+    filter: brightness(1) hue-rotate(0deg);
+  }
+  20% { 
+    background-position: 20% 10%, 80% 90%, 30% 70%, 10% 10%, 0% 0%;
+    filter: brightness(1.1) hue-rotate(5deg);
+  }
+  40% { 
+    background-position: 40% 20%, 60% 80%, 70% 30%, 20% 20%, 0% 0%;
+    filter: brightness(1.2) hue-rotate(-3deg);
+  }
+  60% { 
+    background-position: 60% 30%, 40% 70%, 20% 80%, 30% 30%, 0% 0%;
+    filter: brightness(1.15) hue-rotate(8deg);
+  }
+  80% { 
+    background-position: 80% 40%, 20% 60%, 80% 20%, 40% 40%, 0% 0%;
+    filter: brightness(1.05) hue-rotate(-2deg);
   }
 }
 
