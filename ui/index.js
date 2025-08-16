@@ -972,11 +972,21 @@ function stopActivity(activityName) {
     S.physique.trainingSession = false;
     S.physique.timingActive = false;
   }
+  if (activityName === 'cultivation' && S.auto) {
+    // Ensure passive meditation doesn't continue when cultivation is stopped
+    S.auto.meditate = false;
+  }
   
   log(`Stopped ${activityName}`, 'neutral');
   updateActivitySelectors();
   updateActivityContent();
 }
+
+// Expose activity controls globally so other modules like realm.js can access
+// them when binding UI event handlers. Without this, the cultivation start/stop
+// button fails to toggle the activity state.
+window.startActivity = startActivity;
+window.stopActivity = stopActivity;
 
 function updateActivitySelectors() {
   // Ensure physique and mining data structures exist
