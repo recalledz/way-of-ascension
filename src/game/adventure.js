@@ -4,6 +4,7 @@ import { initializeFight, processAttack } from './combat.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
+import { gainProficiency, getProficiency } from './systems/proficiency.js';
 
 // Adventure zones and enemy data
 export const ADVENTURE_ZONES = [
@@ -61,26 +62,13 @@ export const ADVENTURE_ZONES = [
 ];
 
 // Fist proficiency handling
-export function gainFistXP(amount) {
-  if (!S.proficiencies) return;
-  const prof = S.proficiencies.fist;
-  prof.exp += amount;
-  while (prof.exp >= prof.expMax) {
-    prof.exp -= prof.expMax;
-    prof.level++;
-    prof.expMax = Math.floor(prof.expMax * 1.5);
-    log(`Fist proficiency reached level ${prof.level}!`, 'good');
-  }
-  updateFistProficiencyDisplay();
-}
-
 export function updateFistProficiencyDisplay() {
-  if (!S.proficiencies) return;
-  const prof = S.proficiencies.fist;
-  setText('fistLevel', prof.level);
-  setText('fistExp', Math.floor(prof.exp));
-  setText('fistExpMax', prof.expMax);
-  setFill('fistExpFill', prof.exp / prof.expMax);
+  const { value, bonus } = getProficiency('fist', S);
+  setText('fistLevel', Math.floor(value));
+  setText('fistExp', value.toFixed(0));
+  setText('fistExpMax', '');
+  setFill('fistExpFill', Math.min(value / 100, 1));
+  setText('fistBonus', bonus.toFixed(2));
 }
 
 // Adventure zone and area UI helpers
@@ -212,7 +200,8 @@ export function updateAdventureCombat() {
       const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
       S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
       S.adventure.lastPlayerAttack = now;
-      gainFistXP(Math.round(playerAttack));
+      gainProficiency('fist', Math.round(playerAttack), S);
+      updateFistProficiencyDisplay();
       S.adventure.combatLog = S.adventure.combatLog || [];
       S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
       if (S.adventure.enemyHP <= 0) {
@@ -270,7 +259,8 @@ function defeatEnemy() {
   // Boss bonus rewards
   if (isBoss) {
     const bonusXP = Math.floor(enemy.attack * 2);
-    gainFistXP(bonusXP);
+    gainProficiency('fist', bonusXP, S);
+    updateFistProficiencyDisplay();
     S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
   }
   
