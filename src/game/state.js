@@ -29,6 +29,7 @@ export const defaultState = () => {
   stats: {
     physique: 10,        // Physical power, mining yield
     mind: 10,            // Spell power, alchemy, learning speed
+    agility: 10,         // Weapon handling, dodge
     dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
     comprehension: 10,   // Foundation gain, learning speed
     criticalChance: 0.05, // Base critical hit chance
@@ -89,6 +90,8 @@ export const defaultState = () => {
   },
   // Combat Proficiency
   proficiency: {},
+  equipment: { mainhand: 'fist' },
+  flags: { weaponsEnabled: false },
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
     foundationMult: 1.0, // Foundation gain multiplier from various sources

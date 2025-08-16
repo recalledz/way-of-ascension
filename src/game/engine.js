@@ -80,7 +80,7 @@ export function foundationGainPerSec(){
   }
   if (!S.stats) {
     S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
     };
   }
@@ -110,7 +110,7 @@ export function calcAtk(){
   const stageBonus = Math.floor(baseAtk * (S.realm.stage - 1) * 0.08);
   if (!S.stats) {
     S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
     };
   }
@@ -126,7 +126,7 @@ export function calcDef(){
   const stageBonus = Math.floor(baseDef * (S.realm.stage - 1) * 0.08);
   if (!S.stats) {
     S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
     };
   }
@@ -138,7 +138,7 @@ export function calcDef(){
 export function getStatEffects() {
   if (!S.stats) {
     S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
+      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
     };
   }
