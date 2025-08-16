@@ -1,14 +1,33 @@
 # 🤖 AI Assistant Verification Protocol
 
-**MANDATORY: Every AI assistant MUST follow these verification steps on EVERY prompt.**
+**🚨 MANDATORY ENFORCEMENT: Every AI assistant MUST run validation scripts before ANY changes. 🚨**
 
-## 1. Structure Verification Protocol
+**AUTOMATED ENFORCEMENT ACTIVE:** This protocol is now automatically enforced via validation scripts.
+
+## 1. MANDATORY ENFORCEMENT COMMANDS
+
+**EVERY AI ASSISTANT MUST RUN THESE COMMANDS BEFORE ANY CHANGES:**
+
+```bash
+# Step 1: Run mandatory validation (BLOCKS changes if failed)
+node scripts/validate-structure.js
+
+# Step 2: If validation fails, auto-update documentation
+node scripts/validate-structure.js --auto-update
+
+# Step 3: Re-run validation to confirm fix
+node scripts/validate-structure.js
+```
+
+**🚫 AI CHANGES ARE AUTOMATICALLY BLOCKED UNTIL VALIDATION PASSES 🚫**
+
+## 2. Structure Verification Protocol
 
 **Before making ANY changes to the codebase:**
 
-1. **Read current project-structure.md** to understand the project layout
-2. **Verify file locations** match the documented structure
-3. **Check for new files/directories** that need documentation
+1. **Run validation script** - `node scripts/validate-structure.js`
+2. **Read current project-structure.md** to understand the project layout
+3. **Verify file locations** match the documented structure
 4. **Update project-structure.md** if discrepancies are found
 
 ## 2. Automated Verification Checklist
