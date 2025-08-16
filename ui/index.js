@@ -32,7 +32,6 @@ import {
 import { qs, setText, setFill, log } from './dom.js';
 import { WEAPON_FLAGS } from '../src/data/weapons.js'; // WEAPONS-INTEGRATION
 import {
-  ADVENTURE_ZONES,
   updateActivityAdventure,
   updateAdventureCombat,
   startAdventureCombat,
@@ -43,6 +42,7 @@ import {
   updateFoodSlots,
   setupAdventureTabs
 } from '../src/game/adventure.js';
+import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 
 // Global variables
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
@@ -538,7 +538,7 @@ function updateAll(){
   setText('miningExpMax', S.mining.expMax);
   setFill('miningFill', S.mining.exp / S.mining.expMax);
 
-  const currentZone = ADVENTURE_ZONES[S.adventure.currentZone];
+  const currentZone = ZONES[S.adventure.currentZone];
   const currentArea = currentZone ? currentZone.areas[S.adventure.currentArea] : null;
   const location = currentArea ? currentArea.name : 'Village Outskirts';
   const progress = currentArea ? Math.floor((S.adventure.killsInCurrentArea / currentArea.killReq) * 100) : 0;
@@ -1552,7 +1552,7 @@ function updateSidebarActivities() {
   
   // Update adventure
   if (S.adventure) {
-    const currentZone = ADVENTURE_ZONES[S.adventure.currentZone];
+    const currentZone = ZONES[S.adventure.currentZone];
     setText('adventureLevel', currentZone ? currentZone.name : 'Zone 1');
     const adventureFill = document.getElementById('adventureProgressFill');
     if (adventureFill && currentZone) {

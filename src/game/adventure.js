@@ -8,60 +8,7 @@ import { gainProficiency, getProficiency } from './systems/proficiency.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
 
-// Adventure zones and enemy data
-export const ADVENTURE_ZONES = [
-  {
-    name: 'Peaceful Lands',
-    description: 'A serene area perfect for beginners',
-    unlockReq: { zone: 0, area: 0 },
-    areas: [
-      { name: 'Forest Edge', enemy: 'Forest Rabbit', killReq: 5 },
-      { name: 'Meadow Path', enemy: 'Wild Boar', killReq: 8 },
-      { name: 'Creek Crossing', enemy: 'River Frog', killReq: 10 },
-      { name: 'Flower Field', enemy: 'Honey Bee', killReq: 12 },
-      { name: 'Old Oak Grove', enemy: 'Tree Sprite', killReq: 15 },
-      { name: 'Mossy Rocks', enemy: 'Stone Lizard', killReq: 18 },
-      { name: 'Babbling Brook', enemy: 'Water Snake', killReq: 20 },
-      { name: 'Sunny Clearing', enemy: 'Grass Wolf', killReq: 25 },
-      { name: 'Ancient Ruins', enemy: 'Ruin Guardian', killReq: 30 },
-      { name: 'Forest Heart', enemy: 'Forest Spirit', killReq: 40 }
-    ]
-  },
-  {
-    name: 'Dark Woods',
-    description: 'Twisted trees hide dangerous creatures',
-    unlockReq: { zone: 0, area: 10 },
-    areas: [
-      { name: 'Shadow Path', enemy: 'Shadow Wolf', killReq: 50 },
-      { name: 'Twisted Grove', enemy: 'Dark Treant', killReq: 60 },
-      { name: 'Cursed Pond', enemy: 'Cursed Toad', killReq: 70 },
-      { name: 'Thorn Thicket', enemy: 'Thorn Beast', killReq: 80 },
-      { name: "Witch's Hut", enemy: 'Corrupted Familiar', killReq: 90 },
-      { name: 'Dead Tree Circle', enemy: 'Wraith', killReq: 100 },
-      { name: 'Nightmare Clearing', enemy: 'Nightmare Hound', killReq: 120 },
-      { name: 'Bone Yard', enemy: 'Skeleton Warrior', killReq: 140 },
-      { name: 'Dark Altar', enemy: 'Dark Cultist', killReq: 160 },
-      { name: "Shadow Lord's Lair", enemy: 'Shadow Lord', killReq: 200 }
-    ]
-  },
-  {
-    name: 'Mountain Peaks',
-    description: 'High altitude challenges await the brave',
-    unlockReq: { zone: 1, area: 10 },
-    areas: [
-      { name: 'Rocky Trail', enemy: 'Mountain Goat', killReq: 250 },
-      { name: 'Wind Caves', enemy: 'Wind Elemental', killReq: 300 },
-      { name: 'Ice Fields', enemy: 'Frost Bear', killReq: 350 },
-      { name: 'Crystal Cavern', enemy: 'Crystal Golem', killReq: 400 },
-      { name: "Eagle's Nest", enemy: 'Giant Eagle', killReq: 450 },
-      { name: 'Storm Peak', enemy: 'Lightning Hawk', killReq: 500 },
-      { name: 'Avalanche Zone', enemy: 'Ice Titan', killReq: 600 },
-      { name: "Dragon's Perch", enemy: 'Young Dragon', killReq: 700 },
-      { name: 'Sky Temple', enemy: 'Sky Guardian', killReq: 800 },
-      { name: 'Peak Summit', enemy: 'Mountain King', killReq: 1000 }
-    ]
-  }
-];
+// Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
 // Fist proficiency handling
 export function updateFistProficiencyDisplay() {
@@ -101,7 +48,7 @@ export function updateZoneButtons() {
   const zoneContainer = document.getElementById('zoneButtons');
   if (zoneContainer) {
     zoneContainer.innerHTML = '';
-    ADVENTURE_ZONES.forEach((zone, index) => {
+    ZONES.forEach((zone, index) => {
       if (index < (S.adventure.zonesUnlocked || 1)) {
         const button = document.createElement('button');
         button.className = 'btn zone-btn' + (index === (S.adventure.selectedZone || 0) ? ' active' : '');
@@ -117,7 +64,7 @@ export function updateAreaGrid() {
   ensureAdventure();
   const areaContainer = document.getElementById('areaGrid');
   if (areaContainer) {
-    const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+    const currentZone = ZONES[S.adventure.selectedZone || 0];
     if (currentZone && currentZone.areas) {
       areaContainer.innerHTML = '';
       currentZone.areas.forEach((area, index) => {
@@ -597,7 +544,7 @@ function defeatEnemy() {
     S.adventure.areaProgress[areaKey].bossDefeated = true;
     
     // Unlock next area when boss is defeated
-    const currentZone = ADVENTURE_ZONES[S.adventure.currentZone];
+    const currentZone = ZONES[S.adventure.currentZone];
     if (currentZone && currentZone.areas) {
       const nextAreaIndex = S.adventure.currentArea + 1;
       if (nextAreaIndex < currentZone.areas.length) {
@@ -607,11 +554,11 @@ function defeatEnemy() {
       } else {
         // Unlock first area of next zone
         const nextZoneIndex = S.adventure.currentZone + 1;
-        if (nextZoneIndex < ADVENTURE_ZONES.length) {
+        if (nextZoneIndex < ZONES.length) {
           const nextZoneAreaKey = `${nextZoneIndex}-0`;
           S.adventure.unlockedAreas[nextZoneAreaKey] = true;
           S.adventure.zonesUnlocked = Math.max(S.adventure.zonesUnlocked, nextZoneIndex + 1);
-          log(`New zone unlocked: ${ADVENTURE_ZONES[nextZoneIndex].name}!`, 'excellent');
+          log(`New zone unlocked: ${ZONES[nextZoneIndex].name}!`, 'excellent');
         }
       }
     }
@@ -672,7 +619,7 @@ function defeatEnemy() {
 
 export function generateBossEnemy() {
   if (!S.adventure) return null;
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  const currentZone = ZONES[S.adventure.selectedZone || 0];
   if (!currentZone || !currentZone.areas) return null;
   
   // Get all enemies from current zone
@@ -753,7 +700,7 @@ export function startAdventureCombat() {
   S.adventure.selectedArea = S.adventure.selectedArea || 0;
   S.adventure.currentZone = S.adventure.selectedZone;
   S.adventure.currentArea = S.adventure.selectedArea;
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone];
+  const currentZone = ZONES[S.adventure.selectedZone];
   if (!currentZone || !currentZone.areas) return;
   const currentArea = currentZone.areas[S.adventure.selectedArea];
   if (!currentArea || !currentArea.enemy) return;
@@ -787,7 +734,7 @@ export function startAdventureCombat() {
 
 export function progressToNextArea() {
   if (!S.adventure) return;
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  const currentZone = ZONES[S.adventure.selectedZone || 0];
   if (!currentZone || !currentZone.areas) return;
   const currentArea = currentZone.areas[S.adventure.selectedArea || 0];
   if (!currentArea) return;
@@ -824,7 +771,7 @@ export function progressToNextArea() {
     S.adventure.areasCompleted++;
     const newArea = currentZone.areas[S.adventure.selectedArea];
     log(`Advanced to ${newArea.name}!`, 'good');
-  } else if (S.adventure.selectedZone < ADVENTURE_ZONES.length - 1) {
+  } else if (S.adventure.selectedZone < ZONES.length - 1) {
     const nextZoneIndex = S.adventure.selectedZone + 1;
     const nextZoneAreaKey = `${nextZoneIndex}-0`;
     
@@ -843,7 +790,7 @@ export function progressToNextArea() {
     S.adventure.killsInCurrentArea = newAreaProgress.kills;
     
     S.adventure.zonesUnlocked = Math.max(S.adventure.zonesUnlocked, S.adventure.selectedZone + 1);
-    const newZone = ADVENTURE_ZONES[S.adventure.selectedZone];
+    const newZone = ZONES[S.adventure.selectedZone];
     log(`Advanced to ${newZone.name}!`, 'excellent');
   } else {
     log('You have reached the end of available content!', 'neutral');
@@ -870,7 +817,7 @@ export function selectArea(areaIndex) {
   S.adventure.killsInCurrentArea = progress.kills;
   
   updateActivityAdventure();
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  const currentZone = ZONES[S.adventure.selectedZone || 0];
   if (currentZone && currentZone.areas && currentZone.areas[areaIndex]) {
     const selectedArea = currentZone.areas[areaIndex];
     log(`Selected area: ${selectedArea.name}`, 'good');
@@ -885,7 +832,7 @@ export function selectZone(zoneIndex) {
   S.adventure.currentArea = 0;
   S.adventure.killsInCurrentArea = 0;
   updateActivityAdventure();
-  const selectedZone = ADVENTURE_ZONES[zoneIndex];
+  const selectedZone = ZONES[zoneIndex];
   if (selectedZone) {
     log(`Selected zone: ${selectedZone.name}`, 'good');
   }
@@ -911,7 +858,7 @@ export function updateProgressButton() {
   const progressBtn = document.getElementById('progressButton');
   const bossBtn = document.getElementById('challengeBossButton');
   if (!progressBtn) return;
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
+  const currentZone = ZONES[S.adventure.selectedZone || 0];
   if (!currentZone || !currentZone.areas) return;
   const currentArea = currentZone.areas[S.adventure.selectedArea || 0];
   if (!currentArea) return;
@@ -994,7 +941,7 @@ export function updateFoodSlots() {
 }
 
 function findEnemyInfo(type) {
-  for (const zone of ADVENTURE_ZONES) {
+  for (const zone of ZONES) {
     for (const area of zone.areas) {
       if (area.enemy === type) {
         return { zone: zone.name, area: area.name, killReq: area.killReq };
@@ -1093,7 +1040,7 @@ export function updateActivityAdventure() {
   if (!S.adventure.bestiary) {
     S.adventure.bestiary = {};
   }
-  const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
+  const currentZone = ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
   if (currentZone && currentZone.areas) {
     const currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
     if (currentArea) {
