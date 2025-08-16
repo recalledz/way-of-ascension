@@ -20,22 +20,6 @@ We tie each effect to **damage type** + **secondary gameplay impact**:
 
 ⚖️ **Balance hook**: each element/status gets a **natural counter** (enemies immune or resistant by element). Bosses can have “status thresholds” (e.g. takes 3 stuns → gains temporary stun resist).
 
----
-
-## **2. Combo System**
-
-Right now combat is **independent timers per disciple**. To add combos:
-
-* **Combo Gauge (per disciple)**: Fills when they hit enemies or land crits.
-* **Chain Links**: Each weapon has a “combo window.” Example:
-
-  * **Sword**: 3-hit chain → final hit cleaves (AoE).
-  * **Nunchaku**: 5-hit flurry → guaranteed status proc.
-  * **Hammer**: 2-hit heavy → shockwave stun.
-* **Manual Integration**: Certain manuals unlock special “finisher moves” when a combo gauge reaches X.
-* **Party Combo**: If multiple disciples trigger effects in the same 1–2s window, you get *Synergy Combos* (e.g. Freeze + Hammer Slam → Shatter, dealing AoE dmg).
-
-This keeps it passive/idle-friendly but creates **emergent depth**.
 
 ---
 

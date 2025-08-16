@@ -1,30 +1,68 @@
-# Way of Ascension - Document Structure Guide
+# Way of Ascension - Document Structure & AI Guidelines
 
-## Overview
-This document provides a comprehensive guide to the project structure and code organization for the Way of Ascension cultivation idle game. This guide helps future AI assistants understand where to add new code and maintain consistency.
+This document outlines the project structure and coding conventions for the Way of Ascension cultivation game. **AI assistants must update this document when making structural changes.**
 
-## Project Structure
+## Project Overview
+
+Way of Ascension is a browser-based cultivation/idle game built with vanilla JavaScript. The game features:
+- Cultivation mechanics (Qi, Foundation, Realms)
+- Adventure system with combat and boss challenges
+- Law comprehension system
+- Sect management
+- Manual learning system
+- Weapon proficiency system
+- Area progression with unlocking mechanics
+
+## Complete File Structure
 
 ```
 way-of-ascension/
-├── data/                    # Game data and configuration files
-│   ├── enemies.js          # Enemy definitions for combat/adventure
-│   ├── laws.js             # Cultivation laws and skill trees
-│   └── realms.js           # Cultivation realm definitions
-├── src/                    # Core game logic
-│   └── game/
-│       ├── engine.js       # Core game calculations and mechanics
-│       ├── helpers.js      # Utility functions
-│       ├── migrations.js   # Save data migration system
-│       └── state.js        # Game state management and save/load
-├── ui/                     # User interface code
-│   └── index.js           # Main UI controller and event handlers
-├── node_modules/          # Dependencies (auto-generated)
-├── .windsurf/             # IDE configuration
-├── index.html             # Main HTML file
-├── style.css              # Styling
-├── package.json           # Project configuration
-├── package-lock.json      # Dependency lock file
+├── index.html                    # Main HTML file with game UI
+├── style.css                     # Global styles and CSS
+├── package.json                  # Dependencies and scripts
+├── package-lock.json             # Dependency lock file
+├── eslint.config.mjs             # ESLint configuration
+├── README.md                     # Project documentation
+├── .git/                         # Git repository data
+├── .windsurf/                    # Windsurf IDE configuration
+│   └── rules/
+│       └── way-of-ascension.md   # Project-specific rules
+├── browser-tools-mcp/            # Browser tools MCP server
+│   ├── browser-tools-mcp/        # MCP server implementation
+│   ├── browser-tools-server/     # Server components
+│   ├── chrome-extension/         # Chrome extension files
+│   └── docs/                     # MCP documentation
+├── node_modules/                 # NPM dependencies (auto-generated)
+├── data/                         # Static game data
+│   ├── laws.js                   # Law definitions and bonuses
+│   ├── realms.js                 # Realm progression data
+│   └── enemies.js                # Enemy data for adventure zones
+├── src/                          # Core game logic
+│   ├── game/                     # Game systems
+│   │   ├── state.js              # Game state management & save/load
+│   │   ├── engine.js             # Core calculations & formulas
+│   │   ├── combat.js             # Combat system mechanics
+│   │   ├── adventure.js          # Adventure system with areas/bosses
+│   │   ├── affixes.js            # Enemy affixes and modifiers
+│   │   ├── utils.js              # Utility functions
+│   │   ├── helpers.js            # Helper functions
+│   │   ├── migrations.js         # Save data migration system
+│   │   └── systems/              # Specialized game systems
+│   │       └── weapons.js        # Weapon system implementation
+│   └── data/                     # Dynamic game data
+│       ├── lootTables.js         # Loot generation tables
+│       ├── status.js             # Status effects definitions
+│       └── weapons.js            # Weapon definitions & stats
+├── ui/                           # User interface
+│   ├── index.js                  # Main UI controller (90KB+)
+│   ├── realm.js                  # Realm-specific UI components
+│   └── dom.js                    # DOM utility functions
+└── docs/                         # Documentation
+    ├── doc-structure.md          # This file - project structure
+    ├── adventure-patch.md        # Adventure system expansion plans
+    ├── combo-system.md           # Combat combo system design
+    ├── cultivation-ui-style.md   # UI styling guidelines
+    └── weapons-guidlines.md      # Weapon system design guidelines
 ├── eslint.config.mjs      # Linting configuration
 └── README.md              # Project documentation
 ```
