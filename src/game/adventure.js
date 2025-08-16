@@ -1,6 +1,6 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
-import { initializeFight, processAttack } from './combat.js';
+import { initializeFight, processAttack, computeWeaponDamage } from './combat.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
@@ -270,7 +270,6 @@ export function updateBattleDisplay() {
 export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
-    const playerAttack = calculatePlayerCombatAttack();
     const playerAttackRate = calculatePlayerAttackRate();
     const now = Date.now();
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
@@ -281,15 +280,35 @@ export function updateAdventureCombat() {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
-      const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
-      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
-      S.adventure.lastPlayerAttack = now;
-      gainProficiency('fist', Math.round(playerAttack), S);
-      updateFistProficiencyDisplay();
-      S.adventure.combatLog = S.adventure.combatLog || [];
-      S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
-      if (S.adventure.enemyHP <= 0) {
-        defeatEnemy();
+      if (S.flags?.weaponsEnabled) {
+        const result = computeWeaponDamage(S);
+        const attackValue = result.damage;
+        console.log('[weapon]', result.weapon.key, 'roll', result.baseDamage.toFixed(2), 'final', result.damage.toFixed(2));
+        let dmg = Math.max(1, Math.round(attackValue - enemyDef * 0.6));
+        const critChance = S.stats.criticalChance || 0;
+        const isCrit = Math.random() < critChance;
+        if (isCrit) dmg *= 2;
+        S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
+        S.adventure.lastPlayerAttack = now;
+        gainProficiency(result.weapon.proficiencyKey, isCrit ? 2 : 1, S);
+        if (result.weapon.key === 'fist') updateFistProficiencyDisplay();
+        S.adventure.combatLog = S.adventure.combatLog || [];
+        S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
+        if (S.adventure.enemyHP <= 0) {
+          defeatEnemy();
+        }
+      } else {
+        const playerAttack = calculatePlayerCombatAttack();
+        const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
+        S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
+        S.adventure.lastPlayerAttack = now;
+        gainProficiency('fist', Math.round(playerAttack), S);
+        updateFistProficiencyDisplay();
+        S.adventure.combatLog = S.adventure.combatLog || [];
+        S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
+        if (S.adventure.enemyHP <= 0) {
+          defeatEnemy();
+        }
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
