@@ -202,6 +202,7 @@ export function updateAdventureCombat() {
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
         S.adventure.playerHP = processAttack(S.adventure.playerHP, enemyDamage);
+        S.hp = S.adventure.playerHP;
         S.adventure.lastEnemyAttack = now;
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
         if (S.adventure.playerHP <= 0) {
@@ -230,6 +231,7 @@ function defeatEnemy() {
     S.meat = (S.meat || 0) + meatGained;
     S.adventure.combatLog.push(`Found ${meatGained} raw meat!`);
   }
+  S.hp = S.adventure.playerHP;
   S.adventure.inCombat = false;
   S.adventure.currentEnemy = null;
   const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
@@ -333,6 +335,7 @@ export function selectZone(zoneIndex) {
 export function retreatFromCombat() {
   if (!S.adventure) return;
   if (S.adventure.inCombat) {
+    S.hp = S.adventure.playerHP;
     S.adventure.inCombat = false;
     S.adventure.currentEnemy = null;
     const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
