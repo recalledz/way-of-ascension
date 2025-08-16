@@ -96,9 +96,14 @@ function ensureAdventure() {
       zonesUnlocked: 1,
       killsInCurrentArea: 0,
       bestiary: {},
-      inCombat: false
+      inCombat: false,
+      areaProgress: {}, // Track kills per area: { "0-0": { kills: 5, bossDefeated: true }, ... }
+      unlockedAreas: { "0-0": true } // Track unlocked areas
     };
   }
+  // Ensure new properties exist for existing saves
+  if (!S.adventure.areaProgress) S.adventure.areaProgress = {};
+  if (!S.adventure.unlockedAreas) S.adventure.unlockedAreas = { "0-0": true };
 }
 
 export function updateZoneButtons() {
@@ -127,9 +132,23 @@ export function updateAreaGrid() {
       areaContainer.innerHTML = '';
       currentZone.areas.forEach((area, index) => {
         const button = document.createElement('button');
-        button.className = 'btn area-btn' + (index === (S.adventure.selectedArea || 0) ? ' active' : '');
+        const areaKey = `${S.adventure.selectedZone}-${index}`;
+        const isUnlocked = S.adventure.unlockedAreas[areaKey] || false;
+        const isActive = index === (S.adventure.selectedArea || 0);
+        const progress = S.adventure.areaProgress[areaKey] || { kills: 0, bossDefeated: false };
+        
+        button.className = 'btn area-btn' + (isActive ? ' active' : '') + (!isUnlocked ? ' disabled' : '');
         button.textContent = area.name;
-        button.onclick = () => selectArea(index);
+        button.disabled = !isUnlocked;
+        
+        if (isUnlocked) {
+          const statusText = progress.bossDefeated ? ' ✓' : (progress.kills >= area.killReq ? ' 👹' : ` (${progress.kills}/${area.killReq})`);
+          button.textContent += statusText;
+          button.onclick = () => selectArea(index);
+        } else {
+          button.textContent += ' 🔒';
+        }
+        
         areaContainer.appendChild(button);
       });
     }
@@ -241,10 +260,42 @@ function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
   const enemy = S.adventure.currentEnemy;
   const isBoss = S.adventure.isBossFight;
+  const areaKey = `${S.adventure.currentZone}-${S.adventure.currentArea}`;
   
   S.adventure.totalKills++;
   if (!isBoss) {
     S.adventure.killsInCurrentArea++;
+    // Update persistent area progress
+    if (!S.adventure.areaProgress[areaKey]) {
+      S.adventure.areaProgress[areaKey] = { kills: 0, bossDefeated: false };
+    }
+    S.adventure.areaProgress[areaKey].kills = S.adventure.killsInCurrentArea;
+  } else {
+    // Mark boss as defeated for this area
+    if (!S.adventure.areaProgress[areaKey]) {
+      S.adventure.areaProgress[areaKey] = { kills: S.adventure.killsInCurrentArea, bossDefeated: false };
+    }
+    S.adventure.areaProgress[areaKey].bossDefeated = true;
+    
+    // Unlock next area when boss is defeated
+    const currentZone = ADVENTURE_ZONES[S.adventure.currentZone];
+    if (currentZone && currentZone.areas) {
+      const nextAreaIndex = S.adventure.currentArea + 1;
+      if (nextAreaIndex < currentZone.areas.length) {
+        const nextAreaKey = `${S.adventure.currentZone}-${nextAreaIndex}`;
+        S.adventure.unlockedAreas[nextAreaKey] = true;
+        log(`New area unlocked: ${currentZone.areas[nextAreaIndex].name}!`, 'excellent');
+      } else {
+        // Unlock first area of next zone
+        const nextZoneIndex = S.adventure.currentZone + 1;
+        if (nextZoneIndex < ADVENTURE_ZONES.length) {
+          const nextZoneAreaKey = `${nextZoneIndex}-0`;
+          S.adventure.unlockedAreas[nextZoneAreaKey] = true;
+          S.adventure.zonesUnlocked = Math.max(S.adventure.zonesUnlocked, nextZoneIndex + 1);
+          log(`New zone unlocked: ${ADVENTURE_ZONES[nextZoneIndex].name}!`, 'excellent');
+        }
+      }
+    }
   }
   
   S.adventure.bestiary = S.adventure.bestiary || {};
@@ -420,23 +471,57 @@ export function progressToNextArea() {
   if (!currentZone || !currentZone.areas) return;
   const currentArea = currentZone.areas[S.adventure.selectedArea || 0];
   if (!currentArea) return;
+  
+  const areaKey = `${S.adventure.selectedZone}-${S.adventure.selectedArea}`;
+  const progress = S.adventure.areaProgress[areaKey] || { kills: 0, bossDefeated: false };
+  
   if (S.adventure.killsInCurrentArea < currentArea.killReq) {
     log('Area not yet cleared! Defeat more enemies first.', 'bad');
     return;
   }
+  
+  if (!progress.bossDefeated) {
+    log('Boss must be defeated before progressing!', 'bad');
+    return;
+  }
+  
   if (S.adventure.selectedArea < currentZone.areas.length - 1) {
-    S.adventure.selectedArea++;
+    const nextAreaIndex = S.adventure.selectedArea + 1;
+    const nextAreaKey = `${S.adventure.selectedZone}-${nextAreaIndex}`;
+    
+    if (!S.adventure.unlockedAreas[nextAreaKey]) {
+      log('Next area is not unlocked yet!', 'bad');
+      return;
+    }
+    
+    S.adventure.selectedArea = nextAreaIndex;
     S.adventure.currentArea = S.adventure.selectedArea;
-    S.adventure.killsInCurrentArea = 0;
+    
+    // Load progress for new area
+    const newAreaProgress = S.adventure.areaProgress[nextAreaKey] || { kills: 0, bossDefeated: false };
+    S.adventure.killsInCurrentArea = newAreaProgress.kills;
+    
     S.adventure.areasCompleted++;
     const newArea = currentZone.areas[S.adventure.selectedArea];
     log(`Advanced to ${newArea.name}!`, 'good');
   } else if (S.adventure.selectedZone < ADVENTURE_ZONES.length - 1) {
-    S.adventure.selectedZone++;
+    const nextZoneIndex = S.adventure.selectedZone + 1;
+    const nextZoneAreaKey = `${nextZoneIndex}-0`;
+    
+    if (!S.adventure.unlockedAreas[nextZoneAreaKey]) {
+      log('Next zone is not unlocked yet!', 'bad');
+      return;
+    }
+    
+    S.adventure.selectedZone = nextZoneIndex;
     S.adventure.currentZone = S.adventure.selectedZone;
     S.adventure.selectedArea = 0;
     S.adventure.currentArea = 0;
-    S.adventure.killsInCurrentArea = 0;
+    
+    // Load progress for new zone's first area
+    const newAreaProgress = S.adventure.areaProgress[nextZoneAreaKey] || { kills: 0, bossDefeated: false };
+    S.adventure.killsInCurrentArea = newAreaProgress.kills;
+    
     S.adventure.zonesUnlocked = Math.max(S.adventure.zonesUnlocked, S.adventure.selectedZone + 1);
     const newZone = ADVENTURE_ZONES[S.adventure.selectedZone];
     log(`Advanced to ${newZone.name}!`, 'excellent');
@@ -448,9 +533,22 @@ export function progressToNextArea() {
 
 export function selectArea(areaIndex) {
   if (!S.adventure) return;
+  
+  const areaKey = `${S.adventure.selectedZone}-${areaIndex}`;
+  const isUnlocked = S.adventure.unlockedAreas[areaKey] || false;
+  
+  if (!isUnlocked) {
+    log('This area is locked! Complete previous areas first.', 'bad');
+    return;
+  }
+  
   S.adventure.selectedArea = areaIndex;
   S.adventure.currentArea = areaIndex;
-  S.adventure.killsInCurrentArea = 0;
+  
+  // Load kills for this area
+  const progress = S.adventure.areaProgress[areaKey] || { kills: 0, bossDefeated: false };
+  S.adventure.killsInCurrentArea = progress.kills;
+  
   updateActivityAdventure();
   const currentZone = ADVENTURE_ZONES[S.adventure.selectedZone || 0];
   if (currentZone && currentZone.areas && currentZone.areas[areaIndex]) {
@@ -497,13 +595,25 @@ export function updateProgressButton() {
   if (!currentZone || !currentZone.areas) return;
   const currentArea = currentZone.areas[S.adventure.selectedArea || 0];
   if (!currentArea) return;
-  const isAreaCleared = S.adventure.killsInCurrentArea >= currentArea.killReq;
-  progressBtn.disabled = !isAreaCleared;
-  progressBtn.textContent = isAreaCleared ? 'Progress to Next Area' : `Clear Area (${S.adventure.killsInCurrentArea}/${currentArea.killReq})`;
   
-  // Show boss button when area is cleared
+  const areaKey = `${S.adventure.selectedZone}-${S.adventure.selectedArea}`;
+  const progress = S.adventure.areaProgress[areaKey] || { kills: 0, bossDefeated: false };
+  const isAreaCleared = S.adventure.killsInCurrentArea >= currentArea.killReq;
+  const isBossDefeated = progress.bossDefeated;
+  
+  // Progress button only enabled after boss is defeated
+  progressBtn.disabled = !isBossDefeated;
+  if (isBossDefeated) {
+    progressBtn.textContent = 'Progress to Next Area';
+  } else if (isAreaCleared) {
+    progressBtn.textContent = 'Defeat Boss to Progress';
+  } else {
+    progressBtn.textContent = `Clear Area (${S.adventure.killsInCurrentArea}/${currentArea.killReq})`;
+  }
+  
+  // Show boss button when area is cleared but boss not defeated
   if (bossBtn) {
-    if (isAreaCleared && !S.adventure.inCombat) {
+    if (isAreaCleared && !isBossDefeated && !S.adventure.inCombat) {
       bossBtn.style.display = 'inline-block';
       bossBtn.disabled = false;
     } else {
