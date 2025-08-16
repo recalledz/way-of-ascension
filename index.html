@@ -184,17 +184,14 @@
               </div>
             </div>
             
-            <div class="card cultivation-status-card">
-              <h4>Cultivation Status</h4>
-              <!-- Foundation and Qi bars removed - now shown below silhouette -->
-              <div class="row" style="margin-top:12px">
-                <button class="btn primary" id="startCultivationActivity">🧘 Start Cultivating</button>
-                <button class="btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
+            <div class="card cultivation-controls-card">
+              <h4>Cultivation</h4>
+              <div class="cultivation-buttons">
+                <button class="btn cultivation-btn primary" id="startCultivationActivity">🧘 Start Cultivating</button>
+                <button class="btn cultivation-btn warn" id="breakthroughBtnActivity">⚡ Attempt Breakthrough</button>
+                <button class="btn cultivation-btn secondary" id="toggleProgressBtn">🏔️ View Progress</button>
               </div>
-              <div class="muted" style="margin-top:8px">Foundation gain rate: <span id="foundationRate">0.0</span>/s</div>
-              <div class="row" style="margin-top:12px">
-                <button class="btn secondary" id="toggleProgressBtn">🏔️ View Cultivation Progress</button>
-              </div>
+              <div class="cultivation-rate">Foundation gain: <span id="foundationRate">0.0</span>/s</div>
             </div>
 
             <div class="card cultivation-progress-card" id="cultivationProgressionCard" style="display:none;">
