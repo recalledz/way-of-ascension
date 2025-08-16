@@ -38,7 +38,7 @@ export function updateRealmUI() {
 
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
-  setText('currentRealmHeader', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
+  updateCurrentRealmHeader();
   setText('foundValActivity', Math.floor(S.foundation));
   setText('foundCapActivity', fCap());
   setText('qiValActivity', Math.floor(S.qi));
@@ -190,6 +190,50 @@ export function setupCultivationTabs() {
       }
     };
   });
+}
+
+export function updateCurrentRealmHeader() {
+  const realmData = [
+    { icon: '🌱', name: 'Mortal', desc: 'The beginning of your cultivation journey' },
+    { icon: '⚡', name: 'Qi Refining', desc: 'Learning to gather and refine spiritual energy' },
+    { icon: '🏔️', name: 'Foundation', desc: 'Building a solid cultivation foundation' },
+    { icon: '💎', name: 'Core Formation', desc: 'Forming your spiritual core' },
+    { icon: '👶', name: 'Nascent Soul', desc: 'Birth of your nascent soul' },
+    { icon: '🌟', name: 'Soul Transformation', desc: 'Transforming your very essence' },
+    { icon: '🔥', name: 'Void Refining', desc: 'Refining the void within' },
+    { icon: '🌌', name: 'Body Integration', desc: 'Integrating body and soul' },
+    { icon: '🏛️', name: 'Mahayana', desc: 'The great vehicle of cultivation' },
+    { icon: '✨', name: 'Tribulation', desc: 'Facing heavenly tribulation' },
+    { icon: '👑', name: 'True Immortal', desc: 'Achieving true immortality' }
+  ];
+
+  const currentRealm = realmData[S.realm.tier] || realmData[0];
+  const realmInfo = REALMS[S.realm.tier];
+  const stages = realmInfo ? realmInfo.stages : 9;
+
+  setText('currentRealmName', currentRealm.name);
+  setText('currentRealmDesc', currentRealm.desc);
+  
+  const iconElement = document.getElementById('currentRealmIcon');
+  if (iconElement) {
+    iconElement.textContent = currentRealm.icon;
+  }
+
+  const stagesContainer = document.getElementById('currentRealmStages');
+  if (stagesContainer) {
+    stagesContainer.innerHTML = Array.from({ length: stages }, (_, stageIndex) => {
+      const stageNumber = stageIndex + 1;
+      let stageClass = 'stage-dot';
+      
+      if (stageNumber < S.realm.stage) {
+        stageClass += ' completed';
+      } else if (stageNumber === S.realm.stage) {
+        stageClass += ' current';
+      }
+
+      return `<div class="${stageClass}" title="Stage ${stageNumber}"></div>`;
+    }).join('');
+  }
 }
 
 export function setupProgressToggle() {
