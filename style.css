@@ -1525,6 +1525,36 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   font-size: 1.1em;
 }
 
+.enemy-affixes {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.affix-tile {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  color: #fff;
+  position: relative;
+  cursor: default;
+}
+
+.affix-tile:hover::after {
+  content: attr(data-desc);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
 .health-bar {
   position: relative;
   width: 100%;
