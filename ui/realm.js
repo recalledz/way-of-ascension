@@ -39,8 +39,9 @@ export function updateRealmUI() {
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   updateCurrentRealmHeader();
-  setText('foundValActivity', Math.floor(S.foundation));
-  setText('foundCapActivity', fCap());
+  // Update foundation display below silhouette
+  setText('foundValSilhouette', Math.floor(S.foundation));
+  setText('foundCapSilhouette', fCap());
   setText('qiValActivity', Math.floor(S.qi));
   setText('qiCapActivity', qCap());
   setText('qiRegenActivity', qiRegenPerSec().toFixed(1));

@@ -643,7 +643,7 @@ body{
       black var(--fill-height, 0%), 
       transparent calc(var(--fill-height, 0%) + 1%)
     );
-  transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 2.5s cubic-bezier(0.23, 1, 0.32, 1);
   animation: auroraShimmer 6s ease-in-out infinite;
 }
 
@@ -772,6 +772,32 @@ body{
   }
 }
 
+/* Foundation display below silhouette */
+.foundation-display {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.foundation-display span {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(139, 69, 19, 0.9);
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 0 8px rgba(139, 69, 19, 0.4);
+  letter-spacing: 0.5px;
+  background: rgba(245, 245, 220, 0.15);
+  padding: 6px 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(139, 69, 19, 0.2);
+}
+
 /* Qi streams */
 .qi-stream {
   position: absolute;
@@ -785,7 +811,8 @@ body{
     transparent 100%
   );
   border-radius: 2px;
-  animation: qiFlow 4s ease-in-out infinite;
+  opacity: 0.6;
+  animation: qiFlow 2s ease-in-out infinite;
   filter: blur(0.5px);
 }
 
