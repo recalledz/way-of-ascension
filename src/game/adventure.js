@@ -225,11 +225,25 @@ function defeatEnemy() {
   S.adventure.bestiary[enemyType] = (S.adventure.bestiary[enemyType] || 0) + 1;
   updateBestiaryList();
   S.adventure.combatLog = S.adventure.combatLog || [];
-  S.adventure.combatLog.push(`${enemy.name} defeated!`);
-  if (enemy.drops && enemy.drops.meat && Math.random() < enemy.drops.meat) {
-    const meatGained = 1;
-    S.meat = (S.meat || 0) + meatGained;
-    S.adventure.combatLog.push(`Found ${meatGained} raw meat!`);
+  const lootEntries = enemy.loot ? Object.entries(enemy.loot) : [];
+  lootEntries.forEach(([item, qty]) => {
+    S[item] = (S[item] || 0) + qty;
+  });
+  if (enemy.drops) {
+    Object.entries(enemy.drops).forEach(([item, chance]) => {
+      if (Math.random() < chance) {
+        S[item] = (S[item] || 0) + 1;
+        lootEntries.push([item, 1]);
+      }
+    });
+  }
+  if (lootEntries.length) {
+    const lootText = lootEntries.map(([i, q]) => `${q} ${i}`).join(', ');
+    S.adventure.combatLog.push(`${enemy.name} defeated! Loot: ${lootText}`);
+    log(`${enemy.name} defeated! Loot: ${lootText}`, 'good');
+  } else {
+    S.adventure.combatLog.push(`${enemy.name} defeated!`);
+    log(`${enemy.name} defeated!`, 'good');
   }
   S.hp = S.adventure.playerHP;
   S.adventure.inCombat = false;
@@ -237,7 +251,6 @@ function defeatEnemy() {
   const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
   S.adventure.enemyHP = enemyHP;
   S.adventure.enemyMaxHP = enemyMax;
-  log(`Defeated ${enemy.name}! Kills: ${S.adventure.totalKills}`, 'good');
   if (S.activities.adventure && S.adventure.playerHP > 0) {
     startAdventureCombat();
     updateActivityAdventure();
@@ -270,7 +283,6 @@ export function startAdventureCombat() {
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`A ${enemyData.name} appears!`);
-  log(`Combat started with ${enemyData.name} in ${currentArea.name}!`, 'neutral');
 }
 
 export function progressToNextArea() {
