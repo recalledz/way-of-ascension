@@ -1,6 +1,7 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
 import { initializeFight, processAttack } from './combat.js';
+import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
@@ -484,6 +485,10 @@ export function updateAdventureCombat() {
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
     const playerAttackRate = calculatePlayerAttackRate();
     const now = Date.now();
+    const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
+    S.adventure.lastCombatTick = now; // STATUS-REFORM
+    S.adventure.playerStunBar = decayStunBar(S.adventure.playerStunBar, deltaTime); // STATUS-REFORM
+    S.adventure.enemyStunBar = decayStunBar(S.adventure.enemyStunBar, deltaTime); // STATUS-REFORM
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
     if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
     const enemyDef = S.adventure.currentEnemy.defense || 0;
@@ -500,6 +505,9 @@ export function updateAdventureCombat() {
       updateFistProficiencyDisplay();
       S.adventure.combatLog = S.adventure.combatLog || [];
       S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
+      const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
+      performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dmg, usingPalm: S.equipment?.mainhand === 'palm' }, S); // STATUS-REFORM
+      S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
       if (S.adventure.enemyHP <= 0) {
         defeatEnemy();
       }
@@ -512,6 +520,9 @@ export function updateAdventureCombat() {
         S.hp = S.adventure.playerHP;
         S.adventure.lastEnemyAttack = now;
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
+        const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
+        performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: enemyDamage }, S); // STATUS-REFORM
+        S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
         if (S.adventure.playerHP <= 0) {
           S.adventure.inCombat = false;
           S.adventure.combatLog.push('You have been defeated!');

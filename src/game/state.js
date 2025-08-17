@@ -21,6 +21,7 @@ export const defaultState = () => {
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
   ...initHp(100),
+  stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
   stones:0, herbs:0, ore:0, wood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
@@ -83,6 +84,8 @@ export const defaultState = () => {
     currentEnemy: null,
     lastPlayerAttack: 0,
     lastEnemyAttack: 0,
+    playerStunBar: 0, // STATUS-REFORM
+    enemyStunBar: 0, // STATUS-REFORM
     combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...'],
     location: 'Village Outskirts',
     progress: 0,

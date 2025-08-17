@@ -19,7 +19,29 @@ export const STATUSES = {
     effect: { attackSpeed: -0.2, cooldown: 0.2 },
     stacksToFreeze: 5,    // if reached → freeze
   },
-  // TODO: entomb, ionize, enfeeble, etc.
+  entomb: { // STATUS-REFORM
+    element: 'earth',
+    duration: 5,
+    effect: { immobilize: true },
+  },
+  ionize: { // STATUS-REFORM
+    element: 'metal',
+    duration: 5,
+    effect: { defense: -0.1 },
+  },
+  enfeeble: { // STATUS-REFORM
+    element: null,
+    duration: 6,
+    effect: { attack: -0.1 },
+  },
+  stun: { // STATUS-REFORM
+    element: null,
+    duration: 2,
+  },
+  interrupt: { // STATUS-REFORM
+    element: null,
+    duration: 0.1,
+  },
 };
 
 // Compatibility alias
