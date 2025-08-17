@@ -71,20 +71,6 @@ h1, h2, h3 {
     letter-spacing: 0.5px;
 }
 
-.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.card {
-  background-color: var(--panel);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(45, 37, 32, 0.2), 0 4px 8px rgba(45, 37, 32, 0.15);
-  border: 1px solid rgba(45, 37, 32, 0.35);
-  padding: 16px;
-}
-
 /* --- Standardized Progress Bar --- */
 .progress-bar-container {
   margin-bottom: 12px;
@@ -2235,12 +2221,21 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .content{position:relative; overflow:auto; padding:16px 16px 100px 16px; background: transparent; z-index: 10}
 .content > section{display:none}
 
-/* STYLE-GUIDE-UPDATE: Cards with parchment texture */
+/* Shared card styling */
 .cards{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px}
-.card{background: var(--panel); border:1px solid rgba(45, 37, 32, 0.35); border-radius:var(--radius); padding:14px; box-shadow: 0 10px 25px rgba(45, 37, 32, 0.2), 0 4px 8px rgba(45, 37, 32, 0.15); position: relative;}
-.card::before{content:''; position:absolute; inset:0; background: radial-gradient(circle at 25% 25%, rgba(139, 117, 95, 0.04) 0%, transparent 60%), radial-gradient(circle at 75% 75%, rgba(160, 140, 115, 0.03) 0%, transparent 50%); border-radius:var(--radius); pointer-events:none;}
+.card{
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.06);
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
 .card h4{margin:0 0 8px; font-size:15px}
 .muted{color:var(--muted); font-size:12px}
+.card, .card * { color: #2b2b2b; }
 
 /* Adventure Layout - MAP-UI-UPDATE */
 .adventure-layout {

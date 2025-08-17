@@ -82,9 +82,11 @@ way-of-ascension/
 │   │   │   ├── attack.js
 │   │   │   └── statusEngine.js
 │   │   ├── systems/
+│   │   │   ├── inventory.js
+│   │   │   ├── loot.js
 │   │   │   ├── proficiency.js
-│   │   │   ├── weapons.js
-│   │   │   └── loot.js
+│   │   │   ├── sessionLoot.js
+│   │   │   └── weapons.js
 │   │   ├── adventure.js
 │   │   ├── affixes.js
 │   │   ├── combat.js
@@ -97,6 +99,7 @@ way-of-ascension/
 │       ├── fx/
 │       │   └── fx.js
 │       └── panels/
+│           ├── CharacterPanel.js
 │           └── EquipmentPanel.js
 ├── ui/
 │   ├── components/
@@ -217,6 +220,16 @@ export function runMigrations(save) {
 **Key Functions**: `rollLoot()`, `toLootTableKey()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
 
+#### `systems/inventory.js` - Inventory Management
+**Purpose**: Manages player inventory and equipment slots.
+**Key Functions**: `addToInventory()`, `removeFromInventory()`, `equipItem()`, `unequip()`.
+**When to modify**: Change how items are stored or equipped.
+
+#### `systems/sessionLoot.js` - Session Loot Handling
+**Purpose**: Temporarily stores loot gained during a session until claimed or forfeited.
+**Key Functions**: `addSessionLoot()`, `claimSessionLoot()`, `forfeitSessionLoot()`.
+**When to modify**: Adjust how pending loot is managed between runs.
+
 ### Data Configuration (`data/`)
 
 #### `realms.js` - Cultivation Realms
@@ -329,6 +342,11 @@ function updateAll() {
 **Purpose**: Displays weapons, allowing equip, scrap, and detail actions.
 **Key Functions**: `equipWeapon()`, `renderEquipmentPanel()`.
 **When to modify**: Adjust weapon handling UI or extend equipment features.
+
+#### `panels/CharacterPanel.js` - Character Equipment & Inventory
+**Purpose**: Renders equipped items and the player's inventory with actions to equip, use, or discard items.
+**Key Functions**: `renderCharacterPanel()`, `setupCharacterTab()`.
+**When to modify**: Modify character equipment management or inventory UI behavior.
 
 ### UI Effects (`src/ui/fx/`)
 
