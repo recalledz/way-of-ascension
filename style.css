@@ -56,6 +56,15 @@ body::before{
   z-index: 0;
 }
 
+/* SCENIC-UPDATE: drifting edge fog */
+.mist-layer{pointer-events:none; position:fixed; inset:-10vh -5vw; z-index:0}
+.mist-a,.mist-b{position:absolute; inset:0; opacity:.10; background-repeat:no-repeat; background-size:120% 120%}
+.mist-a{background-image:radial-gradient(ellipse at 70% 80%, #fff 0%, transparent 55%);animation:driftA 28s linear infinite alternate}
+.mist-b{background-image:radial-gradient(ellipse at 30% 20%, #fff 0%, transparent 55%);animation:driftB 36s linear infinite alternate}
+@keyframes driftA{from{transform:translateX(-2%) translateY(0)} to{transform:translateX(2%) translateY(-2%)}}
+@keyframes driftB{from{transform:translateX(2%) translateY(0)} to{transform:translateX(-2%) translateY(2%)}}
+html.reduce-motion .mist-a,html.reduce-motion .mist-b{animation:none}
+
 .content {
   background: transparent;
 }
