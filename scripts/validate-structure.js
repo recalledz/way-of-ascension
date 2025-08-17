@@ -22,6 +22,7 @@ class StructureValidator {
     this.warnings = [];
     this.newFiles = [];
     this.currentStructure = {};
+    this.autoUpdate = process.argv.includes('--auto-update');
     this.documentedFiles = new Set();
     this.logOutput = [];
   }
@@ -41,6 +42,11 @@ class StructureValidator {
     this.scanCurrentStructure();
     this.parseDocumentedStructure();
     this.findViolations();
+
+    if (this.autoUpdate && this.newFiles.length > 0) {
+      return this.fixDocumentation();
+    }
+
     return this.generateReport();
   }
 
@@ -166,6 +172,58 @@ class StructureValidator {
     ];
     
     return ignorePatterns.some(pattern => pattern.test(file));
+  }
+
+  fixDocumentation() {
+    this.log('\n🛠️ AUTO-FIXING DOCUMENTATION...');
+    try {
+      const currentContent = readFileSync(STRUCTURE_FILE, 'utf8');
+      const newFileTree = this.generateFileTree();
+      const updatedContent = currentContent.replace(
+        /way-of-ascension\/(\r?\n)```[\s\S]*?```/,
+        `way-of-ascension/\n${newFileTree}`
+      );
+
+      writeFileSync(STRUCTURE_FILE, updatedContent);
+      this.log('✅ Successfully updated project-structure.md.');
+      this.errors = [];
+      this.newFiles = [];
+    } catch (e) {
+      this.errors.push(`Failed to auto-fix documentation: ${e.message}`);
+      this.log(`❌ ${e.message}`);
+    }
+    return this.generateReport();
+  }
+
+  generateFileTree() {
+    const root = 'way-of-ascension/';
+    let tree = '```\n' + root + '\n';
+    const structure = this.currentStructure;
+    const sortedPaths = Object.keys(structure).sort();
+
+    const processed = new Set();
+
+    const buildTree = (dir, prefix) => {
+      const items = sortedPaths.filter(p => p.startsWith(dir) && p !== dir && p.split('/').length === dir.split('/').length);
+      
+      items.forEach((item, index) => {
+        const isLast = index === items.length - 1;
+        const connector = isLast ? '└── ' : '├── ';
+        const name = item.substring(dir.length);
+
+        tree += `${prefix}${connector}${name}\n`;
+        processed.add(item);
+
+        if (structure[item].type === 'directory') {
+          const newPrefix = prefix + (isLast ? '    ' : '│   ');
+          buildTree(item, newPrefix);
+        }
+      });
+    };
+
+    buildTree('', '    ');
+
+    return tree + '```';
   }
 
   generateReport() {

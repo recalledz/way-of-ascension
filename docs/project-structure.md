@@ -287,6 +287,15 @@ function updateAll() {
 **Purpose**: Realm-specific UI components and cultivation displays
 **When to modify**: Add new realm UI features, modify cultivation interface
 
+#### `equipment.js` - Equipment Panel UI
+**Purpose**: Renders the player's inventory of weapons and armor in the equipment panel. Allows equipping weapons.
+**Key Functions**:
+- `renderEquipmentPanel()`: Main function to draw the weapon and armor lists.
+- `createWeaponElement()`: Creates the DOM element for a single weapon.
+- `createArmorElement()`: Creates the DOM element for a single piece of armor.
+**Dependencies**: `state.js`, `data/weapons.js`, `dom.js`
+**When to modify**: When changing how equipment is displayed or interacted with in the UI.
+
 ### HTML Structure (`index.html`)
 **Purpose**: Main game interface structure
 **Key Elements**:
@@ -300,3 +309,9 @@ function updateAll() {
 ### Styling (`style.css`)
 **Purpose**: Game visual styling
 **When to modify**: Add new styles, modify visual appearance
+
+### Server (`server.js`)
+
+**Purpose**: A simple Node.js server to serve the game's static files for local development.
+**Dependencies**: `http`, `fs`, `path`
+**When to modify**: If server configuration, port, or file handling logic needs to change.
