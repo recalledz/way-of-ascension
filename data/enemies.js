@@ -7,6 +7,7 @@ export const ENEMY_DATA = {
     hp: 45,
     attack: 3, 
     attackRate: 1.2, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 2, herbs: 1 } 
   },
   'Wild Boar': { 
@@ -14,6 +15,7 @@ export const ENEMY_DATA = {
     hp: 75,
     attack: 5, 
     attackRate: 0.9, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 4, ore: 1 } 
   },
   'River Frog': { 
@@ -21,6 +23,7 @@ export const ENEMY_DATA = {
     hp: 60,
     attack: 4, 
     attackRate: 1.1, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 3, herbs: 1 } 
   },
   'Honey Bee': { 
@@ -28,6 +31,7 @@ export const ENEMY_DATA = {
     hp: 36,
     attack: 5, 
     attackRate: 1.5, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { herbs: 2 },
     drops: { honey: 0.3 }
   },
@@ -39,6 +43,7 @@ export const ENEMY_DATA = {
     hp: 90,
     attack: 6, 
     attackRate: 1.0, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { herbs: 3, wood: 1 } 
   },
   'Stone Lizard': { 
@@ -46,6 +51,7 @@ export const ENEMY_DATA = {
     hp: 120,
     attack: 7, 
     attackRate: 0.8, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 5, ore: 2 } 
   },
   'Water Snake': { 
@@ -53,6 +59,7 @@ export const ENEMY_DATA = {
     hp: 84,
     attack: 8, 
     attackRate: 1.2, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { herbs: 2, venom: 1 } 
   },
   'Grass Wolf': { 
@@ -60,6 +67,7 @@ export const ENEMY_DATA = {
     hp: 150,
     attack: 10, 
     attackRate: 1.0, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { meat: 2, pelt: 1 },
     drops: { meat: 0.8 }
   },
@@ -71,6 +79,7 @@ export const ENEMY_DATA = {
     hp: 240,
     attack: 15, 
     attackRate: 0.7, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { ore: 3, ancientRelic: 1 } 
   },
   'Forest Spirit': { 
@@ -78,6 +87,7 @@ export const ENEMY_DATA = {
     hp: 360,
     attack: 20, 
     attackRate: 0.9, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { herbs: 5, ancientRelic: 2, spiritEssence: 1 } 
   },
 
@@ -88,6 +98,7 @@ export const ENEMY_DATA = {
     hp: 450,
     attack: 25, 
     attackRate: 1.2, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { shadowEssence: 1, pelt: 2 },
     drops: { meat: 0.8 }
   },
@@ -96,6 +107,7 @@ export const ENEMY_DATA = {
     hp: 750,
     attack: 35, 
     attackRate: 0.8, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { corruptedWood: 2, shadowEssence: 2 } 
   },
   'Cursed Toad': { 
@@ -103,6 +115,7 @@ export const ENEMY_DATA = {
     hp: 540,
     attack: 40, 
     attackRate: 1.1, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { venom: 3, shadowEssence: 1 } 
   },
   'Thorn Beast': { 
@@ -110,6 +123,7 @@ export const ENEMY_DATA = {
     hp: 900,
     attack: 45, 
     attackRate: 0.9, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { thorns: 4, shadowEssence: 2 } 
   },
   'Corrupted Familiar': { 
@@ -117,6 +131,7 @@ export const ENEMY_DATA = {
     hp: 660,
     attack: 50, 
     attackRate: 1.3, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { shadowEssence: 3, arcaneDust: 2 } 
   },
   'Wraith': { 
@@ -124,6 +139,7 @@ export const ENEMY_DATA = {
     hp: 1050,
     attack: 55, 
     attackRate: 1.0, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { ectoplasm: 3, shadowEssence: 3 } 
   },
   'Nightmare Hound': { 
@@ -131,6 +147,7 @@ export const ENEMY_DATA = {
     hp: 1200,
     attack: 65, 
     attackRate: 1.2, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { nightmareEssence: 2, shadowEssence: 3 } 
   },
   'Skeleton Warrior': { 
@@ -138,6 +155,7 @@ export const ENEMY_DATA = {
     hp: 1500,
     attack: 70, 
     attackRate: 0.9, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { ancientBones: 4, shadowEssence: 3 } 
   },
   'Dark Cultist': { 
@@ -145,6 +163,7 @@ export const ENEMY_DATA = {
     hp: 1350,
     attack: 80, 
     attackRate: 1.1, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { shadowEssence: 5, arcaneTome: 1 } 
   },
 
@@ -155,6 +174,7 @@ export const ENEMY_DATA = {
     hp: 3000,
     attack: 100, 
     attackRate: 1.5, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { shadowEssence: 10, darkCrystal: 1, ancientRelic: 5 } 
   },
 
@@ -165,6 +185,7 @@ export const ENEMY_DATA = {
     hp: 2400,
     attack: 90, 
     attackRate: 1.3, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { mountainHerbs: 3, goatHorn: 2 },
     drops: { meat: 1.0 }
   },
@@ -173,6 +194,7 @@ export const ENEMY_DATA = {
     hp: 1800,
     attack: 110, 
     attackRate: 1.8, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { windCrystal: 3, essenceOfAir: 2 } 
   },
   'Frost Bear': { 
@@ -180,6 +202,7 @@ export const ENEMY_DATA = {
     hp: 3600,
     attack: 130, 
     attackRate: 0.9, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { frostFur: 4, bearClaw: 2 },
     drops: { meat: 1.2 }
   },
@@ -188,6 +211,7 @@ export const ENEMY_DATA = {
     hp: 6000,
     attack: 150, 
     attackRate: 0.7, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { crystalShards: 5, earthEssence: 3 } 
   },
   'Giant Eagle': { 
@@ -195,6 +219,7 @@ export const ENEMY_DATA = {
     hp: 2700,
     attack: 140, 
     attackRate: 1.5, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { eagleFeather: 3, talon: 2 } 
   },
   'Lightning Hawk': { 
@@ -202,6 +227,7 @@ export const ENEMY_DATA = {
     hp: 2100,
     attack: 160, 
     attackRate: 2.0, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { lightningFeather: 4, stormEssence: 3 } 
   },
   'Ice Titan': { 
@@ -209,6 +235,7 @@ export const ENEMY_DATA = {
     hp: 9000,
     attack: 200, 
     attackRate: 0.8, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { titanIce: 5, frozenCore: 1 } 
   },
   'Young Dragon': { 
@@ -216,6 +243,7 @@ export const ENEMY_DATA = {
     hp: 15000,
     attack: 250, 
     attackRate: 1.2, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { dragonScales: 5, dragonClaw: 3, dragonBlood: 2 } 
   },
   'Sky Guardian': { 
@@ -223,6 +251,7 @@ export const ENEMY_DATA = {
     hp: 12000,
     attack: 300, 
     attackRate: 1.5, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { guardianFeather: 5, skyEssence: 3, ancientRelic: 5 } 
   },
 
@@ -233,6 +262,7 @@ export const ENEMY_DATA = {
     hp: 30000,
     attack: 400, 
     attackRate: 1.0, 
+    resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { kingsCrown: 1, mountainHeart: 1, ancientRelic: 10 } 
   }
 };
