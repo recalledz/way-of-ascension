@@ -45,6 +45,19 @@ export const migrations = [
     if(typeof save.qiRegenMult === 'undefined'){
       save.qiRegenMult = 0;
     }
+  },
+  save => {
+    if(!save.inventory){
+      save.inventory = { weapons: [], armor: [] };
+    }else{
+      if(!Array.isArray(save.inventory.weapons)) save.inventory.weapons = [];
+      if(!Array.isArray(save.inventory.armor)) save.inventory.armor = [];
+    }
+    if(!save.equipment){
+      save.equipment = { mainhand: 'fist', armor: null };
+    }else if(typeof save.equipment.armor === 'undefined'){
+      save.equipment.armor = null;
+    }
   }
 ];
 
