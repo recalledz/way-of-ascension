@@ -98,8 +98,10 @@ export const defaultState = () => {
   },
   // Combat Proficiency
   proficiency: {},
-  equipment: { mainhand: 'fist', armor: null }, // WEAPONS-INTEGRATION
-  inventory: { weapons: [], armor: [] }, // WEAPONS-INTEGRATION
+
+  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, torso: null, food: null }, // EQUIP-CHAR-UI
+  inventory: [],
+  sessionLoot: [], // EQUIP-CHAR-UI
   flags: { weaponsEnabled: true },
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier

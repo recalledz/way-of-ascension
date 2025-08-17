@@ -10,7 +10,7 @@ import { applyRandomAffixes, AFFIXES } from './affixes.js';
 import { gainProficiency, getProficiency } from './systems/proficiency.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
-import { renderEquipmentPanel } from '../ui/panels/EquipmentPanel.js'; // WEAPONS-INTEGRATION
+import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from './systems/sessionLoot.js'; // EQUIP-CHAR-UI
 import {
   playSlashArc,
   playThrustLine,
@@ -553,7 +553,8 @@ export function updateAdventureCombat() {
       S.adventure.combatLog = S.adventure.combatLog || [];
       S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
       const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
-      performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dmg, usingPalm: S.equipment?.mainhand === 'palm' }, S); // STATUS-REFORM
+      const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
+      performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dmg, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
       S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
       const pos = getCombatPositions();
       if (pos) {
@@ -619,6 +620,8 @@ export function updateAdventureCombat() {
           S.adventure.inCombat = false;
           S.adventure.combatLog.push('You have been defeated!');
           log('Defeated in combat! Returning to safety...', 'bad');
+          forfeitSessionLoot(); // EQUIP-CHAR-UI
+          updateLootTab(); // EQUIP-CHAR-UI
           S.qi = 0;
           if (typeof globalThis.stopActivity === 'function') {
             globalThis.stopActivity('adventure');
@@ -687,31 +690,27 @@ function defeatEnemy() {
   updateBestiaryList();
   S.adventure.combatLog = S.adventure.combatLog || [];
   
+  const zone = ZONES[S.adventure.currentZone];
+  const area = zone?.areas?.[S.adventure.currentArea];
   const lootEntries = enemy.loot ? Object.entries(enemy.loot) : [];
   lootEntries.forEach(([item, qty]) => {
-    S[item] = (S[item] || 0) + qty;
+    addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty, source: area?.name });
   });
 
   if (enemy.drops) {
     Object.entries(enemy.drops).forEach(([item, chance]) => {
       if (Math.random() < chance) {
-        S[item] = (S[item] || 0) + 1;
+        addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty: 1, source: area?.name });
         lootEntries.push([item, 1]);
       }
     });
   }
 
   if (S.flags?.weaponsEnabled) { // WEAPONS-INTEGRATION
-    const zone = ZONES[S.adventure.currentZone];
-    const area = zone?.areas?.[S.adventure.currentArea];
     const tableKey = toLootTableKey(area?.id || zone?.id);
     const drop = rollLoot(tableKey);
     if (drop) {
-      if (WEAPONS[drop]) {
-        S.inventory.weapons.push({ key: drop, quality: 'common' });
-      } else {
-        S[drop] = (S[drop] || 0) + 1;
-      }
+      addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'mat', qty: 1, source: area?.name });
       lootEntries.push([drop, 1]);
     }
   }
@@ -742,11 +741,12 @@ function defeatEnemy() {
   const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
   S.adventure.enemyHP = enemyHP;
   S.adventure.enemyMaxHP = enemyMax;
-  
+
   if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
     startAdventureCombat();
     updateActivityAdventure();
   }
+  updateLootTab(); // EQUIP-CHAR-UI
 }
 
 export function instakillCurrentEnemy() {
@@ -992,6 +992,8 @@ export function retreatFromCombat() {
     S.adventure.enemyMaxHP = enemyMax;
     S.adventure.combatLog = S.adventure.combatLog || [];
     S.adventure.combatLog.push('You retreated from combat.');
+    claimSessionLoot(); // EQUIP-CHAR-UI
+    updateLootTab(); // EQUIP-CHAR-UI
     log('Retreated from combat safely.', 'neutral');
   }
 }
@@ -1051,9 +1053,8 @@ export function setupAdventureTabs() {
         content.classList.add('active');
         content.style.display = 'block';
       }
-      if (tabName === 'equipment') {
-        updateFoodSlots();
-        renderEquipmentPanel();
+      if (tabName === 'loot') {
+        updateLootTab();
       }
     };
   });
@@ -1179,6 +1180,19 @@ function updateBestiaryList() {
   });
 }
 
+export function updateLootTab() {
+  const list = document.getElementById('sessionLootList');
+  if (!list) return;
+  list.innerHTML = '';
+  (S.sessionLoot || []).forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'loot-row';
+    const src = item.source ? ` (${item.source})` : '';
+    row.textContent = `${item.qty || 1} ${item.key}${src}`;
+    list.appendChild(row);
+  });
+}
+
 export function updateActivityAdventure() {
   ensureAdventure();
   if (!S.adventure.bestiary) {
@@ -1201,7 +1215,8 @@ export function updateActivityAdventure() {
   setText('totalKills', S.adventure.totalKills);
   setText('areasCompleted', S.adventure.areasCompleted);
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
-  setText('currentWeapon', WEAPONS[S.equipment?.mainhand]?.displayName || 'Fists'); // WEAPONS-INTEGRATION
+  const weaponKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
+  setText('currentWeapon', WEAPONS[weaponKey]?.displayName || 'Fists'); // EQUIP-CHAR-UI
   const fistBase = 5 + getFistBonuses().damage;
   setText('baseDamage', fistBase);
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
