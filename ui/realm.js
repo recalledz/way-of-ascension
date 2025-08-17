@@ -309,35 +309,45 @@ export function updateCultivationVisualization() {
   }
 }
 
+function showCultivationProgressModal() {
+  const overlay = document.getElementById('cultivationProgressionOverlay');
+  if (!overlay) return;
+
+  overlay.style.display = 'flex';
+  updateCultivationProgressionTree();
+
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      hideCultivationProgressModal();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+}
+
+function hideCultivationProgressModal() {
+  const overlay = document.getElementById('cultivationProgressionOverlay');
+  if (overlay) {
+    overlay.style.display = 'none';
+  }
+}
+
 export function setupProgressToggle() {
   const toggleBtn = document.getElementById('toggleProgressBtn');
   const closeBtn = document.getElementById('closeProgressBtn');
-  const progressCard = document.getElementById('cultivationProgressionCard');
+  const overlay = document.getElementById('cultivationProgressionOverlay');
+  const backdrop = overlay?.querySelector('.modal-backdrop');
 
   if (toggleBtn) {
-    toggleBtn.onclick = () => {
-      if (progressCard) {
-        progressCard.style.display = 'block';
-        updateCultivationProgressionTree();
-      }
-    };
+    toggleBtn.onclick = showCultivationProgressModal;
   }
 
   if (closeBtn) {
-    closeBtn.onclick = () => {
-      if (progressCard) {
-        progressCard.style.display = 'none';
-      }
-    };
+    closeBtn.onclick = hideCultivationProgressModal;
   }
 
-  // Close on background click
-  if (progressCard) {
-    progressCard.onclick = (e) => {
-      if (e.target === progressCard) {
-        progressCard.style.display = 'none';
-      }
-    };
+  if (backdrop) {
+    backdrop.onclick = hideCultivationProgressModal;
   }
 }
 
