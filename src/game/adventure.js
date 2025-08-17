@@ -1,6 +1,6 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
-import { initializeFight, processAttack } from './combat.js';
+import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
@@ -9,6 +9,17 @@ import { gainProficiency, getProficiency } from './systems/proficiency.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
 import { renderEquipmentPanel } from '../../ui/panels/equipment.js';
+import { WEAPONS } from '../data/weapons.js';
+import {
+  playSlashArc,
+  playThrustLine,
+  playRingShockwave,
+  playBeam,
+  playChakram,
+  playShieldDome,
+  playSparkBurst,
+  setFxTint
+} from '../ui/fx/fx.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
@@ -20,6 +31,25 @@ export function updateFistProficiencyDisplay() {
   setText('fistExpMax', '');
   setFill('fistExpFill', Math.min(value / 100, 1));
   setText('fistBonus', bonus.toFixed(2));
+}
+
+function getCombatPositions() {
+  const svg = document.getElementById('combatFx');
+  const playerEl = document.querySelector('.combatant.player');
+  const enemyEl = document.querySelector('.combatant.enemy');
+  if (!svg || !playerEl || !enemyEl) return null;
+  const rect = svg.getBoundingClientRect();
+  const pRect = playerEl.getBoundingClientRect();
+  const eRect = enemyEl.getBoundingClientRect();
+  const from = {
+    x: ((pRect.right - rect.left) / rect.width) * 100,
+    y: ((pRect.top + pRect.height / 2 - rect.top) / rect.height) * 50,
+  };
+  const to = {
+    x: ((eRect.left - rect.left) / rect.width) * 100,
+    y: ((eRect.top + eRect.height / 2 - rect.top) / rect.height) * 50,
+  };
+  return { svg, from, to };
 }
 
 // Adventure zone and area UI helpers
@@ -485,6 +515,8 @@ export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
     const playerAttackRate = calculatePlayerAttackRate();
+    const weaponKey = getEquippedWeapon(S);
+    const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
     const now = Date.now();
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
@@ -509,6 +541,40 @@ export function updateAdventureCombat() {
       const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
       performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dmg, usingPalm: S.equipment?.mainhand === 'palm' }, S); // STATUS-REFORM
       S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
+      const pos = getCombatPositions();
+      if (pos) {
+        setFxTint(pos.svg, weapon.animations?.tint || 'auto');
+        (weapon.animations?.fx || []).forEach(fx => {
+          switch (fx) {
+            case 'slashArc':
+              playSlashArc(pos.svg, pos.from, pos.to);
+              break;
+            case 'pierceThrust':
+            case 'palmStrike':
+              playThrustLine(pos.svg, pos.from, pos.to);
+              break;
+            case 'smash':
+              playRingShockwave(pos.svg, pos.to, 20);
+              break;
+            case 'flurry': {
+              const mid = { x: (pos.from.x + pos.to.x) / 2, y: pos.from.y };
+              playSlashArc(pos.svg, pos.from, mid);
+              setTimeout(() => playSlashArc(pos.svg, mid, pos.to), 80);
+              playSparkBurst(pos.svg, pos.to);
+              break;
+            }
+            case 'spinThrow':
+              playChakram(pos.svg, pos.from, pos.to);
+              break;
+            case 'magicBolt':
+            case 'smite':
+              playBeam(pos.svg, pos.from, pos.to);
+              break;
+            default:
+              break;
+          }
+        });
+      }
       if (S.adventure.enemyHP <= 0) {
         defeatEnemy();
       }
@@ -524,6 +590,13 @@ export function updateAdventureCombat() {
         const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
         performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: enemyDamage }, S); // STATUS-REFORM
         S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
+        if (weaponKey === 'focus') {
+          const pos = getCombatPositions();
+          if (pos) {
+            setFxTint(pos.svg, weapon.animations?.tint || 'auto');
+            playShieldDome(pos.svg, pos.from, 25);
+          }
+        }
         if (S.adventure.playerHP <= 0) {
           S.adventure.inCombat = false;
           S.adventure.combatLog.push('You have been defeated!');
