@@ -66,6 +66,7 @@ way-of-ascension/
 │   │   └── weapons-guidlines.md
 │   ├── ai-verification-protocol.md
 │   ├── cultivation-ui-style.md
+│   ├── proficiency.md
 │   └── project-structure.md
 ├── node_modules/
 ├── scripts/
@@ -117,6 +118,9 @@ way-of-ascension/
 ```
 
 ## File Responsibilities
+
+### Documentation (`docs/`)
+- `proficiency.md` – Weapon proficiency XP formula and level benefits.
 
 ### Core Game Logic (`src/game/`)
 
