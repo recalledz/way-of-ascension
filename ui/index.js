@@ -41,8 +41,11 @@ import {
   retreatFromCombat,
   updateFistProficiencyDisplay,
   updateFoodSlots,
-  setupAdventureTabs
+  setupAdventureTabs,
+  updateLootTab
 } from '../src/game/adventure.js';
+import { forfeitSessionLoot } from '../src/game/systems/sessionLoot.js'; // EQUIP-CHAR-UI
+import { renderCharacterPanel, setupCharacterTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
 
@@ -55,8 +58,9 @@ const weaponFeatureEnabled = Object.keys(WEAPON_FLAGS).some(w => w !== 'fist' &&
 function updateWeaponChip() {
   const el = document.getElementById('weaponName');
   if (el) {
-    el.textContent = S.weapon || 'fist';
-    console.log('[weapon]', 'hud-update', S.weapon || 'fist');
+    const key = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
+    el.textContent = key || 'fist';
+    console.log('[weapon]', 'hud-update', key || 'fist');
   }
 }
 
@@ -116,6 +120,15 @@ const sidebarActivities = [
     progressFillId: 'adventureProgressFill',
     progressTextId: 'adventureProgressText',
     cost: {}
+  },
+  {
+    id: 'character',
+    label: 'Character',
+    icon: '🧙',
+    group: 'management',
+    levelId: 'characterLevel',
+    initialLevel: 'Gear',
+    cost: {},
   },
   {
     id: 'sect',
@@ -415,9 +428,10 @@ function initUI(){
     const chip = document.createElement('div');
     chip.className = 'chip';
     chip.id = 'weaponChip';
-    chip.innerHTML = `Weapon: <span id="weaponName">${S.weapon || 'fist'}</span>`;
+    const key = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
+    chip.innerHTML = `Weapon: <span id="weaponName">${key || 'fist'}</span>`;
     document.getElementById('top-chips').appendChild(chip);
-    console.log('[weapon]', 'hud-init', S.weapon || 'fist');
+    console.log('[weapon]', 'hud-init', key || 'fist');
   }
 
   // Fill beasts
@@ -1143,6 +1157,9 @@ function updateActivityContent() {
   switch(selectedActivity) {
     case 'adventure':
       updateActivityAdventure();
+      break;
+    case 'character':
+      renderCharacterPanel(); // EQUIP-CHAR-UI
       break;
     case 'cooking':
       updateActivityCooking();
@@ -2603,6 +2620,17 @@ function initActivityListeners() {
     startBossCombat();
     updateActivityAdventure();
   });
+
+  document.getElementById('claimLootBtn')?.addEventListener('click', () => {
+    retreatFromCombat();
+    renderCharacterPanel();
+  });
+  document.getElementById('forfeitLootBtn')?.addEventListener('click', () => {
+    if (confirm('Forfeit all loot?')) {
+      forfeitSessionLoot();
+      updateLootTab();
+    }
+  });
 }
 
 // Add physique training dummy interaction
@@ -2642,6 +2670,7 @@ window.addEventListener('load', ()=>{
   initLawSystem();
   initActivityListeners();
   setupAdventureTabs();
+  setupCharacterTab(); // EQUIP-CHAR-UI
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();
