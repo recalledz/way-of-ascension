@@ -22,14 +22,38 @@
   --nascent-secondary: #ba55d3;
   --spirit-primary: #ff4500;
   --spirit-secondary: #ff6347;
+
+  /* Scenic background controls */
+  --bg-dim: .95;      /* lower = darker */
+  --bg-contrast: .98; /* 1 = none */
 }
 html,body{height:100%}
 body{
   margin:0; font-family: 'Georgia', 'Times New Roman', serif;
-  color: #2d2520; 
-  background: var(--bg);
+  color: #2d2520;
   overflow:hidden;
   position: relative;
+}
+
+body, #root, #app {
+  background:
+    image-set(
+      url("/ink-mountains-style2.avif") type("image/avif"),
+      url("/ink-mountains-style2.webp") type("image/webp")
+    ) center/cover no-repeat,
+    linear-gradient(#f5f1eb, #e9dfd3); /* graceful fallback while loading */
+  filter: brightness(var(--bg-dim)) contrast(var(--bg-contrast)) saturate(.95);
+  background-attachment: fixed; /* remove if scroll feels janky */
+}
+
+body::before{
+  content:"";
+  position: fixed; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg,
+              rgba(0,0,0,.10) 0%,
+              rgba(0,0,0,0) 22% 78%,
+              rgba(0,0,0,.12) 100%);
+  z-index: 0;
 }
 
 .content {
