@@ -749,6 +749,15 @@ function defeatEnemy() {
   updateLootTab(); // EQUIP-CHAR-UI
 }
 
+export function instakillCurrentEnemy() {
+  if (S.adventure && S.adventure.currentEnemy) {
+    S.adventure.enemyHP = 0;
+    defeatEnemy();
+  }
+}
+
+
+
 export function generateBossEnemy() {
   if (!S.adventure) return null;
   const currentZone = ZONES[S.adventure.selectedZone || 0];

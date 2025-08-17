@@ -67,6 +67,7 @@
       <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
     <div class="right-actions">
+      <button class="btn small ghost" id="debugBtn">🐛 Debug</button>
       <button class="btn small ghost" id="saveBtn">💾 Save</button>
       <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
       <button class="btn small ghost" id="importBtn">⬆️ Import</button>
@@ -838,6 +839,15 @@
       </div>
     </div>
   </main>
+
+  <div id="debugConsole" class="debug-console" style="display:none;">
+    <div id="debugOutput"></div>
+    <input id="debugInput" type="text" placeholder="Enter command"/>
+    <div>
+      <button id="debugRunBtn">Run</button>
+      <button id="debugKillBtn">Kill Enemy</button>
+    </div>
+  </div>
 
   <script type="module" src="ui/index.js"></script>
 </body>

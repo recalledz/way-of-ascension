@@ -68,6 +68,8 @@ export const migrations = [
     }
   },
   save => {
+    if (!save.flags) save.flags = {};
+    save.flags.weaponsEnabled = true;
     if (!Array.isArray(save.inventory)) {
       const legacy = save.inventory || {};
       save.inventory = [];
