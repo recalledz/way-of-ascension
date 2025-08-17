@@ -15,58 +15,93 @@ Way of Ascension is a browser-based cultivation/idle game built with vanilla Jav
 
 ```
 way-of-ascension/
-├── index.html                    # Main HTML file with game UI
-├── style.css                     # Global styles and CSS
-├── package.json                  # Dependencies and scripts
-├── package-lock.json             # Dependency lock file
-├── eslint.config.mjs             # ESLint configuration
-├── README.md                     # Project documentation
-├── .git/                         # Git repository data
-├── .windsurf/                    # Windsurf IDE configuration
+├── .windsurf/
+│   ├── ai-enforcement.js
+│   ├── pre-commit-hook.js
 │   └── rules/
-│       └── way-of-ascension.md   # Project-specific rules
-├── browser-tools-mcp/            # Browser tools MCP server
-│   ├── browser-tools-mcp/        # MCP server implementation
-│   ├── browser-tools-server/     # Server components
-│   ├── chrome-extension/         # Chrome extension files
-│   └── docs/                     # MCP documentation
-├── node_modules/                 # NPM dependencies (auto-generated)
-├── data/                         # Static game data
-│   ├── laws.js                   # Law definitions and bonuses
-│   ├── realms.js                 # Realm progression data
-│   ├── enemies.js                # Enemy data for adventure zones
-│   └── zones.js                  # Zone/area data structure with progressive unlock system
-├── src/                          # Core game logic
-│   ├── game/                     # Game systems
-│   │   ├── state.js              # Game state management & save/load
-│   │   ├── engine.js             # Core calculations & formulas
-│   │   ├── combat.js             # Combat system mechanics
-│   │   ├── adventure.js          # Adventure system with areas/bosses
-│   │   ├── affixes.js            # Enemy affixes and modifiers
-│   │   ├── utils.js              # Utility functions
-│   │   ├── helpers.js            # Helper functions
-│   │   ├── migrations.js         # Save data migration system
-│   │   └── systems/              # Specialized game systems
-│   │       └── weapons.js        # Weapon system implementation
-│   └── data/                     # Dynamic game data
-│       ├── lootTables.js         # Loot generation tables
-│       ├── status.js             # Status effects definitions
-│       └── weapons.js            # Weapon definitions & stats
-├── ui/                           # User interface
-│   ├── index.js                  # Main UI controller (90KB+)
-│   ├── realm.js                  # Realm-specific UI components
-│   └── dom.js                    # DOM utility functions
-└── docs/                         # Documentation
-    ├── project-structure.md      # This file - project structure
-    ├── ai-verification-protocol.md # AI assistant verification guidelines
-    ├── adventure-patch.md        # Adventure system expansion plans
-    ├── combo-system.md           # Combat combo system design
-    ├── cultivation-ui-style.md   # UI styling guidelines
-    ├── weapons-guidlines.md      # Weapon system design guidelines
-    └── To-dos/                   # Task-specific documentation
-        ├── affixes-expansion.md  # Affix system expansion plans
-        ├── boss-specific-affixes.md # Boss ability specifications
-        └── enemy-weakness.md     # Enemy weakness system
+│       └── way-of-ascension.md
+├── browser-tools-mcp/
+│   ├── browser-tools-mcp/
+│   │   ├── README.md
+│   │   ├── mcp-server.ts
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   ├── browser-tools-server/
+│   │   ├── lighthouse/
+│   │   ├── README.md
+│   │   ├── browser-connector.ts
+│   │   ├── package.json
+│   │   ├── server.ts
+│   │   └── tsconfig.json
+│   ├── chrome-extension/
+│   │   ├── background.js
+│   │   ├── devtools.html
+│   │   ├── devtools.js
+│   │   ├── manifest.json
+│   │   ├── panel.html
+│   │   └── panel.js
+│   └── docs/
+│       ├── mcp-docs.md
+│       └── mcp.md
+├── data/
+│   ├── enemies.js
+│   ├── laws.js
+│   ├── realms.js
+│   └── zones.js
+├── docs/
+│   ├── To-dos/
+│   │   ├── affixes-expansion.md
+│   │   ├── animations-per-weapon.md
+│   │   ├── boss-specific-affixes.md
+│   │   ├── combat-stats-analysis.md
+│   │   ├── combat-stats.md
+│   │   ├── combo-system.md
+│   │   ├── crafting-forginf.md
+│   │   ├── enemy-weakness.md
+│   │   ├── equipment.md
+│   │   ├── manual-system.md
+│   │   ├── manuals.md
+│   │   ├── status-effects.md
+│   │   └── weapons-guidlines.md
+│   ├── ai-verification-protocol.md
+│   ├── cultivation-ui-style.md
+│   └── project-structure.md
+├── node_modules/
+├── scripts/
+│   ├── test-node.js
+│   └── validate-structure.js
+├── src/
+│   ├── data/
+│   │   ├── lootTables.js
+│   │   ├── status.js
+│   │   ├── statusesByElement.js
+│   │   └── weapons.js
+│   └── game/
+│       ├── combat/
+│       │   ├── attack.js
+│       │   └── statusEngine.js
+│       ├── systems/
+│       │   ├── proficiency.js
+│       │   └── weapons.js
+│       ├── adventure.js
+│       ├── affixes.js
+│       ├── combat.js
+│       ├── engine.js
+│       ├── helpers.js
+│       ├── migrations.js
+│       ├── state.js
+│       └── utils.js
+├── ui/
+│   ├── dom.js
+│   ├── index.js
+│   └── realm.js
+├── README.md
+├── eslint.config.mjs
+├── index.html
+├── package-lock.json
+├── package.json
+└── style.css
 ```
 
 ## File Responsibilities

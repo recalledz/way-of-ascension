@@ -7,7 +7,7 @@
  * Run this before any AI assistant makes changes.
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { join, dirname, normalize } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,10 +23,16 @@ class StructureValidator {
     this.newFiles = [];
     this.currentStructure = {};
     this.documentedFiles = new Set();
+    this.logOutput = [];
+  }
+
+  log(message) {
+    this.logOutput.push(message);
+    console.log(message);
   }
 
   async validate() {
-    console.log('🤖 ENFORCING AI VERIFICATION PROTOCOL...\\n');
+    this.log('🤖 ENFORCING AI VERIFICATION PROTOCOL...');
     
     if (!this.verifyDocumentationExists()) {
       return this.generateReport();
@@ -86,32 +92,34 @@ class StructureValidator {
   parseDocumentedStructure() {
     try {
       const content = readFileSync(STRUCTURE_FILE, 'utf8');
-      const lines = content.split('\\n');
+      const lines = content.split(/\r?\n/);
       let inFileTree = false;
-      
+      const pathStack = [];
+
       for (const line of lines) {
         if (line.includes('way-of-ascension/')) {
           inFileTree = true;
           continue;
         }
-        
-        if (inFileTree && line.trim() === '```') {
-          break;
-        }
-        
-        if (inFileTree) {
-          const match = line.match(/[├└│\\s]*([^\\s├└│#]+)/);
-          if (match) {
-            let fileName = match[1];
-            if (fileName.includes('.') || fileName.endsWith('/')) {
-              fileName = fileName.replace(/\\/$/, '');
-              this.documentedFiles.add(fileName);
-            }
-          }
-        }
+        if (inFileTree && line.trim() === '```') break;
+        if (!inFileTree) continue;
+
+        const depthMatch = line.match(/^[│\s]*/);
+        const depth = depthMatch ? depthMatch[0].length / 4 : 0;
+
+        const nameMatch = line.match(/[├└]──\s*([^\s#]+)/);
+        if (!nameMatch) continue;
+
+        const name = nameMatch[1];
+
+        pathStack.splice(depth);
+        pathStack.push(name.replace(/\/$/, ''));
+
+        const currentPath = pathStack.join('/');
+        this.documentedFiles.add(currentPath);
       }
-    } catch {
-      this.errors.push('Cannot parse project-structure.md');
+    } catch (e) {
+      this.errors.push(`Cannot parse project-structure.md: ${e.message}`);
     }
   }
 
@@ -123,13 +131,11 @@ class StructureValidator {
     for (const file of currentFiles) {
       if (this.shouldIgnoreFile(file)) continue;
       
-      const isDocumented = Array.from(this.documentedFiles).some(docFile => {
-        return file === docFile || file.endsWith('/' + docFile) || docFile.includes(file);
-      });
+      const isDocumented = this.documentedFiles.has(file);
       
       if (!isDocumented) {
         this.newFiles.push(file);
-        this.errors.push(\`UNDOCUMENTED FILE: \${file}\`);
+        this.errors.push(`UNDOCUMENTED FILE: ${file}`);
       }
     }
     
@@ -144,19 +150,19 @@ class StructureValidator {
     
     for (const coreFile of coreFiles) {
       if (!currentFiles.includes(coreFile)) {
-        this.errors.push(\`MISSING CORE FILE: \${coreFile}\`);
+        this.errors.push(`MISSING CORE FILE: ${coreFile}`);
       }
     }
   }
 
   shouldIgnoreFile(file) {
     const ignorePatterns = [
-      /package-lock\\.json$/,
-      /\\.log$/,
-      /\\.tmp$/,
-      /\\.cache$/,
-      /eslint\\.config\\./,
-      /\\.windsurf\\//
+      /package-lock\.json$/,
+      /\.log$/,
+      /\.tmp$/,
+      /\.cache$/,
+      /eslint\.config\./,
+      /\.windsurf\//
     ];
     
     return ignorePatterns.some(pattern => pattern.test(file));
@@ -165,33 +171,38 @@ class StructureValidator {
   generateReport() {
     const isValid = this.errors.length === 0;
     
-    console.log('📋 AI VERIFICATION ENFORCEMENT REPORT');
-    console.log('=====================================');
+    this.log('\n📋 AI VERIFICATION ENFORCEMENT REPORT');
+    this.log('=====================================');
     
     if (isValid) {
-      console.log('✅ VERIFICATION PASSED - AI may proceed');
+      this.log('✅ VERIFICATION PASSED - AI may proceed');
     } else {
-      console.log('❌ VERIFICATION FAILED - MUST fix before proceeding');
-      console.log('\\n🚨 VIOLATIONS DETECTED:');
-      this.errors.forEach(error => console.log(\`   • \${error}\`));
+      this.log('❌ VERIFICATION FAILED - MUST fix before proceeding');
+      this.log('\n🚨 VIOLATIONS DETECTED:');
+      this.errors.forEach(error => this.log(`   • ${error}`));
     }
     
     if (this.warnings.length > 0) {
-      console.log('\\n⚠️  WARNINGS:');
-      this.warnings.forEach(warning => console.log(\`   • \${warning}\`));
+      this.log('\n⚠️  WARNINGS:');
+      this.warnings.forEach(warning => this.log(`   • ${warning}`));
     }
     
     if (this.newFiles.length > 0) {
-      console.log('\\n📝 REQUIRED ACTION:');
-      console.log('   Update docs/project-structure.md with these files:');
-      this.newFiles.forEach(file => console.log(\`   • \${file}\`));
-      console.log('\\n   Then document their purpose and functions.');
+      this.log('\n📝 REQUIRED ACTION:');
+      this.log('   Update docs/project-structure.md with these files:');
+      this.newFiles.forEach(file => this.log(`   • ${file}`));
+      this.log('\n   Then document their purpose and functions.');
     }
     
-    console.log('\\n=====================================');
+    this.log('\n=====================================');
     
     if (!isValid) {
-      console.log('\\n🚫 AI CHANGES BLOCKED UNTIL DOCUMENTATION UPDATED');
+      this.log('\n🚫 AI CHANGES BLOCKED UNTIL DOCUMENTATION UPDATED');
+    }
+
+    writeFileSync(join(PROJECT_ROOT, 'validation.log'), this.logOutput.join('\n'));
+
+    if (!isValid) {
       process.exit(1);
     }
     
