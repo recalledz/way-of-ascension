@@ -1,13 +1,13 @@
 // WEAPONS-INTEGRATION: add weapons to loot tables
 export const LOOT_TABLES = {
   peacefulLands: [
-    { item: 'ironSword', weight: 5 },   // ~5% chance
-    { item: 'herbs', weight: 95 },
+    { item: 'ironSword', weight: 10 },   // ~10% chance
+    { item: 'herbs', weight: 90 },
   ],
   forestEdge: [
     { item: 'bronzeHammer', weight: 3 },
-    { item: 'ironSword', weight: 4 },
-    { item: 'ore', weight: 93 },
+    { item: 'ironSword', weight: 8 },
+    { item: 'ore', weight: 89 },
   ],
   meadowPath: [
     { item: 'elderWand', weight: 2 },

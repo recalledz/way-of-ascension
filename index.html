@@ -67,6 +67,7 @@
       <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
     <div class="right-actions">
+      <button class="btn small ghost" id="debugBtn">🐛 Debug</button>
       <button class="btn small ghost" id="saveBtn">💾 Save</button>
       <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
       <button class="btn small ghost" id="importBtn">⬆️ Import</button>
@@ -488,7 +489,7 @@
             <div class="adventure-tabs">
               <button class="adventure-tab-btn active" data-tab="progress">📊 Progress</button>
               <button class="adventure-tab-btn" data-tab="bestiary">📖 Bestiary</button>
-              <button class="adventure-tab-btn" data-tab="equipment">🎒 Equipment</button>
+              <button class="adventure-tab-btn" data-tab="loot">💰 Loot</button>
               <button class="adventure-tab-btn" data-tab="proficiencies">🥊 Proficiencies</button>
             </div>
             
@@ -512,70 +513,17 @@
                 <div class="muted">Defeat enemies to unlock their information...</div>
               </div>
             </div>
-            
-            <!-- Equipment Tab -->
-            <div id="equipmentTab" class="adventure-tab-content" style="display: none;">
-              <div class="equipment-section">
-                <h4>🍽️ Food Slots</h4>
-                <div class="food-slots">
-                  <div class="food-slot" id="foodSlot1" onclick="useFoodSlot(1)">
-                    <div class="food-icon">🍽️</div>
-                    <div class="food-name">Empty</div>
-                    <div class="food-cooldown" id="foodCooldown1"></div>
-                  </div>
-                  <div class="food-slot" id="foodSlot2" onclick="useFoodSlot(2)">
-                    <div class="food-icon">🍽️</div>
-                    <div class="food-name">Empty</div>
-                    <div class="food-cooldown" id="foodCooldown2"></div>
-                  </div>
-                  <div class="food-slot" id="foodSlot3" onclick="useFoodSlot(3)">
-                    <div class="food-icon">🍽️</div>
-                    <div class="food-name">Empty</div>
-                    <div class="food-cooldown" id="foodCooldown3"></div>
-                  </div>
-                </div>
-                <div class="food-actions">
-                  <button class="btn small" onclick="showActivity('cooking')">🍳 Go to Cooking</button>
-                </div>
-              </div>
-              
-              <div class="equipment-section">
-                <h4>📦 Food Inventory</h4>
-                <div class="food-inventory">
-                  <div class="food-item">
-                    <div class="food-item-icon">🥩</div>
-                    <div class="food-item-info">
-                      <div class="food-item-name">Raw Meat</div>
-                      <div class="food-item-count"><span id="inventoryRawMeatAdventure">0</span></div>
-                      <div class="food-item-desc">Restores 20 HP</div>
-                    </div>
-                    <button class="btn small" onclick="equipFood('meat', 1)">Equip Slot 1</button>
-                    <button class="btn small" onclick="equipFood('meat', 2)">Equip Slot 2</button>
-                    <button class="btn small" onclick="equipFood('meat', 3)">Equip Slot 3</button>
-                  </div>
-                  <div class="food-item">
-                    <div class="food-item-icon">🍖</div>
-                    <div class="food-item-info">
-                      <div class="food-item-name">Cooked Meat</div>
-                      <div class="food-item-count"><span id="inventoryCookedMeatAdventure">0</span></div>
-                      <div class="food-item-desc">Restores 40 HP</div>
-                    </div>
-                    <button class="btn small" onclick="equipFood('cookedMeat', 1)">Equip Slot 1</button>
-                    <button class="btn small" onclick="equipFood('cookedMeat', 2)">Equip Slot 2</button>
-                    <button class="btn small" onclick="equipFood('cookedMeat', 3)">Equip Slot 3</button>
-                  </div>
-                </div>
-              </div>
-              <div class="equipment-section">
-                <h4>⚔️ Weapons</h4>
-                <div id="weaponInventory"></div>
-              </div>
-              <div class="equipment-section">
-                <h4>🛡️ Armor</h4>
-                <div id="armorInventory"></div>
+
+            <!-- Loot Tab -->
+            <div id="lootTab" class="adventure-tab-content" style="display: none;">
+              <div class="muted warn">Items here are not safe. Retreat to claim; death forfeits them.</div>
+              <div class="session-loot-list" id="sessionLootList"></div>
+              <div class="loot-actions" style="text-align:right; margin-top:8px;">
+                <button class="btn small" id="claimLootBtn">Retreat & Claim</button>
+                <button class="btn small warn" id="forfeitLootBtn">Abandon</button>
               </div>
             </div>
-
+            
             <!-- Proficiencies Tab -->
             <div id="proficienciesTab" class="adventure-tab-content" style="display: none;">
               <div class="stat"><span id="weaponLabel">Fists Level</span><span id="weaponLevel">1</span></div>
@@ -598,6 +546,32 @@
             <div class="map-content" id="mapContent">
               <!-- Zone accordions will be populated by JavaScript -->
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-character" class="activity-content" style="display:none;">
+        <h2>🧙 Character</h2>
+        <div class="cards character-cards">
+          <div class="card">
+            <h4>Equipment</h4>
+            <div class="equip-slots">
+              <div class="equip-slot" id="slot-mainhand"><span class="slot-label">Weapon</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+              <div class="equip-slot" id="slot-head"><span class="slot-label">Head</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+              <div class="equip-slot" id="slot-torso"><span class="slot-label">Torso</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+              <div class="equip-slot" id="slot-food"><span class="slot-label">Food</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4>Inventory</h4>
+            <div id="inventoryFilters" class="filters">
+              <button class="btn small" data-filter="all">All</button>
+              <button class="btn small" data-filter="weapon">Weapons</button>
+              <button class="btn small" data-filter="armor">Armor</button>
+              <button class="btn small" data-filter="food">Food</button>
+              <button class="btn small" data-filter="mat">Materials</button>
+            </div>
+            <div class="inventory-list" id="inventoryList"></div>
           </div>
         </div>
       </section>
@@ -866,6 +840,15 @@
       </div>
     </div>
   </main>
+
+  <div id="debugConsole" class="debug-console" style="display:none;">
+    <div id="debugOutput"></div>
+    <input id="debugInput" type="text" placeholder="Enter command"/>
+    <div>
+      <button id="debugRunBtn">Run</button>
+      <button id="debugKillBtn">Kill Enemy</button>
+    </div>
+  </div>
 
   <script type="module" src="ui/index.js"></script>
 </body>

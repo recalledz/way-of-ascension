@@ -22,14 +22,38 @@
   --nascent-secondary: #ba55d3;
   --spirit-primary: #ff4500;
   --spirit-secondary: #ff6347;
+
+  /* Scenic background controls */
+  --bg-dim: .95;      /* lower = darker */
+  --bg-contrast: .98; /* 1 = none */
 }
 html,body{height:100%}
 body{
   margin:0; font-family: 'Georgia', 'Times New Roman', serif;
-  color: #2d2520; 
-  background: var(--bg);
+  color: #2d2520;
   overflow:hidden;
   position: relative;
+}
+
+body, #root, #app {
+  background:
+    image-set(
+      url("/ink-mountains-style2.avif") type("image/avif"),
+      url("/ink-mountains-style2.webp") type("image/webp")
+    ) center/cover no-repeat,
+    linear-gradient(#f5f1eb, #e9dfd3); /* graceful fallback while loading */
+  filter: brightness(var(--bg-dim)) contrast(var(--bg-contrast)) saturate(.95);
+  background-attachment: fixed; /* remove if scroll feels janky */
+}
+
+body::before{
+  content:"";
+  position: fixed; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg,
+              rgba(0,0,0,.10) 0%,
+              rgba(0,0,0,0) 22% 78%,
+              rgba(0,0,0,.12) 100%);
+  z-index: 0;
 }
 
 .content {
@@ -3726,7 +3750,28 @@ tr:last-child td {
 @keyframes fx-ring{to{r:var(--fx-radius);opacity:0}}
 @keyframes fx-shield{from{r:0;opacity:.6}to{r:var(--fx-radius);opacity:0}}
 @keyframes fx-rotate{to{transform:rotate(360deg)}}
-
+/* Debug console */
+.debug-console {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 8px;
+  border: 1px solid #555;
+  z-index: 1000;
+  font-family: monospace;
+}
+.debug-console input {
+  width: 100%;
+  margin-bottom: 4px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+}
+.debug-console button {
+  margin-right: 4px;
+}
 .rays-overlay, .bg-rays, .ray, .sunray,
 .floating-island, .bg-blob, .bg-poop,
 .parchment, .paper-grain {
