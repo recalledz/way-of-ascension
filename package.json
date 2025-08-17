@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "validate": "node scripts/validate-structure.js",
     "validate-fix": "node scripts/validate-structure.js --auto-update",
+    "start": "live-server",
     "enforce-ai": "node .windsurf/ai-enforcement.js"
   },
   "repository": {
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "eslint": "^9.33.0",
-    "globals": "^16.3.0"
+    "globals": "^16.3.0",
+    "live-server": "^1.2.2"
   }
 }
