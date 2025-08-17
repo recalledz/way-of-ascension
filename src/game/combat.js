@@ -17,8 +17,16 @@ export function applyWeaponDamage(base, weapon = 'fist') {
   return modified;
 }
 
-export function processAttack(currentHP, damage) {
-  return Math.max(0, Math.round(currentHP - damage));
+export function applyResists(damage, element, target) {
+  if (!element || !target?.resists) return damage;
+  const resist = target.resists[element] ?? 0;
+  return damage * (1 - resist);
+}
+
+export function processAttack(currentHP, damage, options = {}) {
+  const { element, target } = options;
+  const adjusted = applyResists(damage, element, target);
+  return Math.max(0, Math.round(currentHP - adjusted));
 }
 
 export function getEquippedWeapon(state) {

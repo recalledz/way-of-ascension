@@ -23,6 +23,14 @@ import {
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
+const loggedResistTypes = new Set();
+function logEnemyResists(enemy) {
+  if (enemy && !loggedResistTypes.has(enemy.type)) {
+    console.log('[resist]', enemy.type, enemy.resists);
+    loggedResistTypes.add(enemy.type);
+  }
+}
+
 // Fist proficiency handling
 export function updateFistProficiencyDisplay() {
   const { value, bonus } = getProficiency('fist', S);
@@ -532,7 +540,11 @@ export function updateAdventureCombat() {
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       const playerAttack = calculatePlayerCombatAttack();
       const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
-      S.adventure.enemyHP = processAttack(S.adventure.enemyHP, dmg);
+      S.adventure.enemyHP = processAttack(
+        S.adventure.enemyHP,
+        dmg,
+        { target: S.adventure.currentEnemy, element: null }
+      );
       S.adventure.lastPlayerAttack = now;
       gainProficiency('fist', Math.round(playerAttack), S);
       updateFistProficiencyDisplay();
@@ -583,7 +595,11 @@ export function updateAdventureCombat() {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
-        S.adventure.playerHP = processAttack(S.adventure.playerHP, enemyDamage);
+        S.adventure.playerHP = processAttack(
+          S.adventure.playerHP,
+          enemyDamage,
+          { target: S, element: null }
+        );
         S.hp = S.adventure.playerHP;
         S.adventure.lastEnemyAttack = now;
         S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
@@ -791,6 +807,7 @@ export function startBossCombat() {
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`💀 A powerful ${bossData.name} emerges!`);
   log(`Boss challenge started: ${bossData.name}!`, 'excellent');
+  logEnemyResists(S.adventure.currentEnemy);
 }
 
 export function startAdventureCombat() {
@@ -829,6 +846,7 @@ export function startAdventureCombat() {
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`A ${enemyData.name} appears!`);
+  logEnemyResists(S.adventure.currentEnemy);
 }
 
 export function progressToNextArea() {
