@@ -75,11 +75,6 @@ body{
   100% { opacity: 0; transform: translateX(-50vw) translateY(-60vh) rotate(360deg) scale(0.3); }
 }
 
-@keyframes divineRays {
-  0% { opacity: 0.6; transform: translateY(0) scaleY(1); }
-  50% { opacity: 0.9; transform: translateY(-15px) scaleY(1.2); }
-  100% { opacity: 0.6; transform: translateY(0) scaleY(1); }
-}
 
 @keyframes leafFloat {
   0% { opacity: 0; transform: translateY(0) rotate(0deg); }
@@ -117,10 +112,6 @@ body{
   50% { transform: translate(-50%, -50%) scale(1.05); filter: brightness(1.1); }
 }
 
-@keyframes divineRays {
-  0%, 100% { opacity: 0.1; transform: translateY(0px); }
-  50% { opacity: 0.3; transform: translateY(-10px); }
-}
 
 @keyframes drift{from{transform:translateY(0)} to{transform:translateY(-200px)}}
 
@@ -190,33 +181,53 @@ body{
   }
 }
 
-/* MYSTIC-REALM-UPDATE: Divine light rays streaming from above */
-.divine-rays {
+/* MYSTIC-REALM-ENHANCEMENT: Dramatic god rays */
+.god-rays {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 100%;
-  z-index: 2;
+  z-index: 2; /* Positioned above mountains but below UI */
   pointer-events: none;
+  overflow: hidden;
 }
 
-.light-ray {
+.god-ray {
   position: absolute;
-  width: 1px;
-  height: 50%;
-  background: linear-gradient(to bottom, rgba(184, 134, 11, 0.3) 0%, rgba(139, 117, 95, 0.2) 40%, transparent 100%);
-  top: 0;
-  animation: divineRays 12s ease-in-out infinite;
-  filter: blur(2px);
-  box-shadow: 0 0 3px rgba(184, 134, 11, 0.2);
+  top: -10%;
+  height: 120%;
+  background: linear-gradient(
+    to bottom,
+    rgba(184, 134, 11, 0.25) 0%,
+    rgba(139, 117, 95, 0.15) 40%,
+    transparent 80%
+  );
+  animation: godRaySway 15s ease-in-out infinite;
+  filter: blur(5px);
+  box-shadow: 0 0 10px rgba(184, 134, 11, 0.2),
+              0 0 20px rgba(255, 215, 0, 0.1);
 }
 
-.light-ray:nth-child(1) { left: 20%; animation-delay: 0s; }
-.light-ray:nth-child(2) { left: 35%; animation-delay: -1s; height: 50%; }
-.light-ray:nth-child(3) { left: 50%; animation-delay: -2s; height: 70%; }
-.light-ray:nth-child(4) { left: 65%; animation-delay: -3s; height: 45%; }
-.light-ray:nth-child(5) { left: 80%; animation-delay: -4s; height: 55%; }
+.god-ray:nth-child(1) { left: 5%; width: 40px; animation-delay: -2s; opacity: 0.6; }
+.god-ray:nth-child(2) { left: 15%; width: 60px; animation-delay: 0s; opacity: 0.8; }
+.god-ray:nth-child(3) { left: 30%; width: 30px; animation-delay: -5s; opacity: 0.5; }
+.god-ray:nth-child(4) { left: 45%; width: 50px; animation-delay: -8s; opacity: 0.7; }
+.god-ray:nth-child(5) { left: 60%; width: 45px; animation-delay: -12s; opacity: 0.6; }
+.god-ray:nth-child(6) { left: 75%; width: 70px; animation-delay: -1s; opacity: 0.9; }
+.god-ray:nth-child(7) { left: 85%; width: 35px; animation-delay: -6s; opacity: 0.5; }
+.god-ray:nth-child(8) { left: 95%; width: 55px; animation-delay: -10s; opacity: 0.7; }
+
+@keyframes godRaySway {
+  0%, 100% {
+    transform: translateX(0) skewX(-15deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(20px) skewX(-15deg);
+    opacity: 1;
+  }
+}
 
 /* Misty fog layers behind silhouette */
 .misty-fog {
@@ -273,51 +284,124 @@ body{
 .mountain-silhouettes {
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIyMDBweCIgdmlld0JveD0iMCAwIDEyMDAgMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibW91bnRhaW5HcmFkaWVudCIgeDE9IjAlIiB5MT0iMTAwJSIgeDI9IjAlIiB5Mj0iMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9InJnYmEoMTAwLCA4NSwgNzAsIDAuMykiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0icmdiYSgxMjAsIDEwMCwgODAsIDAuMikiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InRyYW5zcGFyZW50Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTAgMjAwIEwwIDE1MCBMIDE1MCA4MCBMIDI1MCA2MCBMIDM1MCA5MCBMIDQ1MCA0MCBMIDU1MCA3MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA1MCBMIDY1MCA3NTAgNjAgTCA4NTAgODAgTCA5NTAgNTAgTCAxMDUwIDcwIEwgMTE1MCA0NSBMIDEyMDAgNjAgTCAxMjAwIDIwMCBaIiBmaWxsPSJ1cmwoI21vdW50YWluR3JhZGllbnQpIiBvcGFjaXR5PSIwLjE1Ii8+PC9zdmc+');
-  background-size: cover;
+  left: -5%; /* Allow for horizontal movement */
+  width: 110%;
+  height: 350px; /* Increased height for more imposing mountains */
+  background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: bottom;
-  opacity: 0.6;
+  animation-name: mountainDrift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.mountain-background {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNTAiIHZpZXdCb3g9IjAgMCAxNDAwIDM1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnTW91bnRhaW5HcmFkIiB4MT0iNTAlIiB5MT0iMCUiIHgyPSI1MCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDEwMCwgODUsIDcwLCAwLjEpIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0icmdiYSgxMzksIDExNywgOTUsIDAuMykiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTAgMzUwIEwwIDIwMCBDIDIwMCAxNTAgMzAwIDI1MCA1MDAgMjAwIEMgNzAwIDE1MCA4MDAgMjgwIDEwMDAgMjQwIEMgMTIwMCAyMDAgMTMwMCAyODAgMTQwMCAyNTAgTCAxNDAwIDM1MCBaIiBmaWxsPSJ1cmwoI2JnTW91bnRhaW5HcmFkKSIgLz48L3N2Zz4=');
+  opacity: 0.5;
+  z-index: 1;
+  animation-duration: 180s; /* Slowest movement */
+}
+
+.mountain-midground {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNTAiIHZpZXdCb3g9IjAgMCAxNDAwIDM1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im1nTW91bnRhaW5HcmFkIiB4MT0iNTAlIiB5MT0iMCUiIHgyPSI1MCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDg1LCA3MCwgNjAsIDAuMykiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJyZ2JhKDEyMCwgMTAwLCA4MCwgMC41KSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMCAzNTAgTDAgMjgwIEMgMTgwIDIyMCAyNTAgMzAwIDQ1MCAyNjAgQyA2NTAgMjIwIDc1MCAyOTAgOTUwIDI1MCBDIDExNTAgMjEwIDEyNTAgMjc1IDE0MDAgMjYwIEwgMTQwMCAzNTAgWiIgZmlsbD0idXJsKCNtZ01vdW50YWluR3JhZCkiIC8+PC9zdmc+');
+  opacity: 0.7;
+  z-index: 3; /* In front of background mountains and some clouds */
+  animation-duration: 120s; /* Medium speed */
+}
+
+.mountain-foreground {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNTAiIHZpZXdCb3g9IjAgMCAxNDAwIDM1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImZnTW91bnRhaW5HcmFkIiB4MT0iNTAlIiB5MT0iMCUiIHgyPSI1MCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDYwLCA1MCwgNDAsIDAuNykiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJyZ2JhKDk1LCA4MCwgNjUsIDAuOSkiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTAgMzUwIEwwIDMwMCBDIDI1MCAyNTAgMzgwIDMzMCA1NTAgMjkAgQyA3NTAgMjUwIDg1MCAzMjAgMTA1MCAyODAgQyAxMjUwIDI0MCAxMzUwIDMxMCAxNDAwIDMwMCBMIDE0MDAgMzUwIFoiIGZpbGw9InVybCgjZmdNb3VudGFpbkdyYWQpIiAvPjwvc3ZnPg==');
+  opacity: 1;
+  z-index: 5; /* In front of everything except player silhouette */
+  animation-duration: 80s; /* Fastest speed */
 }
 
 .ink-wash-cloud {
   position: absolute;
   background-size: contain;
   background-repeat: no-repeat;
-  opacity: 0.2;
-  animation: cloudDrift 30s ease-in-out infinite;
-  z-index: 1;
+  animation-name: cloudDrift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  filter: blur(3px); /* Soften clouds */
 }
 
 .cloud-1 {
-  width: 200px;
-  height: 120px;
-  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIwMCAxMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJjbG91ZEdyYWRpZW50MSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDEzOSwgMTE3LCA5NSwgMC40KSIvPjxzdG9wIG9mZnNldD0iNzAlIiBzdG9wLWNvbG9yPSJyZ2JhKDEyMCwgMTAwLCA4MCwgMC4yKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iNjAiIHJ4PSI5MCIgcnk9IjUwIiBmaWxsPSJ1cmwoI2Nsb3VkR3JhZGllbnQxKSIgZmlsdGVyPSJibHVyKDVweCkiLz48L3N2Zz4=');
-  top: 15%;
-  left: 10%;
-  animation-delay: 0s;
+  width: 300px;
+  height: 180px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJjbG91ZEdyYWRpZW50MSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDEzOSwgMTE3LCA5NSwgMC4zKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0icmdiYSgxMjAsIDEwMCwgODAsIDApIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjE1MCIgY3k9IjkwIiByeD0iMTQwIiByeT0iODAiIGZpbGw9InVybCgjY2xvdWRHcmFkaWVudDEpIiBmaWx0ZXI9ImJsdXIoMTVweCkiLz48L3N2Zz4=');
+  top: 10%;
+  left: 5%;
+  opacity: 0.4;
+  z-index: 2; /* Between background and midground mountains */
+  animation-duration: 150s;
 }
 
 .cloud-2 {
-  width: 180px;
-  height: 100px;
-  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDE4MCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJjbG91ZEdyYWRpZW50MiIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDE2MCwgMTQwLCAxMTUsIDAuMykiLz48c3RvcCBvZmZzZXQ9IjcwJSIgc3RvcC1jb2xvcj0icmdiYSgxMzksIDExNywgOTUsIDAuMTUpIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ0cmFuc3BhcmVudCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxlbGxpcHNlIGN4PSI5MCIgY3k9IjUwIiByeD0iODAiIHJ5PSI0NSIgZmlsbD0idXJsKCNjbG91ZEdyYWRpZW50MikiIGZpbHRlcj0iYmx1cig0cHgpIi8+PC9zdmc+');
-  top: 60%;
-  right: 15%;
-  animation-delay: -10s;
+  width: 250px;
+  height: 150px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDI1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJjbG91ZEdyYWRpZW50MiIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDE2MCwgMTQwLCAxMTUsIDAuNCkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InJnYmEoMTM5LCAxMTcsIDk1LCAwKSIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxlbGxpcHNlIGN4PSIxMjUiIGN5PSI3NSIgcng9IjExNSIgcnk9IjY1IiBmaWxsPSJ1cmwoI2Nsb3VkR3JhZGllbnQyKSIgZmlsdGVyPSJibHVyKDEycHgpIi8+PC9zdmc+');
+  top: 40%;
+  right: 10%;
+  opacity: 0.6;
+  z-index: 4; /* Between midground and foreground mountains */
+  animation-duration: 100s;
+  animation-direction: reverse;
 }
 
 .cloud-3 {
-  width: 160px;
-  height: 90px;
-  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTYwIDkwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxyYWRpYWxHcmFkaWVudCBpZD0iY2xvdWRHcmFkaWVudDMiIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjUwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiYSgxMjAsIDEwMCwgODAsIDAuMjUpIi8+PHN0b3Agb2Zmc2V0PSI3MCUiIHN0b3AtY29sb3I9InJnYmEoMTAwLCA4NSwgNzAsIDAuMTIpIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ0cmFuc3BhcmVudCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxlbGxpcHNlIGN4PSI4MCIgY3k9IjQ1IiByeD0iNzAiIHJ5PSI0MCIgZmlsbD0idXJsKCNjbG91ZEdyYWRpZW50MykiIGZpbHRlcj0iYmx1cigzcHgpIi8+PC9zdmc+');
-  bottom: 25%;
-  left: 65%;
-  animation-delay: -20s;
+  width: 280px;
+  height: 160px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJjbG91ZEdyYWRpZW50MyIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJyZ2JhKDEyMCwgMTAwLCA4MCwgMC4yKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0icmdiYSgxMDAsIDg1LCA3MCwgMCkiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48ZWxsaXBzZSBjeD0iMTQwIiBjeT0iODAiIHJ4PSIxMzAiIHJ5PSI3MCIgZmlsbD0idXJsKCNjbG91ZEdyYWRpZW50MykiIGZpbHRlcj0iYmx1cigoxOHB4KSIvPjwvc3ZnPg==');
+  bottom: 20%;
+  left: 30%;
+  opacity: 0.3;
+  z-index: 2;
+  animation-duration: 200s;
 }
+
+/* MYSTIC-REALM-ENHANCEMENT: Floating islands with glowing energy */
+.floating-island {
+  position: absolute;
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: floatingIslandBob 12s ease-in-out infinite;
+  filter: drop-shadow(0 20px 15px rgba(45, 37, 32, 0.3));
+}
+
+.island-1 {
+  width: 220px;
+  height: 120px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIyMCAxMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJpc2xhbmRHcmFkMSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiYSg5NSwgODAsIDY1LCAxKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0icmdiYSg2MCwgNTAsIDQwLCAxKSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxwYXRoIGQ9Ik0gMTUgNzAgQyA1IDYwIDAgNDAgMjAgMzAgQyA0MCAyMCA3MCAyNSA5MCAzNSBDIDExMCA0NSAxNDAgNDAgMTcwIDUwIEMgMjAwIDYwIDIxNSA3MCAyMDUgODAgQyAxOTUgOTAgMTgwIDEwNSAxNTAgMTEwIEMgMTIwIDExNSAxMDAgOTUgODAgOTAgQyA2MCA4NSA0MCA4MCAxNSA3MCBaIiBmaWxsPSJ1cmwoI2lzbGFuZEdyYWQxKSIgLz48L3N2Zz4=');
+  top: 25%;
+  left: 15%;
+  z-index: 3;
+  animation-delay: -2s;
+}
+
+.island-2 {
+  width: 180px;
+  height: 100px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDE4MCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJpc2xhbmRHcmFkMiIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiYSgxMDAsIDg1LCA3MCwgMSkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InJnYmEoNzAsIDYwLCA1MCwgMSkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNIDEwIDYwIEMgMCA1MCAxNSA0MCAzMCAzNSBDIDQ1IDMwIDcwIDQwIDkwIDQ1IEMgMTEwIDUwIDEzNSA0NSAxNTUgNTUgQyAxNzUgNjUgMTgwIDc1IDE3MCA4NSBDIDE2MCA5NSAxNDAgMTAwIDEyMCA5NSBDIDEwMCA5MCA4MCA4MCA2MCA3NSBDIDQwIDcwIDIwIDcwIDEwIDYwIFoiIGZpbGw9InVybCgjaXNsYW5kR3JhZDIpIiAvPjwvc3ZnPg==');
+  top: 55%;
+  right: 20%;
+  z-index: 4;
+  animation-duration: 14s;
+}
+
+.energy-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(184, 134, 11, 0.6) 0%, rgba(255, 215, 0, 0.3) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: energyPulse 4s ease-in-out infinite;
+  filter: blur(8px);
+}
+
 
 @keyframes fogDrift {
   0%, 100% { 
@@ -334,10 +418,37 @@ body{
   }
 }
 
+@keyframes mountainDrift {
+  from { transform: translateX(0%); }
+  to { transform: translateX(-9.09%); } /* (100% / 110%) * 10% movement -> 9.09% */
+}
+
 @keyframes cloudDrift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(10px, -5px) scale(1.1); }
-  66% { transform: translate(-5px, 10px) scale(0.9); }
+  0% { transform: translateX(-5%); opacity: 0.8; }
+  50% { transform: translateX(5%); opacity: 1; }
+  100% { transform: translateX(-5%); opacity: 0.8; }
+}
+
+@keyframes floatingIslandBob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes energyPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0.7;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 0 30px rgba(184, 134, 11, 0.2);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 0 50px rgba(184, 134, 11, 0.4);
+  }
 }
 
 /* Lotus bloom effect behind silhouette */

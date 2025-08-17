@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Great. I’ll design a robust and captivating gameplay loop that builds on your current structure—focusing on progression through cultivation, skills, and adventure. I’ll draw on lessons from games like NGU Idle, Melvor Idle, and Amazing Cultivation Simulator, and tailor the flow to your hybrid idle/active balance and current UI layout.",
   "main": "game.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "validate": "node scripts/validate-structure.js",
