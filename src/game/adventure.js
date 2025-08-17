@@ -1,6 +1,8 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
 import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
+import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
+import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
@@ -8,8 +10,7 @@ import { applyRandomAffixes, AFFIXES } from './affixes.js';
 import { gainProficiency, getProficiency } from './systems/proficiency.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
-import { renderEquipmentPanel } from '../../ui/panels/equipment.js';
-import { WEAPONS } from '../data/weapons.js';
+import { renderEquipmentPanel } from '../ui/panels/EquipmentPanel.js'; // WEAPONS-INTEGRATION
 import {
   playSlashArc,
   playThrustLine,
@@ -525,6 +526,7 @@ export function updateAdventureCombat() {
     const playerAttackRate = calculatePlayerAttackRate();
     const weaponKey = getEquippedWeapon(S);
     const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+    console.log('[weapon]', weaponKey); // WEAPONS-INTEGRATION
     const now = Date.now();
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
@@ -546,7 +548,7 @@ export function updateAdventureCombat() {
         { target: S.adventure.currentEnemy, element: null }
       );
       S.adventure.lastPlayerAttack = now;
-      gainProficiency('fist', Math.round(playerAttack), S);
+      gainProficiency(weapon.proficiencyKey, Math.round(playerAttack), S); // WEAPONS-INTEGRATION
       updateFistProficiencyDisplay();
       S.adventure.combatLog = S.adventure.combatLog || [];
       S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
@@ -689,7 +691,7 @@ function defeatEnemy() {
   lootEntries.forEach(([item, qty]) => {
     S[item] = (S[item] || 0) + qty;
   });
-  
+
   if (enemy.drops) {
     Object.entries(enemy.drops).forEach(([item, chance]) => {
       if (Math.random() < chance) {
@@ -697,6 +699,21 @@ function defeatEnemy() {
         lootEntries.push([item, 1]);
       }
     });
+  }
+
+  if (S.flags?.weaponsEnabled) { // WEAPONS-INTEGRATION
+    const zone = ZONES[S.adventure.currentZone];
+    const area = zone?.areas?.[S.adventure.currentArea];
+    const tableKey = toLootTableKey(area?.id || zone?.id);
+    const drop = rollLoot(tableKey);
+    if (drop) {
+      if (WEAPONS[drop]) {
+        S.inventory.weapons.push({ key: drop, quality: 'common' });
+      } else {
+        S[drop] = (S[drop] || 0) + 1;
+      }
+      lootEntries.push([drop, 1]);
+    }
   }
   
   // Boss bonus rewards
@@ -1175,7 +1192,7 @@ export function updateActivityAdventure() {
   setText('totalKills', S.adventure.totalKills);
   setText('areasCompleted', S.adventure.areasCompleted);
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
-  setText('currentWeapon', 'Fists');
+  setText('currentWeapon', WEAPONS[S.equipment?.mainhand]?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   const fistBase = 5 + getFistBonuses().damage;
   setText('baseDamage', fistBase);
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
