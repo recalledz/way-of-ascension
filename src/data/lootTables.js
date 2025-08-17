@@ -1,22 +1,28 @@
+// WEAPONS-INTEGRATION: add weapons to loot tables
 export const LOOT_TABLES = {
   peacefulLands: [
-    { item: 'sword-common', weight: 2 },  // 2% chance
-    { item: 'spear-common', weight: 2 },
-    // TODO: include basic herbs, ores, etc.
+    { item: 'ironSword', weight: 5 },   // ~5% chance
+    { item: 'herbs', weight: 95 },
   ],
   forestEdge: [
-    { item: 'hammer-common', weight: 1 },
-    { item: 'nunchaku-common', weight: 1.5 },
-    // TODO: more drops
+    { item: 'bronzeHammer', weight: 3 },
+    { item: 'ironSword', weight: 4 },
+    { item: 'ore', weight: 93 },
   ],
-  // TODO: define for each zone later
+  meadowPath: [
+    { item: 'elderWand', weight: 2 },
+    { item: 'bronzeHammer', weight: 3 },
+    { item: 'herbs', weight: 95 },
+  ],
+  // existing zones…
 };
 
+import { WEAPONS } from './weapons.js';
 export const WEAPON_LOOT_TABLE = Object.fromEntries(
-  (LOOT_TABLES.peacefulLands || []).map(entry => {
-    const weapon = entry.item.split('-')[0];
-    return [weapon, (entry.weight || 0) / 100];
-  })
+  Object.values(LOOT_TABLES)
+    .flat()
+    .filter(entry => WEAPONS[entry.item])
+    .map(entry => [entry.item, (entry.weight || 0) / 100])
 );
 
 // TODO: derive weapon tables for additional zones

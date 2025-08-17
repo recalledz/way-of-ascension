@@ -83,7 +83,8 @@ way-of-ascension/
 │   │   │   └── statusEngine.js
 │   │   ├── systems/
 │   │   │   ├── proficiency.js
-│   │   │   └── weapons.js
+│   │   │   ├── weapons.js
+│   │   │   └── loot.js
 │   │   ├── adventure.js
 │   │   ├── affixes.js
 │   │   ├── combat.js
@@ -93,8 +94,10 @@ way-of-ascension/
 │   │   ├── state.js
 │   │   └── utils.js
 │   └── ui/
-│       └── fx/
-│           └── fx.js
+│       ├── fx/
+│       │   └── fx.js
+│       └── panels/
+│           └── EquipmentPanel.js
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
@@ -104,6 +107,7 @@ way-of-ascension/
 │   │   └── equipment.js
 │   └── realm.js
 ├── README.md
+├── CHANGELOG.md
 ├── eslint.config.mjs
 ├── index.html
 ├── package-lock.json
@@ -207,6 +211,11 @@ export function runMigrations(save) {
 }
 ```
 **When to modify**: When changing save data structure, increment SAVE_VERSION and add migration logic
+
+#### `systems/loot.js` - Loot Rolling Utilities
+**Purpose**: Provides weighted random item selection based on zone loot tables.
+**Key Functions**: `rollLoot()`, `toLootTableKey()`.
+**When to modify**: Adjust loot algorithms or add new drop behaviors.
 
 ### Data Configuration (`data/`)
 
@@ -316,6 +325,11 @@ function updateAll() {
 **Purpose**: Handles rendering and interaction for the player's equipment inventory.
 **When to modify**: Add new equipment slots, change equipment UI behavior.
 
+#### `panels/EquipmentPanel.js` - Weapon Inventory Panel
+**Purpose**: Displays weapons, allowing equip, scrap, and detail actions.
+**Key Functions**: `equipWeapon()`, `renderEquipmentPanel()`.
+**When to modify**: Adjust weapon handling UI or extend equipment features.
+
 ### UI Effects (`src/ui/fx/`)
 
 #### `fx.js` - SVG Combat Effects
@@ -342,3 +356,7 @@ function updateAll() {
 **Purpose**: A simple Node.js server to serve the game's static files for local development.
 **Dependencies**: `http`, `fs`, `path`
 **When to modify**: If server configuration, port, or file handling logic needs to change.
+
+### Changelog (`CHANGELOG.md`)
+**Purpose**: Tracks notable changes, additions, and fixes across versions.
+**When to modify**: Whenever implementing new features or documenting releases.
