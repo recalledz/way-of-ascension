@@ -8,6 +8,7 @@ import { applyRandomAffixes, AFFIXES } from './affixes.js';
 import { gainProficiency, getProficiency } from './systems/proficiency.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
+import { renderEquipmentPanel } from '../../ui/panels/equipment.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
@@ -935,6 +936,7 @@ export function setupAdventureTabs() {
       }
       if (tabName === 'equipment') {
         updateFoodSlots();
+        renderEquipmentPanel();
       }
     };
   });

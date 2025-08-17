@@ -1879,6 +1879,23 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   font-weight: bold;
 }
 
+.equipment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid #444;
+}
+
+.equipment-item:last-child {
+  border-bottom: none;
+}
+
+.equipment-details {
+  flex: 1;
+  margin-right: 8px;
+}
+
 /* Food Inventory */
 .food-inventory {
   display: flex;
