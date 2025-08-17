@@ -287,6 +287,27 @@ if (newFiles.length > 0 || missingFiles.length > 0) {
 
 ---
 
+## 💻 Runtime and Browser Verification
+
+**After implementing changes, AI assistants MUST perform runtime verification:**
+
+1.  **Launch the Game**: Start the local development server if it's not already running.
+2.  **Open Browser Preview**: Use the `browser_preview` tool to open a browser window for the game.
+3.  **Check for Console Errors**:
+    *   Open the developer console in the browser preview.
+    *   Look for any new errors or warnings that appeared after the changes.
+    *   Document and fix any errors found.
+4.  **Visually Verify UI Changes**:
+    *   Confirm that the UI changes are rendered correctly as intended.
+    *   Interact with the new UI components to ensure they are functional.
+    *   Check for any visual glitches, layout issues, or broken styles.
+5.  **Confirm Functionality**:
+    *   Test the new feature or fix to ensure it works as expected.
+    *   For example, if a button was added, click it and verify the expected action occurs.
+    *   Check relevant game state values in the console (`S` object) to confirm they are updated correctly.
+
+---
+
 ## 🚨 Critical Reminders
 
 1. **ALWAYS read docs/project-structure.md first**
