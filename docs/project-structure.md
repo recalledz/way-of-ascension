@@ -77,21 +77,24 @@ way-of-ascension/
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
 │   │   └── weapons.js
-│   └── game/
-│       ├── combat/
-│       │   ├── attack.js
-│       │   └── statusEngine.js
-│       ├── systems/
-│       │   ├── proficiency.js
-│       │   └── weapons.js
-│       ├── adventure.js
-│       ├── affixes.js
-│       ├── combat.js
-│       ├── engine.js
-│       ├── helpers.js
-│       ├── migrations.js
-│       ├── state.js
-│       └── utils.js
+│   ├── game/
+│   │   ├── combat/
+│   │   │   ├── attack.js
+│   │   │   └── statusEngine.js
+│   │   ├── systems/
+│   │   │   ├── proficiency.js
+│   │   │   └── weapons.js
+│   │   ├── adventure.js
+│   │   ├── affixes.js
+│   │   ├── combat.js
+│   │   ├── engine.js
+│   │   ├── helpers.js
+│   │   ├── migrations.js
+│   │   ├── state.js
+│   │   └── utils.js
+│   └── ui/
+│       └── fx/
+│           └── fx.js
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
@@ -308,6 +311,17 @@ function updateAll() {
 - `createArmorElement()`: Creates the DOM element for a single piece of armor.
 **Dependencies**: `state.js`, `data/weapons.js`, `dom.js`
 **When to modify**: When changing how equipment is displayed or interacted with in the UI.
+
+#### `panels/equipment.js` - Equipment Panel
+**Purpose**: Handles rendering and interaction for the player's equipment inventory.
+**When to modify**: Add new equipment slots, change equipment UI behavior.
+
+### UI Effects (`src/ui/fx/`)
+
+#### `fx.js` - SVG Combat Effects
+**Purpose**: Utility functions for spawning and animating combat visual effects using SVG.
+**Key Functions**: `playSlashArc()`, `playThrustLine()`, `playRingShockwave()`, `playBeam()`, `playChakram()`, `playShieldDome()`, `playSparkBurst()`, `setFxTint()`, `setReduceMotion()`.
+**When to modify**: Extend or adjust visual effect primitives.
 
 ### HTML Structure (`index.html`)
 **Purpose**: Main game interface structure

@@ -4072,3 +4072,19 @@ tr:last-child td {
 
 /* Tooltip */
 .hint{border-bottom:1px dotted #475569; cursor:help}
+
+/* Combat FX Layer */
+.battle-area{position:relative;overflow:hidden}
+.fx-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;--fx-a:#fff;--fx-b:#fff}
+.fx-stroke,.fx-thrust,.fx-beam{fill:none;stroke:url(#fx-gradient);filter:url(#soft-glow);stroke-linecap:round}
+.fx-stroke{stroke-width:2;stroke-dasharray:100;stroke-dashoffset:100;animation:fx-draw .35s linear forwards}
+.fx-thrust{stroke-width:2;stroke-dasharray:60;stroke-dashoffset:60;animation:fx-draw .25s linear forwards}
+.fx-beam{stroke-width:3;stroke-dasharray:100;stroke-dashoffset:100;animation:fx-draw .4s linear forwards}
+.fx-ring{fill:none;stroke:url(#fx-gradient);filter:url(#soft-glow);stroke-width:4;animation:fx-ring .5s ease-out forwards}
+.fx-shield{fill:rgba(255,255,255,.15);stroke:url(#fx-gradient);filter:url(#soft-glow);stroke-width:2;animation:fx-shield .6s ease-out forwards}
+.fx-rotate{animation:fx-rotate .6s linear}
+
+@keyframes fx-draw{to{stroke-dashoffset:0;opacity:0}}
+@keyframes fx-ring{to{r:var(--fx-radius);opacity:0}}
+@keyframes fx-shield{from{r:0;opacity:.6}to{r:var(--fx-radius);opacity:0}}
+@keyframes fx-rotate{to{transform:rotate(360deg)}}

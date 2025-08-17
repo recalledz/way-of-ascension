@@ -85,6 +85,7 @@
       <div class="chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
       <div class="chip">Stones: <span id="stonesVal">0</span></div>
       <div class="chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span></div>
+      <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
     <div class="right-actions">
       <button class="btn small ghost" id="saveBtn">💾 Save</button>
@@ -433,7 +434,37 @@
             
             <div class="battle-area" id="battleArea">
               <div class="area-background" id="areaBackground"></div>
-              
+
+              <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <defs>
+                  <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                  <linearGradient id="fx-gradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="var(--fx-a, #fff)" />
+                    <stop offset="100%" stop-color="var(--fx-b, #fff)" />
+                  </linearGradient>
+                  <linearGradient id="elem-fire" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ff9a00" />
+                    <stop offset="100%" stop-color="#ff0000" />
+                  </linearGradient>
+                  <linearGradient id="elem-ice" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#00c6ff" />
+                    <stop offset="100%" stop-color="#0072ff" />
+                  </linearGradient>
+                  <symbol id="rune-circle" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="6" />
+                  </symbol>
+                  <symbol id="shockwave-ring" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="10" />
+                  </symbol>
+                </defs>
+              </svg>
+
               <div class="combat-display">
                 <div class="combatant player">
                   <div class="combatant-name">You</div>

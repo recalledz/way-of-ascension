@@ -44,6 +44,7 @@ import {
   setupAdventureTabs
 } from '../src/game/adventure.js';
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
+import { setReduceMotion } from '../src/ui/fx/fx.js';
 
 // Global variables
 const progressBars = {};
@@ -465,6 +466,18 @@ function initUI(){
   if (autoHunt) {
     autoHunt.checked = S.auto.hunt;
     autoHunt.addEventListener('change', e => S.auto.hunt = e.target.checked);
+  }
+
+  const reduceMotionToggle = qs('#reduceMotionToggle');
+  if (reduceMotionToggle) {
+    const stored = localStorage.getItem('reduce-motion') === '1';
+    reduceMotionToggle.checked = stored;
+    setReduceMotion(stored);
+    reduceMotionToggle.addEventListener('change', e => {
+      const v = e.target.checked;
+      localStorage.setItem('reduce-motion', v ? '1' : '0');
+      setReduceMotion(v);
+    });
   }
 
   // Save/Load (with safe null checks)
