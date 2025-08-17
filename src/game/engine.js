@@ -163,11 +163,11 @@ export function getStatEffects() {
 }
 
 export function getFistBonuses() {
-  const { bonus } = getProficiency('fist', S);
-  const base = 5;
+  const { value } = getProficiency('fist', S);
+  const level = Math.floor(value / 100);
   return {
-    damage: Math.round(base * (bonus - 1)),
-    speed: bonus - 1
+    damage: level,
+    speed: level * 0.01,
   };
 }
 
