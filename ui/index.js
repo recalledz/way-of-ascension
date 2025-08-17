@@ -15,7 +15,7 @@ import {
   powerMult,
   calcAtk,
   calcDef,
-  getFistBonuses,
+  getWeaponProficiencyBonuses,
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
@@ -39,7 +39,7 @@ import {
   startBossCombat,
   progressToNextArea,
   retreatFromCombat,
-  updateFistProficiencyDisplay,
+  updateWeaponProficiencyDisplay,
   updateFoodSlots,
   setupAdventureTabs
 } from '../src/game/adventure.js';

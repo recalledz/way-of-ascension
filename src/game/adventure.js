@@ -1,5 +1,5 @@
 import { S } from './state.js';
-import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getFistBonuses } from './engine.js';
+import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses } from './engine.js';
 import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
@@ -32,14 +32,20 @@ function logEnemyResists(enemy) {
   }
 }
 
-// Fist proficiency handling
-export function updateFistProficiencyDisplay() {
-  const { value, bonus } = getProficiency('fist', S);
-  setText('fistLevel', Math.floor(value));
-  setText('fistExp', value.toFixed(0));
-  setText('fistExpMax', '');
-  setFill('fistExpFill', Math.min(value / 100, 1));
-  setText('fistBonus', bonus.toFixed(2));
+// Weapon proficiency handling
+export function updateWeaponProficiencyDisplay() {
+  const weaponKey = getEquippedWeapon(S);
+  const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+  const { value } = getProficiency(weapon.proficiencyKey, S);
+  const level = Math.floor(value / 100);
+  const progress = value % 100;
+  setText('weaponLabel', `${weapon.displayName} Level`);
+  setText('weaponLevel', level);
+  setText('weaponExp', progress.toFixed(0));
+  setText('weaponExpMax', '100');
+  setFill('weaponExpFill', progress / 100);
+  const bonus = 1 + level * 0.01;
+  setText('weaponBonus', bonus.toFixed(2));
 }
 
 function getCombatPositions() {
@@ -548,8 +554,9 @@ export function updateAdventureCombat() {
         { target: S.adventure.currentEnemy, element: null }
       );
       S.adventure.lastPlayerAttack = now;
-      gainProficiency(weapon.proficiencyKey, Math.round(playerAttack), S); // WEAPONS-INTEGRATION
-      updateFistProficiencyDisplay();
+      const xpGain = Math.max(1, Math.ceil(S.adventure.enemyMaxHP / 30));
+      gainProficiency(weapon.proficiencyKey, xpGain, S); // WEAPONS-INTEGRATION
+      updateWeaponProficiencyDisplay();
       S.adventure.combatLog = S.adventure.combatLog || [];
       S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
       const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
@@ -718,9 +725,11 @@ function defeatEnemy() {
   
   // Boss bonus rewards
   if (isBoss) {
-    const bonusXP = Math.floor(enemy.attack * 2);
-    gainProficiency('fist', bonusXP, S);
-    updateFistProficiencyDisplay();
+    const bonusXP = Math.max(1, Math.round(enemy.hp / 10));
+    const weaponKey = getEquippedWeapon(S);
+    const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+    gainProficiency(weapon.proficiencyKey, bonusXP, S);
+    updateWeaponProficiencyDisplay();
     S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
   }
   
@@ -1193,10 +1202,10 @@ export function updateActivityAdventure() {
   setText('areasCompleted', S.adventure.areasCompleted);
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
   setText('currentWeapon', WEAPONS[S.equipment?.mainhand]?.displayName || 'Fists'); // WEAPONS-INTEGRATION
-  const fistBase = 5 + getFistBonuses().damage;
-  setText('baseDamage', fistBase);
+  const base = 5 + getWeaponProficiencyBonuses().damage;
+  setText('baseDamage', base);
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
-  updateFistProficiencyDisplay();
+  updateWeaponProficiencyDisplay();
   updateZoneButtons();
   updateAreaGrid();
   updateAdventureProgressBar(); // MAP-UI-UPDATE

@@ -2,6 +2,8 @@ import { REALMS } from '../../data/realms.js';
 import { LAWS } from '../../data/laws.js';
 import { S } from './state.js';
 import { getProficiency } from './systems/proficiency.js';
+import { getEquippedWeapon } from './combat.js';
+import { WEAPONS } from '../data/weapons.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -116,8 +118,8 @@ export function calcAtk(){
   }
   const physiqueMult = 1 + (S.stats.physique - 10) * 0.05;
   const lawBonuses = getLawBonuses();
-  const fistBonus = getFistBonuses().damage;
-  return Math.floor((S.atkBase + fistBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
+  const profBonus = getWeaponProficiencyBonuses().damage;
+  return Math.floor((S.atkBase + profBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
 }
 
 export function calcDef(){
@@ -162,12 +164,14 @@ export function getStatEffects() {
   };
 }
 
-export function getFistBonuses() {
-  const { bonus } = getProficiency('fist', S);
-  const base = 5;
+export function getWeaponProficiencyBonuses(state = S) {
+  const weaponKey = getEquippedWeapon(state);
+  const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+  const { value } = getProficiency(weapon.proficiencyKey, state);
+  const level = Math.floor(value / 100);
   return {
-    damage: Math.round(base * (bonus - 1)),
-    speed: bonus - 1
+    damage: level,
+    speed: level * 0.01,
   };
 }
 
@@ -175,14 +179,14 @@ export function calculatePlayerCombatAttack() {
   const baseAttack = 5;
   const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
   const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
-  const fistBonus = getFistBonuses().damage;
-  return baseAttack + fistBonus + physiqueBonus + realmBonus;
+  const profBonus = getWeaponProficiencyBonuses().damage;
+  return baseAttack + profBonus + physiqueBonus + realmBonus;
 }
 
 export function calculatePlayerAttackRate() {
   const baseRate = 1.0;
   const dexterityBonus = (S.stats.dexterity - 10) * 0.05;
   const attackSpeedBonus = S.stats.attackSpeed || 0;
-  const fistBonus = getFistBonuses().speed;
-  return baseRate + dexterityBonus + (attackSpeedBonus / 100) + fistBonus;
+  const profBonus = getWeaponProficiencyBonuses().speed;
+  return baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus;
 }
