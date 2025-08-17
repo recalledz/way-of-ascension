@@ -66,6 +66,10 @@ export const migrations = [
     if (save.activities && typeof save.activities.cooking === 'undefined') {
       save.activities.cooking = false;
     }
+  },
+  save => {
+    if (!save.flags) save.flags = {};
+    save.flags.weaponsEnabled = true;
   }
 ];
 

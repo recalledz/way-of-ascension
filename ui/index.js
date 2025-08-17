@@ -41,6 +41,7 @@ import {
   retreatFromCombat,
   updateFistProficiencyDisplay,
   updateFoodSlots,
+  instakillCurrentEnemy,
   setupAdventureTabs
 } from '../src/game/adventure.js';
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
@@ -502,6 +503,31 @@ function initUI(){
       inp.click();
     });
   }
+  const debugBtn = qs('#debugBtn');
+  const debugConsole = qs('#debugConsole');
+  if (debugBtn && debugConsole) {
+    debugBtn.addEventListener('click', () => {
+      debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
+    });
+  }
+
+  const debugRunBtn = qs('#debugRunBtn');
+  if (debugRunBtn) {
+    debugRunBtn.addEventListener('click', () => {
+      const input = qs('#debugInput');
+      const output = qs('#debugOutput');
+      try {
+        const result = eval(input.value);
+        if (output) output.textContent = String(result);
+      } catch (err) {
+        if (output) output.textContent = err.message;
+      }
+    });
+  }
+
+  const debugKillBtn = qs('#debugKillBtn');
+  if (debugKillBtn) debugKillBtn.addEventListener('click', instakillCurrentEnemy);
+
 
   // Safe render calls - only call functions that exist
   if (typeof renderUpgrades === 'function') renderUpgrades();
