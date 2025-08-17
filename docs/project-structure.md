@@ -93,14 +93,19 @@ way-of-ascension/
 │       ├── state.js
 │       └── utils.js
 ├── ui/
+│   ├── components/
+│   │   └── progressBar.js
 │   ├── dom.js
 │   ├── index.js
+│   ├── panels/
+│   │   └── equipment.js
 │   └── realm.js
 ├── README.md
 ├── eslint.config.mjs
 ├── index.html
 ├── package-lock.json
 ├── package.json
+├── server.js
 └── style.css
 ```
 
@@ -287,7 +292,15 @@ function updateAll() {
 **Purpose**: Realm-specific UI components and cultivation displays
 **When to modify**: Add new realm UI features, modify cultivation interface
 
-#### `equipment.js` - Equipment Panel UI
+#### `components/progressBar.js` - Reusable Progress Bar Component
+**Purpose**: Provides reusable functions to create and update standardized progress bars throughout the UI.
+**Key Functions**:
+- `createProgressBar()`: Creates a new progress bar component.
+- `updateProgressBar()`: Updates an existing progress bar's value and text.
+**Dependencies**: Vanilla JS, follows structure in `style.css`.
+**When to modify**: When changing the fundamental structure or style of all progress bars.
+
+#### `panels/equipment.js` - Equipment Panel UI
 **Purpose**: Renders the player's inventory of weapons and armor in the equipment panel. Allows equipping weapons.
 **Key Functions**:
 - `renderEquipmentPanel()`: Main function to draw the weapon and armor lists.

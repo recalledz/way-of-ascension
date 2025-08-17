@@ -48,6 +48,56 @@ h1, h2, h3 {
     letter-spacing: 0.5px;
 }
 
+/* --- Standardized Progress Bar --- */
+.progress-bar-container {
+  margin-bottom: 12px;
+}
+
+.progress-label {
+  font-family: 'Trajan Pro', 'Palatino Linotype', serif;
+  font-size: 0.9rem;
+  color: var(--ink-dark);
+  text-shadow: 1px 1px 2px var(--parchment-light);
+  margin-bottom: 4px;
+  margin-left: 2px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 22px;
+  background-color: var(--parchment-light);
+  border: 1px solid var(--ink-light);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.progress-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--ink-dark);
+  text-shadow: 0 0 5px white;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.progress-fill {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-glow-light), var(--accent-glow-dark));
+  border-radius: 5px;
+  transition: width 0.3s ease-in-out;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+
 /* MYSTIC-REALM-UPDATE: Ambient Qi particles and glimmering motes */
 .qi-particles{position:fixed; inset:0; pointer-events:none; z-index:1;}
 .qi-particle{position:absolute; width:3px; height:3px; background:radial-gradient(circle, rgba(34, 139, 34, 0.6) 0%, rgba(74, 222, 128, 0.4) 50%, transparent 100%); border-radius:50%; opacity:0; animation:qiSpiral 15s ease-in-out infinite;}

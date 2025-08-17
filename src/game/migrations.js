@@ -58,6 +58,14 @@ export const migrations = [
     }else if(typeof save.equipment.armor === 'undefined'){
       save.equipment.armor = null;
     }
+  },
+  save => {
+    if (typeof save.cooking === 'undefined') {
+      save.cooking = { level: 1, exp: 0, expMax: 100 };
+    }
+    if (save.activities && typeof save.activities.cooking === 'undefined') {
+      save.activities.cooking = false;
+    }
   }
 ];
 

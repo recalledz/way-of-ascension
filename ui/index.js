@@ -30,6 +30,7 @@ import {
   getRealmName
 } from './realm.js';
 import { qs, setText, setFill, log } from './dom.js';
+import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { WEAPON_FLAGS } from '../src/data/weapons.js'; // WEAPONS-INTEGRATION
 import {
   updateActivityAdventure,
@@ -45,6 +46,7 @@ import {
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 
 // Global variables
+const progressBars = {};
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
 const weaponFeatureEnabled = Object.keys(WEAPON_FLAGS).some(w => w !== 'fist' && WEAPON_FLAGS[w]);
@@ -147,22 +149,26 @@ function renderSidebarActivities() {
         </div>
       </div>`;
 
+    item.innerHTML = html;
+
+    // Render progress bars
     if (act.progressFillId && act.progressTextId) {
-      html += `
+      const progressBarHtml = `
       <div class="activity-progress-bar">
         <div class="progress-fill" id="${act.progressFillId}"></div>
         <div class="progress-text" id="${act.progressTextId}">0%</div>
       </div>`;
+      item.insertAdjacentHTML('beforeend', progressBarHtml);
     }
 
     if (act.statusId) {
-      html += `
+      const statusHtml = `
       <div class="activity-status">
         <div class="status-indicator" id="${act.statusId}">Inactive</div>
       </div>`;
+      item.insertAdjacentHTML('beforeend', statusHtml);
     }
 
-    item.innerHTML = html;
     container.appendChild(item);
   });
 }
@@ -505,6 +511,8 @@ function updateAll(){
   setText('qiPct', Math.floor(100 * S.qi / qCap()) + '%');
   
   // Foundation
+  setFill('cultivationProgressFill', S.foundation / fCap());
+  setText('cultivationProgressText', `${fmt(S.foundation)} / ${fmt(fCap())}`);
   setText('foundValL', fmt(S.foundation)); setText('foundCapL', fmt(fCap()));
   setFill('foundFill', S.foundation / fCap());
   setFill('foundFill2', S.foundation / fCap());
@@ -528,22 +536,27 @@ function updateAll(){
   if (weaponFeatureEnabled) updateWeaponChip();
 
   // Update progression displays
-  setText('physiqueLevel', S.physique.level);
-  setText('physiqueExp', S.physique.exp);
-  setText('physiqueExpMax', S.physique.expMax);
-  setFill('physiqueFill', S.physique.exp / S.physique.expMax);
+  setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
+  setText('physiqueProgressText', `${fmt(S.physique.exp)} / ${fmt(S.physique.expMax)} XP`);
+  setText('physiqueLevel', `Level ${S.physique.level}`);
 
-  setText('miningLevel', S.mining.level);
-  setText('miningExp', S.mining.exp);
-  setText('miningExpMax', S.mining.expMax);
-  setFill('miningFill', S.mining.exp / S.mining.expMax);
+  setFill('miningProgressFill', S.mining.exp / S.mining.expMax);
+  setText('miningProgressText', `${fmt(S.mining.exp)} / ${fmt(S.mining.expMax)} XP`);
+  setText('miningLevel', `Level ${S.mining.level}`);
+
+  setFill('cookingProgressFillSidebar', S.cooking.exp / S.cooking.expMax);
+  setText('cookingProgressTextSidebar', `${fmt(S.cooking.exp)} / ${fmt(S.cooking.expMax)} XP`);
+  setText('cookingLevelSidebar', `Level ${S.cooking.level}`);
 
   const currentZone = ZONES[S.adventure.currentZone];
   const currentArea = currentZone ? currentZone.areas[S.adventure.currentArea] : null;
   const location = currentArea ? currentArea.name : 'Village Outskirts';
-  const progress = currentArea ? Math.floor((S.adventure.killsInCurrentArea / currentArea.killReq) * 100) : 0;
-  setText('currentLocation', location);
-  setText('adventureProgress', progress > 0 ? `${progress}%` : 'Ready');
+  if (currentArea) {
+    const progress = S.adventure.killsInCurrentArea / currentArea.killReq;
+    setFill('adventureProgressFill', progress);
+    setText('adventureProgressText', `${Math.floor(progress * 100)}%`);
+  }
+  setText('adventureLevel', location);
   
   setText('buildingCount', Object.values(S.buildings).filter(level => level > 0).length);
   setText('stonesDisplay', fmt(S.stones));

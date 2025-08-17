@@ -67,6 +67,11 @@ export const defaultState = () => {
     selectedResource: 'stones',
     resourcesGained: 0
   },
+  cooking: {
+    level: 1,
+    exp: 0,
+    expMax: 100
+  },
   adventure: {
     currentZone: 0,
     currentArea: 0,
