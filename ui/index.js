@@ -149,25 +149,23 @@ function renderSidebarActivities() {
         </div>
       </div>`;
 
-    item.innerHTML = html;
-
     // Render progress bars
     if (act.progressFillId && act.progressTextId) {
-      const progressBarHtml = `
+      html += `
       <div class="activity-progress-bar">
         <div class="progress-fill" id="${act.progressFillId}"></div>
         <div class="progress-text" id="${act.progressTextId}">0%</div>
       </div>`;
-      item.insertAdjacentHTML('beforeend', progressBarHtml);
     }
 
     if (act.statusId) {
-      const statusHtml = `
+      html += `
       <div class="activity-status">
         <div class="status-indicator" id="${act.statusId}">Inactive</div>
       </div>`;
-      item.insertAdjacentHTML('beforeend', statusHtml);
     }
+
+    item.innerHTML = html;
 
     container.appendChild(item);
   });
