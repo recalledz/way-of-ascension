@@ -30,7 +30,10 @@ export function processAttack(currentHP, damage, options = {}) {
 }
 
 export function getEquippedWeapon(state) {
-  return state.equipment?.mainhand || 'fist';
+  // WEAPONS-INTEGRATION: respect feature flag and invalid keys
+  if (!state.flags?.weaponsEnabled) return 'fist';
+  const key = state.equipment?.mainhand;
+  return WEAPONS[key] ? key : 'fist';
 }
 
 export function computeWeaponDamage(state) {

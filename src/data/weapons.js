@@ -109,6 +109,40 @@ export const WEAPONS = {
     proficiencyKey: 'scepter',
     animations: { fx: ['smite'], tint: 'auto' },
   },
+  // WEAPONS-INTEGRATION: new equipment
+  ironSword: {
+    key: 'ironSword',
+    displayName: 'Iron Sword',
+    slot: 'mainhand',
+    base: { min: 4, max: 7, attackRate: 1.2 },
+    scales: { physique: 0.5, agility: 0.3, mind: 0.2 },
+    tags: ['melee', 'physical', 'sword'],
+    reqs: { realmMin: 1, proficiencyMin: 0 },
+    proficiencyKey: 'sword',
+    animations: { fx: ['slashArc'], tint: 'auto' },
+  },
+  bronzeHammer: {
+    key: 'bronzeHammer',
+    displayName: 'Bronze Hammer',
+    slot: 'mainhand',
+    base: { min: 8, max: 12, attackRate: 0.8 },
+    scales: { physique: 0.7, agility: 0.1, mind: 0.2 },
+    tags: ['melee', 'physical', 'hammer'],
+    reqs: { realmMin: 2, proficiencyMin: 5 },
+    proficiencyKey: 'hammer',
+    animations: { fx: ['ringShockwave'], tint: 'auto' },
+  },
+  elderWand: {
+    key: 'elderWand',
+    displayName: 'Elder Wand',
+    slot: 'mainhand',
+    base: { min: 2, max: 3, attackRate: 1.0 },
+    scales: { physique: 0.1, agility: 0.2, mind: 0.7 },
+    tags: ['caster', 'fire'],
+    reqs: { realmMin: 3, proficiencyMin: 0 },
+    proficiencyKey: 'wand',
+    animations: { fx: ['beam'], tint: 'fire' },
+  },
 };
 
 // TODO: balance weapon stats and effects

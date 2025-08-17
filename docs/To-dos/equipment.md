@@ -18,3 +18,15 @@
 
   * Weapon DPS = `(Base Weapon Power × Quality Multiplier) × (1 + Proficiency%)`
   * Example: Sword (Base 10) + Rare (×1.5) + Proficiency (20%) = 18 DPS.
+
+* **Early Weapons & Drop Rates**:
+
+  * **Iron Sword** – base 4–7 damage, balanced scaling. Drops in Peaceful Lands (~5%).
+  * **Bronze Hammer** – base 8–12 damage, slower but stronger. Drops in Forest Edge (~3%) and Meadow Path (~3%).
+  * **Elder Wand** – base 2–3 damage, mind‑focused. Drops in Meadow Path (~2%).
+
+* **Zone Loot Tables**:
+
+  * **Peaceful Lands** – `ironSword` 5 %, `herbs` 95 %.
+  * **Forest Edge** – `bronzeHammer` 3 %, `ironSword` 4 %, `ore` 93 %.
+  * **Meadow Path** – `elderWand` 2 %, `bronzeHammer` 3 %, `herbs` 95 %.
