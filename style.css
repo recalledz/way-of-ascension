@@ -1,8 +1,7 @@
-
 :root{
   /* STYLE-GUIDE-UPDATE: Parchment-scroll theme color palette */
   --bg: #f8f5f0; /* Ancient scroll base */
-  --panel: #f0ead8; /* Silk texture panel */
+  --panel: #c9bba0; /* Even darker parchment for panels */
   --ink: #2d2520; /* Dark ink for text */
   --muted: #6b5b4f; /* Muted brown for secondary text */
   --accent: #8b4513; /* Saddle brown for accents */
@@ -46,6 +45,20 @@ h1, h2, h3 {
     font-family: 'Trajan Pro', 'Palatino Linotype', 'Book Antiqua', Palatino, serif; /* A more calligraphic/engraved font */
     font-weight: 600; /* Bolder for emphasis */
     letter-spacing: 0.5px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background-color: var(--panel);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(45, 37, 32, 0.2), 0 4px 8px rgba(45, 37, 32, 0.15);
+  border: 1px solid rgba(45, 37, 32, 0.35);
+  padding: 16px;
 }
 
 /* --- Standardized Progress Bar --- */
@@ -2589,12 +2602,12 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .grid{display:grid; gap:12px}
 
 /* STYLE-GUIDE-UPDATE: Content area with parchment background */
-.content{position:relative; overflow:auto; padding:16px 16px 100px 16px; background: transparent}
+.content{position:relative; overflow:auto; padding:16px 16px 100px 16px; background: transparent; z-index: 10}
 .content > section{display:none}
 
 /* STYLE-GUIDE-UPDATE: Cards with parchment texture */
 .cards{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px}
-.card{background:linear-gradient(180deg, rgba(248, 245, 240, 0.7), rgba(235, 224, 200, 0.7)); border:1px solid var(--accent); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); position: relative;}
+.card{background: var(--panel); border:1px solid rgba(45, 37, 32, 0.35); border-radius:var(--radius); padding:14px; box-shadow: 0 10px 25px rgba(45, 37, 32, 0.2), 0 4px 8px rgba(45, 37, 32, 0.15); position: relative;}
 .card::before{content:''; position:absolute; inset:0; background: radial-gradient(circle at 25% 25%, rgba(139, 117, 95, 0.04) 0%, transparent 60%), radial-gradient(circle at 75% 75%, rgba(160, 140, 115, 0.03) 0%, transparent 50%); border-radius:var(--radius); pointer-events:none;}
 .card h4{margin:0 0 8px; font-size:15px}
 .muted{color:var(--muted); font-size:12px}
