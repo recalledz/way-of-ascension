@@ -231,83 +231,6 @@ h1, h2, h3 {
   box-shadow: inset 0 0 20px rgba(139, 117, 95, 0.2);
 }
 
-/* Ancient parchment background */
-.parchment-background {
-  position: absolute;
-  inset: 0;
-  background: 
-    /* Focus gradient - darker edges, lighter center */
-    radial-gradient(ellipse at center, transparent 20%, rgba(120, 100, 80, 0.15) 60%, rgba(100, 85, 70, 0.25) 100%),
-    /* Paper texture */
-    radial-gradient(circle at 15% 25%, rgba(139, 117, 95, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(160, 140, 115, 0.10) 0%, transparent 45%),
-    radial-gradient(circle at 60% 40%, rgba(120, 100, 80, 0.06) 0%, transparent 35%),
-    /* Parchment texture overlay */
-    radial-gradient(circle at 30% 20%, rgba(139, 117, 95, 0.08) 0%, transparent 30%),
-    radial-gradient(circle at 70% 80%, rgba(160, 140, 115, 0.06) 0%, transparent 25%),
-    radial-gradient(circle at 20% 70%, rgba(120, 100, 80, 0.05) 0%, transparent 20%),
-    /* Base parchment color with subtle gradient */
-    radial-gradient(ellipse at center, rgba(248, 245, 240, 0.4) 0%, rgba(240, 234, 216, 0.4) 30%, rgba(235, 224, 200, 0.4) 60%, rgba(230, 213, 184, 0.4) 85%, rgba(224, 202, 176, 0.4) 100%);
-  background-size: 100% 100%, 250px 250px, 350px 350px, 200px 200px, 180px 180px, 220px 220px, 160px 160px, 100% 100%;
-  animation: parchmentShift 25s ease-in-out infinite;
-}
-
-@keyframes parchmentShift {
-  0%, 100% {
-    background-position: 0% 0%, 0% 0%, 100% 100%, 50% 50%, 0% 0%, 100% 100%, 50% 50%, 0% 0%;
-  }
-  50% {
-    background-position: 0% 0%, 20% 20%, 80% 80%, 30% 30%, 15% 15%, 85% 85%, 25% 25%, 0% 0%;
-  }
-}
-
-/* MYSTIC-REALM-ENHANCEMENT: Dramatic god rays */
-.god-rays {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  z-index: 2; /* Positioned above mountains but below UI */
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.god-ray {
-  position: absolute;
-  top: -10%;
-  height: 120%;
-  background: linear-gradient(
-    to bottom,
-    rgba(184, 134, 11, 0.25) 0%,
-    rgba(139, 117, 95, 0.15) 40%,
-    transparent 80%
-  );
-  animation: godRaySway 15s ease-in-out infinite;
-  filter: blur(5px);
-  box-shadow: 0 0 10px rgba(184, 134, 11, 0.2),
-              0 0 20px rgba(255, 215, 0, 0.1);
-}
-
-.god-ray:nth-child(1) { left: 5%; width: 40px; animation-delay: -2s; opacity: 0.6; }
-.god-ray:nth-child(2) { left: 15%; width: 60px; animation-delay: 0s; opacity: 0.8; }
-.god-ray:nth-child(3) { left: 30%; width: 30px; animation-delay: -5s; opacity: 0.5; }
-.god-ray:nth-child(4) { left: 45%; width: 50px; animation-delay: -8s; opacity: 0.7; }
-.god-ray:nth-child(5) { left: 60%; width: 45px; animation-delay: -12s; opacity: 0.6; }
-.god-ray:nth-child(6) { left: 75%; width: 70px; animation-delay: -1s; opacity: 0.9; }
-.god-ray:nth-child(7) { left: 85%; width: 35px; animation-delay: -6s; opacity: 0.5; }
-.god-ray:nth-child(8) { left: 95%; width: 55px; animation-delay: -10s; opacity: 0.7; }
-
-@keyframes godRaySway {
-  0%, 100% {
-    transform: translateX(0) skewX(-15deg);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateX(20px) skewX(-15deg);
-    opacity: 1;
-  }
-}
 
 /* Misty fog layers behind silhouette */
 .misty-fog {
@@ -396,91 +319,6 @@ h1, h2, h3 {
   animation-duration: 80s; /* Fastest speed */
 }
 
-.ink-wash-cloud {
-  position: absolute;
-  background-size: contain;
-  background-repeat: no-repeat;
-  animation-name: cloudDrift;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  filter: blur(3px); /* Soften clouds */
-}
-
-.cloud-1 {
-  width: 300px;
-  height: 180px;
-  background-image: url("data:image/svg+xml,%3csvg width='300' height='180' viewBox='0 0 300 180' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cradialGradient id='cloudGradient1' cx='50%25' cy='50%25' r='50%25'%3e%3cstop offset='0%25' stop-color='rgba(139, 117, 95, 0.3)'/%3e%3cstop offset='100%25' stop-color='rgba(120, 100, 80, 0)'/%3e%3c/radialGradient%3e%3c/defs%3e%3cellipse cx='150' cy='90' rx='140' ry='80' fill='url(%23cloudGradient1)' filter='blur(15px)'/%3e%3c/svg%3e");
-  top: 10%;
-  left: 5%;
-  opacity: 0.4;
-  z-index: 2; /* Between background and midground mountains */
-  animation-duration: 150s;
-}
-
-.cloud-2 {
-  width: 250px;
-  height: 150px;
-  background-image: url("data:image/svg+xml,%3csvg width='250' height='150' viewBox='0 0 250 150' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cradialGradient id='cloudGradient2' cx='50%25' cy='50%25' r='50%25'%3e%3cstop offset='0%25' stop-color='rgba(160, 140, 115, 0.4)'/%3e%3cstop offset='100%25' stop-color='rgba(139, 117, 95, 0)'/%3e%3c/radialGradient%3e%3c/defs%3e%3cellipse cx='125' cy='75' rx='115' ry='65' fill='url(%23cloudGradient2)' filter='blur(12px)'/%3e%3c/svg%3e");
-  top: 40%;
-  right: 10%;
-  opacity: 0.6;
-  z-index: 4; /* Between midground and foreground mountains */
-  animation-duration: 100s;
-  animation-direction: reverse;
-}
-
-.cloud-3 {
-  width: 280px;
-  height: 160px;
-  background-image: url("data:image/svg+xml,%3csvg width='280' height='160' viewBox='0 0 280 160' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cradialGradient id='cloudGradient3' cx='50%25' cy='50%25' r='50%25'%3e%3cstop offset='0%25' stop-color='rgba(120, 100, 80, 0.2)'/%3e%3cstop offset='100%25' stop-color='rgba(100, 85, 70, 0)'/%3e%3c/radialGradient%3e%3c/defs%3e%3cellipse cx='140' cy='80' rx='130' ry='70' fill='url(%23cloudGradient3)' filter='blur(18px)'/%3e%3c/svg%3e");
-  bottom: 20%;
-  left: 30%;
-  opacity: 0.3;
-  z-index: 2;
-  animation-duration: 200s;
-}
-
-/* MYSTIC-REALM-ENHANCEMENT: Floating islands with glowing energy */
-.floating-island {
-  position: absolute;
-  background-size: contain;
-  background-repeat: no-repeat;
-  animation: floatingIslandBob 12s ease-in-out infinite;
-  filter: drop-shadow(0 20px 15px rgba(45, 37, 32, 0.3));
-}
-
-.island-1 {
-  width: 220px;
-  height: 120px;
-  background-image: url("data:image/svg+xml,%3csvg width='220' height='120' viewBox='0 0 220 120' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3clinearGradient id='islandGrad1' x1='50%25' y1='0%25' x2='50%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='rgba(95, 80, 65, 1)'/%3e%3cstop offset='100%25' stop-color='rgba(60, 50, 40, 1)'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath d='M 15 70 C 5 60 0 40 20 30 C 40 20 70 25 90 35 C 110 45 140 40 170 50 C 200 60 215 70 205 80 C 195 90 180 105 150 110 C 120 115 100 95 80 90 C 60 85 40 80 15 70 Z' fill='url(%23islandGrad1)' /%3e%3c/svg%3e");
-  top: 25%;
-  left: 15%;
-  z-index: 3;
-  animation-delay: -2s;
-}
-
-.island-2 {
-  width: 180px;
-  height: 100px;
-  background-image: url("data:image/svg+xml,%3csvg width='180' height='100' viewBox='0 0 180 100' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3clinearGradient id='islandGrad2' x1='50%25' y1='0%25' x2='50%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='rgba(100, 85, 70, 1)'/%3e%3cstop offset='100%25' stop-color='rgba(70, 60, 50, 1)'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath d='M 10 60 C 0 50 15 40 30 35 C 45 30 70 40 90 45 C 110 50 135 45 155 55 C 175 65 180 75 170 85 C 160 95 140 100 120 95 C 100 90 80 80 60 75 C 40 70 20 70 10 60 Z' fill='url(%23islandGrad2)' /%3e%3c/svg%3e");
-  top: 55%;
-  right: 20%;
-  z-index: 4;
-  animation-duration: 14s;
-}
-
-.energy-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(ellipse, rgba(184, 134, 11, 0.6) 0%, rgba(255, 215, 0, 0.3) 40%, transparent 70%);
-  border-radius: 50%;
-  animation: energyPulse 4s ease-in-out infinite;
-  filter: blur(8px);
-}
 
 
 @keyframes fogDrift {
@@ -503,33 +341,6 @@ h1, h2, h3 {
   to { transform: translateX(-9.09%); } /* (100% / 110%) * 10% movement -> 9.09% */
 }
 
-@keyframes cloudDrift {
-  0% { transform: translateX(-5%); opacity: 0.8; }
-  50% { transform: translateX(5%); opacity: 1; }
-  100% { transform: translateX(-5%); opacity: 0.8; }
-}
-
-@keyframes floatingIslandBob {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-@keyframes energyPulse {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(0.95);
-    opacity: 0.7;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 0 30px rgba(184, 134, 11, 0.2);
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.05);
-    opacity: 1;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 0 50px rgba(184, 134, 11, 0.4);
-  }
-}
 
 /* Lotus bloom effect behind silhouette */
 .lotus-bloom {
@@ -3915,3 +3726,10 @@ tr:last-child td {
 @keyframes fx-ring{to{r:var(--fx-radius);opacity:0}}
 @keyframes fx-shield{from{r:0;opacity:.6}to{r:var(--fx-radius);opacity:0}}
 @keyframes fx-rotate{to{transform:rotate(360deg)}}
+
+.rays-overlay, .bg-rays, .ray, .sunray,
+.floating-island, .bg-blob, .bg-poop,
+.parchment, .paper-grain {
+  display: none !important;
+  background: none !important;
+}
