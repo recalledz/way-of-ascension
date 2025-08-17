@@ -83,9 +83,11 @@ way-of-ascension/
 │   │   │   ├── attack.js
 │   │   │   └── statusEngine.js
 │   │   ├── systems/
+│   │   │   ├── inventory.js
+│   │   │   ├── loot.js
 │   │   │   ├── proficiency.js
-│   │   │   ├── weapons.js
-│   │   │   └── loot.js
+│   │   │   ├── sessionLoot.js
+│   │   │   └── weapons.js
 │   │   ├── adventure.js
 │   │   ├── affixes.js
 │   │   ├── combat.js
@@ -98,6 +100,7 @@ way-of-ascension/
 │       ├── fx/
 │       │   └── fx.js
 │       └── panels/
+│           ├── CharacterPanel.js
 │           └── EquipmentPanel.js
 ├── ui/
 │   ├── components/
@@ -221,6 +224,16 @@ export function runMigrations(save) {
 **Key Functions**: `rollLoot()`, `toLootTableKey()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
 
+#### `systems/inventory.js` - Inventory Management
+**Purpose**: Adds, removes, and equips items in the player's inventory and equipment slots.
+**Key Functions**: `addToInventory()`, `removeFromInventory()`, `equipItem()`, `unequip()`.
+**When to modify**: Expand inventory features or adjust equip logic.
+
+#### `systems/sessionLoot.js` - Session Loot Buffer
+**Purpose**: Temporarily stores loot until claimed or forfeited after a session.
+**Key Functions**: `addSessionLoot()`, `claimSessionLoot()`, `forfeitSessionLoot()`.
+**When to modify**: Change how loot is staged or distributed post-combat.
+
 ### Data Configuration (`data/`)
 
 #### `realms.js` - Cultivation Realms
@@ -333,6 +346,11 @@ function updateAll() {
 **Purpose**: Displays weapons, allowing equip, scrap, and detail actions.
 **Key Functions**: `equipWeapon()`, `renderEquipmentPanel()`.
 **When to modify**: Adjust weapon handling UI or extend equipment features.
+
+#### `panels/CharacterPanel.js` - Character Equipment Panel
+**Purpose**: Shows equipped items and inventory with actions to equip, use, scrap, or filter gear.
+**Key Functions**: `renderCharacterPanel()`, `setupCharacterTab()`.
+**When to modify**: Modify character gear interface or inventory interactions.
 
 ### UI Effects (`src/ui/fx/`)
 
