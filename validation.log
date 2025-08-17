@@ -2,6 +2,17 @@
 
 📋 AI VERIFICATION ENFORCEMENT REPORT
 =====================================
-✅ VERIFICATION PASSED - AI may proceed
+❌ VERIFICATION FAILED - MUST fix before proceeding
+
+🚨 VIOLATIONS DETECTED:
+   • UNDOCUMENTED FILE: ui/panels/equipment.js
+
+📝 REQUIRED ACTION:
+   Update docs/project-structure.md with these files:
+   • ui/panels/equipment.js
+
+   Then document their purpose and functions.
 
 =====================================
+
+🚫 AI CHANGES BLOCKED UNTIL DOCUMENTATION UPDATED
