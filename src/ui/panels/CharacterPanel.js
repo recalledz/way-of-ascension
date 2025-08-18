@@ -11,6 +11,22 @@ export function renderCharacterPanel() {
   renderInventory();
 }
 
+function weaponDetailsText(item) {
+  const w = WEAPONS[item.key];
+  if (!w) return '';
+  const base = w.base ? `${w.base.min}-${w.base.max} (${w.base.attackRate}/s)` : 'n/a';
+  const scales = Object.entries(w.scales || {})
+    .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
+    .join(', ');
+  const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
+  return `${w.displayName}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+}
+
+function itemTooltip(item) {
+  if (item.type === 'weapon') return weaponDetailsText(item);
+  return 'Details coming soon';
+}
+
 function renderEquipment() {
   const slots = [
     { key: 'mainhand', label: 'Weapon' },
@@ -33,6 +49,7 @@ function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
   row.innerHTML = `<span class="inv-name">${item.key}</span> <span class="inv-qty">${item.qty || 1}</span>`;
+  row.title = itemTooltip(item);
   const act = document.createElement('div');
   act.className = 'inv-actions';
   const equipBtn = document.createElement('button');
