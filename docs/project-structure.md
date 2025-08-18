@@ -136,6 +136,7 @@ way-of-ascension/
 - `docs/To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 - `docs/To-dos/Balance.md` – Balance system notes and parameter guidelines.
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
+- `To-dos/Balance.md` – Notes on planned balance adjustments.
 
 ### Core Game Logic (`src/game/`)
 
