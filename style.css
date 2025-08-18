@@ -3420,12 +3420,23 @@ tr:last-child td {
 /* Enhanced Progress Bars */
 .activity-progress-bar {
   position: relative;
-  width: 100%;
+  /* Standardize width with left indent so bars align and don't jump */
+  box-sizing: border-box;
+  width: calc(100% - 32px);
+  margin-left: 32px; /* space between bar and left icon/label */
+  margin-top: 6px;
   height: 16px;
   background: rgba(0, 0, 0, 0.4);
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Keep bar size stable on hover/active */
+.activity-item:hover .activity-progress-bar,
+.activity-item.active .activity-progress-bar {
+  width: calc(100% - 32px);
+  margin-left: 32px;
 }
 
 .progress-fill {
