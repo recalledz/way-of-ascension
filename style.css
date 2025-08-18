@@ -1,16 +1,19 @@
 :root{
   /* STYLE-GUIDE-UPDATE: Parchment-scroll theme color palette */
-  --bg: #f8f5f0; /* Ancient scroll base */
-  --panel: #c9bba0; /* Even darker parchment for panels */
+  --primary-bg: #fdfaf4; /* soft parchment base for ~60% of the UI */
+  --secondary-bg: #ece5d6; /* light warm grey for ~30% sections */
+  --accent-color: #5784ba; /* calming azure for ~10% accents */
+  --bg: var(--primary-bg); /* primary background */
+  --panel: var(--secondary-bg); /* secondary background for panels */
   --ink: #000; /* Black ink for text */
   --ink-light: #000;
   --ink-dark: #000;
   --ink-color: #000;
-  --muted: #6b5b4f; /* Muted brown for secondary text */
-  --accent: #8b4513; /* Saddle brown for accents */
-  --accent-2: #a0522d; /* Sienna for secondary accents */
+  --muted: #8b7f75; /* softened brown for secondary text */
+  --accent: var(--accent-color); /* calming azure accents */
+  --accent-2: #7b9ec6; /* soft accent variant */
   --gold: #b8860b; /* Dark golden rod */
-  --danger: #8b0000; /* Dark red */
+  --danger: #b32424; /* clearer alert red */
   --shadow: 0 10px 30px rgba(45, 37, 32, 0.25); /* Soft brown shadow */
   --radius: 16px;
   
@@ -27,7 +30,7 @@
   --spirit-secondary: #ff6347;
 
   /* Scenic background controls */
-  --bg-dim: .95;      /* lower = darker */
+  --bg-dim: .97;      /* lower = darker */
   --bg-contrast: .98; /* 1 = none */
 }
 html,body{height:100%}
