@@ -2760,9 +2760,9 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: flex;
   align-items: center;
   padding: 12px;
-  border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   border-left: 4px solid transparent;
+  position: relative; /* allow metallic overlay */
   transition: all 0.2s ease;
 }
 
@@ -2772,9 +2772,25 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 }
 
 .realm-node.current {
-  background: rgba(59, 130, 246, 0.1);
-  border-left-color: #3b82f6;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.24), rgba(212, 175, 55, 0.10));
+  border-left-color: #d4af37; /* richer gold */
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.35), inset 0 0 0 1px rgba(212, 175, 55, 0.25);
+}
+
+/* metallic sheen overlay */
+.realm-node.current::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.12) 30%,
+      rgba(0, 0, 0, 0.10) 100%
+    );
+  mix-blend-mode: overlay;
+  opacity: 0.7;
 }
 
 .realm-node.locked {
@@ -2820,8 +2836,11 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 }
 
 .stage-dot.current {
-  background: #3b82f6;
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6) 0 45%, transparent 46%),
+    #d4af37; /* richer gold */
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+  border: 1px solid rgba(139, 107, 16, 0.6);
   animation: realmPulse 2s infinite;
 }
 
