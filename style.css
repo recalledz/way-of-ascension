@@ -34,6 +34,42 @@
   --bg-contrast: .98; /* 1 = none */
 }
 html,body{height:100%}
+
+/* --- Parchment-style custom scrollbar --- */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* ---------- Firefox (standards) ---------- */
+* {
+  scrollbar-width: thin; /* auto | thin | none */
+  scrollbar-color: #b28c63 #f2ecd8; /* thumb | track */
+}
+
+/* ---------- WebKit (Chrome/Edge/Safari) ---------- */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: #f2ecd8; /* aged parchment */
+  border-radius: 999px;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #c8a97e, #a8875a);
+  border-radius: 999px;
+  border: 2px solid #f2ecd8; /* creates “pill” inset */
+  background-clip: padding-box;
+  box-shadow: inset 0 0 2px rgba(255,255,255,0.3), 0 0 2px rgba(0,0,0,0.2);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #d5b48f, #b69363);
+}
+*::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #b69363, #8f6d3f);
+}
+
 body{
   margin:0;
   font-family: 'IM Fell English', serif;
@@ -3106,7 +3142,7 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .combat-log {
   max-height: 120px;
   overflow-y: auto;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--panel);
   border-radius: 6px;
   padding: 12px;
   margin: 12px 0;
@@ -3355,12 +3391,12 @@ tr:last-child td {
   left:280px; 
   right:0; 
   bottom:0; 
-  height:80px; 
+  height:80px;
   border-top:1px solid var(--accent);
-  background: var(--parchment);
-  overflow:auto; 
-  padding:8px 12px; 
-  font-size:12px; 
+  background: var(--panel);
+  overflow:auto;
+  padding:8px 12px;
+  font-size:12px;
   z-index:10;
   box-shadow: 0 -2px 10px rgba(58, 45, 28, 0.1);
 }
