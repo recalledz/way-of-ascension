@@ -103,6 +103,8 @@ way-of-ascension/
 │       └── panels/
 │           ├── CharacterPanel.js
 │           └── EquipmentPanel.js
+│       ├── sidebar.js
+│       └── weaponChip.js
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
@@ -353,6 +355,14 @@ function updateAll() {
 **Purpose**: Shows equipped items and inventory with actions to equip, use, scrap, or filter gear.
 **Key Functions**: `renderCharacterPanel()`, `setupCharacterTab()`.
 **When to modify**: Modify character gear interface or inventory interactions.
+
+#### `src/ui/sidebar.js` - Sidebar Activity Renderer
+**Purpose**: Builds the sidebar activity list and progress displays.
+**When to modify**: Adjust sidebar activities or their presentation.
+
+#### `src/ui/weaponChip.js` - Weapon Chip HUD
+**Purpose**: Initializes and updates the weapon display chip in the top HUD.
+**When to modify**: Change weapon HUD logic or appearance.
 
 ### UI Effects (`src/ui/fx/`)
 

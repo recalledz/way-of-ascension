@@ -31,7 +31,8 @@ import {
 } from './realm.js';
 import { qs, setText, setFill, log } from './dom.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
-import { WEAPON_FLAGS } from '../src/data/weapons.js'; // WEAPONS-INTEGRATION
+import { renderSidebarActivities } from '../src/ui/sidebar.js';
+import { initializeWeaponChip, updateWeaponChip } from '../src/ui/weaponChip.js';
 import {
   updateActivityAdventure,
   updateAdventureCombat,
@@ -55,137 +56,7 @@ import { setReduceMotion } from '../src/ui/fx/fx.js';
 const progressBars = {};
 let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
 
-const weaponFeatureEnabled = Object.keys(WEAPON_FLAGS).some(w => w !== 'fist' && WEAPON_FLAGS[w]);
 
-function updateWeaponChip() {
-  const el = document.getElementById('weaponName');
-  if (el) {
-    const key = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-    el.textContent = key || 'fist';
-    console.log('[weapon]', 'hud-update', key || 'fist');
-  }
-}
-
-// Sidebar activities configuration
-const sidebarActivities = [
-  {
-    id: 'cultivation',
-    label: 'Cultivation',
-    icon: '<iconify-icon icon="mdi:flower-lotus" class="ui-icon" style="color:#16a34a"></iconify-icon>',
-    group: 'leveling',
-    levelId: 'cultivationLevel',
-    initialLevel: 'Mortal 1',
-    progressFillId: 'cultivationProgressFill',
-    progressTextId: 'cultivationProgressText',
-    cost: {}
-  },
-  {
-    id: 'physique',
-    label: 'Physique',
-    icon: '<iconify-icon icon="hugeicons:body-part-muscle" class="ui-icon" width="20"></iconify-icon>',
-    group: 'leveling',
-    levelId: 'physiqueLevel',
-    initialLevel: 'Level 1',
-    progressFillId: 'physiqueProgressFill',
-    progressTextId: 'physiqueProgressText',
-    cost: {}
-  },
-  {
-    id: 'mining',
-    label: 'Mining',
-    icon: '<iconify-icon icon="hugeicons:mining-02" class="ui-icon" width="20"></iconify-icon>',
-    group: 'leveling',
-    levelId: 'miningLevel',
-    initialLevel: 'Level 1',
-    progressFillId: 'miningProgressFill',
-    progressTextId: 'miningProgressText',
-    cost: {}
-  },
-  {
-    id: 'cooking',
-    label: 'Cooking',
-    icon: '<iconify-icon icon="ep:food" class="ui-icon" width="20"></iconify-icon>',
-    group: 'leveling',
-    levelId: 'cookingLevelSidebar',
-    initialLevel: 'Level 1',
-    progressFillId: 'cookingProgressFillSidebar',
-    progressTextId: 'cookingProgressTextSidebar',
-    cost: {}
-  },
-  {
-    id: 'adventure',
-    label: 'Adventure',
-    icon: '<iconify-icon icon="lucide:mountain" class="ui-icon"></iconify-icon>',
-    group: 'management',
-    levelId: 'adventureLevel',
-    initialLevel: 'Zone 1',
-    progressFillId: 'adventureProgressFill',
-    progressTextId: 'adventureProgressText',
-    cost: {}
-  },
-  {
-    id: 'character',
-    label: 'Character',
-    icon: '<iconify-icon icon="healthicons:head-outline" class="ui-icon" width="20"></iconify-icon>',
-    group: 'management',
-    levelId: 'characterLevel',
-    initialLevel: 'Gear',
-    cost: {},
-  },
-  {
-    id: 'sect',
-    label: 'Sect',
-    icon: '🏛️',
-    group: 'management',
-    levelId: 'sectLevel',
-    initialLevel: 'Buildings',
-    statusId: 'sectStatus',
-    cost: {}
-  }
-];
-
-function renderSidebarActivities() {
-  const levelingContainer = document.getElementById('levelingActivities');
-  const managementContainer = document.getElementById('managementActivities');
-
-  sidebarActivities.forEach(act => {
-    const container = act.group === 'leveling' ? levelingContainer : managementContainer;
-    if (!container) return;
-
-    const item = document.createElement('div');
-    item.className = `activity-item ${act.group === 'leveling' ? 'leveling-tab' : 'management-tab'}`;
-    item.dataset.activity = act.id;
-
-    let html = `
-      <div class="activity-header">
-        <div class="activity-icon">${act.icon}</div>
-        <div class="activity-info">
-          <div class="activity-name">${act.label}</div>
-          <div class="activity-level" id="${act.levelId}">${act.initialLevel}</div>
-        </div>
-      </div>`;
-
-    // Render progress bars
-    if (act.progressFillId && act.progressTextId) {
-      html += `
-      <div class="activity-progress-bar">
-        <div class="progress-fill" id="${act.progressFillId}"></div>
-        <div class="progress-text" id="${act.progressTextId}">0%</div>
-      </div>`;
-    }
-
-    if (act.statusId) {
-      html += `
-      <div class="activity-status">
-        <div class="status-indicator" id="${act.statusId}">Inactive</div>
-      </div>`;
-    }
-
-    item.innerHTML = html;
-
-    container.appendChild(item);
-  });
-}
 
 const BEASTS = [
   {name:'Wild Rabbit', hp:60, atk:2, def:0, reward:{stones:5, herbs:2}},
@@ -426,15 +297,7 @@ function initUI(){
   // Render sidebar activities
   renderSidebarActivities();
 
-  if (weaponFeatureEnabled) {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.id = 'weaponChip';
-    const key = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-    chip.innerHTML = `Weapon: <span id="weaponName">${key || 'fist'}</span>`;
-    document.getElementById('top-chips').appendChild(chip);
-    console.log('[weapon]', 'hud-init', key || 'fist');
-  }
+  initializeWeaponChip();
 
   // Fill beasts
   const bs = document.getElementById('beastSelect');
@@ -585,7 +448,7 @@ function updateAll(){
   }
   updateCurrentTaskDisplay();
 
-  if (weaponFeatureEnabled) updateWeaponChip();
+    updateWeaponChip();
 
   // Update progression displays
   setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
