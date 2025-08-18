@@ -439,6 +439,10 @@
                     <div class="health-fill" id="playerHealthFill"></div>
                     <span class="health-text" id="playerHealthText">100/100</span>
                   </div>
+                  <div class="qi-bar">
+                    <div class="qi-fill" id="playerQiFill"></div>
+                    <span class="qi-text" id="playerQiText">0/0</span>
+                  </div>
                   <div class="combat-stats">
                     <span>ATK: <span id="playerAttack">10</span></span>
                     <span>Rate: <span id="playerAttackRate">1.0/s</span></span>
@@ -454,21 +458,31 @@
                     <div class="health-fill" id="enemyHealthFill"></div>
                     <span class="health-text" id="enemyHealthText">--/--</span>
                   </div>
+                  <div class="qi-bar">
+                    <div class="qi-fill" id="enemyQiFill"></div>
+                    <span class="qi-text" id="enemyQiText">--</span>
+                  </div>
                   <div class="combat-stats">
                     <span>ATK: <span id="enemyAttack">--</span></span>
                     <span>Rate: <span id="enemyAttackRate">--/s</span></span>
                   </div>
                 </div>
               </div>
-              
+
               <!-- Combat Actions -->
               <div class="combat-controls">
-                <button class="btn primary" id="startBattleButton">⚔️ Start Battle</button>
-                <button class="btn success" id="progressButton" disabled>🚀 Progress to Next Stage</button>
+                <button class="btn primary" id="startBattleButton">Start Battle</button>
+                <button class="btn success" id="progressButton" disabled>Clear Area</button>
                 <button class="btn danger" id="challengeBossButton" disabled style="display: none;">👹 Challenge Boss</button>
               </div>
+
+              <!-- Ability Bar -->
+              <div class="ability-bar-container">
+                <span class="ability-label">Ability Bar:</span>
+                <div class="ability-bar" id="abilityBar"></div>
+              </div>
             </div>
-            
+
             <!-- Combat Log -->
             <div class="combat-log" id="combatLog">
               <div class="log-entry">Select an area to begin your adventure...</div>
