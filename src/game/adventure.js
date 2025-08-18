@@ -1268,9 +1268,12 @@ export function updateActivityAdventure() {
   setText('totalKills', S.adventure.totalKills);
   setText('areasCompleted', S.adventure.areasCompleted);
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
-  setText('currentWeapon', WEAPONS[S.equipment?.mainhand]?.displayName || 'Fists'); // WEAPONS-INTEGRATION
-  const base = 5 + getWeaponProficiencyBonuses().damage;
-  setText('baseDamage', base);
+  {
+    const equippedKey = getEquippedWeapon(S);
+    setText('currentWeapon', WEAPONS[equippedKey]?.displayName || 'Fists'); // WEAPONS-INTEGRATION
+  }
+  const baseAttack = Math.round(calculatePlayerCombatAttack());
+  setText('baseDamage', baseAttack);
   const weaponKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
   updateWeaponProficiencyDisplay();
