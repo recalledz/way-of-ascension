@@ -2,7 +2,7 @@ import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses, qCap } from './engine.js';
 import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
-import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { WEAPONS } from '../data/weapon.legacy.js'; // WEAPONS-INTEGRATION
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
