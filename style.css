@@ -3941,3 +3941,19 @@ tr:last-child td {
   transform: translateY(-1px);
   transition: transform .18s ease;
 }
+
+/* Ensure black text for the breakthrough button */
+#breakthroughBtnActivity {
+  color: #000 !important;
+  text-shadow: none;
+}
+
+#breakthroughBtnActivity:hover,
+#breakthroughBtnActivity:active {
+  color: #000 !important;
+}
+
+#breakthroughBtnActivity.disabled,
+#breakthroughBtnActivity:disabled {
+  color: #000 !important;
+}
