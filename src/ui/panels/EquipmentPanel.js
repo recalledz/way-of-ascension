@@ -20,15 +20,20 @@ function scrapWeapon(index, state) {
   renderEquipmentPanel(state);
 }
 
-function showDetails(item) {
+function weaponDetailsText(item) {
   const w = WEAPONS[item.key];
-  if (!w) return;
+  if (!w) return '';
   const base = w.base ? `${w.base.min}-${w.base.max} (${w.base.attackRate}/s)` : 'n/a';
   const scales = Object.entries(w.scales || {})
     .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
     .join(', ');
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
-  window.alert(`${w.displayName}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`);
+  return `${w.displayName}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+}
+
+function showDetails(item) {
+  const text = weaponDetailsText(item);
+  if (text) window.alert(text);
 }
 
 export function renderEquipmentPanel(state = S) {
@@ -42,6 +47,8 @@ export function renderEquipmentPanel(state = S) {
     const div = document.createElement('div');
     div.className = 'equipment-item';
     div.innerHTML = `<div class="equipment-details"><strong>${weapon.displayName}</strong></div>`;
+    const tooltip = weaponDetailsText(item);
+    if (tooltip) div.title = tooltip;
     const equipBtn = document.createElement('button');
     equipBtn.className = 'btn small';
     equipBtn.textContent = 'Equip';
