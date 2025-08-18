@@ -101,8 +101,7 @@ way-of-ascension/
 │       ├── fx/
 │       │   └── fx.js
 │       └── panels/
-│           ├── CharacterPanel.js
-│           └── EquipmentPanel.js
+│           └── CharacterPanel.js
 │       ├── sidebar.js
 │       └── weaponChip.js
 ├── ui/
@@ -330,15 +329,10 @@ function updateAll() {
 **Dependencies**: Vanilla JS, follows structure in `style.css`.
 **When to modify**: When changing the fundamental structure or style of all progress bars.
 
-#### `src/ui/panels/EquipmentPanel.js` - Equipment Panel
-**Purpose**: Displays weapons from the shared inventory, allowing equip, scrap, and detail actions.
-**Key Functions**: `equipWeapon()`, `renderEquipmentPanel()`.
-**When to modify**: Adjust weapon handling UI or extend equipment features.
-
-#### `src/ui/panels/CharacterPanel.js` - Character Equipment Panel
-**Purpose**: Shows equipped items and inventory with actions to equip, use, scrap, or filter gear.
-**Key Functions**: `renderCharacterPanel()`, `setupCharacterTab()`.
-**When to modify**: Modify character gear interface or inventory interactions.
+#### `src/ui/panels/CharacterPanel.js` - Equipment & Inventory Panel
+**Purpose**: Single source for rendering equipped items and inventory with actions to equip, use, scrap, filter, and view details.
+**Key Functions**: `renderEquipmentPanel()`, `setupEquipmentTab()`.
+**When to modify**: Adjust character gear interface or inventory interactions.
 
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.

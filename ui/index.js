@@ -48,7 +48,7 @@ import {
 
 } from '../src/game/adventure.js';
 import { forfeitSessionLoot } from '../src/game/systems/sessionLoot.js'; // EQUIP-CHAR-UI
-import { renderCharacterPanel, setupCharacterTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
+import { renderEquipmentPanel, setupEquipmentTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
 
@@ -1049,7 +1049,7 @@ function updateActivityContent() {
       updateActivityAdventure();
       break;
     case 'character':
-      renderCharacterPanel(); // EQUIP-CHAR-UI
+      renderEquipmentPanel(); // EQUIP-CHAR-UI
       break;
     case 'cooking':
       updateActivityCooking();
@@ -2513,7 +2513,7 @@ function initActivityListeners() {
 
   document.getElementById('claimLootBtn')?.addEventListener('click', () => {
     retreatFromCombat();
-    renderCharacterPanel();
+    renderEquipmentPanel();
   });
   document.getElementById('forfeitLootBtn')?.addEventListener('click', () => {
     if (confirm('Forfeit all loot?')) {
@@ -2560,7 +2560,7 @@ window.addEventListener('load', ()=>{
   initLawSystem();
   initActivityListeners();
   setupAdventureTabs();
-  setupCharacterTab(); // EQUIP-CHAR-UI
+  setupEquipmentTab(); // EQUIP-CHAR-UI
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();

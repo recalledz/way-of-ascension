@@ -1,12 +1,12 @@
-import { S } from '../../game/state.js';
+import { S, save } from '../../game/state.js';
 import { WEAPONS } from '../../data/weapons.js';
 import { equipItem, unequip, removeFromInventory } from '../../game/systems/inventory.js';
 
-// EQUIP-CHAR-UI: render character equipment and inventory
+// Consolidated equipment/inventory panel
 let currentFilter = 'all';
 let slotFilter = null;
 
-export function renderCharacterPanel() {
+export function renderEquipmentPanel() {
   renderEquipment();
   renderInventory();
 }
@@ -25,8 +25,28 @@ function renderEquipment() {
     const name = item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty';
     el.querySelector('.slot-name').textContent = name;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
-    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderCharacterPanel(); };
+    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
   });
+}
+
+function weaponDetailsText(item) {
+  const w = WEAPONS[item.key];
+  if (!w) return '';
+  const base = w.base ? `${w.base.min}-${w.base.max} (${w.base.attackRate}/s)` : 'n/a';
+  const scales = Object.entries(w.scales || {})
+    .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
+    .join(', ');
+  const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
+  return `${w.displayName}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+}
+
+function showDetails(item) {
+  if (item.type === 'weapon') {
+    const text = weaponDetailsText(item);
+    if (text) window.alert(text);
+  } else {
+    window.alert(item.key);
+  }
 }
 
 function createInventoryRow(item) {
@@ -38,7 +58,7 @@ function createInventoryRow(item) {
   const equipBtn = document.createElement('button');
   equipBtn.className = 'btn small';
   equipBtn.textContent = 'Equip';
-  equipBtn.onclick = () => { equipItem(item); slotFilter = null; renderCharacterPanel(); };
+  equipBtn.onclick = () => { equipItem(item); slotFilter = null; renderEquipmentPanel(); };
   act.appendChild(equipBtn);
   const useBtn = document.createElement('button');
   useBtn.className = 'btn small';
@@ -50,18 +70,25 @@ function createInventoryRow(item) {
       item.qty = (item.qty || 1) - 1;
       if (item.qty <= 0) removeFromInventory(item.id);
     }
-    renderCharacterPanel();
+    renderEquipmentPanel();
   };
   act.appendChild(useBtn);
   const scrapBtn = document.createElement('button');
   scrapBtn.className = 'btn small warn';
   scrapBtn.textContent = 'Scrap';
-  scrapBtn.onclick = () => { removeFromInventory(item.id); renderCharacterPanel(); };
+  scrapBtn.onclick = () => {
+    if (item.type === 'weapon') {
+      S.ore = (S.ore || 0) + 1;
+      save?.();
+    }
+    removeFromInventory(item.id);
+    renderEquipmentPanel();
+  };
   act.appendChild(scrapBtn);
   const detailsBtn = document.createElement('button');
   detailsBtn.className = 'btn small';
   detailsBtn.textContent = 'Details';
-  detailsBtn.onclick = () => alert(item.key);
+  detailsBtn.onclick = () => showDetails(item);
   act.appendChild(detailsBtn);
   row.appendChild(act);
   if (slotFilter && !canEquipToSlot(item, slotFilter)) row.classList.add('muted');
@@ -91,6 +118,6 @@ function renderInventory() {
   });
 }
 
-export function setupCharacterTab() {
-  renderCharacterPanel();
+export function setupEquipmentTab() {
+  renderEquipmentPanel();
 }
