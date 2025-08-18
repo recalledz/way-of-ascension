@@ -80,7 +80,9 @@ export function updateActivityCultivation() {
 
   const startBtn = document.getElementById('startCultivationActivity');
   if (startBtn) {
-    startBtn.textContent = S.activities.cultivation ? '🛑 Stop Cultivating' : '🧘 Start Cultivating';
+    startBtn.innerHTML = S.activities.cultivation
+      ? '🛑 Stop Cultivating'
+      : '<iconify-icon icon="twemoji:lotus" class="ui-icon" width="20"></iconify-icon> Start Cultivating';
     startBtn.onclick = () => S.activities.cultivation ? stopActivity('cultivation') : startActivity('cultivation');
   }
 
