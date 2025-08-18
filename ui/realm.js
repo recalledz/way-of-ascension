@@ -11,7 +11,7 @@ import {
   foundationGainPerSec,
   powerMult
 } from '../src/game/engine.js';
-import { qs, setText, log } from './dom.js';
+import { qs, setText, log } from '../src/game/utils.js';
 
 export function getRealmName(tier) {
   return REALMS[tier].name;

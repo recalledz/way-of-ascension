@@ -29,7 +29,7 @@ import {
   initRealmUI,
   getRealmName
 } from './realm.js';
-import { qs, setText, setFill, log } from './dom.js';
+import { qs, setText, setFill, log } from '../src/game/utils.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
 import { initializeWeaponChip, updateWeaponChip } from '../src/ui/weaponChip.js';

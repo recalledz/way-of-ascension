@@ -108,7 +108,6 @@ way-of-ascension/
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
-│   ├── dom.js
 │   ├── index.js
 │   └── realm.js
 ├── README.md
