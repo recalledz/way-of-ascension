@@ -134,6 +134,37 @@
                   <div class="bloom-petal petal-8"></div>
                 </div>
 
+                <!-- Orbital rune ring around silhouette -->
+                <svg class="rune-ring" viewBox="0 0 240 240" aria-hidden="true">
+                  <defs>
+                    <filter id="runeGlow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                    <symbol id="rune"><path d="M0,-3 L0,3 M-2,0 L2,0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></symbol>
+                  </defs>
+
+                  <g transform="translate(120 120)">
+                    <circle r="88" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+                    <g class="runes" filter="url(#runeGlow)">
+                      <!-- 12 runes -->
+                      <!-- you can swap <use> for your own rune paths later -->
+                      <g class="orbit">
+                        <!-- positions each rune on the ring -->
+                        <g transform="rotate(0) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(30) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(60) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(90) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(120) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(150) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(180) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(210) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(240) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(270) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(300) translate(88 0)"><use href="#rune"/></g>
+                        <g transform="rotate(330) translate(88 0)"><use href="#rune"/></g>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+
                 <!-- Lotus pose silhouette -->
                 <div class="lotus-silhouette">
                   <!-- Hidden defs: clipPath for silhouette used by CSS clip-path -->
