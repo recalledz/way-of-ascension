@@ -3828,13 +3828,10 @@ tr:last-child td {
 .ui-icon {
   width: 20px;
   height: 20px;
-  color: #5a5a5a;
+  color: currentColor; /* inherit from parent so hover/active states work */
   vertical-align: -2px;
 }
-.nav-item.active .ui-icon {
-  color: var(--accent, #d8a316);
-}
-.nav-item:hover .ui-icon {
+.activity-item:hover .ui-icon {
   transform: translateY(-1px);
   transition: transform .18s ease;
 }

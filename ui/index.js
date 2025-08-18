@@ -126,7 +126,7 @@ const sidebarActivities = [
   {
     id: 'character',
     label: 'Character',
-    icon: '🧙',
+    icon: '<iconify-icon icon="healthicons:head-outline" class="ui-icon" width="20"></iconify-icon>',
     group: 'management',
     levelId: 'characterLevel',
     initialLevel: 'Gear',
