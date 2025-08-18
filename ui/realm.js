@@ -87,11 +87,11 @@ export function updateActivityCultivation() {
   const btBtn = document.getElementById('breakthroughBtnActivity');
   if (btBtn) {
     if (S.breakthrough && S.breakthrough.inProgress) {
-      btBtn.textContent = `⚡ Breakthrough in Progress... (${Math.ceil(S.breakthrough.timeRemaining)}s)`;
+      btBtn.textContent = `Breakthrough in Progress... (${Math.ceil(S.breakthrough.timeRemaining)}s)`;
       btBtn.disabled = true;
       btBtn.classList.add('disabled');
     } else {
-      btBtn.textContent = '⚡ Attempt Breakthrough';
+      btBtn.textContent = 'Attempt Breakthrough';
       btBtn.disabled = false;
       btBtn.classList.remove('disabled');
     }
