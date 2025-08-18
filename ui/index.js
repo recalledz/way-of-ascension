@@ -71,7 +71,7 @@ const sidebarActivities = [
   {
     id: 'cultivation',
     label: 'Cultivation',
-    icon: '<iconify-icon icon="mdi:flower-lotus" class="ui-icon"></iconify-icon>',
+    icon: '<iconify-icon icon="mdi:flower-lotus" class="ui-icon" style="color:#16a34a"></iconify-icon>',
     group: 'leveling',
     levelId: 'cultivationLevel',
     initialLevel: 'Mortal 1',

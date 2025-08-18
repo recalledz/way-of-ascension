@@ -3381,6 +3381,20 @@ tr:last-child td {
   color: var(--accent);
 }
 
+/* Cultivation lotus icon — force green color (normal, hover, active) */
+.activity-item[data-activity="cultivation"] .activity-icon,
+.activity-item[data-activity="cultivation"]:hover .activity-icon,
+.activity-item[data-activity="cultivation"].active .activity-icon {
+  color: #16a34a !important; /* Tailwind green-600 */
+}
+
+/* Target the Iconify custom element directly to ensure color applies */
+.activity-item[data-activity="cultivation"] .activity-icon iconify-icon,
+.activity-item[data-activity="cultivation"]:hover .activity-icon iconify-icon,
+.activity-item[data-activity="cultivation"].active .activity-icon iconify-icon {
+  color: #16a34a !important;
+}
+
 .activity-info {
   flex-grow: 1;
 }
