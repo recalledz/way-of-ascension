@@ -34,6 +34,41 @@
   --bg-contrast: .98; /* 1 = none */
 }
 html,body{height:100%}
+
+/* --- Custom scrollbar styling --- */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* ---------- Firefox (standards) ---------- */
+* {
+  scrollbar-width: thin; /* auto | thin | none */
+  scrollbar-color: var(--accent-color, #5784BA) rgba(0,0,0,.06);
+}
+
+/* ---------- WebKit (Chrome/Edge/Safari) ---------- */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.06);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--accent-color, #5784BA) 85%, #ffffff);
+  border-radius: 999px;
+  border: 2px solid transparent;         /* creates "pill" inset */
+  background-clip: padding-box;
+  box-shadow: 0 0 1px rgba(0,0,0,.15) inset;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--accent-color, #5784BA) 100%, #ffffff);
+}
+*::-webkit-scrollbar-thumb:active {
+  background: color-mix(in oklab, var(--accent-color, #5784BA) 85%, #000);
+}
+
 body{
   margin:0;
   font-family: 'IM Fell English', serif;
