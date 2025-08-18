@@ -76,13 +76,16 @@ way-of-ascension/
 ├── src/
 │   ├── data/
 │   │   ├── lootTables.js
+│   │   ├── lootTables.weapons.js
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
-│   │   ├── weapon.legacy.js
+│   │   ├── weapons.js
 │   │   ├── weaponTypes.js
 │   │   ├── materials.stub.js
+│   │   ├── zones.js
 │   │   └── abilities.js
 │   ├── systems/
+│   │   ├── loot.js
 │   │   └── weaponGenerator.js
 │   ├── game/
 │   │   ├── combat/
