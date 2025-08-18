@@ -1373,14 +1373,50 @@ header{
   height:84px; 
   border-radius:50%; 
   position:relative;
-  box-shadow:0 0 15px 3px rgba(34, 139, 34, 0.3), inset 0 0 8px 3px rgba(34, 139, 34, 0.2); 
+  /* Fine-tuning controls for Yin-Yang fit */
+  --yy-scale: 1.90;   /* +15% more from previous size */
+  --yy-tx: -0.2px;    /* horizontal nudge (right positive) */
+  --yy-ty: -0.2px;    /* vertical nudge (down positive) */
+  /* Reduce outer glow radius and strength by ~10% */
+  box-shadow:0 0 20px 7.2px rgba(34, 139, 34, 0.45), inset 0 0 9px 3.6px rgba(34, 139, 34, 0.22); 
   animation:pulse 3.4s ease-in-out infinite;
   transition: all 0.5s ease;
 }
+/* Ensure the Yin-Yang SVG sits above any orb glow layers */
+.qi-orb > svg {
+  position: absolute;
+  /* Shrink white circular layer to 90% and center it */
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+  z-index: 2;
+  pointer-events: none;
+  background: #ffffff;          /* white exactly under the symbol */
+  border-radius: 50%;
+  overflow: hidden;             /* hard-clip to circle bounds */
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
+}
+
+/* Make the Yin-Yang drawing fill the white circle exactly */
+.qi-orb .yin-yang-svg {
+  display: block;
+}
+.qi-orb .yin-yang-svg path {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transform: translate(var(--yy-tx), var(--yy-ty)) scale(var(--yy-scale)); /* precise fit using tunable vars */
+  shape-rendering: geometricPrecision;
+  stroke: none; /* prevent thin outline from appearing at the edge */
+}
+
+/* Remove extra white ring: no pseudo-element needed */
 
 /* STYLE-GUIDE-UPDATE: Soft foundation max glow */
 .qi-orb.foundation-max {
-  box-shadow:0 0 20px 6px rgba(34, 139, 34, 0.4), 0 0 30px 9px rgba(34, 139, 34, 0.2), inset 0 0 12px 4px rgba(34, 139, 34, 0.3);
+  /* Reduce foundation-max glow sizes by ~10% as well */
+  box-shadow:0 0 18px 5.4px rgba(34, 139, 34, 0.4), 0 0 27px 8.1px rgba(34, 139, 34, 0.2), inset 0 0 10.8px 3.6px rgba(34, 139, 34, 0.3);
   animation:foundation-shine 2s ease-in-out infinite;
 }
 
