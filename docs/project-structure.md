@@ -51,6 +51,7 @@ way-of-ascension/
 │   └── zones.js
 ├── docs/
 │   ├── To-dos/
+│   │   ├── Balance.md
 │   │   ├── affixes-expansion.md
 │   │   ├── animations-per-weapon.md
 │   │   ├── boss-specific-affixes.md
@@ -133,6 +134,7 @@ way-of-ascension/
 ### Documentation (`docs/`)
 - `proficiency.md` – Weapon proficiency XP formula and level benefits.
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
+- `To-dos/Balance.md` – Notes on planned balance adjustments.
 - `To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 
 ### Core Game Logic (`src/game/`)

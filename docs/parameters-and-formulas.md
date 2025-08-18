@@ -29,6 +29,10 @@
 ### Foundation Gain
 `foundationGainPerSec = qiRegenPerSec * 0.8 * talent * (1 + (Comprehension - 10) * 0.05) * foundationMult * lawMult * buildingMult * pillMult`
 
+### Talent and Comprehension
+- **Talent** acts as a direct multiplier on cultivation progress. Higher Talent means proportionally faster foundation gain.
+- **Comprehension** boosts cultivation efficiency and learning speed. Each point above 10 adds +5% foundation gain via `(1 + (Comprehension - 10) * 0.05)` and grants +4% learning speed.
+
 ## Attack Damage Calculation
 1. `baseDamage = random(min, max) * attackRate`
 2. `scale = physiqueMultiplier * Physique + agilityMultiplier * Agility + mindMultiplier * Mind`
