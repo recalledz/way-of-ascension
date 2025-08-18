@@ -1526,6 +1526,15 @@ header{
   clip-path: circle(50% at 50% 50%);
 }
 
+/* Header Yin-Yang: remove white backing and match green orb size */
+#qiOrb > svg {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
 /* Make the Yin-Yang drawing fill the white circle exactly */
 .qi-orb .yin-yang-svg {
   display: block;
