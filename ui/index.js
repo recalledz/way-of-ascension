@@ -82,7 +82,7 @@ const sidebarActivities = [
   {
     id: 'physique',
     label: 'Physique',
-    icon: '💪',
+    icon: '<iconify-icon icon="hugeicons:body-part-muscle" class="ui-icon" width="20"></iconify-icon>',
     group: 'leveling',
     levelId: 'physiqueLevel',
     initialLevel: 'Level 1',
