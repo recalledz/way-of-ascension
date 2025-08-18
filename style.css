@@ -1060,8 +1060,8 @@ h1, h2, h3 {
   top: 65.8%;
   left: 50.2%;
   transform: translate(-50%, -50%);
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   z-index: 10;
 }
 
@@ -1369,8 +1369,8 @@ header{
 .brand{display:flex; gap:14px; align-items:center}
 .qi-orb{
   background:linear-gradient(135deg, var(--foundation-primary), var(--foundation-secondary)); 
-  width:42px; 
-  height:42px; 
+  width:84px; 
+  height:84px; 
   border-radius:50%; 
   position:relative;
   box-shadow:0 0 15px 3px rgba(34, 139, 34, 0.3), inset 0 0 8px 3px rgba(34, 139, 34, 0.2); 
