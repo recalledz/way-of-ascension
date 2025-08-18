@@ -101,17 +101,13 @@ way-of-ascension/
 │       ├── fx/
 │       │   └── fx.js
 │       └── panels/
-│           ├── CharacterPanel.js
-│           └── EquipmentPanel.js
+│           └── CharacterPanel.js
 │       ├── sidebar.js
 │       └── weaponChip.js
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
-│   ├── dom.js
 │   ├── index.js
-│   ├── panels/
-│   │   └── equipment.js
 │   └── realm.js
 ├── README.md
 ├── CHANGELOG.md
@@ -333,28 +329,10 @@ function updateAll() {
 **Dependencies**: Vanilla JS, follows structure in `style.css`.
 **When to modify**: When changing the fundamental structure or style of all progress bars.
 
-#### `panels/equipment.js` - Equipment Panel UI
-**Purpose**: Renders the player's inventory of weapons and armor in the equipment panel. Allows equipping weapons.
-**Key Functions**:
-- `renderEquipmentPanel()`: Main function to draw the weapon and armor lists.
-- `createWeaponElement()`: Creates the DOM element for a single weapon.
-- `createArmorElement()`: Creates the DOM element for a single piece of armor.
-**Dependencies**: `state.js`, `data/weapons.js`, `dom.js`
-**When to modify**: When changing how equipment is displayed or interacted with in the UI.
-
-#### `panels/equipment.js` - Equipment Panel
-**Purpose**: Handles rendering and interaction for the player's equipment inventory.
-**When to modify**: Add new equipment slots, change equipment UI behavior.
-
-#### `panels/EquipmentPanel.js` - Weapon Inventory Panel
-**Purpose**: Displays weapons, allowing equip, scrap, and detail actions.
-**Key Functions**: `equipWeapon()`, `renderEquipmentPanel()`.
-**When to modify**: Adjust weapon handling UI or extend equipment features.
-
-#### `panels/CharacterPanel.js` - Character Equipment Panel
-**Purpose**: Shows equipped items and inventory with actions to equip, use, scrap, or filter gear.
-**Key Functions**: `renderCharacterPanel()`, `setupCharacterTab()`.
-**When to modify**: Modify character gear interface or inventory interactions.
+#### `src/ui/panels/CharacterPanel.js` - Equipment & Inventory Panel
+**Purpose**: Single source for rendering equipped items and inventory with actions to equip, use, scrap, filter, and view details.
+**Key Functions**: `renderEquipmentPanel()`, `setupEquipmentTab()`.
+**When to modify**: Adjust character gear interface or inventory interactions.
 
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.

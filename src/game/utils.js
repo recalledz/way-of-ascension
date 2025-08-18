@@ -1,5 +1,7 @@
 import { clamp } from './engine.js';
 
+export const qs = sel => document.querySelector(sel);
+
 export function setText(id, v) {
   const el = document.getElementById(id);
   if (el) el.textContent = v;
