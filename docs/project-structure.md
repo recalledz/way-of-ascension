@@ -51,6 +51,7 @@ way-of-ascension/
 │   └── zones.js
 ├── docs/
 │   ├── To-dos/
+│   │   ├── Balance.md
 │   │   ├── affixes-expansion.md
 │   │   ├── animations-per-weapon.md
 │   │   ├── boss-specific-affixes.md
