@@ -104,7 +104,7 @@ const sidebarActivities = [
   {
     id: 'cooking',
     label: 'Cooking',
-    icon: '🍳',
+    icon: '<iconify-icon icon="ep:food" class="ui-icon" width="20"></iconify-icon>',
     group: 'leveling',
     levelId: 'cookingLevelSidebar',
     initialLevel: 'Level 1',
