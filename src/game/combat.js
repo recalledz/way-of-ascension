@@ -37,17 +37,3 @@ export function getEquippedWeapon(state) {
   return WEAPONS[key] ? key : 'fist';
 }
 
-export function computeWeaponDamage(state) {
-  const weaponKey = getEquippedWeapon(state);
-  const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
-  const baseDamage = (Math.random() * (weapon.base.max - weapon.base.min) + weapon.base.min) * weapon.base.attackRate;
-  const scale = weapon.scales.physique * (state.stats?.physique ?? 0) +
-                weapon.scales.agility * (state.stats?.agility ?? 0) +
-                weapon.scales.mind * (state.stats?.mind ?? 0);
-  const profBonus = getProficiency(weapon.proficiencyKey, state).bonus;
-  const damage = baseDamage * (1 + scale) * profBonus;
-  return { weapon, baseDamage, damage };
-}
-
-// CHANGELOG: Added weapon damage calculation.
-
