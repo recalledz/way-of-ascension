@@ -1,5 +1,5 @@
 import { S, save } from '../state.js';
-import { WEAPONS } from '../../data/weapon.legacy.js';
+import { WEAPONS } from '../../data/weapons.js';
 
 // EQUIP-CHAR-UI: basic inventory helpers
 export function addToInventory(item) {
