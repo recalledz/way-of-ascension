@@ -68,6 +68,7 @@ way-of-ascension/
 │   ├── ai-verification-protocol.md
 │   ├── cultivation-ui-style.md
 │   ├── proficiency.md
+│   ├── parameters-and-formulas.md
 │   └── project-structure.md
 ├── node_modules/
 ├── scripts/
@@ -131,6 +132,7 @@ way-of-ascension/
 
 ### Documentation (`docs/`)
 - `proficiency.md` – Weapon proficiency XP formula and level benefits.
+- `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
 - `To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 
 ### Core Game Logic (`src/game/`)
