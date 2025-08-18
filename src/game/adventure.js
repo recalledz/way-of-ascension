@@ -1,5 +1,5 @@
 import { S } from './state.js';
-import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses } from './engine.js';
+import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses, qCap } from './engine.js';
 import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
@@ -477,6 +477,14 @@ export function updateBattleDisplay() {
     const playerHealthPct = (playerHP / playerMaxHP) * 100;
     playerHealthFill.style.width = `${playerHealthPct}%`;
   }
+  const playerQi = S.qi || 0;
+  const playerMaxQi = qCap();
+  setText('playerQiText', `${Math.round(playerQi)}/${Math.round(playerMaxQi)}`);
+  const playerQiFill = document.getElementById('playerQiFill');
+  if (playerQiFill) {
+    const playerQiPct = playerMaxQi ? (playerQi / playerMaxQi) * 100 : 0;
+    playerQiFill.style.width = `${playerQiPct}%`;
+  }
   const playerAttack = calculatePlayerCombatAttack();
   const playerAttackRate = calculatePlayerAttackRate();
   setText('playerAttack', Math.round(playerAttack));
@@ -490,6 +498,18 @@ export function updateBattleDisplay() {
     setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
     setText('enemyAttack', Math.round(enemy.attack || 0));
     setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    const enemyQiFill = document.getElementById('enemyQiFill');
+    if (enemy.qiMax) {
+      const enemyQi = S.adventure.enemyQi || 0;
+      setText('enemyQiText', `${Math.round(enemyQi)}/${Math.round(enemy.qiMax)}`);
+      if (enemyQiFill) {
+        const enemyQiPct = (enemyQi / enemy.qiMax) * 100;
+        enemyQiFill.style.width = `${enemyQiPct}%`;
+      }
+    } else {
+      setText('enemyQiText', '—');
+      if (enemyQiFill) enemyQiFill.style.width = '0%';
+    }
     const affixEl = document.getElementById('enemyAffixes');
     if (affixEl) {
       if (enemy.affixes && enemy.affixes.length) {
@@ -515,6 +535,9 @@ export function updateBattleDisplay() {
     setText('enemyAttackRate', '--/s');
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill) enemyHealthFill.style.width = '0%';
+    const enemyQiFill = document.getElementById('enemyQiFill');
+    setText('enemyQiText', '--');
+    if (enemyQiFill) enemyQiFill.style.width = '0%';
     const affixEl = document.getElementById('enemyAffixes');
     if (affixEl) affixEl.innerHTML = '';
   }
@@ -523,6 +546,27 @@ export function updateBattleDisplay() {
     const recentLogs = S.adventure.combatLog.slice(-5);
     combatLog.innerHTML = recentLogs.map(l => `<div class="log-entry">${l}</div>`).join('');
     combatLog.scrollTop = combatLog.scrollHeight;
+  }
+}
+
+export function updateAbilityBar() {
+  const bar = document.getElementById('abilityBar');
+  if (!bar) return;
+  const slots = S.adventure.abilities || [];
+  bar.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const ability = slots[i];
+    const slot = document.createElement('div');
+    slot.className = 'ability-slot';
+    const index = document.createElement('span');
+    index.className = 'slot-index';
+    index.textContent = i + 1;
+    slot.appendChild(index);
+    const name = document.createElement('span');
+    name.className = 'ability-name';
+    name.textContent = ability?.name || '—';
+    slot.appendChild(name);
+    bar.appendChild(slot);
   }
 }
 
@@ -1234,6 +1278,7 @@ export function updateActivityAdventure() {
   updateAreaGrid();
   updateAdventureProgressBar(); // MAP-UI-UPDATE
   updateBattleDisplay();
+  updateAbilityBar();
   updateAdventureCombat();
   updateFoodSlots();
   updateProgressButton();
