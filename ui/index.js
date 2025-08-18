@@ -93,7 +93,7 @@ const sidebarActivities = [
   {
     id: 'mining',
     label: 'Mining',
-    icon: '⛏️',
+    icon: '<iconify-icon icon="hugeicons:mining-02" class="ui-icon" width="20"></iconify-icon>',
     group: 'leveling',
     levelId: 'miningLevel',
     initialLevel: 'Level 1',
