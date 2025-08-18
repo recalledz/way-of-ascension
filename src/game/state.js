@@ -94,7 +94,15 @@ export const defaultState = () => {
     combatLog: ['Welcome to Peaceful Lands! Select an area to begin your adventure...'],
     location: 'Village Outskirts',
     progress: 0,
-    maxProgress: 100
+    maxProgress: 100,
+    abilities: [
+      { key: 'power_slash', name: 'Power Slash' },
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
   },
   // Combat Proficiency
   proficiency: {},
