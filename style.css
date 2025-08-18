@@ -391,10 +391,37 @@ h1, .ability-name {
   left: 25%; 
   transform: translateX(-50%) rotate(270deg) scale(0.5);
 }
-.petal-8 { 
-  top: 25%; 
-  left: 35%; 
+.petal-8 {
+  top: 25%;
+  left: 35%;
   transform: translateX(-50%) rotate(315deg) scale(0.5);
+}
+
+/* Orbital rune ring around the silhouette */
+.rune-ring {
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(52vmin,420px);
+  height:auto;
+  transform:translate(-50%,-50%);
+  color:var(--accent,#d8a316);
+  opacity:.85;
+  z-index:2;
+}
+
+.rune-ring .orbit {
+  animation:orbit 32s linear infinite;
+}
+
+@keyframes orbit {
+  to {
+    transform:rotate(360deg);
+  }
+}
+
+html.reduce-motion .rune-ring .orbit {
+  animation:none;
 }
 
 /* MYSTIC-REALM-UPDATE: Lotus silhouette with breathing animation */
