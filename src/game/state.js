@@ -23,7 +23,7 @@ export const defaultState = () => {
   ...initHp(100),
   stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
-  stones:0, herbs:0, ore:0, wood:0, cores:0,
+  wood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
   atkBase:5, defBase:2, tempAtk:0, tempDef:0,
   // Expanded Stat System
@@ -140,6 +140,32 @@ export const defaultState = () => {
 };
 
 export let S = loadSave() || defaultState();
+
+// Map resource properties to inventory entries so the inventory is the
+// single source of truth for all items.  These properties are not
+// serialized directly; instead their values are derived from the
+// corresponding entries in `S.inventory`.
+['stones', 'ore', 'herbs'].forEach(key => {
+  const initial = S[key] || 0;
+  Object.defineProperty(S, key, {
+    get() {
+      return S.inventory?.find(it => it.key === key)?.qty || 0;
+    },
+    set(val) {
+      S.inventory = S.inventory || [];
+      const item = S.inventory.find(it => it.key === key);
+      if (val <= 0) {
+        if (item) S.inventory.splice(S.inventory.indexOf(item), 1);
+        return;
+      }
+      if (item) item.qty = val;
+      else S.inventory.push({ id: key, key, type: 'material', qty: val });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  if (initial > 0) S[key] = initial; // populate inventory if save had values
+});
 
 export function save(){
   try{

@@ -55,41 +55,43 @@ function createInventoryRow(item) {
   row.innerHTML = `<span class="inv-name">${item.key}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';
-  const equipBtn = document.createElement('button');
-  equipBtn.className = 'btn small';
-  equipBtn.textContent = 'Equip';
-  equipBtn.onclick = () => { equipItem(item); slotFilter = null; renderEquipmentPanel(); };
-  act.appendChild(equipBtn);
-  const useBtn = document.createElement('button');
-  useBtn.className = 'btn small';
-  useBtn.textContent = item.type === 'food' ? 'Eat' : 'Use';
-  useBtn.onclick = () => {
-    if (item.type === 'food') {
-      const heal = item.key === 'cookedMeat' ? 40 : 20;
-      S.hp = Math.min(S.hpMax, (S.hp || 0) + heal);
-      item.qty = (item.qty || 1) - 1;
-      if (item.qty <= 0) removeFromInventory(item.id);
-    }
-    renderEquipmentPanel();
-  };
-  act.appendChild(useBtn);
-  const scrapBtn = document.createElement('button');
-  scrapBtn.className = 'btn small warn';
-  scrapBtn.textContent = 'Scrap';
-  scrapBtn.onclick = () => {
-    if (item.type === 'weapon') {
-      S.ore = (S.ore || 0) + 1;
-      save?.();
-    }
-    removeFromInventory(item.id);
-    renderEquipmentPanel();
-  };
-  act.appendChild(scrapBtn);
-  const detailsBtn = document.createElement('button');
-  detailsBtn.className = 'btn small';
-  detailsBtn.textContent = 'Details';
-  detailsBtn.onclick = () => showDetails(item);
-  act.appendChild(detailsBtn);
+  if (['weapon', 'armor', 'food'].includes(item.type)) {
+    const equipBtn = document.createElement('button');
+    equipBtn.className = 'btn small';
+    equipBtn.textContent = 'Equip';
+    equipBtn.onclick = () => { equipItem(item); slotFilter = null; renderEquipmentPanel(); };
+    act.appendChild(equipBtn);
+    const useBtn = document.createElement('button');
+    useBtn.className = 'btn small';
+    useBtn.textContent = item.type === 'food' ? 'Eat' : 'Use';
+    useBtn.onclick = () => {
+      if (item.type === 'food') {
+        const heal = item.key === 'cookedMeat' ? 40 : 20;
+        S.hp = Math.min(S.hpMax, (S.hp || 0) + heal);
+        item.qty = (item.qty || 1) - 1;
+        if (item.qty <= 0) removeFromInventory(item.id);
+      }
+      renderEquipmentPanel();
+    };
+    act.appendChild(useBtn);
+    const scrapBtn = document.createElement('button');
+    scrapBtn.className = 'btn small warn';
+    scrapBtn.textContent = 'Scrap';
+    scrapBtn.onclick = () => {
+      if (item.type === 'weapon') {
+        S.ore = (S.ore || 0) + 1;
+        save?.();
+      }
+      removeFromInventory(item.id);
+      renderEquipmentPanel();
+    };
+    act.appendChild(scrapBtn);
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'btn small';
+    detailsBtn.textContent = 'Details';
+    detailsBtn.onclick = () => showDetails(item);
+    act.appendChild(detailsBtn);
+  }
   row.appendChild(act);
   if (slotFilter && !canEquipToSlot(item, slotFilter)) row.classList.add('muted');
   return row;
