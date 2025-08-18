@@ -3,6 +3,7 @@ import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProfic
 import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { WEAPON_TYPES } from '../data/weaponTypes.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
@@ -39,7 +40,11 @@ export function updateWeaponProficiencyDisplay() {
   const { value } = getProficiency(weapon.proficiencyKey, S);
   const level = Math.floor(value / 100);
   const progress = value % 100;
-  setText('weaponLabel', `${weapon.displayName} Level`);
+  const type = WEAPON_TYPES[weapon.proficiencyKey];
+  let label = type?.displayName || weapon.proficiencyKey;
+  // crude pluralization: append 's' if not already plural
+  if (!label.endsWith('s')) label += 's';
+  setText('weaponLabel', `${label} Level`);
   setText('weaponLevel', level);
   setText('weaponExp', progress.toFixed(0));
   setText('weaponExpMax', '100');
