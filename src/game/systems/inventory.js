@@ -41,7 +41,8 @@ export function equipItem(item) {
   const slot = info.slot;
   // Simple requirement check placeholder
   const existing = S.equipment[slot];
-  if (existing && existing.key) addToInventory(existing);
+  const existingKey = typeof existing === 'string' ? existing : existing?.key;
+  if (existingKey && existingKey !== 'fist') addToInventory(existing);
   S.equipment[slot] = { key: item.key, type: item.type, slot: item.slot };
   removeFromInventory(item.id);
   console.log('[equip]', 'slot→', slot, 'item→', item.key);
@@ -58,7 +59,8 @@ export function equipItem(item) {
 export function unequip(slot) {
   const item = S.equipment[slot];
   if (!item) return;
-  addToInventory(item);
+  const key = typeof item === 'string' ? item : item.key;
+  if (key !== 'fist') addToInventory(item);
   S.equipment[slot] = null;
   console.log('[equip]', 'slot→', slot, 'item→', 'none');
   if (slot === 'mainhand') {
