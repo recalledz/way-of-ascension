@@ -1,5 +1,5 @@
 import { S, save } from '../../game/state.js';
-import { WEAPONS } from '../../data/weapons.js';
+import { WEAPONS } from '../../data/weapon.legacy.js';
 import { equipItem, unequip, removeFromInventory } from '../../game/systems/inventory.js';
 
 // Consolidated equipment/inventory panel

@@ -1,4 +1,4 @@
-import { WEAPON_FLAGS } from '../../data/weapons.js';
+import { WEAPON_FLAGS } from '../../data/weapon.legacy.js';
 import { WEAPON_LOOT_TABLE } from '../../data/lootTables.js'; // WEAPONS-INTEGRATION
 
 export function rollWeaponDrop(weapon, rng = Math.random) {
