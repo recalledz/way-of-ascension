@@ -3,7 +3,7 @@ import { LAWS } from '../../data/laws.js';
 import { S } from './state.js';
 import { getProficiency } from './systems/proficiency.js';
 import { getEquippedWeapon } from './combat.js';
-import { WEAPONS } from '../data/weapon.legacy.js';
+import { WEAPONS } from '../data/weapons.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 

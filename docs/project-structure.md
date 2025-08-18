@@ -69,6 +69,7 @@ way-of-ascension/
 │   ├── ai-verification-protocol.md
 │   ├── cultivation-ui-style.md
 │   ├── proficiency.md
+│   ├── parameters-and-formulas.md
 │   └── project-structure.md
 ├── node_modules/
 ├── scripts/
@@ -77,13 +78,16 @@ way-of-ascension/
 ├── src/
 │   ├── data/
 │   │   ├── lootTables.js
+│   │   ├── lootTables.weapons.js
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
-│   │   ├── weapon.legacy.js
+│   │   ├── weapons.js
 │   │   ├── weaponTypes.js
 │   │   ├── materials.stub.js
+│   │   ├── zones.js
 │   │   └── abilities.js
 │   ├── systems/
+│   │   ├── loot.js
 │   │   └── weaponGenerator.js
 │   ├── game/
 │   │   ├── combat/
@@ -131,6 +135,7 @@ way-of-ascension/
 - `proficiency.md` – Weapon proficiency XP formula and level benefits.
 - `docs/To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 - `docs/To-dos/Balance.md` – Balance system notes and parameter guidelines.
+- `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
 
 ### Core Game Logic (`src/game/`)
 

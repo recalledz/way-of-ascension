@@ -1,5 +1,6 @@
 import { initHp } from './helpers.js';
-import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../data/weapon.legacy.js'; // WEAPONS-INTEGRATION
+import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { getProficiency } from './systems/proficiency.js';
 
 export function initializeFight(enemy) {
   const { hp: enemyHP, hpMax: enemyMax } = initHp(enemy.hp || 0);

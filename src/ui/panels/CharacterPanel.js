@@ -1,5 +1,5 @@
 import { S, save } from '../../game/state.js';
-import { WEAPONS } from '../../data/weapon.legacy.js';
+import { WEAPONS } from '../../data/weapons.js';
 import { equipItem, unequip, removeFromInventory } from '../../game/systems/inventory.js';
 
 // Consolidated equipment/inventory panel
@@ -30,14 +30,17 @@ function renderEquipment() {
 }
 
 function weaponDetailsText(item) {
-  const w = WEAPONS[item.key];
+  const w = WEAPONS[item.key] || item;
   if (!w) return '';
-  const base = w.base ? `${w.base.min}-${w.base.max} (${w.base.attackRate}/s)` : 'n/a';
+  const baseRate = w.base ? (w.base.attackRate ?? w.base.rate) : null;
+  const base = w.base ? `${w.base.min}-${w.base.max} (${baseRate}/s)` : 'n/a';
   const scales = Object.entries(w.scales || {})
     .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
     .join(', ');
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
-  return `${w.displayName}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+  const quality = w.quality ?? 'normal';
+  const affixes = w.affixes && w.affixes.length ? w.affixes.join(', ') : 'None';
+  return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
 }
 
 function showDetails(item) {
