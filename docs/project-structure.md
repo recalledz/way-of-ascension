@@ -63,6 +63,7 @@ way-of-ascension/
 │   │   ├── manual-system.md
 │   │   ├── manuals.md
 │   │   ├── status-effects.md
+│   │   ├── ui-improvements.md
 │   │   └── weapons-guidlines.md
 │   ├── ai-verification-protocol.md
 │   ├── cultivation-ui-style.md
@@ -124,6 +125,7 @@ way-of-ascension/
 
 ### Documentation (`docs/`)
 - `proficiency.md` – Weapon proficiency XP formula and level benefits.
+- `To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 
 ### Core Game Logic (`src/game/`)
 

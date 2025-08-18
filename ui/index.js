@@ -71,7 +71,7 @@ const sidebarActivities = [
   {
     id: 'cultivation',
     label: 'Cultivation',
-    icon: '🧘',
+    icon: '<iconify-icon icon="mdi:lotus" class="ui-icon"></iconify-icon>',
     group: 'leveling',
     levelId: 'cultivationLevel',
     initialLevel: 'Mortal 1',
@@ -115,7 +115,7 @@ const sidebarActivities = [
   {
     id: 'adventure',
     label: 'Adventure',
-    icon: '⚔️',
+    icon: '<iconify-icon icon="lucide:mountain" class="ui-icon"></iconify-icon>',
     group: 'management',
     levelId: 'adventureLevel',
     initialLevel: 'Zone 1',
