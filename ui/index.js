@@ -1867,7 +1867,7 @@ function updateActivityUI() {
         statusEl.textContent = 'Active';
         statusEl.style.background = 'rgba(34, 197, 94, 0.2)';
         statusEl.style.color = '#22c55e';
-        btnEl.textContent = btnEl.textContent.replace('Start', 'Stop').replace('🧘', '⏹️').replace('💪', '⏹️').replace('🗺️', '⏹️').replace('⛏️', '⏹️');
+        btnEl.textContent = btnEl.textContent.replace('Start', 'Stop');
         btnEl.classList.add('active');
         panelEl.classList.add('active');
       } else {
@@ -1878,7 +1878,7 @@ function updateActivityUI() {
         panelEl.classList.remove('active');
 
         // Reset button text
-        if (activity === 'cultivation') btnEl.textContent = '🧘 Start Cultivating';
+        if (activity === 'cultivation') btnEl.textContent = 'Start Cultivating';
         if (activity === 'physique') btnEl.textContent = '💪 Train Physique';
         if (activity === 'adventure') btnEl.textContent = '🗺️ Explore';
         if (activity === 'mining') btnEl.textContent = '⛏️ Mine Ore';
