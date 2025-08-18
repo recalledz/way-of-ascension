@@ -2,7 +2,10 @@
   /* STYLE-GUIDE-UPDATE: Parchment-scroll theme color palette */
   --bg: #f8f5f0; /* Ancient scroll base */
   --panel: #c9bba0; /* Even darker parchment for panels */
-  --ink: #2d2520; /* Dark ink for text */
+  --ink: #000; /* Black ink for text */
+  --ink-light: #000;
+  --ink-dark: #000;
+  --ink-color: #000;
   --muted: #6b5b4f; /* Muted brown for secondary text */
   --accent: #8b4513; /* Saddle brown for accents */
   --accent-2: #a0522d; /* Sienna for secondary accents */
@@ -29,8 +32,9 @@
 }
 html,body{height:100%}
 body{
-  margin:0; font-family: 'Georgia', 'Times New Roman', serif;
-  color: #2d2520;
+  margin:0;
+  font-family: 'IM Fell English', serif;
+  color: #000;
   overflow:hidden;
   position: relative;
 }
@@ -70,14 +74,17 @@ html.reduce-motion .mist-a,html.reduce-motion .mist-b{animation:none}
 }
 
 h1, h2, h3 {
-    color: #2d2520; /* Use main ink color for all headers */
+    color: #000;
     border-bottom: 1px solid var(--muted);
     padding-bottom: 5px;
     margin-top: 20px;
     margin-bottom: 10px;
-    font-family: 'Trajan Pro', 'Palatino Linotype', 'Book Antiqua', Palatino, serif; /* A more calligraphic/engraved font */
-    font-weight: 600; /* Bolder for emphasis */
+    font-weight: 600;
     letter-spacing: 0.5px;
+}
+
+h1, .ability-name {
+    font-family: 'Uncial Antiqua', cursive;
 }
 
 .cards {
