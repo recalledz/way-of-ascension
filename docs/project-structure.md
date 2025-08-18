@@ -104,6 +104,7 @@ way-of-ascension/
 │   │   ├── combat.js
 │   │   ├── engine.js
 │   │   ├── helpers.js
+│   │   ├── abilitySystem.js
 │   │   ├── migrations.js
 │   │   ├── state.js
 │   │   └── utils.js
@@ -217,6 +218,14 @@ S = {
 
 **Dependencies**: `data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
+
+#### `abilitySystem.js` - Active Ability Handling
+**Purpose**: Manages ability slots, casting validation, cooldown timers, and resolving ability effects.
+**Key Functions**:
+- `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
+- `tryCastAbility(key)` – validate and trigger ability casts, deduct Qi, start cooldowns.
+- `tickAbilityCooldowns(dt)` – decrement cooldown timers each game tick.
+- `processAbilityQueue(state)` – resolve queued ability actions like Power Slash damage and healing.
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions

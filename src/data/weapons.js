@@ -7,6 +7,7 @@ function toLegacy(key, item){
     quality: item.quality,
     affixes: [...item.affixes],
     slot: 'mainhand',
+    typeKey: item.typeKey,
     base: { min: item.base.min, max: item.base.max, attackRate: item.base.rate },
     scales: { ...item.scales },
     tags: [...item.tags],
@@ -20,6 +21,7 @@ function toLegacy(key, item){
 const FIST = {
   key: 'fist',
   displayName: 'Fists',
+  typeKey: 'fist',
   quality: 'normal',
   affixes: [],
   slot: 'mainhand',
