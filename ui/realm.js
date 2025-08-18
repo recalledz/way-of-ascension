@@ -40,7 +40,7 @@ export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   updateCurrentRealmHeader();
   
-  // Update foundation seal
+  // Update foundation text (inline above Qi bar)
   const prevFoundation = parseInt(document.getElementById('foundValSilhouette').textContent) || 0;
   const currentFoundation = Math.floor(S.foundation);
   const maxFoundation = fCap();
@@ -49,7 +49,7 @@ export function updateActivityCultivation() {
   setText('foundCapSilhouette', maxFoundation);
   
   // Flash effect when foundation increases
-  const foundationNumbers = document.getElementById('foundationNumbers');
+  const foundationNumbers = document.querySelector('.foundation-inline');
   if (foundationNumbers && currentFoundation > prevFoundation) {
     foundationNumbers.classList.add('flash');
     setTimeout(() => foundationNumbers.classList.remove('flash'), 600);

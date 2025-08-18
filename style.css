@@ -902,6 +902,27 @@ h1, .ability-name {
   margin-bottom: 2px;
 }
 
+/* Foundation inline numbers above Qi bar */
+.qi-display .foundation-inline {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  text-shadow: none;
+  margin-bottom: 4px;
+}
+
+/* Preserve visual feedback for foundation changes */
+.qi-display .foundation-inline.flash {
+  animation: foundationFlash 0.6s ease-out;
+}
+.qi-display .foundation-inline.pulse-max {
+  animation: foundationPulse 2s ease-in-out infinite;
+}
+
+/* Remove old medallion and backdrop */
+.foundation-display { display: none !important; }
 .qi-bar-silhouette {
   width: 100%;
   height: 6px;
