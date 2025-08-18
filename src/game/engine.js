@@ -190,3 +190,24 @@ export function calculatePlayerAttackRate() {
   const profBonus = getWeaponProficiencyBonuses().speed;
   return baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus;
 }
+
+export function breakthroughChance(){
+  if(S.qi < qCap()*0.99 || S.foundation < fCap()*0.99) return 0;
+
+  const realm = REALMS[S.realm.tier];
+  let base = realm.bt;
+
+  const stageMultiplier = 1 - (S.realm.stage - 1) * 0.05;
+  const realmPenalty = S.realm.tier * 0.02;
+
+  base = base * stageMultiplier - realmPenalty;
+
+  const ward = S.pills.ward>0 ? 0.15 : 0;
+  const alchemyBonus = S.alchemy.successBonus * 0.1;
+  const buildingBonus = S.buildingBonuses.breakthroughBonus || 0;
+  const cultivationBonus = (S.cultivation.talent - 1) * 0.1;
+
+  const totalChance = base + ward + alchemyBonus + buildingBonus + cultivationBonus;
+
+  return clamp(totalChance, 0.01, 0.95);
+}
