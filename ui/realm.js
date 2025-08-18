@@ -290,6 +290,12 @@ export function updateCultivationVisualization() {
   } else {
     cultivationViz.classList.remove('near-breakthrough');
   }
+  // Indicate active breakthrough state for intensified visuals
+  if (S.breakthrough && S.breakthrough.inProgress) {
+    cultivationViz.classList.add('breakthrough');
+  } else {
+    cultivationViz.classList.remove('breakthrough');
+  }
 
   // Adjust pulse speed based on cultivation activity and breakthrough proximity
   const yinYang = document.getElementById('cultivationYinYang');

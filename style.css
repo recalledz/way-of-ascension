@@ -460,6 +460,38 @@ html.reduce-motion .rune-ring .orbit {
   animation:none;
 }
 
+/* Intensify rune ring during active breakthrough */
+.breakthrough .rune-ring {
+  opacity: 1;
+  color: var(--accent-strong, #ffd34d);
+  /* Stronger multi-layer glow */
+  filter:
+    drop-shadow(0 0 2px rgba(0, 0, 0, 0.35)) /* dark underglow for contrast */
+    drop-shadow(0 0 3px rgba(255, 211, 77, 0.95))
+    drop-shadow(0 0 8px rgba(255, 211, 77, 0.9))
+    drop-shadow(0 0 18px rgba(255, 238, 170, 0.85))
+    drop-shadow(0 0 30px rgba(255, 255, 255, 0.8));
+}
+.breakthrough .rune-ring .orbit {
+  /* 3x faster than default 32s */
+  animation-duration: 10.6667s;
+}
+/* Boost rune strokes and contrast for legibility */
+.breakthrough .rune-ring .runes {
+  mix-blend-mode: screen;
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.35)) /* subtle dark outline */
+    drop-shadow(0 0 2px rgba(255, 240, 200, 0.95))
+    drop-shadow(0 0 10px rgba(255, 240, 200, 0.8));
+  opacity: 1;
+}
+.breakthrough .rune-ring use {
+  /* Override presentation attributes in <symbol> */
+  stroke-width: 3.2 !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* MYSTIC-REALM-UPDATE: Lotus silhouette with breathing animation */
 .lotus-silhouette {
   position: absolute;
