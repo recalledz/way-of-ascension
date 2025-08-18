@@ -1,20 +1,18 @@
 import { WEAPONS } from '../../data/weapons.js';
 import { S, save } from '../../game/state.js';
+import { equipItem, removeFromInventory } from '../../game/systems/inventory.js';
 
 // WEAPONS-INTEGRATION: render weapon inventory and equip flow
-export function equipWeapon(key, state = S) {
+export function equipWeapon(item, state = S) {
   if (!state.flags?.weaponsEnabled) return;
-  if (!WEAPONS[key]) return;
-  state.equipment.mainhand = key;
-  console.log('[equip]', key);
-  save?.();
+  if (!item || !WEAPONS[item.key]) return;
+  equipItem(item);
   renderEquipmentPanel(state);
 }
 
-function scrapWeapon(index, state) {
-  const item = state.inventory.weapons[index];
+function scrapWeapon(item, state) {
   if (!item) return;
-  state.inventory.weapons.splice(index, 1);
+  removeFromInventory(item.id);
   state.ore = (state.ore || 0) + 1;
   save?.();
   renderEquipmentPanel(state);
@@ -41,7 +39,8 @@ export function renderEquipmentPanel(state = S) {
   const list = document.getElementById('weaponInventory');
   if (!list) return;
   list.innerHTML = '';
-  state.inventory.weapons.forEach((item, idx) => {
+  const weapons = (state.inventory || []).filter(it => it.type === 'weapon');
+  weapons.forEach(item => {
     const weapon = WEAPONS[item.key];
     if (!weapon) return;
     const div = document.createElement('div');
@@ -52,11 +51,11 @@ export function renderEquipmentPanel(state = S) {
     const equipBtn = document.createElement('button');
     equipBtn.className = 'btn small';
     equipBtn.textContent = 'Equip';
-    equipBtn.onclick = () => equipWeapon(item.key, state);
+    equipBtn.onclick = () => equipWeapon(item, state);
     const scrapBtn = document.createElement('button');
     scrapBtn.className = 'btn small warn';
     scrapBtn.textContent = 'Scrap';
-    scrapBtn.onclick = () => scrapWeapon(idx, state);
+    scrapBtn.onclick = () => scrapWeapon(item, state);
     const detailsBtn = document.createElement('button');
     detailsBtn.className = 'btn small';
     detailsBtn.textContent = 'Details';
@@ -67,7 +66,10 @@ export function renderEquipmentPanel(state = S) {
     list.appendChild(div);
   });
   const hud = document.getElementById('currentWeapon');
-  if (hud && state.equipment.mainhand) {
-    hud.textContent = WEAPONS[state.equipment.mainhand]?.displayName || 'Fists';
+  if (hud) {
+    const key = typeof state.equipment?.mainhand === 'string'
+      ? state.equipment.mainhand
+      : state.equipment?.mainhand?.key;
+    hud.textContent = WEAPONS[key]?.displayName || 'Fists';
   }
 }
