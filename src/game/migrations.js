@@ -1,3 +1,5 @@
+import { WEAPONS } from '../data/weapons.js';
+
 export const migrations = [
   save => {
     if(!save.laws){
@@ -95,6 +97,17 @@ export const migrations = [
       if (typeof save.equipment.food === 'undefined') save.equipment.food = null;
     }
     if (!Array.isArray(save.sessionLoot)) save.sessionLoot = [];
+  },
+  save => {
+    if (save.proficiency && typeof save.proficiency === 'object') {
+      const converted = {};
+      for (const [key, val] of Object.entries(save.proficiency)) {
+        const weapon = WEAPONS[key];
+        const typeKey = weapon?.proficiencyKey || key;
+        converted[typeKey] = (converted[typeKey] || 0) + val;
+      }
+      save.proficiency = converted;
+    }
   }
 ];
 
