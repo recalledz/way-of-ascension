@@ -1,36 +1,7 @@
 import { ABILITIES } from '../data/abilities.js';
-import { getEquippedWeapon, processAttack } from './combat.js';
+import { processAttack } from './combat.js';
+import { getEquippedWeapon } from './selectors.js';
 import { S } from './state.js';
-
-/**
- * Get ability slots derived from currently equipped weapon.
- * @param {any} state
- * @returns {Array<import('../data/abilities.js').AbilityDef>}
- */
-export function getAbilitySlots(state = S) {
-  const slots = [];
-  const weapon = getEquippedWeapon(state);
-  const abilityKey = weapon.abilityKeys?.[0];
-  for (let i = 0; i < 6; i++) {
-    if (i === 0 && abilityKey) {
-      const def = ABILITIES[abilityKey];
-      const meetsReq = def && (!def.requiresWeaponType || def.requiresWeaponType === weapon.typeKey);
-      if (meetsReq) {
-        const cooldown = state.abilityCooldowns?.[abilityKey] || 0;
-        slots.push({
-          keybind: i + 1,
-          abilityKey,
-          isReady: cooldown <= 0 && state.qi >= def.costQi,
-          cooldownRemainingMs: cooldown,
-          insufficientQi: state.qi < def.costQi,
-        });
-        continue;
-      }
-    }
-    slots.push({ keybind: i + 1, abilityKey: undefined, isReady: false, cooldownRemainingMs: 0, insufficientQi: false });
-  }
-  return slots;
-}
 
 export function tryCastAbility(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];

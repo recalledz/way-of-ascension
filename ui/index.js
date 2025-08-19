@@ -15,10 +15,10 @@ import {
   powerMult,
   calcAtk,
   calcDef,
-  getWeaponProficiencyBonuses,
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
+import { getWeaponProficiencyBonuses } from '../src/game/selectors.js';
 import { initializeFight, processAttack, refillShieldFromQi } from '../src/game/combat.js';
 import { applyRandomAffixes } from '../src/game/affixes.js';
 import {
