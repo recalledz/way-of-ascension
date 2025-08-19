@@ -83,7 +83,8 @@ export function foundationGainPerSec(){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   const comprehensionMult = 1 + (S.stats.comprehension - 10) * 0.05;
@@ -113,7 +114,8 @@ export function calcAtk(){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   const lawBonuses = getLawBonuses();
@@ -128,7 +130,8 @@ export function calcDef(){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   const lawBonuses = getLawBonuses();
@@ -139,7 +142,8 @@ export function getStatEffects() {
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   return {

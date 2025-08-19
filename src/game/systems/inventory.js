@@ -4,14 +4,20 @@ import { WEAPONS } from '../../data/weapons.js';
 // EQUIP-CHAR-UI: basic inventory helpers
 export function recomputePlayerTotals(player = S) {
   let armor = 0;
+  let accuracy = 0;
+  let dodge = 0;
   let shieldMax = 0;
   const equipped = Object.values(player.equipment || {});
   for (const item of equipped) {
     if (item && item.defense?.armor) armor += item.defense.armor;
     if (item && item.shield?.max) shieldMax += item.shield.max;
+    if (item && item.stats?.accuracy) accuracy += item.stats.accuracy;
+    if (item && item.stats?.dodge) dodge += item.stats.dodge;
   }
   player.stats = player.stats || {};
   player.stats.armor = armor;
+  player.stats.accuracy = accuracy;
+  player.stats.dodge = dodge;
   player.shield = player.shield || { current: 0, max: 0 };
   const mind = player.stats.mind || 0;
   const shieldMult = 1 + mind * 0.06;
