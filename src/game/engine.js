@@ -165,8 +165,7 @@ export function getStatEffects() {
 }
 
 export function getWeaponProficiencyBonuses(state = S) {
-  const weaponKey = getEquippedWeapon(state);
-  const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+  const weapon = getEquippedWeapon(state);
   const { value } = getProficiency(weapon.proficiencyKey, state);
   const level = Math.floor(value / 100);
   return {

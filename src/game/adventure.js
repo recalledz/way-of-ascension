@@ -3,7 +3,9 @@ import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProfic
 import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { ABILITIES } from '../data/abilities.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
+import { getAbilitySlots, tryCastAbility, processAbilityQueue } from './abilitySystem.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
@@ -34,8 +36,7 @@ function logEnemyResists(enemy) {
 
 // Weapon proficiency handling
 export function updateWeaponProficiencyDisplay() {
-  const weaponKey = getEquippedWeapon(S);
-  const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+  const weapon = getEquippedWeapon(S);
   const { value } = getProficiency(weapon.proficiencyKey, S);
   const level = Math.floor(value / 100);
   const progress = value % 100;
@@ -552,31 +553,72 @@ export function updateBattleDisplay() {
 export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
-  const slots = S.adventure.abilities || [];
+  const slots = getAbilitySlots(S);
+  const iconMap = { 'pointy-sword': '🗡️' };
   bar.innerHTML = '';
-  for (let i = 0; i < 6; i++) {
-    const ability = slots[i];
-    const slot = document.createElement('div');
-    slot.className = 'ability-slot';
-    const index = document.createElement('span');
-    index.className = 'slot-index';
-    index.textContent = i + 1;
-    slot.appendChild(index);
-    const name = document.createElement('span');
-    name.className = 'ability-name';
-    name.textContent = ability?.name || '—';
-    slot.appendChild(name);
-    bar.appendChild(slot);
-  }
+  slots.forEach((slot, i) => {
+    const card = document.createElement('div');
+    card.className = 'ability-card';
+    card.dataset.slot = i + 1;
+    if (slot.abilityKey) {
+      const def = ABILITIES[slot.abilityKey];
+      card.innerHTML = `
+        <div class="ability-name">${def.displayName}</div>
+        <div class="ability-icon">${iconMap[def.icon] || def.icon}</div>
+        <div class="qi-badge">${def.costQi} Qi</div>
+        <div class="keybind">[${i + 1}]</div>
+      `;
+      card.title = '130% base Physical. Cost 10 Qi. CD 10s. +5 HP on hit.';
+      if (slot.cooldownRemainingMs > 0) {
+        const overlay = document.createElement('div');
+        overlay.className = 'cooldown-overlay';
+        overlay.textContent = Math.ceil(slot.cooldownRemainingMs / 1000);
+        card.appendChild(overlay);
+        card.classList.add('cooling');
+      }
+      if (slot.insufficientQi) card.classList.add('insufficient');
+      card.addEventListener('click', () => {
+        if (tryCastAbility(slot.abilityKey)) {
+          flashAbilityCard(i + 1);
+          updateAbilityBar();
+        } else {
+          shakeAbilityCard(i + 1);
+        }
+      });
+    } else {
+      card.classList.add('empty');
+      card.innerHTML = `
+        <div class="ability-name">—</div>
+        <div class="ability-icon"></div>
+        <div class="qi-badge"></div>
+        <div class="keybind">[${i + 1}]</div>
+      `;
+    }
+    bar.appendChild(card);
+  });
+}
+
+function flashAbilityCard(index) {
+  const el = document.querySelector(`.ability-card[data-slot='${index}']`);
+  if (!el) return;
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 150);
+}
+
+function shakeAbilityCard(index) {
+  const el = document.querySelector(`.ability-card[data-slot='${index}']`);
+  if (!el) return;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 300);
 }
 
 export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
+  processAbilityQueue(S);
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
     const playerAttackRate = calculatePlayerAttackRate();
-    const weaponKey = getEquippedWeapon(S);
-    const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
-    console.log('[weapon]', weaponKey); // WEAPONS-INTEGRATION
+    const weapon = getEquippedWeapon(S);
+    console.log('[weapon]', weapon.key); // WEAPONS-INTEGRATION
     const now = Date.now();
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
@@ -660,7 +702,7 @@ export function updateAdventureCombat() {
         const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
         performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: enemyDamage }, S); // STATUS-REFORM
         S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
-        if (weaponKey === 'focus') {
+        if (weapon.typeKey === 'focus') {
           const pos = getCombatPositions();
           if (pos) {
             setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -769,8 +811,7 @@ function defeatEnemy() {
   // Boss bonus rewards
   if (isBoss) {
     const bonusXP = Math.max(1, Math.round(enemy.hp / 10));
-    const weaponKey = getEquippedWeapon(S);
-    const weapon = WEAPONS[weaponKey] || WEAPONS.fist;
+    const weapon = getEquippedWeapon(S);
     gainProficiency(weapon.proficiencyKey, bonusXP, S);
     updateWeaponProficiencyDisplay();
     S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
@@ -1269,12 +1310,11 @@ export function updateActivityAdventure() {
   setText('areasCompleted', S.adventure.areasCompleted);
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
   {
-    const equippedKey = getEquippedWeapon(S);
-    setText('currentWeapon', WEAPONS[equippedKey]?.displayName || 'Fists'); // WEAPONS-INTEGRATION
+    const equipped = getEquippedWeapon(S);
+    setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   }
   const baseAttack = Math.round(calculatePlayerCombatAttack());
   setText('baseDamage', baseAttack);
-  const weaponKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
   setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
   updateWeaponProficiencyDisplay();
   updateZoneButtons();
@@ -1287,3 +1327,21 @@ export function updateActivityAdventure() {
   updateProgressButton();
   updateBestiaryList();
 }
+
+// Ability keybind input
+document.addEventListener('keydown', e => {
+  if (e.target && ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= 6) {
+    const slots = getAbilitySlots(S);
+    const slot = slots[num - 1];
+    if (slot?.abilityKey) {
+      if (tryCastAbility(slot.abilityKey)) {
+        flashAbilityCard(num);
+        updateAbilityBar();
+      } else {
+        shakeAbilityCard(num);
+      }
+    }
+  }
+});
