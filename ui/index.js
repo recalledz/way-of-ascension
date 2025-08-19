@@ -1155,13 +1155,13 @@ function updateActivityPhysique() {
     // Update physique effects display
     const currentPhysique = S.stats.physique || 10;
     const miningBonus = Math.floor((currentPhysique - 10) * 2);
-    const combatPower = Math.floor((currentPhysique - 10) * 1.5);
-    const carryCapacity = Math.floor((currentPhysique - 10) * 5);
+    const hpBonus = Math.floor((currentPhysique - 10) * 5);
+    const carryCapacity = Math.max(0, currentPhysique - 10);
     
     setText('currentPhysiqueStat', currentPhysique);
     setText('physiqueMiningStat', `+${Math.max(0, miningBonus)}%`);
-    setText('physiqueCombatStat', `+${Math.max(0, combatPower)}`);
-    setText('physiqueCarryStat', `+${Math.max(0, carryCapacity)}`);
+    setText('physiqueHpStat', `+${Math.max(0, hpBonus)}`);
+    setText('physiqueCarryStat', `+${carryCapacity}`);
   }
 }
 
