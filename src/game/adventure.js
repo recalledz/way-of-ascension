@@ -4,6 +4,8 @@ import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../data/abilities.js';
+import { WEAPON_TYPES } from '../data/weaponTypes.js';
+import { WEAPON_ICONS } from '../data/weaponIcons.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { getAbilitySlots, tryCastAbility, processAbilityQueue } from './abilitySystem.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
@@ -40,7 +42,16 @@ export function updateWeaponProficiencyDisplay() {
   const { value } = getProficiency(weapon.proficiencyKey, S);
   const level = Math.floor(value / 100);
   const progress = value % 100;
-  setText('weaponLabel', `${weapon.displayName} Level`);
+  const type = WEAPON_TYPES[weapon.proficiencyKey];
+  let label = type?.displayName || weapon.proficiencyKey;
+  // crude pluralization: append 's' if not already plural
+  if (!label.endsWith('s')) label += 's';
+  const icon = WEAPON_ICONS[weapon.proficiencyKey];
+  const labelEl = document.getElementById('weaponLabel');
+  if (labelEl) {
+    const text = `${label} Level`;
+    labelEl.innerHTML = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${text}` : text;
+  }
   setText('weaponLevel', level);
   setText('weaponExp', progress.toFixed(0));
   setText('weaponExpMax', '100');

@@ -63,6 +63,7 @@ way-of-ascension/
 │   │   ├── equipment.md
 │   │   ├── manual-system.md
 │   │   ├── manuals.md
+│   │   ├── Palms-and-fists.md
 │   │   ├── status-effects.md
 │   │   ├── ui-improvements.md
 │   │   └── weapons-guidlines.md
@@ -83,6 +84,7 @@ way-of-ascension/
 │   │   ├── statusesByElement.js
 │   │   ├── weapons.js
 │   │   ├── weaponTypes.js
+│   │   ├── weaponIcons.js
 │   │   ├── materials.stub.js
 │   │   ├── zones.js
 │   │   └── abilities.js
@@ -136,7 +138,9 @@ way-of-ascension/
 - `proficiency.md` – Weapon proficiency XP formula and level benefits.
 - `docs/To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 - `docs/To-dos/Balance.md` – Balance system notes and parameter guidelines.
+- `docs/To-dos/Palms-and-fists.md` – Concept notes for palm and fist weapon styles.
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
+- `To-dos/Balance.md` – Notes on planned balance adjustments.
 
 ### Core Game Logic (`src/game/`)
 
@@ -311,6 +315,10 @@ export const ZONES = [
 ];
 ```
 **When to modify**: Add new zones/areas, modify unlock requirements, adjust loot tables
+
+#### `weaponIcons.js` - Weapon Type Icons
+**Purpose**: Maps weapon type keys to Iconify icon names for UI display.
+**When to modify**: Add or update icons when introducing new weapon types.
 
 ### User Interface (`ui/`)
 
