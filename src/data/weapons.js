@@ -1,5 +1,32 @@
 import { generateWeapon } from '../systems/weaponGenerator.js';
 
+function defaultAnimationsForType(typeKey) {
+  switch (typeKey) {
+    case 'sword':
+      return { fx: ['slashArc'], tint: 'auto' };
+    case 'spear':
+      return { fx: ['pierceThrust'], tint: 'auto' };
+    case 'hammer':
+      return { fx: ['smash'], tint: 'auto' };
+    case 'nunchaku':
+      return { fx: ['flurry'], tint: 'auto' };
+    case 'chakram':
+      return { fx: ['spinThrow'], tint: 'auto' };
+    case 'wand':
+      return { fx: ['magicBolt'], tint: '#8ecaff' };
+    case 'scepter':
+      return { fx: ['smite'], tint: '#ffd27a' };
+    case 'focus':
+      // Focus has special defensive FX handled in adventure.js
+      return { fx: [], tint: '#9ed2ff' };
+    case 'fist':
+      // Placeholder: use palm-like thrust for jabs
+      return { fx: ['palmStrike'], tint: 'auto' };
+    default:
+      return { fx: [], tint: 'auto' };
+  }
+}
+
 function toLegacy(key, item){
   return {
     key,
@@ -14,7 +41,7 @@ function toLegacy(key, item){
     reqs: { realmMin: 1, proficiencyMin: 0 },
     proficiencyKey: item.typeKey,
     abilityKeys: [...item.abilityKeys],
-    animations: { fx: [], tint: 'auto' },
+    animations: defaultAnimationsForType(item.typeKey),
   };
 }
 
@@ -31,7 +58,7 @@ const FIST = {
   reqs: { realmMin: 0, proficiencyMin: 0 },
   proficiencyKey: 'fist',
   abilityKeys: [],
-  animations: { fx: [], tint: 'auto' },
+  animations: defaultAnimationsForType('fist'),
 };
 
 export const WEAPONS = {
