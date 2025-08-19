@@ -10,6 +10,31 @@ let slotFilter = null;
 export function renderEquipmentPanel() {
   renderEquipment();
   renderInventory();
+  renderStats();
+}
+
+function renderStats() {
+  if (!S.stats) return;
+  const defs = [
+    { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
+    { id: 'atkBase', value: () => S.atkBase },
+    { id: 'defBase', value: () => S.defBase },
+    { id: 'physique', stat: 'physique' },
+    { id: 'mind', stat: 'mind' },
+    { id: 'agility', stat: 'agility' },
+    { id: 'dexterity', stat: 'dexterity' },
+    { id: 'comprehension', stat: 'comprehension' },
+    { id: 'criticalChance', stat: 'criticalChance', format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'attackSpeed', stat: 'attackSpeed', format: v => v.toFixed(2) },
+    { id: 'cooldownReduction', stat: 'cooldownReduction', format: v => `${Math.round(v * 100)}%` },
+    { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) }
+  ];
+  defs.forEach(d => {
+    const el = document.getElementById(`stat-${d.id}`);
+    if (!el) return;
+    const val = d.value ? d.value() : (S.stats[d.stat] ?? 0);
+    el.textContent = d.format ? d.format(val) : val;
+  });
 }
 
 function renderEquipment() {
