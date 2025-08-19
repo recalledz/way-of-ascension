@@ -1495,50 +1495,26 @@ header{
 }
 .brand{display:flex; gap:14px; align-items:center}
 .qi-orb{
-  background:linear-gradient(135deg, var(--foundation-primary), var(--foundation-secondary)); 
-  width:84px; 
-  height:84px; 
-  border-radius:50%; 
+  background:linear-gradient(135deg, var(--foundation-primary), var(--foundation-secondary));
+  width:84px;
+  height:84px;
+  border-radius:50%;
   position:relative;
-  /* Fine-tuning controls for Yin-Yang fit */
-  --yy-scale: 1.90;   /* +15% more from previous size */
-  --yy-tx: -0.2px;    /* horizontal nudge (right positive) */
-  --yy-ty: -0.2px;    /* vertical nudge (down positive) */
   /* Reduce outer glow radius and strength by ~10% */
-  box-shadow:0 0 20px 7.2px rgba(34, 139, 34, 0.45), inset 0 0 9px 3.6px rgba(34, 139, 34, 0.22); 
+  box-shadow:0 0 20px 7.2px rgba(34, 139, 34, 0.45), inset 0 0 9px 3.6px rgba(34, 139, 34, 0.22);
   animation:pulse 3.4s ease-in-out infinite;
   transition: all 0.5s ease;
 }
-/* Ensure the Yin-Yang SVG sits above any orb glow layers */
+/* Ensure the Yin-Yang SVG sits above any orb glow layers and fills the orb */
 .qi-orb > svg {
   position: absolute;
-  /* Shrink white circular layer to 90% and center it */
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 2;
   pointer-events: none;
-  background: #ffffff;          /* white exactly under the symbol */
-  border-radius: 50%;
-  overflow: hidden;             /* hard-clip to circle bounds */
-  -webkit-clip-path: circle(50% at 50% 50%);
-  clip-path: circle(50% at 50% 50%);
 }
-
-/* Make the Yin-Yang drawing fill the white circle exactly */
-.qi-orb .yin-yang-svg {
-  display: block;
-}
-.qi-orb .yin-yang-svg path {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  transform: translate(var(--yy-tx), var(--yy-ty)) scale(var(--yy-scale)); /* precise fit using tunable vars */
-  shape-rendering: geometricPrecision;
-  stroke: none; /* prevent thin outline from appearing at the edge */
-}
-
-/* Remove extra white ring: no pseudo-element needed */
 
 /* STYLE-GUIDE-UPDATE: Soft foundation max glow */
 .qi-orb.foundation-max {
