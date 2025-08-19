@@ -1630,6 +1630,10 @@ h1{font-size:20px; margin:0; letter-spacing:.5px}
 .topbar{display:flex; gap:14px; flex-wrap:wrap}
 /* STYLE-GUIDE-UPDATE: Parchment chip style */
 .chip{background:var(--panel); border:1px solid var(--accent); padding:8px 12px; border-radius:999px; font-size:12px; box-shadow: inset 0 1px 3px rgba(139, 117, 95, 0.2);}
+.hp-chip{display:flex; flex-direction:column; align-items:flex-start;}
+.hp-chip .hp-bar{position:relative; width:100px; height:8px; background:rgba(239,68,68,0.3); border-radius:4px; margin-top:2px;}
+.hp-chip .hp-bar .fill{height:100%; background:linear-gradient(90deg,#ef4444,#f87171); border-radius:4px; transition:width 0.3s ease; width:0%;}
+.hp-chip .hp-bar .shield-fill{position:absolute; top:0; left:0; height:2px; background:cyan; border-radius:4px; width:0%; transition:width 0.3s ease;}
 
 main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 

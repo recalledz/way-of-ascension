@@ -1,6 +1,6 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses, qCap } from './engine.js';
-import { initializeFight, processAttack, getEquippedWeapon } from './combat.js';
+import { initializeFight, processAttack, getEquippedWeapon, refillShieldFromQi } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../data/abilities.js';
@@ -746,6 +746,8 @@ export function updateAdventureCombat() {
             btn.disabled = false;
           }
           updateActivityAdventure();
+          const { gained, qiSpent } = refillShieldFromQi(S);
+          if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
         }
       }
     }
@@ -852,6 +854,9 @@ function defeatEnemy() {
   const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
   S.adventure.enemyHP = enemyHP;
   S.adventure.enemyMaxHP = enemyMax;
+
+  const { gained, qiSpent } = refillShieldFromQi(S);
+  if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
 
   if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
     startAdventureCombat();

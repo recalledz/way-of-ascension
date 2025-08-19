@@ -18,6 +18,7 @@ function renderStats() {
   if (!S.stats) return;
   const defs = [
     { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
+    { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
     { id: 'atkBase', value: () => S.atkBase },
     { id: 'defBase', value: () => S.defBase },
     { id: 'physique', stat: 'physique' },
