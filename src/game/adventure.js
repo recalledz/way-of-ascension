@@ -626,6 +626,11 @@ function shakeAbilityCard(index) {
 export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
   processAbilityQueue(S);
+  // If an ability reduced enemy HP to 0, resolve defeat immediately
+  if (S.adventure.currentEnemy && S.adventure.enemyHP <= 0) {
+    defeatEnemy();
+    return;
+  }
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
     const playerAttackRate = calculatePlayerAttackRate();
     const weapon = getEquippedWeapon(S);
