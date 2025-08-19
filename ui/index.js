@@ -44,13 +44,15 @@ import {
   updateFoodSlots,
   instakillCurrentEnemy,
   setupAdventureTabs,
-  updateLootTab
+  updateLootTab,
+  updateAbilityBar
 
 } from '../src/game/adventure.js';
 import { forfeitSessionLoot } from '../src/game/systems/sessionLoot.js'; // EQUIP-CHAR-UI
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
+import { tickAbilityCooldowns } from '../src/game/abilitySystem.js';
 
 // Global variables
 const progressBars = {};
@@ -2192,6 +2194,7 @@ if (ascendBtn) {
 /* Loop */
 function tick(){
   S.time++;
+  tickAbilityCooldowns(1000);
 
   // Passive Qi regen and out-of-combat HP regen
   S.qi = clamp(S.qi + qiRegenPerSec(), 0, qCap());
@@ -2332,6 +2335,7 @@ function tick(){
   if(S.time % 2===0) updateWinEst();
   updateSidebarActivities(); // Update progress bars every tick
   updateAll();
+  updateAbilityBar();
 }
 
 
