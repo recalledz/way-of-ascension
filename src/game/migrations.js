@@ -1,4 +1,4 @@
-import { WEAPONS } from '../data/weapons.js';
+import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 
 export const migrations = [
   save => {

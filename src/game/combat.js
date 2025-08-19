@@ -1,5 +1,5 @@
 import { initHp } from './helpers.js';
-import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../features/weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 
 /** Tunables */
 export const ARMOR_K = 10;           // how "strong" armor is vs damage size

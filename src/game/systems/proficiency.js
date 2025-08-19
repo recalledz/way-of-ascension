@@ -1,4 +1,4 @@
-import { WEAPONS } from '../../data/weapons.js';
+import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
 
 // Proficiency is stored on the player state as an object: { [weaponType]: number }
 function resolveKey(key) {
