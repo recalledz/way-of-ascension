@@ -1,5 +1,5 @@
 import { ZONES } from './zones.js';
-import { generateWeapon } from '../systems/weaponGenerator.js';
+import { generateWeapon } from '../game/systems/weaponGenerator.js';
 
 /** @typedef {{ typeKey:string, materialKey?:string, weight:number }} WeaponLootRow */
 
