@@ -1,5 +1,6 @@
 import { S, save } from '../../game/state.js';
 import { WEAPONS } from '../../data/weapons.js';
+import { WEAPON_ICONS } from '../../data/weaponIcons.js';
 import { equipItem, unequip, removeFromInventory } from '../../game/systems/inventory.js';
 
 // Consolidated equipment/inventory panel
@@ -23,7 +24,10 @@ function renderEquipment() {
     if (!el) return;
     const item = S.equipment[s.key];
     const name = item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty';
-    el.querySelector('.slot-name').textContent = name;
+    const iconKey = item?.key ? WEAPONS[item.key]?.proficiencyKey : null;
+    const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+    const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${name}` : name;
+    el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
   });
@@ -55,7 +59,10 @@ function showDetails(item) {
 function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
-  row.innerHTML = `<span class="inv-name">${item.key}</span> <span class="inv-qty">${item.qty || 1}</span>`;
+  const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
+  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+  const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${item.key}` : item.key;
+  row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';
   if (['weapon', 'armor', 'food'].includes(item.type)) {

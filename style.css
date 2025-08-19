@@ -4010,6 +4010,13 @@ tr:last-child td {
   transition: transform .18s ease;
 }
 
+.weapon-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
 /* Ensure black text for the breakthrough button */
 #breakthroughBtnActivity {
   color: #000 !important;
