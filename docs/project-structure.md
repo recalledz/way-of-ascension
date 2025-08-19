@@ -82,12 +82,21 @@ way-of-ascension/
 │   │   ├── lootTables.weapons.js
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
-│   │   ├── weapons.js
-│   │   ├── weaponTypes.js
-│   │   ├── weaponIcons.js
-│   │   ├── materials.stub.js
 │   │   ├── zones.js
 │   │   └── abilities.js
+│   ├── features/
+│   │   └── weaponGeneration/
+│   │       ├── data/
+│   │       │   ├── materials.stub.js
+│   │       │   ├── weaponIcons.js
+│   │       │   ├── weaponTypes.js
+│   │       │   └── weapons.js
+│   │       ├── logic.js
+│   │       ├── mutators.js
+│   │       ├── selectors.js
+│   │       ├── state.js
+│   │       └── ui/
+│   │           └── weaponChip.js
 │   ├── game/
 │   │   ├── combat/
 │   │   │   ├── attack.js
@@ -97,9 +106,7 @@ way-of-ascension/
 │   │   │   ├── inventory.js
 │   │   │   ├── loot.js
 │   │   │   ├── proficiency.js
-│   │   │   ├── sessionLoot.js
-│   │   │   ├── weaponGenerator.js
-│   │   │   └── weapons.js
+│   │   │   └── sessionLoot.js
 │   │   ├── adventure.js
 │   │   ├── affixes.js
 │   │   ├── combat.js
@@ -113,10 +120,9 @@ way-of-ascension/
 │   └── ui/
 │       ├── fx/
 │       │   └── fx.js
-│       └── panels/
-│           └── CharacterPanel.js
-│       ├── sidebar.js
-│       └── weaponChip.js
+│       ├── panels/
+│       │   └── CharacterPanel.js
+│       └── sidebar.js
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js

@@ -1,7 +1,7 @@
 // Centralized state selectors.
 // Never read state fields directly; use selectors.
 
-import { WEAPONS } from '../data/weapons.js';
+import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 import { ABILITIES } from '../data/abilities.js';
 import { getProficiency } from './systems/proficiency.js';
 import { S } from './state.js';
