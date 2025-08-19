@@ -3,10 +3,10 @@ import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from './
 import { initializeFight, processAttack, refillShieldFromQi } from './combat.js';
 import { getEquippedWeapon, getAbilitySlots } from './selectors.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
-import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
+import { WEAPONS } from '../features/weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../data/abilities.js';
-import { WEAPON_TYPES } from '../data/weaponTypes.js';
-import { WEAPON_ICONS } from '../data/weaponIcons.js';
+import { WEAPON_TYPES } from '../features/weaponGeneration/data/weaponTypes.js';
+import { WEAPON_ICONS } from '../features/weaponGeneration/data/weaponIcons.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { chanceToHit } from './combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from './abilitySystem.js';

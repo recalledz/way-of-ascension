@@ -1,5 +1,5 @@
 import { S, save } from '../state.js';
-import { WEAPONS } from '../../data/weapons.js';
+import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
 
 // EQUIP-CHAR-UI: basic inventory helpers
 export function recomputePlayerTotals(player = S) {
