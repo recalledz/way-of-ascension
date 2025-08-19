@@ -135,32 +135,99 @@
                 </div>
 
                 <!-- Orbital rune ring around silhouette -->
-                <svg class="rune-ring" viewBox="0 0 240 240" aria-hidden="true">
+                <svg class="rune-ring" viewBox="-140 -140 280 280" aria-hidden="true">
                   <defs>
-                    <filter id="runeGlow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-                    <symbol id="rune"><path d="M0,-3 L0,3 M-2,0 L2,0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></symbol>
+                    <filter id="runeGlow">
+                      <feGaussianBlur stdDeviation="2" result="b"/>
+                      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+
+                    <!-- 16 tiny glyphs, centered at 0,0 (12x12 box) -->
+                    <symbol id="r-01" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M-4 0H4M0 -4V4"/>
+                    </symbol>
+                    <symbol id="r-02" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M-4 -4L4 4M4 -4L-4 4"/>
+                    </symbol>
+                    <symbol id="r-03" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M0 -4L4 0L0 4L-4 0Z"/>
+                    </symbol>
+                    <symbol id="r-04" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <circle r="4"/><circle r="1.2"/>
+                    </symbol>
+                    <symbol id="r-05" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-4 2L0 -2L4 2M-4 -2L0 2L4 -2"/>
+                    </symbol>
+                    <symbol id="r-06" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-4 3L0 -3L4 3M-1 1H1"/>
+                    </symbol>
+                    <symbol id="r-07" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M0 -4V4M-3 -1h6M-2 2h4"/>
+                    </symbol>
+                    <symbol id="r-08" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-4 0A4 4 0 0 1 4 0M0 -4V4"/>
+                    </symbol>
+                    <symbol id="r-09" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-3 -3L3 -3L0 3Z"/>
+                    </symbol>
+                    <symbol id="r-10" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M0 -4A4 4 0 1 0 0 4M0 -4L0 -2"/>
+                    </symbol>
+                    <symbol id="r-11" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-3 0Q0 -4 3 0Q0 4 -3 0Z"/>
+                    </symbol>
+                    <symbol id="r-12" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M0 -4V4M-2 -1L0 1L2 -1"/>
+                    </symbol>
+                    <symbol id="r-13" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-3 -4L3 4M3 -4L-3 4M-3 0H3"/>
+                    </symbol>
+                    <symbol id="r-14" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <circle r="3.5"/><path d="M-3 0H3M0 -3V3"/>
+                    </symbol>
+                    <symbol id="r-15" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M-4 1Q-1 -4 4 1M-4 -1Q-1 4 4 -1"/>
+                    </symbol>
+                    <symbol id="r-16" viewBox="-6 -6 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M0 -4L-3 2H3Z"/>
+                    </symbol>
                   </defs>
 
-                  <g transform="translate(120 120)">
-                    <circle r="88" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
-                    <g class="runes" filter="url(#runeGlow)">
-                      <!-- 12 runes -->
-                      <!-- you can swap <use> for your own rune paths later -->
-                      <g class="orbit">
-                        <!-- positions each rune on the ring -->
-                        <g transform="rotate(0) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(30) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(60) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(90) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(120) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(150) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(180) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(210) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(240) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(270) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(300) translate(88 0)"><use href="#rune"/></g>
-                        <g transform="rotate(330) translate(88 0)"><use href="#rune"/></g>
-                      </g>
+                  <!-- Base rings -->
+                  <g opacity=".55">
+                    <circle r="96" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
+                    <circle r="112" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+                  </g>
+
+                  <!-- Orbiting glyphs -->
+                  <g class="runes" filter="url(#runeGlow)">
+                    <g class="orbit">
+                      <!-- 24 positions at 15° steps, alternating runes -->
+                      <!-- You can change r=104 to align perfectly with your silhouette ring -->
+                      <g transform="rotate(0) translate(104 0)"><use href="#r-01"/></g>
+                      <g transform="rotate(15) translate(104 0)"><use href="#r-04"/></g>
+                      <g transform="rotate(30) translate(104 0)"><use href="#r-09"/></g>
+                      <g transform="rotate(45) translate(104 0)"><use href="#r-03"/></g>
+                      <g transform="rotate(60) translate(104 0)"><use href="#r-12"/></g>
+                      <g transform="rotate(75) translate(104 0)"><use href="#r-07"/></g>
+                      <g transform="rotate(90) translate(104 0)"><use href="#r-05"/></g>
+                      <g transform="rotate(105) translate(104 0)"><use href="#r-10"/></g>
+                      <g transform="rotate(120) translate(104 0)"><use href="#r-14"/></g>
+                      <g transform="rotate(135) translate(104 0)"><use href="#r-02"/></g>
+                      <g transform="rotate(150) translate(104 0)"><use href="#r-11"/></g>
+                      <g transform="rotate(165) translate(104 0)"><use href="#r-06"/></g>
+                      <g transform="rotate(180) translate(104 0)"><use href="#r-16"/></g>
+                      <g transform="rotate(195) translate(104 0)"><use href="#r-13"/></g>
+                      <g transform="rotate(210) translate(104 0)"><use href="#r-08"/></g>
+                      <g transform="rotate(225) translate(104 0)"><use href="#r-15"/></g>
+                      <g transform="rotate(240) translate(104 0)"><use href="#r-01"/></g>
+                      <g transform="rotate(255) translate(104 0)"><use href="#r-04"/></g>
+                      <g transform="rotate(270) translate(104 0)"><use href="#r-09"/></g>
+                      <g transform="rotate(285) translate(104 0)"><use href="#r-03"/></g>
+                      <g transform="rotate(300) translate(104 0)"><use href="#r-12"/></g>
+                      <g transform="rotate(315) translate(104 0)"><use href="#r-07"/></g>
+                      <g transform="rotate(330) translate(104 0)"><use href="#r-05"/></g>
+                      <g transform="rotate(345) translate(104 0)"><use href="#r-10"/></g>
                     </g>
                   </g>
                 </svg>
