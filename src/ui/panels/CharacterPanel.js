@@ -1,13 +1,14 @@
 import { S, save } from '../../game/state.js';
 import { WEAPONS } from '../../data/weapons.js';
 import { WEAPON_ICONS } from '../../data/weaponIcons.js';
-import { equipItem, unequip, removeFromInventory } from '../../game/systems/inventory.js';
+import { equipItem, unequip, removeFromInventory, recomputePlayerTotals } from '../../game/systems/inventory.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
 let slotFilter = null;
 
 export function renderEquipmentPanel() {
+  recomputePlayerTotals();
   renderEquipment();
   renderInventory();
 }
@@ -31,6 +32,8 @@ function renderEquipment() {
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
   });
+  const armorEl = document.getElementById('armorVal');
+  if (armorEl) armorEl.textContent = S.stats?.armor || 0;
 }
 
 function weaponDetailsText(item) {

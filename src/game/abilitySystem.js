@@ -84,11 +84,14 @@ function resolvePowerSlash(state) {
   const weapon = getEquippedWeapon(state);
   const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
   const raw = Math.round(1.3 * roll);
-  const enemyDef = state.adventure.currentEnemy?.defense || 0;
-  const damage = Math.max(1, Math.round(raw - enemyDef * 0.6));
-  state.adventure.enemyHP = processAttack(state.adventure.enemyHP, damage, { target: state.adventure.currentEnemy, element: null });
-  state.adventure.combatLog.push(`You used Power Slash for ${damage} Physical damage.`);
-  if (damage > 0) {
+  let dealt = 0;
+  state.adventure.enemyHP = processAttack(
+    state.adventure.enemyHP,
+    raw,
+    { target: state.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
+  );
+  state.adventure.combatLog.push(`You used Power Slash for ${dealt} Physical damage.`);
+  if (dealt > 0) {
     const healed = Math.min(5, state.hpMax - state.hp);
     state.hp += healed;
     state.adventure.playerHP = state.hp;

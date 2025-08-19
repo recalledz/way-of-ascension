@@ -442,7 +442,9 @@ function updateAll(){
   
   // Combat stats
   setText('atkVal', calcAtk()); setText('defVal', calcDef());
+  setText('armorVal', S.stats?.armor || 0);
   setText('atkVal2', calcAtk()); setText('defVal2', calcDef());
+  setText('armorVal2', S.stats?.armor || 0);
   
   // Activity system display
   if (!S.activities) {
@@ -2135,7 +2137,7 @@ function techSlash(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
   const dmg = calcAtk()*3;
-  S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg);
+  S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' });
   S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
 }
 function techGuard(){
@@ -2147,7 +2149,7 @@ function techBurst(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
   const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
+  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' }); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
 }
 
 function updateWinEst(){
@@ -2294,10 +2296,10 @@ function tick(){
     const ourDPS = Math.max(1, atk - h.eDef*0.6);
     let enemyDPS = Math.max(0, h.eAtk - def*0.7);
     if(guardActive) enemyDPS *= 0.5;
-    h.enemyHP = processAttack(h.enemyHP, ourDPS);
+    h.enemyHP = processAttack(h.enemyHP, ourDPS, { type: 'physical' });
     if(h.regen) h.enemyHP += h.enemyMax * h.regen;
     h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
-    S.hp = processAttack(S.hp, enemyDPS);
+    S.hp = processAttack(S.hp, enemyDPS, { target: S, type: 'physical' });
     if(h.enemyHP<=0){ resolveHunt(true); }
     else if(S.hp<=1){ resolveHunt(false); }
     updateHuntUI();

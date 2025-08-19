@@ -2,6 +2,16 @@ import { S, save } from '../state.js';
 import { WEAPONS } from '../../data/weapons.js';
 
 // EQUIP-CHAR-UI: basic inventory helpers
+export function recomputePlayerTotals(player = S) {
+  let armor = 0;
+  const equipped = Object.values(player.equipment || {});
+  for (const item of equipped) {
+    if (item && item.defense?.armor) armor += item.defense.armor;
+  }
+  player.stats = player.stats || {};
+  player.stats.armor = armor;
+}
+
 export function addToInventory(item) {
   S.inventory = S.inventory || [];
   const id = item.id || Date.now() + Math.random();
@@ -43,8 +53,9 @@ export function equipItem(item) {
   const existing = S.equipment[slot];
   const existingKey = typeof existing === 'string' ? existing : existing?.key;
   if (existingKey && existingKey !== 'fist') addToInventory(existing);
-  S.equipment[slot] = { key: item.key, type: item.type, slot: item.slot };
-  removeFromInventory(item.id);
+  const { id, ...equipData } = item;
+  S.equipment[slot] = equipData;
+  removeFromInventory(id);
   console.log('[equip]', 'slot→', slot, 'item→', item.key);
   if (slot === 'mainhand') {
     const hud = document.getElementById('currentWeapon');
@@ -52,6 +63,7 @@ export function equipItem(item) {
     const chip = document.getElementById('weaponName');
     if (chip) chip.textContent = WEAPONS[item.key]?.displayName || item.key;
   }
+  recomputePlayerTotals();
   save?.();
   return true;
 }
@@ -69,5 +81,6 @@ export function unequip(slot) {
     const chip = document.getElementById('weaponName');
     if (chip) chip.textContent = 'fist';
   }
+  recomputePlayerTotals();
   save?.();
 }
