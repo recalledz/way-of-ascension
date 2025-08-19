@@ -739,16 +739,15 @@ html.reduce-motion .rune-ring .orbit {
 }
 
 .lotus-silhouette .silhouette-svg path {
+  --sil-stroke: #0f766e; /* teal-700 outline */
+  --sil-glow: #5eead4;   /* mint glow */
   fill: none;
-  stroke: rgba(31, 41, 55, 0.85);
-  stroke-width: 4;
+  stroke: var(--sil-stroke);
+  stroke-width: 3.2px;
   stroke-linejoin: round;
   stroke-linecap: round;
-  /* Strong light-blue outer glow (not soft) */
-  filter:
-    drop-shadow(0 0 2px rgba(59, 130, 246, 0.9))
-    drop-shadow(0 0 6px rgba(96, 165, 250, 0.85))
-    drop-shadow(0 0 10px rgba(147, 197, 253, 0.75));
+  /* Soft mint inner glow */
+  filter: drop-shadow(0 0 10px color-mix(in oklab, var(--sil-glow) 55%, transparent));
 }
 
 @keyframes liquidShimmer {

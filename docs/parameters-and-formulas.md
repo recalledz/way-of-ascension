@@ -18,6 +18,7 @@
 | Cooldown Reduction | 0% |
 | Adventure Speed | 1.0× |
 
+
 ## Attribute Effects
 All attribute levels grant **+1% talent**.
 
@@ -26,6 +27,9 @@ All attribute levels grant **+1% talent**.
 | Physique | +5 HP, +1 carry capacity |
 | Mind | +6% energy shield |
 | Agility | +2% dodge chance |
+
+## Physique-Derived Bonuses
+- **Carry Capacity**: `max(0, (Physique - 10) * 5)` extra units of carrying capacity.
 
 ## Cultivation Stats
 - **Qi**: 100
