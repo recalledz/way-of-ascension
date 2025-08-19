@@ -5,15 +5,15 @@ import { getEquippedWeapon, getAbilitySlots } from './selectors.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../features/weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../data/abilities.js';
-import { WEAPON_TYPES } from '../features/weaponGeneration/data/weaponTypes.js';
-import { WEAPON_ICONS } from '../features/weaponGeneration/data/weaponIcons.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { chanceToHit } from './combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from './abilitySystem.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
-import { setText, setFill, log } from './utils.js';
+import { setText, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
-import { gainProficiency, getProficiency } from './systems/proficiency.js';
+import { gainProficiency } from '../features/proficiency/mutators.js';
+import { getProficiency } from '../features/proficiency/selectors.js';
+import { updateWeaponProficiencyDisplay } from '../features/proficiency/ui/weaponProficiencyDisplay.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from './systems/sessionLoot.js'; // EQUIP-CHAR-UI
@@ -36,30 +36,6 @@ function logEnemyResists(enemy) {
     console.log('[resist]', enemy.type, enemy.resists);
     loggedResistTypes.add(enemy.type);
   }
-}
-
-// Weapon proficiency handling
-export function updateWeaponProficiencyDisplay() {
-  const weapon = getEquippedWeapon(S);
-  const { value } = getProficiency(weapon.proficiencyKey, S);
-  const level = Math.floor(value / 100);
-  const progress = value % 100;
-  const type = WEAPON_TYPES[weapon.proficiencyKey];
-  let label = type?.displayName || weapon.proficiencyKey;
-  // crude pluralization: append 's' if not already plural
-  if (!label.endsWith('s')) label += 's';
-  const icon = WEAPON_ICONS[weapon.proficiencyKey];
-  const labelEl = document.getElementById('weaponLabel');
-  if (labelEl) {
-    const text = `${label} Level`;
-    labelEl.innerHTML = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${text}` : text;
-  }
-  setText('weaponLevel', level);
-  setText('weaponExp', progress.toFixed(0));
-  setText('weaponExpMax', '100');
-  setFill('weaponExpFill', progress / 100);
-  const bonus = 1 + level * 0.01;
-  setText('weaponBonus', bonus.toFixed(2));
 }
 
 function getCombatPositions() {

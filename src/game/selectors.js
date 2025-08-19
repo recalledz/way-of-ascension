@@ -3,7 +3,6 @@
 
 import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 import { ABILITIES } from '../data/abilities.js';
-import { getProficiency } from './systems/proficiency.js';
 import { S } from './state.js';
 
 export function getEquippedWeapon(state = S) {
@@ -39,12 +38,3 @@ export function getAbilitySlots(state = S) {
   return slots;
 }
 
-export function getWeaponProficiencyBonuses(state = S) {
-  const weapon = getEquippedWeapon(state);
-  const { value } = getProficiency(weapon.proficiencyKey, state);
-  const level = Math.floor(value / 100);
-  return {
-    damage: level,
-    speed: level * 0.01,
-  };
-}

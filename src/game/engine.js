@@ -1,7 +1,7 @@
 import { REALMS } from '../../data/realms.js';
 import { LAWS } from '../../data/laws.js';
 import { S } from './state.js';
-import { getWeaponProficiencyBonuses } from './selectors.js';
+import { getWeaponProficiencyBonuses } from '../features/proficiency/selectors.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -117,7 +117,7 @@ export function calcAtk(){
     };
   }
   const lawBonuses = getLawBonuses();
-  const profBonus = getWeaponProficiencyBonuses().damage;
+  const profBonus = getWeaponProficiencyBonuses(S).damage;
   return Math.floor((S.atkBase + profBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk);
 }
 
@@ -164,7 +164,7 @@ export function getStatEffects() {
 export function calculatePlayerCombatAttack() {
   const baseAttack = 5;
   const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
-  const profBonus = getWeaponProficiencyBonuses().damage;
+  const profBonus = getWeaponProficiencyBonuses(S).damage;
   return baseAttack + profBonus + realmBonus;
 }
 
@@ -172,7 +172,7 @@ export function calculatePlayerAttackRate() {
   const baseRate = 1.0;
   const dexterityBonus = (S.stats.dexterity - 10) * 0.05;
   const attackSpeedBonus = S.stats.attackSpeed || 0;
-  const profBonus = getWeaponProficiencyBonuses().speed;
+  const profBonus = getWeaponProficiencyBonuses(S).speed;
   return baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus;
 }
 

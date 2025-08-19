@@ -85,6 +85,15 @@ way-of-ascension/
 │   │   ├── zones.js
 │   │   └── abilities.js
 │   ├── features/
+│   │   ├── proficiency/
+│   │   │   ├── data/
+│   │   │   │   └── .gitkeep
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── weaponProficiencyDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -105,7 +114,6 @@ way-of-ascension/
 │   │   ├── systems/
 │   │   │   ├── inventory.js
 │   │   │   ├── loot.js
-│   │   │   ├── proficiency.js
 │   │   │   └── sessionLoot.js
 │   │   ├── adventure.js
 │   │   ├── affixes.js
@@ -246,7 +254,6 @@ S = {
 **Key Functions**:
 - `getEquippedWeapon(state)` – retrieve the currently equipped weapon.
 - `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
-- `getWeaponProficiencyBonuses(state)` – compute damage and speed bonuses from proficiency.
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
@@ -387,6 +394,30 @@ function updateAll() {
 #### `src/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
 **When to modify**: Change weapon HUD logic or appearance.
+
+#### `src/features/proficiency/state.js` - Proficiency Feature State
+**Purpose**: Maintains the player's proficiency map keyed by weapon type.
+**When to modify**: Adjust underlying storage of proficiency values.
+
+#### `src/features/proficiency/logic.js` - Proficiency Calculations
+**Purpose**: Provides core functions for gaining and querying proficiency.
+**Key Functions**:
+- `gainProficiency(key, amount, state)` – increment proficiency for a weapon type.
+- `getProficiency(key, state)` – retrieve proficiency value and bonus multiplier.
+
+#### `src/features/proficiency/mutators.js` - Proficiency Mutators
+**Purpose**: State-aware wrappers around proficiency logic.
+**Key Functions**: `gainProficiency(key, amount, state)`.
+
+#### `src/features/proficiency/selectors.js` - Proficiency Selectors
+**Purpose**: Read-only helpers to derive proficiency data and bonuses.
+**Key Functions**:
+- `getProficiency(key, state)` – get stored proficiency and bonus.
+- `getWeaponProficiencyBonuses(state)` – compute damage and speed bonuses for the equipped weapon.
+
+#### `src/features/proficiency/ui/weaponProficiencyDisplay.js` - Proficiency HUD
+**Purpose**: Updates HUD elements showing weapon proficiency levels and progress.
+**When to modify**: Adjust proficiency display or formatting.
 
 ### UI Effects (`src/ui/fx/`)
 

@@ -18,7 +18,6 @@ import {
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
-import { getWeaponProficiencyBonuses } from '../src/game/selectors.js';
 import { initializeFight, processAttack, refillShieldFromQi } from '../src/game/combat.js';
 import { applyRandomAffixes } from '../src/game/affixes.js';
 import {
@@ -40,7 +39,6 @@ import {
   startBossCombat,
   progressToNextArea,
   retreatFromCombat,
-  updateWeaponProficiencyDisplay,
   updateFoodSlots,
   instakillCurrentEnemy,
   setupAdventureTabs,
@@ -48,6 +46,7 @@ import {
   updateAbilityBar
 
 } from '../src/game/adventure.js';
+import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { forfeitSessionLoot } from '../src/game/systems/sessionLoot.js'; // EQUIP-CHAR-UI
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
