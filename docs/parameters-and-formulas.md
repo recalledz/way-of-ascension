@@ -18,6 +18,11 @@
 | Cooldown Reduction | 0% |
 | Adventure Speed | 1.0× |
 
+## Physique-Derived Bonuses
+
+- **Mining Bonus**: `max(0, (Physique - 10) * 2)%` additional mining yield.
+- **Carry Capacity**: `max(0, (Physique - 10) * 5)` extra units of carrying capacity.
+
 ## Cultivation Stats
 - **Qi**: 100
 - **Qi Regeneration**: 1 per second
