@@ -36,7 +36,8 @@ export const defaultState = () => {
     criticalChance: 0.05, // Base critical hit chance
     attackSpeed: 1.0,    // Base attack speed multiplier
     cooldownReduction: 0, // Cooldown reduction percentage
-    adventureSpeed: 1.0  // Adventure/exploration speed multiplier
+    adventureSpeed: 1.0, // Adventure/exploration speed multiplier
+    armor: 0            // Total armor from gear and bonuses
   },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},

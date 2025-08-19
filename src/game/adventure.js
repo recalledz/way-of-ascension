@@ -642,28 +642,28 @@ export function updateAdventureCombat() {
     S.adventure.enemyStunBar = decayStunBar(S.adventure.enemyStunBar, deltaTime); // STATUS-REFORM
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
     if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
-    const enemyDef = S.adventure.currentEnemy.defense || 0;
     const regen = S.adventure.currentEnemy.regen || 0;
     if (regen) {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       const playerAttack = calculatePlayerCombatAttack();
-      const dmg = Math.max(1, Math.round(playerAttack - enemyDef * 0.6));
+      const dmg = Math.max(1, Math.round(playerAttack));
+      let dealt = 0;
       S.adventure.enemyHP = processAttack(
         S.adventure.enemyHP,
         dmg,
-        { target: S.adventure.currentEnemy, element: null }
+        { target: S.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
       );
       S.adventure.lastPlayerAttack = now;
       const xpGain = Math.max(1, Math.ceil(S.adventure.enemyMaxHP / 30));
       gainProficiency(weapon.proficiencyKey, xpGain, S); // WEAPONS-INTEGRATION
       updateWeaponProficiencyDisplay();
       S.adventure.combatLog = S.adventure.combatLog || [];
-      S.adventure.combatLog.push(`You deal ${dmg} damage to ${S.adventure.currentEnemy.name}`);
+      S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
       const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
       const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-      performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dmg, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
+      performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
       S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
       const pos = getCombatPositions();
       if (pos) {
@@ -707,16 +707,17 @@ export function updateAdventureCombat() {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+        let taken = 0;
         S.adventure.playerHP = processAttack(
           S.adventure.playerHP,
           enemyDamage,
-          { target: S, element: null }
+          { target: S, type: 'physical', onDamage: d => (taken = d) }
         );
         S.hp = S.adventure.playerHP;
         S.adventure.lastEnemyAttack = now;
-        S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${enemyDamage} damage to you`);
+        S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
         const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
-        performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: enemyDamage }, S); // STATUS-REFORM
+        performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
         S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
         if (weapon.typeKey === 'focus') {
           const pos = getCombatPositions();
@@ -932,6 +933,7 @@ export function startBossCombat() {
     type: originalType,
     attack: Math.round(h.eAtk),
     defense: Math.round(h.eDef),
+    armor: Math.round(h.eDef),
     regen: h.regen,
     affixes: h.affixes
   };
@@ -972,6 +974,7 @@ export function startAdventureCombat() {
     type: enemyType,
     attack: Math.round(h.eAtk),
     defense: Math.round(h.eDef),
+    armor: Math.round(h.eDef),
     regen: h.regen,
     affixes: h.affixes
   };
