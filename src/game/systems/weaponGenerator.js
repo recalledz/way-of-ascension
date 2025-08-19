@@ -1,5 +1,5 @@
-import { WEAPON_TYPES } from '../data/weaponTypes.js';
-import { MATERIALS_STUB } from '../data/materials.stub.js';
+import { WEAPON_TYPES } from '../../data/weaponTypes.js';
+import { MATERIALS_STUB } from '../../data/materials.stub.js';
 
 /** @typedef {{
  *  typeKey:string,

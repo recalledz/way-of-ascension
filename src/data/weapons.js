@@ -1,4 +1,4 @@
-import { generateWeapon } from '../systems/weaponGenerator.js';
+import { generateWeapon } from '../game/systems/weaponGenerator.js';
 
 function defaultAnimationsForType(typeKey) {
   switch (typeKey) {
