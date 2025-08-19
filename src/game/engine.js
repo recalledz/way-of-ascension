@@ -116,10 +116,9 @@ export function calcAtk(){
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
     };
   }
-  const physiqueMult = 1 + (S.stats.physique - 10) * 0.05;
   const lawBonuses = getLawBonuses();
   const profBonus = getWeaponProficiencyBonuses().damage;
-  return Math.floor((S.atkBase + profBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
+  return Math.floor((S.atkBase + profBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk);
 }
 
 export function calcDef(){
@@ -132,9 +131,8 @@ export function calcDef(){
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
     };
   }
-  const physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
   const lawBonuses = getLawBonuses();
-  return Math.floor((S.defBase + S.tempDef + baseDef + stageBonus + S.karma.def*100) * lawBonuses.def * physiqueMult);
+  return Math.floor((S.defBase + S.tempDef + baseDef + stageBonus + S.karma.def*100) * lawBonuses.def);
 }
 
 export function getStatEffects() {
@@ -145,9 +143,6 @@ export function getStatEffects() {
     };
   }
   return {
-    physicalDamageMult: 1 + (S.stats.physique - 10) * 0.05,
-    physicalDefenseMult: 1 + (S.stats.physique - 10) * 0.03,
-    miningYieldMult: 1 + (S.stats.physique - 10) * 0.03,
     spellPowerMult: 1 + (S.stats.mind - 10) * 0.06,
     alchemySuccessMult: 1 + (S.stats.mind - 10) * 0.04,
     learningSpeedMult: 1 + (S.stats.mind - 10) * 0.05,
@@ -176,10 +171,9 @@ export function getWeaponProficiencyBonuses(state = S) {
 
 export function calculatePlayerCombatAttack() {
   const baseAttack = 5;
-  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
   const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
   const profBonus = getWeaponProficiencyBonuses().damage;
-  return baseAttack + profBonus + physiqueBonus + realmBonus;
+  return baseAttack + profBonus + realmBonus;
 }
 
 export function calculatePlayerAttackRate() {

@@ -1331,7 +1331,6 @@ export function updateActivityAdventure() {
   }
   const baseAttack = Math.round(calculatePlayerCombatAttack());
   setText('baseDamage', baseAttack);
-  setText('physiqueDamageBonus', `+${Math.floor((S.stats.physique - 10) * 2)}`);
   updateWeaponProficiencyDisplay();
   updateZoneButtons();
   updateAreaGrid();

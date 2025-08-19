@@ -6,7 +6,7 @@
 - **Critical Chance** - `S.stats.criticalChance` (base 0.05, scales with dexterity)
 - **Attack Speed** - `S.stats.attackSpeed` (base 1.0, scales with dexterity)
 - **Cooldown Reduction** - `S.stats.cooldownReduction` (scales with dexterity)
-- **Defense** - `calcDef()` function with physique scaling and realm bonuses
+- **Defense** - `calcDef()` function with realm bonuses
 - **Adventure Speed** - `S.stats.adventureSpeed` for exploration speed
 
 ### ❌ **Missing from Current Implementation**
@@ -51,7 +51,6 @@ statusEffectDuration: 1.0,   // Duration multiplier
 **Implementation Pattern:**
 - Weapon/ability-based status effects (poison, burn, freeze)
 - Mind attribute affects status effect potency
-- Physique affects status effect resistance
 
 ### **Priority 3: Advanced Combat Stats**
 
@@ -71,10 +70,9 @@ criticalDamage: 1.5,   // Base crit damage multiplier (currently missing)
 ### **Attribute Scaling Recommendations**
 
 **Physique:**
-- Physical damage: ✅ Implemented (5% per point)
-- Physical defense: ✅ Implemented (3% per point)
-- Status effect resistance: ❌ **Add this**
-- HP scaling: ❌ **Consider adding**
+- HP: ✅ +5 per level
+- Carry capacity: ✅ +1 per level
+- Talent: ✅ +1% per level
 
 **Mind:**
 - Spell damage: ✅ Implemented (6% per point)
