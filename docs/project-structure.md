@@ -108,6 +108,7 @@ way-of-ascension/
 │   │   ├── engine.js
 │   │   ├── helpers.js
 │   │   ├── abilitySystem.js
+│   │   ├── selectors.js
 │   │   ├── migrations.js
 │   │   ├── state.js
 │   │   └── utils.js
@@ -230,12 +231,18 @@ S = {
 - `chanceToHit(accuracy, dodge)` – computes final hit probability.
 
 #### `abilitySystem.js` - Active Ability Handling
-**Purpose**: Manages ability slots, casting validation, cooldown timers, and resolving ability effects.
+**Purpose**: Manages casting validation, cooldown timers, and resolving ability effects.
 **Key Functions**:
-- `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
 - `tryCastAbility(key)` – validate and trigger ability casts, deduct Qi, start cooldowns.
 - `tickAbilityCooldowns(dt)` – decrement cooldown timers each game tick.
 - `processAbilityQueue(state)` – resolve queued ability actions like Power Slash damage and healing.
+
+#### `selectors.js` - Centralized State Selectors
+**Purpose**: Provides derived state accessors. Never read state fields directly; use selectors.
+**Key Functions**:
+- `getEquippedWeapon(state)` – retrieve the currently equipped weapon.
+- `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
+- `getWeaponProficiencyBonuses(state)` – compute damage and speed bonuses from proficiency.
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions

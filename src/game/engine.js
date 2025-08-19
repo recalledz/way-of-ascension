@@ -1,9 +1,7 @@
 import { REALMS } from '../../data/realms.js';
 import { LAWS } from '../../data/laws.js';
 import { S } from './state.js';
-import { getProficiency } from './systems/proficiency.js';
-import { getEquippedWeapon } from './combat.js';
-import { WEAPONS } from '../data/weapons.js';
+import { getWeaponProficiencyBonuses } from './selectors.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -160,16 +158,6 @@ export function getStatEffects() {
     totalAttackSpeed: S.stats.attackSpeed * (1 + (S.stats.dexterity - 10) * 0.04),
     totalCooldownReduction: S.stats.cooldownReduction + (S.stats.dexterity - 10) * 0.02,
     totalAdventureSpeed: S.stats.adventureSpeed * (1 + (S.stats.dexterity - 10) * 0.03)
-  };
-}
-
-export function getWeaponProficiencyBonuses(state = S) {
-  const weapon = getEquippedWeapon(state);
-  const { value } = getProficiency(weapon.proficiencyKey, state);
-  const level = Math.floor(value / 100);
-  return {
-    damage: level,
-    speed: level * 0.01,
   };
 }
 

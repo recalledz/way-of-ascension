@@ -1,6 +1,5 @@
 import { initHp } from './helpers.js';
 import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
-import { getProficiency } from './systems/proficiency.js';
 
 /** Tunables */
 export const ARMOR_K = 10;           // how "strong" armor is vs damage size
@@ -83,13 +82,5 @@ export function processAttack(currentHP, damage, options = {}) {
   const final = Math.max(0, Math.round(adjusted));
   if (typeof onDamage === 'function') onDamage(final);
   return Math.max(0, Math.round(currentHP - final));
-}
-
-export function getEquippedWeapon(state) {
-  // WEAPONS-INTEGRATION: respect feature flag and invalid keys
-  if (!state.flags?.weaponsEnabled) return WEAPONS.fist;
-  const eq = state.equipment?.mainhand;
-  const key = typeof eq === 'string' ? eq : eq?.key;
-  return WEAPONS[key] || WEAPONS.fist;
 }
 

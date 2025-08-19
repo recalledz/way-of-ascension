@@ -1,6 +1,7 @@
 import { S } from './state.js';
-import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses, qCap } from './engine.js';
-import { initializeFight, processAttack, getEquippedWeapon, refillShieldFromQi } from './combat.js';
+import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from './engine.js';
+import { initializeFight, processAttack, refillShieldFromQi } from './combat.js';
+import { getEquippedWeapon, getAbilitySlots } from './selectors.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../data/abilities.js';
@@ -8,7 +9,7 @@ import { WEAPON_TYPES } from '../data/weaponTypes.js';
 import { WEAPON_ICONS } from '../data/weaponIcons.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { chanceToHit } from './combat/hit.js';
-import { getAbilitySlots, tryCastAbility, processAbilityQueue } from './abilitySystem.js';
+import { tryCastAbility, processAbilityQueue } from './abilitySystem.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
 import { applyRandomAffixes, AFFIXES } from './affixes.js';
