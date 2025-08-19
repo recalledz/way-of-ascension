@@ -21,6 +21,8 @@ export const defaultState = () => {
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
   ...initHp(100),
+  shield: { current: 0, max: 0 },
+  autoFillShieldFromQi: true,
   stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
   wood:0, cores:0,

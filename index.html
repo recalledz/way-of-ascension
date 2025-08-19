@@ -57,7 +57,9 @@
       <div class="chip">Realm: <span id="realmName">Mortal 1</span></div>
       <div class="chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
       <div class="chip">Stones: <span id="stonesVal">0</span></div>
-      <div class="chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span></div>
+      <div class="chip hp-chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span>
+        <div class="hp-bar"><div class="fill" id="hpFill"></div><div class="shield-fill" id="shieldFill"></div></div>
+      </div>
       <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
     <div class="right-actions">
@@ -578,6 +580,7 @@
           <div class="card">
             <h4>Stats</h4>
             <div class="stat"><span>HP</span><span id="stat-hp">100/100</span></div>
+            <div class="stat"><span>Shield</span><span id="stat-shield">0/0</span></div>
             <div class="stat"><span>Attack</span><span id="stat-atkBase">5</span></div>
             <div class="stat"><span>Defense</span><span id="stat-defBase">2</span></div>
             <div class="stat"><span>Physique</span><span id="stat-physique">10</span></div>

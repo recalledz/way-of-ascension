@@ -19,7 +19,7 @@ import {
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
-import { initializeFight, processAttack } from '../src/game/combat.js';
+import { initializeFight, processAttack, refillShieldFromQi } from '../src/game/combat.js';
 import { applyRandomAffixes } from '../src/game/affixes.js';
 import {
   updateRealmUI,
@@ -439,6 +439,7 @@ function updateAll(){
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
   setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
   setFill('hpFill', S.hp / S.hpMax);
+  setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
   
   // Combat stats
   setText('atkVal', calcAtk()); setText('defVal', calcDef());
@@ -2187,6 +2188,8 @@ function tick(){
   if (!(S.adventure?.inCombat) && !S.combat.hunt) {
     S.hp = clamp(S.hp + 1, 0, S.hpMax);
     if (S.adventure) S.adventure.playerHP = S.hp;
+    const { gained, qiSpent } = refillShieldFromQi(S);
+    if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   }
 
   // Gathering

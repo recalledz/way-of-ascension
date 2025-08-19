@@ -108,6 +108,11 @@ export const migrations = [
       }
       save.proficiency = converted;
     }
+  },
+  save => {
+    if (!save.shield) save.shield = { current: 0, max: 0 };
+    if (typeof save.autoFillShieldFromQi === 'undefined') save.autoFillShieldFromQi = true;
+    if (save.shield.current > save.shield.max) save.shield.current = save.shield.max;
   }
 ];
 
