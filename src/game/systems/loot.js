@@ -1,6 +1,6 @@
 // WEAPONS-INTEGRATION: basic loot table rolling
 import { LOOT_TABLES } from '../../data/lootTables.js';
-import { rollWeaponDropForZone } from '../../data/lootTables.weapons.js';
+import { rollWeaponDropForZone } from '../../features/weaponGeneration/selectors.js';
 import { ZONES } from '../../data/zones.js';
 
 export function toLootTableKey(id = '') {
@@ -33,3 +33,6 @@ export function onEnemyDefeated(state) {
 
   // … add other rewards (xp, coins) as you already do
 }
+
+// Re-export weapon drop helper for any callers that previously imported it from this module.
+export { rollWeaponDropForZone };
