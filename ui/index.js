@@ -1154,14 +1154,12 @@ function updateActivityPhysique() {
     
     // Update physique effects display
     const currentPhysique = S.stats.physique || 10;
-    const miningBonus = Math.floor((currentPhysique - 10) * 2);
-    const combatPower = Math.floor((currentPhysique - 10) * 1.5);
-    const carryCapacity = Math.floor((currentPhysique - 10) * 5);
-    
+    const hpBonus = Math.floor((currentPhysique - 10) * 5);
+    const carryCapacity = Math.max(0, currentPhysique - 10);
+
     setText('currentPhysiqueStat', currentPhysique);
-    setText('physiqueMiningStat', `+${Math.max(0, miningBonus)}%`);
-    setText('physiqueCombatStat', `+${Math.max(0, combatPower)}`);
-    setText('physiqueCarryStat', `+${Math.max(0, carryCapacity)}`);
+    setText('physiqueHpStat', `+${Math.max(0, hpBonus)}`);
+    setText('physiqueCarryStat', `+${carryCapacity}`);
   }
 }
 
@@ -1224,14 +1222,8 @@ function updateActivityMining() {
   // Update mining stats
   if (S.activities.mining) {
     setText('resourcesGained', S.mining.resourcesGained || 0);
-    
-    const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-    setText('physiqueYieldBonus', `+${physiqueBonus}%`);
-    
     const baseRate = getMiningRate(S.mining.selectedResource);
-    const bonusRate = baseRate * (physiqueBonus / 100);
-    const totalRate = baseRate + bonusRate;
-    setText('currentMiningRate', `${totalRate.toFixed(1)}/sec`);
+    setText('currentMiningRate', `${baseRate.toFixed(1)}/sec`);
   }
   
   // Update resource rate displays
@@ -1250,12 +1242,10 @@ function getMiningRate(resource) {
 }
 
 function updateMiningRateDisplays() {
-  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-  
-  const stonesRate = getMiningRate('stones') * (1 + physiqueBonus / 100);
-  const ironRate = getMiningRate('iron') * (1 + physiqueBonus / 100);
-  const iceRate = getMiningRate('ice') * (1 + physiqueBonus / 100);
-  
+  const stonesRate = getMiningRate('stones');
+  const ironRate = getMiningRate('iron');
+  const iceRate = getMiningRate('ice');
+
   setText('stonesRate', `+${stonesRate.toFixed(1)}/sec`);
   setText('ironRate', `+${ironRate.toFixed(1)}/sec`);
   setText('iceRate', `+${iceRate.toFixed(1)}/sec`);
@@ -2053,13 +2043,7 @@ function yieldBase(type){
     };
   }
   
-  // Physique affects mining (ore) yield (3% per point above 10)
-  let physiqueMult = 1;
-  if (type === 'ore') {
-    physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
-  }
-  
-  return base[type] * (1 + S.yieldMult[type]) * physiqueMult;
+  return base[type] * (1 + S.yieldMult[type]);
 }
 
 // Alchemy
@@ -2219,9 +2203,7 @@ function tick(){
   
   // Passive mining progression
   if(S.activities.mining && S.mining && S.mining.selectedResource) {
-    const baseRate = getMiningRate(S.mining.selectedResource);
-    const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-    const totalRate = baseRate * (1 + physiqueBonus / 100);
+    const totalRate = getMiningRate(S.mining.selectedResource);
     
     // Add resources based on selected type
     switch(S.mining.selectedResource) {

@@ -18,9 +18,17 @@
 | Cooldown Reduction | 0% |
 | Adventure Speed | 1.0× |
 
-## Physique-Derived Bonuses
 
-- **Mining Bonus**: `max(0, (Physique - 10) * 2)%` additional mining yield.
+## Attribute Effects
+All attribute levels grant **+1% talent**.
+
+| Attribute | Bonus per Level |
+| --- | --- |
+| Physique | +5 HP, +1 carry capacity |
+| Mind | +6% energy shield |
+| Agility | +2% dodge chance |
+
+## Physique-Derived Bonuses
 - **Carry Capacity**: `max(0, (Physique - 10) * 5)` extra units of carrying capacity.
 
 ## Cultivation Stats

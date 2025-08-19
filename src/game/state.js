@@ -28,7 +28,7 @@ export const defaultState = () => {
   atkBase:5, defBase:2, tempAtk:0, tempDef:0,
   // Expanded Stat System
   stats: {
-    physique: 10,        // Physical power, mining yield
+    physique: 10,        // Physical power
     mind: 10,            // Spell power, alchemy, learning speed
     agility: 10,         // Weapon handling, dodge
     dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
