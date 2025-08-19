@@ -39,7 +39,9 @@ export const defaultState = () => {
     attackSpeed: 1.0,    // Base attack speed multiplier
     cooldownReduction: 0, // Cooldown reduction percentage
     adventureSpeed: 1.0, // Adventure/exploration speed multiplier
-    armor: 0            // Total armor from gear and bonuses
+    armor: 0,           // Total armor from gear and bonuses
+    accuracy: 0,        // Chance to hit with attacks
+    dodge: 0           // Chance to avoid attacks
   },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},

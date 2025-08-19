@@ -445,7 +445,8 @@ export function advanceRealm(){
     if (!S.stats) {
       S.stats = {
         physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+        armor: 0, accuracy: 0, dodge: 0
       };
     }
 
@@ -478,7 +479,8 @@ export function advanceRealm(){
     if (!S.stats) {
       S.stats = {
         physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+        criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+        armor: 0, accuracy: 0, dodge: 0
       };
     }
 

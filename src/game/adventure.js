@@ -7,6 +7,7 @@ import { ABILITIES } from '../data/abilities.js';
 import { WEAPON_TYPES } from '../data/weaponTypes.js';
 import { WEAPON_ICONS } from '../data/weaponIcons.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
+import { chanceToHit } from './combat/hit.js';
 import { getAbilitySlots, tryCastAbility, processAbilityQueue } from './abilitySystem.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, setFill, log } from './utils.js';
@@ -647,107 +648,121 @@ export function updateAdventureCombat() {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
-      const playerAttack = calculatePlayerCombatAttack();
-      const dmg = Math.max(1, Math.round(playerAttack));
-      let dealt = 0;
-      S.adventure.enemyHP = processAttack(
-        S.adventure.enemyHP,
-        dmg,
-        { target: S.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
-      );
       S.adventure.lastPlayerAttack = now;
-      const xpGain = Math.max(1, Math.ceil(S.adventure.enemyMaxHP / 30));
-      gainProficiency(weapon.proficiencyKey, xpGain, S); // WEAPONS-INTEGRATION
-      updateWeaponProficiencyDisplay();
-      S.adventure.combatLog = S.adventure.combatLog || [];
-      S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
-      const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
-      const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-      performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
-      S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
-      const pos = getCombatPositions();
-      if (pos) {
-        setFxTint(pos.svg, weapon.animations?.tint || 'auto');
-        (weapon.animations?.fx || []).forEach(fx => {
-          switch (fx) {
-            case 'slashArc':
-              playSlashArc(pos.svg, pos.from, pos.to);
-              break;
-            case 'pierceThrust':
-            case 'palmStrike':
-              playThrustLine(pos.svg, pos.from, pos.to);
-              break;
-            case 'smash':
-              playRingShockwave(pos.svg, pos.to, 20);
-              break;
-            case 'flurry': {
-              const mid = { x: (pos.from.x + pos.to.x) / 2, y: pos.from.y };
-              playSlashArc(pos.svg, pos.from, mid);
-              setTimeout(() => playSlashArc(pos.svg, mid, pos.to), 80);
-              playSparkBurst(pos.svg, pos.to);
-              break;
+      const enemyDodge = S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0;
+      const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
+      if (Math.random() < hitP) {
+        const playerAttack = calculatePlayerCombatAttack();
+        const dmg = Math.max(1, Math.round(playerAttack));
+        let dealt = 0;
+        S.adventure.enemyHP = processAttack(
+          S.adventure.enemyHP,
+          dmg,
+          { target: S.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
+        );
+        const xpGain = Math.max(1, Math.ceil(S.adventure.enemyMaxHP / 30));
+        gainProficiency(weapon.proficiencyKey, xpGain, S); // WEAPONS-INTEGRATION
+        updateWeaponProficiencyDisplay();
+        S.adventure.combatLog = S.adventure.combatLog || [];
+        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
+        const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
+        const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
+        performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
+        S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
+        const pos = getCombatPositions();
+        if (pos) {
+          setFxTint(pos.svg, weapon.animations?.tint || 'auto');
+          (weapon.animations?.fx || []).forEach(fx => {
+            switch (fx) {
+              case 'slashArc':
+                playSlashArc(pos.svg, pos.from, pos.to);
+                break;
+              case 'pierceThrust':
+              case 'palmStrike':
+                playThrustLine(pos.svg, pos.from, pos.to);
+                break;
+              case 'smash':
+                playRingShockwave(pos.svg, pos.to, 20);
+                break;
+              case 'flurry': {
+                const mid = { x: (pos.from.x + pos.to.x) / 2, y: pos.from.y };
+                playSlashArc(pos.svg, pos.from, mid);
+                setTimeout(() => playSlashArc(pos.svg, mid, pos.to), 80);
+                playSparkBurst(pos.svg, pos.to);
+                break;
+              }
+              case 'spinThrow':
+                playChakram(pos.svg, pos.from, pos.to);
+                break;
+              case 'magicBolt':
+              case 'smite':
+                playBeam(pos.svg, pos.from, pos.to);
+                break;
+              default:
+                break;
             }
-            case 'spinThrow':
-              playChakram(pos.svg, pos.from, pos.to);
-              break;
-            case 'magicBolt':
-            case 'smite':
-              playBeam(pos.svg, pos.from, pos.to);
-              break;
-            default:
-              break;
-          }
-        });
-      }
-      if (S.adventure.enemyHP <= 0) {
-        defeatEnemy();
+          });
+        }
+        if (S.adventure.enemyHP <= 0) {
+          defeatEnemy();
+        }
+      } else {
+        S.adventure.combatLog = S.adventure.combatLog || [];
+        S.adventure.combatLog.push('You miss!');
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
-        const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
-        let taken = 0;
-        S.adventure.playerHP = processAttack(
-          S.adventure.playerHP,
-          enemyDamage,
-          { target: S, type: 'physical', onDamage: d => (taken = d) }
-        );
-        S.hp = S.adventure.playerHP;
         S.adventure.lastEnemyAttack = now;
-        S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
-        const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
-        performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
-        S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
-        if (weapon.typeKey === 'focus') {
-          const pos = getCombatPositions();
-          if (pos) {
-            setFxTint(pos.svg, weapon.animations?.tint || 'auto');
-            playShieldDome(pos.svg, pos.from, 25);
+        const enemyAcc = S.adventure.currentEnemy?.stats?.accuracy ?? S.adventure.currentEnemy?.accuracy ?? 0;
+        const playerDodge = S.stats?.dodge || 0;
+        const hitP = chanceToHit(enemyAcc, playerDodge);
+        if (Math.random() < hitP) {
+          const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          let taken = 0;
+          S.adventure.playerHP = processAttack(
+            S.adventure.playerHP,
+            enemyDamage,
+            { target: S, type: 'physical', onDamage: d => (taken = d) }
+          );
+          S.hp = S.adventure.playerHP;
+          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
+          const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
+          performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
+          S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
+          if (weapon.typeKey === 'focus') {
+            const pos = getCombatPositions();
+            if (pos) {
+              setFxTint(pos.svg, weapon.animations?.tint || 'auto');
+              playShieldDome(pos.svg, pos.from, 25);
+            }
           }
-        }
-        if (S.adventure.playerHP <= 0) {
-          S.adventure.inCombat = false;
-          S.adventure.combatLog.push('You have been defeated!');
-          log('Defeated in combat! Returning to safety...', 'bad');
-          forfeitSessionLoot(); // EQUIP-CHAR-UI
-          updateLootTab(); // EQUIP-CHAR-UI
-          S.qi = 0;
-          if (typeof globalThis.stopActivity === 'function') {
-            globalThis.stopActivity('adventure');
-          } else {
-            S.activities.adventure = false;
+          if (S.adventure.playerHP <= 0) {
+            S.adventure.inCombat = false;
+            S.adventure.combatLog.push('You have been defeated!');
+            log('Defeated in combat! Returning to safety...', 'bad');
+            forfeitSessionLoot(); // EQUIP-CHAR-UI
+            updateLootTab(); // EQUIP-CHAR-UI
+            S.qi = 0;
+            if (typeof globalThis.stopActivity === 'function') {
+              globalThis.stopActivity('adventure');
+            } else {
+              S.activities.adventure = false;
+            }
+            const btn = document.getElementById('startBattleButton');
+            if (btn) {
+              btn.textContent = '⚔️ Start Battle';
+              btn.classList.remove('warn');
+              btn.classList.add('primary');
+              btn.disabled = false;
+            }
+            updateActivityAdventure();
+            const { gained, qiSpent } = refillShieldFromQi(S);
+            if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
           }
-          const btn = document.getElementById('startBattleButton');
-          if (btn) {
-            btn.textContent = '⚔️ Start Battle';
-            btn.classList.remove('warn');
-            btn.classList.add('primary');
-            btn.disabled = false;
-          }
-          updateActivityAdventure();
-          const { gained, qiSpent } = refillShieldFromQi(S);
-          if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
+        } else {
+          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
         }
       }
     }

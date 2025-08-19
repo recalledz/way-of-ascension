@@ -26,6 +26,8 @@ function renderStats() {
     { id: 'agility', stat: 'agility' },
     { id: 'dexterity', stat: 'dexterity' },
     { id: 'comprehension', stat: 'comprehension' },
+    { id: 'accuracy', stat: 'accuracy' },
+    { id: 'dodge', stat: 'dodge' },
     { id: 'criticalChance', stat: 'criticalChance', format: v => `${(v * 100).toFixed(1)}%` },
     { id: 'attackSpeed', stat: 'attackSpeed', format: v => v.toFixed(2) },
     { id: 'cooldownReduction', stat: 'cooldownReduction', format: v => `${Math.round(v * 100)}%` },
@@ -60,6 +62,10 @@ function renderEquipment() {
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;
+  const accEl = document.getElementById('accuracyVal');
+  if (accEl) accEl.textContent = S.stats?.accuracy || 0;
+  const dodgeEl = document.getElementById('dodgeVal');
+  if (dodgeEl) dodgeEl.textContent = S.stats?.dodge || 0;
 }
 
 function weaponDetailsText(item) {

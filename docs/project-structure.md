@@ -94,6 +94,7 @@ way-of-ascension/
 │   ├── game/
 │   │   ├── combat/
 │   │   │   ├── attack.js
+│   │   │   ├── hit.js
 │   │   │   └── statusEngine.js
 │   │   ├── systems/
 │   │   │   ├── inventory.js
@@ -222,6 +223,11 @@ S = {
 
 **Dependencies**: `data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
+
+#### `combat/hit.js` - Hit Chance Calculation
+**Purpose**: Calculates chance for an attack to hit based on accuracy and dodge with scaling and caps.
+**Key Functions**:
+- `chanceToHit(accuracy, dodge)` – computes final hit probability.
 
 #### `abilitySystem.js` - Active Ability Handling
 **Purpose**: Manages ability slots, casting validation, cooldown timers, and resolving ability effects.

@@ -444,8 +444,12 @@ function updateAll(){
   // Combat stats
   setText('atkVal', calcAtk()); setText('defVal', calcDef());
   setText('armorVal', S.stats?.armor || 0);
+  setText('accuracyVal', S.stats?.accuracy || 0);
+  setText('dodgeVal', S.stats?.dodge || 0);
   setText('atkVal2', calcAtk()); setText('defVal2', calcDef());
   setText('armorVal2', S.stats?.armor || 0);
+  setText('accuracyVal2', S.stats?.accuracy || 0);
+  setText('dodgeVal2', S.stats?.dodge || 0);
   
   // Activity system display
   if (!S.activities) {
@@ -2042,7 +2046,8 @@ function yieldBase(type){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   
@@ -2072,7 +2077,8 @@ function collectBrew(i){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   
