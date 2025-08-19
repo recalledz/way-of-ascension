@@ -4051,3 +4051,7 @@ tr:last-child td {
 @keyframes ability-shake { 0%{transform:translateX(0);}25%{transform:translateX(-2px);}50%{transform:translateX(2px);}75%{transform:translateX(-2px);}100%{transform:translateX(0);} }
 .heal-float { position:fixed; color:#0f0; font-weight:bold; pointer-events:none; animation:heal-float 1s forwards; }
 @keyframes heal-float { from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(-20px);} }
+.combat-float { position:fixed; font-weight:bold; pointer-events:none; transform:translate(-50%,0); animation:combat-float 1s forwards; }
+.combat-float.crit { color:#fffa8b; text-shadow:0 0 4px #f00; }
+.combat-float.miss { color:#ccc; }
+@keyframes combat-float { from{opacity:1; transform:translate(-50%,0);} to{opacity:0; transform:translate(-50%,-20px);} }

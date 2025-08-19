@@ -1,5 +1,5 @@
 import { S } from './state.js';
-import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses, qCap } from './engine.js';
+import { calculatePlayerCombatAttack, calculatePlayerAttackRate, getWeaponProficiencyBonuses, qCap, getStatEffects, getLawBonuses } from './engine.js';
 import { initializeFight, processAttack, getEquippedWeapon, refillShieldFromQi } from './combat.js';
 import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../data/weapons.js'; // WEAPONS-INTEGRATION
@@ -24,7 +24,8 @@ import {
   playChakram,
   playShieldDome,
   playSparkBurst,
-  setFxTint
+  setFxTint,
+  showFloatingText
 } from '../ui/fx/fx.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
@@ -653,7 +654,10 @@ export function updateAdventureCombat() {
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
         const playerAttack = calculatePlayerCombatAttack();
-        const dmg = Math.max(1, Math.round(playerAttack));
+        const critChance = getStatEffects().totalCritChance + getLawBonuses().critChance;
+        const isCrit = Math.random() < critChance;
+        let dmg = Math.max(1, Math.round(playerAttack));
+        if (isCrit) dmg *= 2;
         let dealt = 0;
         S.adventure.enemyHP = processAttack(
           S.adventure.enemyHP,
@@ -667,8 +671,9 @@ export function updateAdventureCombat() {
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
         const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
         const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-        performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
+        performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm', isCrit }, S); // STATUS-REFORM
         S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
+        if (isCrit) showFloatingText('.combatant.enemy', 'Crit!', 'crit');
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -709,6 +714,7 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
+        showFloatingText('.combatant.enemy', 'Miss', 'miss');
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
@@ -719,7 +725,10 @@ export function updateAdventureCombat() {
         const playerDodge = S.stats?.dodge || 0;
         const hitP = chanceToHit(enemyAcc, playerDodge);
         if (Math.random() < hitP) {
-          const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          let enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          const enemyCritChance = S.adventure.currentEnemy?.stats?.criticalChance ?? S.adventure.currentEnemy?.criticalChance ?? 0;
+          const enemyCrit = Math.random() < enemyCritChance;
+          if (enemyCrit) enemyDamage *= 2;
           let taken = 0;
           S.adventure.playerHP = processAttack(
             S.adventure.playerHP,
@@ -729,8 +738,9 @@ export function updateAdventureCombat() {
           S.hp = S.adventure.playerHP;
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
           const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
-          performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
+          performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken, isCrit: enemyCrit }, S); // STATUS-REFORM
           S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
+          if (enemyCrit) showFloatingText('.combatant.player', 'Crit!', 'crit');
           if (weapon.typeKey === 'focus') {
             const pos = getCombatPositions();
             if (pos) {
@@ -763,6 +773,7 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
+          showFloatingText('.combatant.player', 'Miss', 'miss');
         }
       }
     }

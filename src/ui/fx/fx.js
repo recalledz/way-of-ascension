@@ -131,4 +131,17 @@ export function playSparkBurst(svg, center) {
   playRingShockwave(svg, center, 6);
 }
 
+export function showFloatingText(target, text, type = '') {
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const note = document.createElement('div');
+  note.className = `combat-float${type ? ' ' + type : ''}`;
+  note.textContent = text;
+  note.style.left = rect.left + rect.width / 2 + 'px';
+  note.style.top = rect.top - 10 + 'px';
+  document.body.appendChild(note);
+  setTimeout(() => note.remove(), 1000);
+}
+
 export { reduceMotion };
