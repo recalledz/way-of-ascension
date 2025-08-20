@@ -1,5 +1,5 @@
 import { on } from '../../../shared/events.js';
-import { setText } from '../../../game/utils.js';
+import { setText } from '../../../shared/utils/dom.js';
 import { ALCHEMY_RECIPES } from '../data/recipes.js';
 import { startBrew, completeBrew } from '../mutators.js';
 import { getQueue, getMaxSlots } from '../selectors.js';

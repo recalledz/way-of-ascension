@@ -146,7 +146,7 @@ class StructureValidator {
     }
     
     const coreFiles = [
-      'src/game/state.js',
+      'src/shared/state.js',
       'src/features/progression/logic.js',
       'src/features/adventure/logic.js',
       'ui/index.js',

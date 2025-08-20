@@ -2,7 +2,7 @@
 
 import { REALMS } from '../data/realms.js';
 import { LAWS } from '../data/laws.js';
-import { S } from '../../../game/state.js';
+import { S } from '../../../shared/state.js';
 import {
   qCap,
   qiRegenPerSec,
@@ -12,7 +12,7 @@ import {
   breakthroughChance
 } from '../selectors.js';
 import { advanceRealm, checkLawUnlocks, awardLawPoints } from '../mutators.js';
-import { qs, setText, log } from '../../../game/utils.js';
+import { qs, setText, log } from '../../../shared/utils/dom.js';
 
 export function getRealmName(tier) {
   return REALMS[tier].name;

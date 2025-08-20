@@ -1,4 +1,4 @@
-import { S } from '../../../game/state.js';
+import { S } from '../../../shared/state.js';
 import { WEAPON_FLAGS } from '../../weaponGeneration/data/weapons.js';
 
 const weaponFeatureEnabled = Object.keys(WEAPON_FLAGS).some(w => w !== 'fist' && WEAPON_FLAGS[w]);

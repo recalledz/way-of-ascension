@@ -1,5 +1,5 @@
-import { S } from '../../game/state.js';
-import { log } from '../../game/utils.js';
+import { S } from '../../shared/state.js';
+import { log } from '../../shared/utils/dom.js';
 
 export function getMiningRate(resource, state = S) {
   const baseRates = {

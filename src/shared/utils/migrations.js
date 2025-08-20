@@ -1,4 +1,4 @@
-import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
+import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
 
 export const migrations = [
   save => {
@@ -10,7 +10,7 @@ export const migrations = [
         trees: {
           sword: {},
           formation: {},
-          alchemy: {}
+          alchemy: {},
         }
       };
     }
@@ -23,7 +23,7 @@ export const migrations = [
         comprehension: 1.0,
         foundationMult: 1.0,
         pillMult: 1.0,
-        buildingMult: 1.0
+        buildingMult: 1.0,
       };
     }
     if(!save.proficiency){

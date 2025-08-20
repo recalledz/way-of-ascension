@@ -210,17 +210,17 @@ way-of-ascension/
 │   │       ├── selectors.js
 │   │       └── state.js
 │   ├── game/
-│   │   ├── GameController.js
-│   │   ├── systems/
-│   │   │   ├── loot.js
-│   │   │   └── sessionLoot.js
-│   │   ├── helpers.js
-│   │   ├── migrations.js
-│   │   ├── state.js
-│   │   └── utils.js
+│   │   └── GameController.js
 │   ├── shared/
 │   │   ├── events.js
-│   │   └── saveLoad.js
+│   │   ├── saveLoad.js
+│   │   ├── state.js
+│   │   ├── mutators.js
+│   │   ├── selectors.js
+│   │   └── utils/
+│   │       ├── dom.js
+│   │       ├── hp.js
+│   │       └── migrations.js
 │   └── ui/
 │       ├── fx/
 │       │   └── fx.js
@@ -249,10 +249,10 @@ way-of-ascension/
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
 - `To-dos/Balance.md` – Notes on planned balance adjustments.
 
-### Core Game Logic (`src/game/`)
+### Shared Modules (`src/shared/`)
 
-#### `state.js` - Game State Management
-**Purpose**: Central state management, save/load functionality
+#### `state.js` - Root Game State
+**Purpose**: Composes feature state slices, handles migrations and persistence
 **Key Functions**:
 - `defaultState()` - Defines initial game state structure
 - `loadSave()` - Loads game from localStorage
@@ -302,6 +302,15 @@ S = {
 
 **When to modify**: Add new state properties, modify save structure, add migration logic
 
+#### `mutators.js` and `selectors.js` - Aggregated APIs
+Re-export mutators and selectors from individual features to provide a central access layer for cross-feature interactions.
+
+#### `utils/dom.js` - DOM Helpers
+Utility functions for querying elements, updating text/fill styles and logging to the on-screen log.
+
+#### `utils/hp.js` - HP Utilities
+Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
+
 #### `src/features/progression/logic.js` - Game Calculations
 **Purpose**: Core progression mechanics and calculations
 **Key Functions**:
@@ -347,7 +356,7 @@ S = {
 - `getEquippedWeapon(state)` – retrieve the currently equipped weapon.
 - `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
 
-#### `migrations.js` - Save Migration System
+#### `utils/migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
 
 #### `src/features/ability/state.js` - Ability State Slice

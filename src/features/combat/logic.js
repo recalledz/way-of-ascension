@@ -1,4 +1,4 @@
-import { initHp } from '../../game/helpers.js';
+import { initHp } from '../../shared/utils/hp.js';
 import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 
 /** Tunables */

@@ -1,4 +1,4 @@
-import { S, save } from '../../game/state.js';
+import { S, save } from '../../shared/state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from '../progression/selectors.js';
 import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi } from '../combat/logic.js';
@@ -11,7 +11,7 @@ import { performAttack, decayStunBar } from '../combat/attack.js'; // STATUS-REF
 import { chanceToHit } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
-import { setText, log } from '../../game/utils.js';
+import { setText, log } from '../../shared/utils/dom.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency } from '../proficiency/mutators.js';

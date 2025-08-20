@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 
 export function getCookingState(state = S) {
   return state.cooking || { level: 1, exp: 0, expMax: 100, successBonus: 0 };

@@ -8,8 +8,9 @@ At the root of the repository you will find the following top‑level folders:
 
 | Folder            | Purpose |
 |-------------------|---------|
-| `src/features/`   | **Feature modules**.  Each subfolder under `features` encapsulates all the data definitions, state slice, mutators, selectors, business logic and any UI components needed for a single game system.  Currently two features have been migrated: **Proficiency** and **Weapon Generation**. |
-| `src/game/`       | **Legacy game logic**.  This folder still contains most of the core gameplay code (combat, adventure, ability system, engine, helpers, etc.).  Over time these modules will be gradually moved into feature folders. |
+| `src/features/`   | **Feature modules**.  Each subfolder under `features` encapsulates all the data definitions, state slice, mutators, selectors, business logic and any UI components needed for a single game system. |
+| `src/shared/`     | Cross-feature utilities and root state. Includes the composed `state.js`, aggregated `mutators.js`/`selectors.js`, event bus and save/load helpers. |
+| `src/game/`       | **Legacy game logic**.  This folder now primarily hosts the `GameController` and any remaining legacy systems pending migration. |
 | `src/data/`       | Shared static data that has not yet been migrated into feature modules.  Examples include loot tables, status definitions and ability lists. |
 | `src/ui/`         | Legacy user interface code organised by view or component.  Feature UIs being added in the new structure live inside `src/features/<feature>/ui`. |
 | `docs/`           | Project documentation (design guides, UI style guidelines, proficiency explanation, etc.).  This file lives here. |
@@ -31,6 +32,10 @@ A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. 
 #### State Access Rules
 
 Selectors read from state and mutators write to state. User interfaces never mutate state directly.
+
+#### Cross-feature access
+
+`src/shared/selectors.js` and `src/shared/mutators.js` re-export each feature's API. Features that need data or behaviour from another slice import through this shared layer, keeping dependencies explicit and avoiding deep relative paths.
 
 #### Migration Process (Incremental)
 
@@ -70,15 +75,7 @@ Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js`
 
 ## Legacy `src/game` modules
 
-At the time of writing, the following game systems remain in the `src/game` folder:
-
-* **Combat and adventure:** core fighting mechanics and exploration systems, including `combat.js`, the `combat/` subdirectory (hit resolution and status effects) and `adventure.js`.
-* **Engine:** progression and simulation loop (`src/features/progression/logic.js`) which ties together cultivation, skills and other systems.
-* **Affixes, helpers and utilities:** general helper functions and item modifier definitions.
-* **Game state:** a monolithic `state.js` defines the default state for the entire game, while selectors like `getEquippedWeapon()` have been migrated into feature folders.
-* **Systems:** some subsystems (inventory, loot, session loot) still live under `src/game/systems`.  They will eventually be migrated into dedicated feature folders like `inventory`, `loot` and `sessionLoot`.
-
-These modules still work, and the new features currently import state or helpers from them.  For example, the proficiency UI pulls the equipped weapon via `getEquippedWeapon()` from the inventory selectors:contentReference[oaicite:16]{index=16}.  The plan is to migrate these systems one at a time into `src/features`, following the incremental roadmap.
+The original `src/game` folder has largely been superseded.  With the root state and helpers moved into `src/shared/`, this directory now primarily houses `GameController.js` as a bridge for the legacy world.  Any remaining legacy systems will continue to be migrated into `src/features` until the folder can be retired entirely.
 
 ## Future migration plan
 
