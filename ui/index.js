@@ -4,7 +4,7 @@
 // Way of Ascension — Modular JS
 
 import { LAWS } from '../src/features/progression/data/laws.js';
-import { S, defaultState, save, setState } from '../src/game/state.js';
+import { S, defaultState, save, setState } from '../src/shared/state.js';
 import {
   clamp,
   qCap,
@@ -29,7 +29,8 @@ import {
   initRealmUI,
   getRealmName
 } from './realm.js';
-import { qs, setText, setFill, log } from '../src/game/utils.js';
+import { qs, setText, setFill } from '../src/shared/utils/dom.js';
+import { log } from '../src/shared/utils/log.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
 import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
