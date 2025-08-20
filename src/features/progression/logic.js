@@ -2,6 +2,7 @@ import { REALMS } from './data/realms.js';
 import { LAWS } from './data/laws.js';
 import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
+import { getBuildingBonuses } from '../sect/selectors.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -53,12 +54,14 @@ export function qCap(state = progressionState){
   const baseQi = realm.cap;
   const stageMultiplier = 1 + (state.realm.stage - 1) * 0.12;
   const lawBonuses = getLawBonuses(state);
-  return Math.floor(baseQi * stageMultiplier * (1 + state.qiCapMult) * lawBonuses.qiCap);
+  const building = getBuildingBonuses(state).qiCapMult || 0;
+  return Math.floor(baseQi * stageMultiplier * (1 + state.qiCapMult + building) * lawBonuses.qiCap);
 }
 
 export function qiRegenPerSec(state = progressionState){
   const lawBonuses = getLawBonuses(state);
-  return (REALMS[state.realm.tier].baseRegen + state.karma.qiRegen*10) * (1 + state.qiRegenMult) * lawBonuses.qiRegen;
+  const building = getBuildingBonuses(state).qiRegenMult || 0;
+  return (REALMS[state.realm.tier].baseRegen + state.karma.qiRegen*10) * (1 + state.qiRegenMult + building) * lawBonuses.qiRegen;
 }
 
 export function fCap(state = progressionState){
@@ -89,7 +92,8 @@ export function foundationGainPerSec(state = progressionState){
   const cultivationMult = state.cultivation.talent * comprehensionMult * state.cultivation.foundationMult;
   const lawBonuses = getLawBonuses(state);
   const lawMult = lawBonuses.foundationMult || 1;
-  const buildingMult = state.cultivation.buildingMult;
+  const bonuses = getBuildingBonuses(state);
+  const buildingMult = state.cultivation.buildingMult * (1 + (bonuses.foundationMult || 0));
   const pillMult = state.cultivation.pillMult;
   return baseGain * cultivationMult * lawMult * buildingMult * pillMult;
 }
@@ -118,7 +122,8 @@ export function calcAtk(state = progressionState){
   }
   const lawBonuses = getLawBonuses(state);
   const profBonus = getWeaponProficiencyBonuses(state).damage;
-  return Math.floor((state.atkBase + profBonus + state.tempAtk + baseAtk + stageBonus + state.karma.atk*100) * lawBonuses.atk);
+  const building = getBuildingBonuses(state).atkBase || 0;
+  return Math.floor((state.atkBase + building + profBonus + state.tempAtk + baseAtk + stageBonus + state.karma.atk*100) * lawBonuses.atk);
 }
 
 export function calcDef(state = progressionState){
@@ -133,7 +138,8 @@ export function calcDef(state = progressionState){
     };
   }
   const lawBonuses = getLawBonuses(state);
-  return Math.floor((state.defBase + state.tempDef + baseDef + stageBonus + state.karma.def*100) * lawBonuses.def);
+  const building = getBuildingBonuses(state).defBase || 0;
+  return Math.floor((state.defBase + building + state.tempDef + baseDef + stageBonus + state.karma.def*100) * lawBonuses.def);
 }
 
 export function getStatEffects(state = progressionState) {
@@ -189,7 +195,7 @@ export function breakthroughChance(state = progressionState){
 
   const ward = state.pills.ward>0 ? 0.15 : 0;
   const alchemyBonus = state.alchemy.successBonus * 0.1;
-  const buildingBonus = state.buildingBonuses.breakthroughBonus || 0;
+  const buildingBonus = getBuildingBonuses(state).breakthroughBonus || 0;
   const cultivationBonus = (state.cultivation.talent - 1) * 0.1;
 
   const totalChance = base + ward + alchemyBonus + buildingBonus + cultivationBonus;
@@ -197,4 +203,4 @@ export function breakthroughChance(state = progressionState){
   return clamp(totalChance, 0.01, 0.95);
 }
 
-export default function engineTick(state = progressionState) {}
+export default function engineTick() {}

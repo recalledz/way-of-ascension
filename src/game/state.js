@@ -1,5 +1,7 @@
 import { initHp } from './helpers.js';
 import { runMigrations, SAVE_VERSION } from './migrations.js';
+import { sectState } from '../features/sect/state.js';
+import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 
 export function loadSave(){
   try{
@@ -135,18 +137,13 @@ export const defaultState = () => {
       alchemy: {}
     }
   },
-  // Sect Buildings System
-  buildings: {}, // Building levels: {building_key: level}
-  // Building bonuses (calculated from building levels)
-  buildingBonuses: {
-    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
-    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
-    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
-  }
+  sect: structuredClone(sectState),
   };
 };
 
 export let S = loadSave() || defaultState();
+S.sect = { ...structuredClone(sectState), ...S.sect };
+recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the
 // single source of truth for all items.  These properties are not
