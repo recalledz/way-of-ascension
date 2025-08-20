@@ -6,7 +6,7 @@ import { proficiencyState } from "../features/proficiency/state.js";
 import { weaponGenerationState } from "../features/weaponGeneration/state.js";
 
 // TEMP bridge to legacy world:
-import engineTick from "./engine.js";
+import engineTick from "../features/progression/logic.js";
 
 export function createGameController() {
   const state = {

@@ -1,4 +1,4 @@
-import { clamp } from './engine.js';
+import { clamp } from '../features/progression/selectors.js';
 
 export const qs = sel => document.querySelector(sel);
 

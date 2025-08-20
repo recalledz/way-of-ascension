@@ -34,7 +34,7 @@ Selectors read from state and mutators write to state. User interfaces never mut
 
 #### Migration Process (Incremental)
 
-Keep `engine.js` intact for now; the controller calls it every step. Migrate features one at a time (loot → inventory → affixes → ability → combat → adventure → engine). After a feature is migrated, remove its responsibilities from `engine.js` and replace them with `TICK` listeners or feature‑local logic.
+Keep `progression/logic.js` intact for now; the controller calls it every step. Migrate features one at a time (loot → inventory → affixes → ability → combat → adventure → engine). After a feature is migrated, remove its responsibilities from `progression/logic.js` and replace them with `TICK` listeners or feature‑local logic.
 
 #### PR Checklist (Short)
 
@@ -73,7 +73,7 @@ Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js`
 At the time of writing, the following game systems remain in the `src/game` folder:
 
 * **Combat and adventure:** core fighting mechanics and exploration systems, including `combat.js`, the `combat/` subdirectory (hit resolution and status effects) and `adventure.js`.
-* **Engine:** progression and simulation loop (`engine.js`) which ties together cultivation, skills and other systems.
+* **Engine:** progression and simulation loop (`src/features/progression/logic.js`) which ties together cultivation, skills and other systems.
 * **Affixes, helpers and utilities:** general helper functions and item modifier definitions.
 * **Game state:** a monolithic `state.js` defines the default state for the entire game, while selectors like `getEquippedWeapon()` have been migrated into feature folders.
 * **Systems:** some subsystems (inventory, loot, session loot) still live under `src/game/systems`.  They will eventually be migrated into dedicated feature folders like `inventory`, `loot` and `sessionLoot`.

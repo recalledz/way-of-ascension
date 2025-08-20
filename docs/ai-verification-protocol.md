@@ -80,7 +80,7 @@ ls -la src/game/ src/data/ data/ ui/ docs/
 // Verify core game files exist
 const coreFiles = [
   'src/game/state.js',
-  'src/game/engine.js', 
+  'src/features/progression/logic.js',
   'src/features/adventure/logic.js',
   'ui/index.js',
   'ui/realm.js',
@@ -149,7 +149,7 @@ coreFiles.forEach(file => {
 
 ### New Game Systems
 1. **State**: Add state properties to `defaultState()` in `state.js`
-2. **Logic**: Add calculation functions to `engine.js`
+2. **Logic**: Add calculation functions to `src/features/progression/logic.js`
 3. **UI**: Add render functions and event handlers to `ui/index.js`
 4. **Data**: Add configuration files to `data/` if needed
 5. **Migration**: Update save version and add migration if needed
@@ -175,7 +175,7 @@ coreFiles.forEach(file => {
 4. Add to building render system
 
 ### New Laws/Skills
-1. Add to `data/laws.js`
+1. Add to `src/features/progression/data/laws.js`
 2. Define skill tree structure
 3. Add bonus calculation logic
 4. Add UI rendering for skill trees
@@ -195,10 +195,10 @@ coreFiles.forEach(file => {
 
 ## Common Locations for Code
 
-- **New calculations**: `src/game/engine.js`
+- **New calculations**: `src/features/progression/logic.js`
 - **New state properties**: `src/game/state.js` in `defaultState()`
 - **New UI elements**: `ui/index.js` in appropriate render functions
-- **New game data**: `data/` directory in appropriate files
+- **New game data**: `src/features/progression/data/` in appropriate files
 - **New activities**: Activity logic in tick system, UI in activity cards
 - **New buildings**: SECT_BUILDINGS configuration in `ui/index.js`
 - **Save migrations**: `src/game/migrations.js`

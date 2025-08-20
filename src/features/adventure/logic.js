@@ -1,5 +1,5 @@
 import { S, save } from '../../game/state.js';
-import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from '../../game/engine.js';
+import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from '../progression/selectors.js';
 import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
@@ -317,15 +317,15 @@ export function updateBattleDisplay() {
     playerHealthFill.style.width = `${playerHealthPct}%`;
   }
   const playerQi = S.qi || 0;
-  const playerMaxQi = qCap();
+  const playerMaxQi = qCap(S);
   setText('playerQiText', `${Math.round(playerQi)}/${Math.round(playerMaxQi)}`);
   const playerQiFill = document.getElementById('playerQiFill');
   if (playerQiFill) {
     const playerQiPct = playerMaxQi ? (playerQi / playerMaxQi) * 100 : 0;
     playerQiFill.style.width = `${playerQiPct}%`;
   }
-  const playerAttack = calculatePlayerCombatAttack();
-  const playerAttackRate = calculatePlayerAttackRate();
+  const playerAttack = calculatePlayerCombatAttack(S);
+  const playerAttackRate = calculatePlayerAttackRate(S);
   setText('playerAttack', Math.round(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
@@ -461,7 +461,7 @@ export function updateAdventureCombat() {
     return;
   }
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
-    const playerAttackRate = calculatePlayerAttackRate();
+    const playerAttackRate = calculatePlayerAttackRate(S);
     const weapon = getEquippedWeapon(S);
     console.log('[weapon]', weapon.key); // WEAPONS-INTEGRATION
     const now = Date.now();
@@ -480,7 +480,7 @@ export function updateAdventureCombat() {
       const enemyDodge = S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
-        const playerAttack = calculatePlayerCombatAttack();
+        const playerAttack = calculatePlayerCombatAttack(S);
         const dmg = Math.max(1, Math.round(playerAttack));
         const dealt = processAttack(
           dmg,
@@ -1169,7 +1169,7 @@ export function updateActivityAdventure() {
     const equipped = getEquippedWeapon(S);
     setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   }
-  const baseAttack = Math.round(calculatePlayerCombatAttack());
+  const baseAttack = Math.round(calculatePlayerCombatAttack(S));
   setText('baseDamage', baseAttack);
   updateWeaponProficiencyDisplay();
   updateZoneButtons(selectZone);

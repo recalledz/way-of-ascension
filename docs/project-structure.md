@@ -44,9 +44,6 @@ way-of-ascension/
 │   └── docs/
 │       ├── mcp-docs.md
 │       └── mcp.md
-├── data/
-│   ├── laws.js
-│   └── realms.js
 ├── docs/
 │   ├── To-dos/
 │   │   ├── Balance.md
@@ -146,6 +143,15 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   └── ui/
 │   │   │       └── weaponProficiencyDisplay.js
+│   │   ├── progression/
+│   │   │   ├── data/
+│   │   │   │   ├── laws.js
+│   │   │   │   └── realms.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -161,7 +167,6 @@ way-of-ascension/
 │   │   ├── systems/
 │   │   │   ├── loot.js
 │   │   │   └── sessionLoot.js
-│   │   ├── engine.js
 │   │   ├── helpers.js
 │   │   ├── migrations.js
 │   │   ├── state.js
@@ -251,8 +256,8 @@ S = {
 
 **When to modify**: Add new state properties, modify save structure, add migration logic
 
-#### `engine.js` - Game Calculations
-**Purpose**: Core game mechanics and calculations
+#### `src/features/progression/logic.js` - Game Calculations
+**Purpose**: Core progression mechanics and calculations
 **Key Functions**:
 - `qCap()`, `qiRegenPerSec()` - Qi system calculations
 - `fCap()`, `foundationGainPerSec()` - Foundation system
@@ -372,7 +377,7 @@ export function runMigrations(save) {
 **Key Functions**: `addSessionLoot()`, `claimSessionLoot()`, `forfeitSessionLoot()`.
 **When to modify**: Change how loot is staged or distributed post-combat.
 
-### Data Configuration (`data/`)
+### Data Configuration (`src/features/progression/data/`)
 
 #### `realms.js` - Cultivation Realms
 **Purpose**: Define cultivation progression tiers
@@ -507,6 +512,27 @@ function updateAll() {
 #### `src/features/proficiency/ui/weaponProficiencyDisplay.js` - Proficiency HUD
 **Purpose**: Updates HUD elements showing weapon proficiency levels and progress.
 **When to modify**: Adjust proficiency display or formatting.
+
+#### `src/features/progression/state.js` - Progression State Slice
+**Purpose**: Stores realm, cultivation, and law info for the player.
+
+#### `src/features/progression/mutators.js` - Progression Mutators
+**Purpose**: Advance realms and manage law selection and unlocking.
+**Key Functions**: `advanceRealm(state)`, `selectLaw(lawKey, state)`.
+
+#### `src/features/progression/selectors.js` - Progression Selectors
+**Purpose**: Expose derived values like qi capacity, regeneration, and law bonuses.
+**Key Functions**: `qCap(state)`, `qiRegenPerSec(state)`, `getLawBonuses(state)`.
+
+#### `src/features/progression/logic.js` - Progression Calculations
+**Purpose**: Core formulas for cultivation and combat stats.
+**Key Functions**: `fCap(state)`, `calcAtk(state)`, `breakthroughChance(state)`.
+
+#### `src/features/progression/data/realms.js` - Cultivation Realms
+**Purpose**: Define realm tiers and their properties.
+
+#### `src/features/progression/data/laws.js` - Cultivation Laws
+**Purpose**: Define law bonuses and skill trees.
 
 ### UI Effects (`src/ui/fx/`)
 

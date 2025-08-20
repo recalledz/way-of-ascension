@@ -3,7 +3,7 @@
 
 // Way of Ascension — Modular JS
 
-import { LAWS } from '../data/laws.js';
+import { LAWS } from '../src/features/progression/data/laws.js';
 import { S, defaultState, save, setState } from '../src/game/state.js';
 import {
   clamp,
@@ -17,7 +17,7 @@ import {
   calcDef,
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
-} from '../src/game/engine.js';
+} from '../src/features/progression/selectors.js';
 import { initializeFight } from '../src/features/combat/mutators.js';
 import { processAttack, refillShieldFromQi } from '../src/features/combat/logic.js';
 import { applyRandomAffixes } from '../src/features/affixes/logic.js';
@@ -286,7 +286,7 @@ function updateQiOrbEffect(){
   if(!qiOrb) return;
   
   // Check if foundation is at maximum capacity
-  const isFoundationMax = S.foundation >= fCap() * 0.99; // 99% or higher counts as "max"
+  const isFoundationMax = S.foundation >= fCap(S) * 0.99; // 99% or higher counts as "max"
   
   if(isFoundationMax) {
     qiOrb.classList.add('foundation-max');
@@ -420,20 +420,20 @@ function updateAll(){
   updateRealmUI();
 
   // Qi
-  setText('qiVal', fmt(S.qi)); setText('qiCap', fmt(qCap()));
-  setText('qiValL', fmt(S.qi)); setText('qiCapL', fmt(qCap()));
-  setText('qiRegen', qiRegenPerSec().toFixed(1));
-  setFill('qiFill', S.qi / qCap());
-  setFill('qiFill2', S.qi / qCap());
-  setText('qiPct', Math.floor(100 * S.qi / qCap()) + '%');
+  setText('qiVal', fmt(S.qi)); setText('qiCap', fmt(qCap(S)));
+  setText('qiValL', fmt(S.qi)); setText('qiCapL', fmt(qCap(S)));
+  setText('qiRegen', qiRegenPerSec(S).toFixed(1));
+  setFill('qiFill', S.qi / qCap(S));
+  setFill('qiFill2', S.qi / qCap(S));
+  setText('qiPct', Math.floor(100 * S.qi / qCap(S)) + '%');
   
   // Foundation
-  setFill('cultivationProgressFill', S.foundation / fCap());
-  setText('cultivationProgressText', `${fmt(S.foundation)} / ${fmt(fCap())}`);
-  setText('foundValL', fmt(S.foundation)); setText('foundCapL', fmt(fCap()));
-  setFill('foundFill', S.foundation / fCap());
-  setFill('foundFill2', S.foundation / fCap());
-  setText('foundPct', Math.floor(100 * S.foundation / fCap()) + '%');
+  setFill('cultivationProgressFill', S.foundation / fCap(S));
+  setText('cultivationProgressText', `${fmt(S.foundation)} / ${fmt(fCap(S))}`);
+  setText('foundValL', fmt(S.foundation)); setText('foundCapL', fmt(fCap(S)));
+  setFill('foundFill', S.foundation / fCap(S));
+  setFill('foundFill2', S.foundation / fCap(S));
+  setText('foundPct', Math.floor(100 * S.foundation / fCap(S)) + '%');
   
   // HP
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
@@ -442,11 +442,11 @@ function updateAll(){
   setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
   
   // Combat stats
-  setText('atkVal', calcAtk()); setText('defVal', calcDef());
+  setText('atkVal', calcAtk(S)); setText('defVal', calcDef(S));
   setText('armorVal', S.stats?.armor || 0);
   setText('accuracyVal', S.stats?.accuracy || 0);
   setText('dodgeVal', S.stats?.dodge || 0);
-  setText('atkVal2', calcAtk()); setText('defVal2', calcDef());
+  setText('atkVal2', calcAtk(S)); setText('defVal2', calcDef(S));
   setText('armorVal2', S.stats?.armor || 0);
   setText('accuracyVal2', S.stats?.accuracy || 0);
   setText('dodgeVal2', S.stats?.dodge || 0);
@@ -983,7 +983,7 @@ function updateActivitySelectors() {
   }
   
   if (cultivationFill && cultivationInfo) {
-    const foundationPct = S.foundation / fCap() * 100;
+    const foundationPct = S.foundation / fCap(S) * 100;
     cultivationFill.style.width = `${foundationPct}%`;
     cultivationInfo.textContent = S.activities.cultivation ? 'Cultivating...' : 'Foundation Progress';
   }
@@ -1452,7 +1452,7 @@ function updateSidebarActivities() {
   setText('cultivationLevel', `${getRealmName(S.realm.tier)} ${S.realm.stage}`);
   const cultivationFill = document.getElementById('cultivationProgressFill');
   if (cultivationFill) {
-    const foundationProgress = S.foundation / fCap();
+    const foundationProgress = S.foundation / fCap(S);
     const progressPct = Math.floor(foundationProgress * 100);
     cultivationFill.style.width = progressPct + '%';
     setText('cultivationProgressText', progressPct + '%');
@@ -1787,8 +1787,8 @@ function initLawSystem(){
 }
 
 function meditate(){
-  const gain = foundationGainPerMeditate();
-  S.foundation = clamp(S.foundation + gain, 0, fCap());
+  const gain = foundationGainPerMeditate(S);
+  S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   log(`Meditated: +${gain.toFixed(1)} Foundation`);
   updateAll();
 }
@@ -2101,7 +2101,7 @@ function buy(u){ if(S.bought[u.key]) return false; if(!pay(u.cost)) { log('Not e
 // Pills
 function usePill(type){
   if(S.pills[type]<=0){ log('No pill available','bad'); return; }
-  if(type==='qi'){ const add = Math.floor(qCap()*0.25); S.qi=clamp(S.qi+add,0,qCap()); }
+  if(type==='qi'){ const add = Math.floor(qCap(S)*0.25); S.qi=clamp(S.qi+add,0,qCap(S)); }
   if(type==='body'){ S.tempAtk+=4; S.tempDef+=3; setTimeout(()=>{ S.tempAtk=Math.max(0,S.tempAtk-4); S.tempDef=Math.max(0,S.tempDef-3); updateAll(); }, 60000); }
   if(type==='ward'){ /* consumed during breakthrough */ }
   S.pills[type]--; updateAll();
@@ -2143,7 +2143,7 @@ function resolveHunt(win){
 function techSlash(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
-  const dmg = calcAtk()*3;
+  const dmg = calcAtk(S)*3;
   S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' });
   S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
 }
@@ -2155,13 +2155,13 @@ function techGuard(){
 function techBurst(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
-  const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' }); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
+  const need = 0.25*qCap(S); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
+  S.qi -= need; const dmg = need/3 + calcAtk(S); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' }); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
 }
 
 function updateWinEst(){
   const i= +document.getElementById('beastSelect').value; const b=BEASTS[i]; if(!b){ setText('winEst','—'); return; }
-  const atk = calcAtk(); const def = calcDef(); const ourDPS = Math.max(1, atk - b.def*0.6); const enemyDPS = Math.max(0, b.atk - def*0.7);
+  const atk = calcAtk(S); const def = calcDef(S); const ourDPS = Math.max(1, atk - b.def*0.6); const enemyDPS = Math.max(0, b.atk - def*0.7);
   const tKill = b.hp/ourDPS; const tDie = S.hp / Math.max(0.1, enemyDPS);
   const p = clamp(0.5 + (tDie - tKill)/ (tDie + tKill + 1e-6), 0, 0.99);
   setText('winEst', Math.round(p*100)+'%');
@@ -2190,7 +2190,7 @@ function tick(){
   tickAbilityCooldowns(1000);
 
   // Passive Qi regen and out-of-combat HP regen
-  S.qi = clamp(S.qi + qiRegenPerSec(), 0, qCap());
+  S.qi = clamp(S.qi + qiRegenPerSec(S), 0, qCap(S));
   if (!(S.adventure?.inCombat) && !S.combat.hunt) {
     S.hp = clamp(S.hp + 1, 0, S.hpMax);
     if (S.adventure) S.adventure.playerHP = S.hp;
@@ -2208,8 +2208,8 @@ function tick(){
 
   // Activity-based progression
   if(S.activities.cultivation) {
-    const gain = foundationGainPerSec();
-    S.foundation = clamp(S.foundation + gain, 0, fCap());
+    const gain = foundationGainPerSec(S);
+    S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
   
   // Passive mining progression
@@ -2291,8 +2291,8 @@ function tick(){
   
   // Auto meditation fallback for old saves
   if(S.auto.meditate && !S.activities.cultivation) {
-    const gain = foundationGainPerSec() * 0.5; // Reduced when not actively cultivating
-    S.foundation = clamp(S.foundation + gain, 0, fCap());
+    const gain = foundationGainPerSec(S) * 0.5; // Reduced when not actively cultivating
+    S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
   if(S.auto.brewQi && S.alchemy.queue.length < S.alchemy.maxSlots){ if(canPay(RECIPES.qi.cost)) addBrew(); }
   if(S.auto.hunt && !S.combat.hunt){ startHunt(); }
@@ -2301,7 +2301,7 @@ function tick(){
   if(S.combat.hunt){
     const h=S.combat.hunt;
     const guardActive = S.time < S.combat.guardUntil;
-    const atk = calcAtk(), def = calcDef();
+    const atk = calcAtk(S), def = calcDef(S);
     const ourDPS = Math.max(1, atk - h.eDef*0.6);
     let enemyDPS = Math.max(0, h.eAtk - def*0.7);
     if(guardActive) enemyDPS *= 0.5;
@@ -2412,7 +2412,7 @@ function initActivityListeners() {
         } else {
           S.activities.adventure = false;
         }
-        const loss = Math.floor(qCap() * 0.25);
+        const loss = Math.floor(qCap(S) * 0.25);
         S.qi = Math.max(0, S.qi - loss);
         log(`Retreated from combat. Lost ${loss} Qi.`, 'neutral');
         btn.disabled = false;
