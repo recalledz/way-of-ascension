@@ -62,13 +62,6 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 
 
-const KARMA_UPS = [
-  {key:'k_qi', name:'Inner Stillness', desc:'+15% Qi regen (permanent)', base:5, mult:1.45, eff:s=>s.karma.qiRegen+=0.15},
-  {key:'k_yield', name:'Providence', desc:'+12% resource yield (perm.)', base:5, mult:1.6, eff:s=>s.karma.yield+=0.12},
-  {key:'k_blade', name:'Sword Intent', desc:'+10% ATK (perm.)', base:8, mult:1.7, eff:s=>s.karma.atk+=0.10},
-  {key:'k_shell', name:'Stone Body', desc:'+10% DEF (perm.)', base:8, mult:1.7, eff:s=>s.karma.def+=0.10}
-];
-
 const fmt = n=>{
   if (n>=1e12) return (n/1e12).toFixed(2)+'t';
   if (n>=1e9) return (n/1e9).toFixed(2)+'b';
@@ -193,10 +186,9 @@ function initUI(){
   if (debugKillBtn) debugKillBtn.addEventListener('click', instakillCurrentEnemy);
 
 
-  // Safe render calls
-  renderKarma();
-  updateAll();
-}
+    // Safe render calls
+    updateAll();
+  }
 
 function updateAll(){
   updateRealmUI();
@@ -274,7 +266,6 @@ function updateAll(){
   // Disciples
   
   // Karma
-  setText('karmaVal', S.karmaPts);
   const ascendBtn = document.getElementById('ascendBtn');
   if (ascendBtn) ascendBtn.disabled = calcKarmaGain() <= 0;
   
@@ -282,6 +273,9 @@ function updateAll(){
   if (typeof updateLawsDisplay === 'function') updateLawsDisplay();
   
   // Safe render function calls
+  if (typeof renderQueue === 'function') renderQueue();
+  if (typeof renderAlchemyUI === 'function') renderAlchemyUI();
+
   renderKarma(); 
   if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
@@ -290,7 +284,62 @@ function updateAll(){
   updateActivityCards();
 }
 
+function renderAlchemyUI(){
+  // Update recipe select based on known recipes and unlock status
+  const recipeSelect = document.getElementById('recipeSelect');
+  const brewBtn = document.getElementById('brewBtn');
+  
+  if(!S.alchemy.unlocked) {
+    recipeSelect.innerHTML = '<option value="">Alchemy not unlocked - Build Alchemy Laboratory</option>';
+    recipeSelect.disabled = true;
+    brewBtn.disabled = true;
+    brewBtn.textContent = '🔒 Locked';
+    return;
+  }
+  
+  recipeSelect.disabled = false;
+  brewBtn.disabled = false;
+  brewBtn.textContent = '🔥 Brew';
+  
+  recipeSelect.innerHTML = '';
+  S.alchemy.knownRecipes.forEach(key => {
+    const recipe = RECIPES[key];
+    if(recipe) {
+      const option = document.createElement('option');
+      option.value = key;
+      const costStr = Object.entries(recipe.cost).map(([res, amt]) => {
+        const icons = {herbs: '🌿', ore: '⛏️', wood: '🪵', stones: '🪨'};
+        return `${amt}${icons[res] || res}`;
+      }).join(' ');
+      option.textContent = `${recipe.name} (${costStr}, ${recipe.time}s, ${Math.floor(recipe.base*100)}%)`;
+      recipeSelect.appendChild(option);
+    }
+  });
+  
+  // Add unknown recipes as disabled options with hints
+  Object.entries(RECIPES).forEach(([key, recipe]) => {
+    if(!S.alchemy.knownRecipes.includes(key)) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.disabled = true;
+      option.textContent = `??? - ${recipe.unlockHint}`;
+      recipeSelect.appendChild(option);
+    }
+  });
+}
 
+function renderQueue(){
+  const tbody = document.getElementById('queueTable');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  S.alchemy.queue.forEach((q, i) => {
+    const tr = document.createElement('tr');
+    const prog = q.done ? 'Done' : `${q.T - q.t}s`;
+    const btn = q.done ? `<button class="btn small" onclick="collectBrew(${i})">Collect</button>` : '';
+    tr.innerHTML = `<td>${q.name}</td><td>${prog}</td><td>${q.done ? 'Ready' : 'Brewing'}</td><td>${btn}</td>`;
+    tbody.appendChild(tr);
+  });
+}
 function renderKarma(){
   const body=document.getElementById('karmaUpgrades'); 
   if (!body) return; 
@@ -1258,8 +1307,8 @@ if (ascendBtn) {
   ascendBtn.addEventListener('click', ()=>{
     const gain = calcKarmaGain();
     if(!confirm(`Ascend now and earn ${gain} karma? This resets most progress.`)) return;
-    S.karmaPts += gain; S.ascensions++;
-    const keep = {karmaPts:S.karmaPts, ascensions:S.ascensions, karma:S.karma};
+    S.karma.points += gain; S.ascensions++;
+    const keep = { ascensions:S.ascensions, karma:S.karma };
     setState(Object.assign(defaultState(), keep));
     save(); location.reload();
   });

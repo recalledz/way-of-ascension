@@ -168,6 +168,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   └── ui/
 │   │   │       └── sectScreen.js
+│   │   ├── karma/
 │   │   ├── alchemy/
 │   │   │   ├── data/
 │   │   │   │   └── recipes.js
@@ -176,6 +177,7 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
+│   │   │       └── karmaDisplay.js
 │   │   │       └── alchemyDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
@@ -471,7 +473,7 @@ export const ZONES = [
 - `initUI()` - Initialize UI elements and event listeners
 - `updateAll()` - Update all UI displays
 - `setText()`, `setFill()` - UI utility functions
-- Render functions: `renderBuildings()`, `renderKarma()`, etc.
+- Render functions: `renderBuildings()`, etc.
 
 **UI Update Pattern**:
 ```javascript
@@ -479,10 +481,9 @@ function updateAll() {
   // Update displays
   setText('elementId', value);
   setFill('fillId', ratio);
-  
+
   // Call specialized render functions
   renderBuildings();
-  renderKarma();
   // etc.
 }
 ```
@@ -634,6 +635,13 @@ Paths added:
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
 
+### Karma Feature (`src/features/karma/`)
+- `src/features/karma/state.js` – Stores karma points and purchased bonuses.
+- `src/features/karma/logic.js` – Derives combat and regeneration bonuses from karma.
+- `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
+- `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
+- `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
+=======
 ### Alchemy Feature
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
 - `src/features/alchemy/logic.js` – Tick handler that advances brew timers.

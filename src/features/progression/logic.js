@@ -3,6 +3,7 @@ import { LAWS } from './data/laws.js';
 import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
+import { karmaQiRegenBonus, karmaAtkBonus, karmaDefBonus } from '../karma/logic.js';
 import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 import { getCookingSuccessBonus } from '../cooking/selectors.js';
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
@@ -61,7 +62,7 @@ export function qCap(state = progressionState){
 export function qiRegenPerSec(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).qiRegenMult || 0;
-  return (REALMS[state.realm.tier].baseRegen + state.karma.qiRegen*10) * (1 + state.qiRegenMult + building) * lawBonuses.qiRegen;
+  return (REALMS[state.realm.tier].baseRegen + karmaQiRegenBonus(state)) * (1 + state.qiRegenMult + building) * lawBonuses.qiRegen;
 }
 
 export function fCap(state = progressionState){
@@ -123,7 +124,7 @@ export function calcAtk(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const profBonus = getWeaponProficiencyBonuses(state).damage;
   const building = getBuildingBonuses(state).atkBase || 0;
-  return Math.floor((state.atkBase + building + profBonus + state.tempAtk + baseAtk + stageBonus + state.karma.atk*100) * lawBonuses.atk);
+  return Math.floor((state.atkBase + building + profBonus + state.tempAtk + baseAtk + stageBonus + karmaAtkBonus(state)) * lawBonuses.atk);
 }
 
 export function calcDef(state = progressionState){
@@ -139,7 +140,7 @@ export function calcDef(state = progressionState){
   }
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).defBase || 0;
-  return Math.floor((state.defBase + building + state.tempDef + baseDef + stageBonus + state.karma.def*100) * lawBonuses.def);
+  return Math.floor((state.defBase + building + state.tempDef + baseDef + stageBonus + karmaDefBonus(state)) * lawBonuses.def);
 }
 
 export function getStatEffects(state = progressionState) {
