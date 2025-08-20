@@ -87,6 +87,9 @@ way-of-ascension/
 │   │   └── abilities.js
 │   ├── features/
 │   │   ├── index.js
+│   │   ├── affixes/
+│   │   │   ├── data/
+│   │   │   │   └── affixes.js
 │   │   ├── inventory/
 │   │   │   ├── data/
 │   │   │   ├── logic.js
@@ -94,8 +97,7 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
-│   │   │       ├── CharacterPanel.js
-│   │   │       └── weaponChip.js
+│   │   │       └── .gitkeep
 │   │   ├── loot/
 │   │   │   ├── data/
 │   │   │   │   ├── lootTables.js
@@ -135,7 +137,6 @@ way-of-ascension/
 │   │   │   ├── loot.js
 │   │   │   └── sessionLoot.js
 │   │   ├── adventure.js
-│   │   ├── affixes.js
 │   │   ├── combat.js
 │   │   ├── engine.js
 │   │   ├── helpers.js
