@@ -115,6 +115,13 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
+│   │   ├── cooking/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── cookingDisplay.js
 │   │   ├── inventory/
 │   │   │   ├── data/
 │   │   │   ├── logic.js
@@ -627,14 +634,6 @@ Paths added:
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
 
-### Sect Feature
-- `src/features/sect/data/buildings.js` – Defines sect buildings, upgrade costs, and per-level effects.
-- `src/features/sect/logic.js` – Calculates building costs and aggregated bonuses.
-- `src/features/sect/mutators.js` – Upgrades buildings and recomputes bonuses.
-- `src/features/sect/selectors.js` – Retrieves building levels, bonuses, and disciple counts.
-- `src/features/sect/state.js` – Default sect building levels and bonus placeholders.
-- `src/features/sect/ui/sectScreen.js` – Renders the sect management interface.
-
 ### Alchemy Feature
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
 - `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
@@ -642,3 +641,18 @@ Paths added:
 - `src/features/alchemy/selectors.js` – Accessors for brewing queue and success chance calculations.
 - `src/features/alchemy/state.js` – Base alchemy stats including level, XP, and known recipes.
 - `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.
+
+### Cooking Feature (`src/features/cooking/`)
+- `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
+- `src/features/cooking/mutators.js` – Manage cooking actions and food slot equipment.
+- `src/features/cooking/selectors.js` – Access success bonus and other cooking state.
+- `src/features/cooking/logic.js` – Handle cooking, food slot usage, and UI updates.
+- `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
+
+### Sect Feature (`src/features/sect/`)
+- `src/features/sect/state.js` – Sect buildings and resources.
+- `src/features/sect/mutators.js` – Mutators for building and upgrading sect structures.
+- `src/features/sect/selectors.js` – Accessors for sect data.
+- `src/features/sect/logic.js` – Core sect calculations and mechanics.
+- `src/features/sect/data/buildings.js` – Building definitions and costs.
+- `src/features/sect/ui/sectScreen.js` – UI for managing the sect.

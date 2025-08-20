@@ -35,10 +35,10 @@ import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventor
 import {
   updateActivityAdventure,
   updateAdventureCombat,
-  updateFoodSlots,
   setupAdventureTabs,
   updateAbilityBar
 } from '../src/features/adventure/logic.js';
+import { updateActivityCooking, updateCookingSidebar } from '../src/features/cooking/ui/cookingDisplay.js';
 import {
   startAdventureCombat,
   startBossCombat,
@@ -250,9 +250,7 @@ function updateAll(){
   setText('miningProgressText', `${fmt(S.mining.exp)} / ${fmt(S.mining.expMax)} XP`);
   setText('miningLevel', `Level ${S.mining.level}`);
 
-  setFill('cookingProgressFillSidebar', S.cooking.exp / S.cooking.expMax);
-  setText('cookingProgressTextSidebar', `${fmt(S.cooking.exp)} / ${fmt(S.cooking.expMax)} XP`);
-  setText('cookingLevelSidebar', `Level ${S.cooking.level}`);
+  updateCookingSidebar();
 
   const currentZone = ZONES[S.adventure.currentZone];
   const currentArea = currentZone ? currentZone.areas[S.adventure.currentArea] : null;
@@ -851,193 +849,6 @@ function updateMiningRateDisplays() {
 }
 
 
-function updateActivityCooking() {
-  // Initialize cooking data if not exists
-  if (!S.cooking) {
-    S.cooking = {
-      level: 1,
-      exp: 0,
-      expMax: 100
-    };
-  }
-  
-  // Initialize food slots if not exists
-  if (!S.foodSlots) {
-    S.foodSlots = {
-      slot1: null,
-      slot2: null,
-      slot3: null,
-      lastUsed: 0,
-      cooldown: 5000
-    };
-  }
-  
-  // Initialize meat if not exists
-  if (S.meat === undefined) S.meat = 0;
-  if (S.cookedMeat === undefined) S.cookedMeat = 0;
-  
-  // Update cooking skill display
-  setText('cookingLevel', S.cooking.level);
-  setText('cookingExp', S.cooking.exp);
-  setText('cookingExpMax', S.cooking.expMax);
-  
-  const yieldBonus = (S.cooking.level - 1) * 10;
-  setText('cookingYieldBonus', yieldBonus + '%');
-  setText('currentYieldBonus', yieldBonus);
-  
-  // Update progress bar
-  const progressFill = document.getElementById('cookingProgressFill');
-  if (progressFill) {
-    progressFill.style.width = (S.cooking.exp / S.cooking.expMax * 100) + '%';
-  }
-  
-  // Update cook button
-  const cookButton = document.getElementById('cookMeatButton');
-  if (cookButton) {
-    cookButton.disabled = (S.meat || 0) === 0;
-  }
-  
-  // Update food slots
-  updateFoodSlots();
-}
-
-// Food System Functions
-function cookMeat() {
-  const amount = parseInt(document.getElementById('cookAmount').value) || 1;
-  
-  if ((S.meat || 0) < amount) {
-    log('Not enough raw meat!', 'bad');
-    return;
-  }
-  
-  // Calculate yield with cooking bonus
-  const yieldBonus = (S.cooking.level - 1) * 0.1; // 10% per level
-  let cookedAmount = amount;
-  
-  // Apply yield bonus (chance for extra cooked meat)
-  for (let i = 0; i < amount; i++) {
-    if (Math.random() < yieldBonus) {
-      cookedAmount++;
-    }
-  }
-  
-  // Consume raw meat and produce cooked meat
-  S.meat -= amount;
-  S.cookedMeat = (S.cookedMeat || 0) + cookedAmount;
-  
-  // Add cooking experience
-  const expGain = amount * 10; // 10 exp per meat cooked
-  S.cooking.exp += expGain;
-  
-  // Check for level up
-  while (S.cooking.exp >= S.cooking.expMax) {
-    S.cooking.exp -= S.cooking.expMax;
-    S.cooking.level++;
-    S.cooking.expMax = Math.floor(S.cooking.expMax * 1.2); // 20% increase per level
-    log(`Cooking level increased to ${S.cooking.level}!`, 'good');
-  }
-  
-  const bonusText = cookedAmount > amount ? ` (+${cookedAmount - amount} bonus)` : '';
-  log(`Cooked ${amount} meat into ${cookedAmount} cooked meat${bonusText}!`, 'good');
-  
-  updateAll();
-}
-
-function equipFood(foodType, slotNumber) {
-  if (!S.foodSlots) {
-    S.foodSlots = {
-      slot1: null,
-      slot2: null,
-      slot3: null,
-      lastUsed: 0,
-      cooldown: 5000
-    };
-  }
-  
-  const slotKey = `slot${slotNumber}`;
-  
-  // Check if we have the food
-  if (foodType === 'meat' && (S.meat || 0) === 0) {
-    log('No raw meat to equip!', 'bad');
-    return;
-  }
-  if (foodType === 'cookedMeat' && (S.cookedMeat || 0) === 0) {
-    log('No cooked meat to equip!', 'bad');
-    return;
-  }
-  
-  // Equip the food
-  S.foodSlots[slotKey] = foodType;
-  
-  log(`Equipped ${foodType === 'meat' ? 'raw meat' : 'cooked meat'} to slot ${slotNumber}!`, 'good');
-  updateAll();
-}
-
-function useFoodSlot(slotNumber) {
-  if (!S.foodSlots) return;
-  
-  const slotKey = `slot${slotNumber}`;
-  const foodType = S.foodSlots[slotKey];
-  
-  if (!foodType) {
-    log('No food equipped in this slot!', 'bad');
-    return;
-  }
-  
-  // Check cooldown
-  const now = Date.now();
-  if (now - S.foodSlots.lastUsed < S.foodSlots.cooldown) {
-    const remaining = Math.ceil((S.foodSlots.cooldown - (now - S.foodSlots.lastUsed)) / 1000);
-    log(`Food is on cooldown! ${remaining}s remaining.`, 'bad');
-    return;
-  }
-  
-  // Check if we have the food
-  if (foodType === 'meat' && (S.meat || 0) === 0) {
-    log('No raw meat available!', 'bad');
-    return;
-  }
-  if (foodType === 'cookedMeat' && (S.cookedMeat || 0) === 0) {
-    log('No cooked meat available!', 'bad');
-    return;
-  }
-  
-  // Check if HP is full
-  if (S.hp >= S.hpMax) {
-    log('HP is already full!', 'bad');
-    return;
-  }
-  
-  // Consume food and restore HP
-  let healAmount = 0;
-  if (foodType === 'meat') {
-    S.meat--;
-    healAmount = 20;
-  } else if (foodType === 'cookedMeat') {
-    S.cookedMeat--;
-    healAmount = 40;
-  }
-  
-  const oldHP = S.hp;
-  S.hp = Math.min(S.hpMax, S.hp + healAmount);
-  const actualHeal = S.hp - oldHP;
-  
-  S.foodSlots.lastUsed = now;
-  
-  log(`Used ${foodType === 'meat' ? 'raw meat' : 'cooked meat'} and restored ${actualHeal} HP!`, 'good');
-  
-  // Update adventure HP if in combat
-  if (S.adventure && S.adventure.inCombat) {
-    S.adventure.playerHP = S.hp;
-  }
-  
-  updateAll();
-}
-
-
-
-
-
 // Update sidebar activity displays
 function updateSidebarActivities() {
   // Update cultivation
@@ -1088,6 +899,7 @@ function updateSidebarActivities() {
     }
   }
   
+  updateCookingSidebar();
   
   // Update sect status indicator
   const sectStatus = document.getElementById('sectStatus');
