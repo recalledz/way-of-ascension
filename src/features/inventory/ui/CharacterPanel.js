@@ -1,14 +1,15 @@
-import { S, save } from '../../game/state.js';
-import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
-import { WEAPON_ICONS } from '../../features/weaponGeneration/data/weaponIcons.js';
-import { equipItem, unequip, removeFromInventory, recomputePlayerTotals } from '../../game/systems/inventory.js';
+import { S, save } from '../../../game/state.js';
+import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
+import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
+import { equipItem, unequip, removeFromInventory } from '../mutators.js';
+import { recomputePlayerTotals } from '../logic.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
 let slotFilter = null;
 
 export function renderEquipmentPanel() {
-  recomputePlayerTotals();
+  recomputePlayerTotals(S);
   renderEquipment();
   renderInventory();
   renderStats();

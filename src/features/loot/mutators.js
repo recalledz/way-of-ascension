@@ -1,5 +1,5 @@
 import { S, save } from '../../game/state.js';
-import { addToInventory } from '../../game/systems/inventory.js';
+import { addToInventory } from '../inventory/mutators.js';
 
 // EQUIP-CHAR-UI: session loot helpers
 export function addSessionLoot(item, state = S) {
