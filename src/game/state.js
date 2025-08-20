@@ -141,6 +141,7 @@ export const defaultState = () => {
 export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
+S.physique = { ...structuredClone(physiqueState), ...S.physique };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the

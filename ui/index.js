@@ -24,10 +24,10 @@ import {
   updateRealmUI,
   updateActivityCultivation,
   updateBreakthrough,
-  checkLawUnlocks,
   initRealmUI,
-  getRealmName
-} from './realm.js';
+  getRealmName,
+  checkLawUnlocks,
+} from '../src/features/progression/index.js';
 import { qs, setText, setFill, log } from '../src/game/utils.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
@@ -589,7 +589,7 @@ function stopActivity(activityName) {
   updateActivityContent();
 }
 
-// Expose activity controls globally so other modules like realm.js can access
+// Expose activity controls globally so other modules like the progression realm UI can access
 // them when binding UI event handlers. Without this, the cultivation start/stop
 // button fails to toggle the activity state.
 window.startActivity = startActivity;
@@ -795,14 +795,6 @@ function updateActivityPhysique() {
     setText('passiveTrainingRate', `+${passiveRate.toFixed(1)} XP/sec`);
     setText('passiveXpGained', `${Math.floor(S.physique.passiveXpGained || 0)} XP`);
     
-    // Update physique effects display
-    const currentPhysique = S.stats.physique || 10;
-    const hpBonus = Math.floor((currentPhysique - 10) * 5);
-    const carryCapacity = Math.max(0, currentPhysique - 10);
-
-    setText('currentPhysiqueStat', currentPhysique);
-    setText('physiqueHpStat', `+${Math.max(0, hpBonus)}`);
-    setText('physiqueCarryStat', `+${carryCapacity}`);
   }
 }
 

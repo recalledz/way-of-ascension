@@ -71,7 +71,6 @@ way-of-ascension/
 │   └── ARCHITECTURE.md
 ├── node_modules/
 ├── scripts/
-│   ├── test-node.js
 │   └── validate-structure.js
 ├── src/
 │   ├── index.js
@@ -158,7 +157,9 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       └── realm.js
 │   │   ├── sect/
 │   │   │   ├── data/
 │   │   │   │   └── buildings.js
@@ -222,8 +223,7 @@ way-of-ascension/
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
-│   ├── index.js
-│   └── realm.js
+│   └── index.js
 ├── README.md
 ├── CHANGELOG.md
 ├── eslint.config.mjs
@@ -504,7 +504,7 @@ function updateAll() {
 
 **When to modify**: Add new UI elements, modify display logic, add event handlers
 
-#### `realm.js` - Realm UI Components
+#### `src/features/progression/ui/realm.js` - Realm UI Components
 **Purpose**: Realm-specific UI components and cultivation displays
 **When to modify**: Add new realm UI features, modify cultivation interface
 
@@ -563,6 +563,9 @@ function updateAll() {
 #### `src/features/progression/selectors.js` - Progression Selectors
 **Purpose**: Expose derived values like qi capacity, regeneration, and law bonuses.
 **Key Functions**: `qCap(state)`, `qiRegenPerSec(state)`, `getLawBonuses(state)`.
+
+#### `src/features/progression/index.js` - Progression Feature Exports
+**Purpose**: Re-exports realm UI hooks and mutators for easier consumption.
 
 #### `src/features/progression/logic.js` - Progression Calculations
 **Purpose**: Core formulas for cultivation and combat stats.
@@ -663,9 +666,14 @@ Paths added:
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
 
+
 ### Physique Feature (`src/features/physique/`)
-- `src/features/physique/state.js` – Stores level, experience and stamina for physique training.
-=======
+- `src/features/physique/state.js` – Tracks physique training progress and stamina.
+- `src/features/physique/logic.js` – Calculates bonuses from the physique stat such as HP and carry capacity.
+- `src/features/physique/mutators.js` – Handles gaining physique experience and stamina changes.
+- `src/features/physique/selectors.js` – Accessors for physique levels, experience, stamina, and bonuses.
+- `src/features/physique/ui/physiqueDisplay.js` – Renders physique progress and bonuses in the UI.
+
 ### Alchemy Feature
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
 - `src/features/alchemy/logic.js` – Tick handler that advances brew timers.

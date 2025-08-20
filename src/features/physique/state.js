@@ -4,4 +4,5 @@ export const physiqueState = {
   expMax: 100,
   stamina: 100,
   maxStamina: 100,
+  passiveXpGained: 0,
 };

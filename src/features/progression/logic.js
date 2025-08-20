@@ -82,13 +82,6 @@ export function foundationGainPerSec(state = progressionState){
       buildingMult: 1.0
     };
   }
-  if (!state.stats) {
-    state.stats = {
-      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
-    };
-  }
   const comprehensionMult = 1 + (state.stats.comprehension - 10) * 0.05;
   const cultivationMult = state.cultivation.talent * comprehensionMult * state.cultivation.foundationMult;
   const lawBonuses = getLawBonuses(state);
@@ -114,13 +107,6 @@ export function calcAtk(state = progressionState){
   const realm = REALMS[state.realm.tier];
   const baseAtk = realm.atk;
   const stageBonus = Math.floor(baseAtk * (state.realm.stage - 1) * 0.08);
-  if (!state.stats) {
-    state.stats = {
-      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
-    };
-  }
   const lawBonuses = getLawBonuses(state);
   const profBonus = getWeaponProficiencyBonuses(state).damage;
   const building = getBuildingBonuses(state).atkBase || 0;
@@ -131,26 +117,12 @@ export function calcDef(state = progressionState){
   const realm = REALMS[state.realm.tier];
   const baseDef = realm.def;
   const stageBonus = Math.floor(baseDef * (state.realm.stage - 1) * 0.08);
-  if (!state.stats) {
-    state.stats = {
-      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
-    };
-  }
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).defBase || 0;
   return Math.floor((state.defBase + building + state.tempDef + baseDef + stageBonus + karmaDefBonus(state)) * lawBonuses.def);
 }
 
 export function getStatEffects(state = progressionState) {
-  if (!state.stats) {
-    state.stats = {
-      physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
-    };
-  }
   return {
     spellPowerMult: 1 + (state.stats.mind - 10) * 0.06,
     alchemySuccessMult: 1 + (state.stats.mind - 10) * 0.04,

@@ -7,6 +7,8 @@ import { mountKarmaUI } from "./karma/ui/karmaDisplay.js";
 import { mountAlchemyUI } from "./alchemy/ui/alchemyDisplay.js";
 import { mountCookingUI } from "./cooking/ui/cookingDisplay.js";
 import { mountMiningUI } from "./mining/ui/miningDisplay.js";
+import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
+
 
 // Example placeholder for later:
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
@@ -18,6 +20,8 @@ export function mountAllFeatureUIs(state) {
   mountAlchemyUI(state);
   mountCookingUI(state);
   mountMiningUI(state);
+  mountPhysiqueUI(state);
+
   // mountWeaponGenUI?.(state);
 }
 
