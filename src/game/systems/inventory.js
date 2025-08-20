@@ -1,7 +1,30 @@
 import { S, save } from '../state.js';
-import { WEAPONS } from '../../data/weapons.js';
+import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
 
 // EQUIP-CHAR-UI: basic inventory helpers
+export function recomputePlayerTotals(player = S) {
+  let armor = 0;
+  let accuracy = 0;
+  let dodge = 0;
+  let shieldMax = 0;
+  const equipped = Object.values(player.equipment || {});
+  for (const item of equipped) {
+    if (item && item.defense?.armor) armor += item.defense.armor;
+    if (item && item.shield?.max) shieldMax += item.shield.max;
+    if (item && item.stats?.accuracy) accuracy += item.stats.accuracy;
+    if (item && item.stats?.dodge) dodge += item.stats.dodge;
+  }
+  player.stats = player.stats || {};
+  player.stats.armor = armor;
+  player.stats.accuracy = accuracy;
+  player.stats.dodge = dodge;
+  player.shield = player.shield || { current: 0, max: 0 };
+  const mind = player.stats.mind || 0;
+  const shieldMult = 1 + mind * 0.06;
+  player.shield.max = Math.round(shieldMax * shieldMult);
+  player.shield.current = Math.min(player.shield.current, player.shield.max);
+}
+
 export function addToInventory(item) {
   S.inventory = S.inventory || [];
   const id = item.id || Date.now() + Math.random();
@@ -43,8 +66,9 @@ export function equipItem(item) {
   const existing = S.equipment[slot];
   const existingKey = typeof existing === 'string' ? existing : existing?.key;
   if (existingKey && existingKey !== 'fist') addToInventory(existing);
-  S.equipment[slot] = { key: item.key, type: item.type, slot: item.slot };
-  removeFromInventory(item.id);
+  const { id, ...equipData } = item;
+  S.equipment[slot] = equipData;
+  removeFromInventory(id);
   console.log('[equip]', 'slot→', slot, 'item→', item.key);
   if (slot === 'mainhand') {
     const hud = document.getElementById('currentWeapon');
@@ -52,6 +76,7 @@ export function equipItem(item) {
     const chip = document.getElementById('weaponName');
     if (chip) chip.textContent = WEAPONS[item.key]?.displayName || item.key;
   }
+  recomputePlayerTotals();
   save?.();
   return true;
 }
@@ -69,5 +94,6 @@ export function unequip(slot) {
     const chip = document.getElementById('weaponName');
     if (chip) chip.textContent = 'fist';
   }
+  recomputePlayerTotals();
   save?.();
 }

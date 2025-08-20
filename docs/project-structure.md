@@ -82,41 +82,55 @@ way-of-ascension/
 │   │   ├── lootTables.weapons.js
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
-│   │   ├── weapons.js
-│   │   ├── weaponTypes.js
-│   │   ├── weaponIcons.js
-│   │   ├── materials.stub.js
 │   │   ├── zones.js
 │   │   └── abilities.js
-│   ├── systems/
-│   │   ├── loot.js
-│   │   └── weaponGenerator.js
+│   ├── features/
+│   │   ├── proficiency/
+│   │   │   ├── data/
+│   │   │   │   └── .gitkeep
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── weaponProficiencyDisplay.js
+│   │   └── weaponGeneration/
+│   │       ├── data/
+│   │       │   ├── materials.stub.js
+│   │       │   ├── weaponIcons.js
+│   │       │   ├── weaponTypes.js
+│   │       │   └── weapons.js
+│   │       ├── logic.js
+│   │       ├── mutators.js
+│   │       ├── selectors.js
+│   │       ├── state.js
+│   │       └── ui/
+│   │           └── weaponChip.js
 │   ├── game/
 │   │   ├── combat/
 │   │   │   ├── attack.js
+│   │   │   ├── hit.js
 │   │   │   └── statusEngine.js
 │   │   ├── systems/
 │   │   │   ├── inventory.js
 │   │   │   ├── loot.js
-│   │   │   ├── proficiency.js
-│   │   │   ├── sessionLoot.js
-│   │   │   └── weapons.js
+│   │   │   └── sessionLoot.js
 │   │   ├── adventure.js
 │   │   ├── affixes.js
 │   │   ├── combat.js
 │   │   ├── engine.js
 │   │   ├── helpers.js
 │   │   ├── abilitySystem.js
+│   │   ├── selectors.js
 │   │   ├── migrations.js
 │   │   ├── state.js
 │   │   └── utils.js
 │   └── ui/
 │       ├── fx/
 │       │   └── fx.js
-│       └── panels/
-│           └── CharacterPanel.js
-│       ├── sidebar.js
-│       └── weaponChip.js
+│       ├── panels/
+│       │   └── CharacterPanel.js
+│       └── sidebar.js
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
@@ -223,13 +237,23 @@ S = {
 **Dependencies**: `data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
 
-#### `abilitySystem.js` - Active Ability Handling
-**Purpose**: Manages ability slots, casting validation, cooldown timers, and resolving ability effects.
+#### `combat/hit.js` - Hit Chance Calculation
+**Purpose**: Calculates chance for an attack to hit based on accuracy and dodge with scaling and caps.
 **Key Functions**:
-- `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
+- `chanceToHit(accuracy, dodge)` – computes final hit probability.
+
+#### `abilitySystem.js` - Active Ability Handling
+**Purpose**: Manages casting validation, cooldown timers, and resolving ability effects.
+**Key Functions**:
 - `tryCastAbility(key)` – validate and trigger ability casts, deduct Qi, start cooldowns.
 - `tickAbilityCooldowns(dt)` – decrement cooldown timers each game tick.
 - `processAbilityQueue(state)` – resolve queued ability actions like Power Slash damage and healing.
+
+#### `selectors.js` - Centralized State Selectors
+**Purpose**: Provides derived state accessors. Never read state fields directly; use selectors.
+**Key Functions**:
+- `getEquippedWeapon(state)` – retrieve the currently equipped weapon.
+- `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
@@ -244,17 +268,17 @@ export function runMigrations(save) {
 ```
 **When to modify**: When changing save data structure, increment SAVE_VERSION and add migration logic
 
-#### `systems/loot.js` - Loot Rolling Utilities
+#### `game/systems/loot.js` - Loot Rolling Utilities
 **Purpose**: Provides weighted random item selection based on zone loot tables.
-**Key Functions**: `rollLoot()`, `toLootTableKey()`.
+**Key Functions**: `rollLoot()`, `toLootTableKey()`, `onEnemyDefeated()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
 
-#### `systems/inventory.js` - Inventory Management
+#### `game/systems/inventory.js` - Inventory Management
 **Purpose**: Adds, removes, and equips items in the player's inventory and equipment slots.
 **Key Functions**: `addToInventory()`, `removeFromInventory()`, `equipItem()`, `unequip()`.
 **When to modify**: Expand inventory features or adjust equip logic.
 
-#### `systems/sessionLoot.js` - Session Loot Buffer
+#### `game/systems/sessionLoot.js` - Session Loot Buffer
 **Purpose**: Temporarily stores loot until claimed or forfeited after a session.
 **Key Functions**: `addSessionLoot()`, `claimSessionLoot()`, `forfeitSessionLoot()`.
 **When to modify**: Change how loot is staged or distributed post-combat.
@@ -370,6 +394,30 @@ function updateAll() {
 #### `src/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
 **When to modify**: Change weapon HUD logic or appearance.
+
+#### `src/features/proficiency/state.js` - Proficiency Feature State
+**Purpose**: Maintains the player's proficiency map keyed by weapon type.
+**When to modify**: Adjust underlying storage of proficiency values.
+
+#### `src/features/proficiency/logic.js` - Proficiency Calculations
+**Purpose**: Provides core functions for gaining and querying proficiency.
+**Key Functions**:
+- `gainProficiency(key, amount, state)` – increment proficiency for a weapon type.
+- `getProficiency(key, state)` – retrieve proficiency value and bonus multiplier.
+
+#### `src/features/proficiency/mutators.js` - Proficiency Mutators
+**Purpose**: State-aware wrappers around proficiency logic.
+**Key Functions**: `gainProficiency(key, amount, state)`.
+
+#### `src/features/proficiency/selectors.js` - Proficiency Selectors
+**Purpose**: Read-only helpers to derive proficiency data and bonuses.
+**Key Functions**:
+- `getProficiency(key, state)` – get stored proficiency and bonus.
+- `getWeaponProficiencyBonuses(state)` – compute damage and speed bonuses for the equipped weapon.
+
+#### `src/features/proficiency/ui/weaponProficiencyDisplay.js` - Proficiency HUD
+**Purpose**: Updates HUD elements showing weapon proficiency levels and progress.
+**When to modify**: Adjust proficiency display or formatting.
 
 ### UI Effects (`src/ui/fx/`)
 

@@ -21,6 +21,8 @@ export const defaultState = () => {
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
   ...initHp(100),
+  shield: { current: 0, max: 0 },
+  autoFillShieldFromQi: true,
   stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
   wood:0, cores:0,
@@ -28,7 +30,7 @@ export const defaultState = () => {
   atkBase:5, defBase:2, tempAtk:0, tempDef:0,
   // Expanded Stat System
   stats: {
-    physique: 10,        // Physical power, mining yield
+    physique: 10,        // Physical power
     mind: 10,            // Spell power, alchemy, learning speed
     agility: 10,         // Weapon handling, dodge
     dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
@@ -36,7 +38,10 @@ export const defaultState = () => {
     criticalChance: 0.05, // Base critical hit chance
     attackSpeed: 1.0,    // Base attack speed multiplier
     cooldownReduction: 0, // Cooldown reduction percentage
-    adventureSpeed: 1.0  // Adventure/exploration speed multiplier
+    adventureSpeed: 1.0, // Adventure/exploration speed multiplier
+    armor: 0,           // Total armor from gear and bonuses
+    accuracy: 0,        // Chance to hit with attacks
+    dodge: 0           // Chance to avoid attacks
   },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},

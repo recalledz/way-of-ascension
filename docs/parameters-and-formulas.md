@@ -2,6 +2,7 @@
 
 ## Base Stats
 - **HP**: 100
+- **Qi Shield**: 0
 - **Base Attack**: 5
 - **Base Defense**: 2
 - **Starting Stats**:
@@ -18,9 +19,17 @@
 | Cooldown Reduction | 0% |
 | Adventure Speed | 1.0× |
 
-## Physique-Derived Bonuses
 
-- **Mining Bonus**: `max(0, (Physique - 10) * 2)%` additional mining yield.
+## Attribute Effects
+All attribute levels grant **+1% talent**.
+
+| Attribute | Bonus per Level |
+| --- | --- |
+| Physique | +5 HP, +1 carry capacity |
+| Mind | +1% Qi Shield refill efficiency, +6% Qi Shield capacity |
+| Agility | +2% dodge chance |
+
+## Physique-Derived Bonuses
 - **Carry Capacity**: `max(0, (Physique - 10) * 5)` extra units of carrying capacity.
 
 ## Cultivation Stats
@@ -37,6 +46,12 @@
 ### Talent and Comprehension
 - **Talent** acts as a direct multiplier on cultivation progress. Higher Talent means proportionally faster foundation gain.
 - **Comprehension** boosts cultivation efficiency and learning speed. Each point above 10 adds +5% foundation gain via `(1 + (Comprehension - 10) * 0.05)` and grants +4% learning speed.
+
+## Qi Shield
+- Absorbs damage before HP and does not regenerate during combat.
+- Max Shield: `baseShield × (1 + Mind × 0.06)`.
+- Refill cost per shield point: `cost = 2 / (1 + Mind × 0.01)`, floored to 25% of base.
+- Refill occurs after encounters or periodically out of combat, consuming Qi.
 
 ## Attack Damage Calculation
 1. `baseDamage = random(min, max) * attackRate`

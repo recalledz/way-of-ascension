@@ -17,7 +17,7 @@ export const LOOT_TABLES = {
   // existing zones…
 };
 
-import { WEAPONS } from './weapons.js';
+import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 export const WEAPON_LOOT_TABLE = Object.fromEntries(
   Object.values(LOOT_TABLES)
     .flat()

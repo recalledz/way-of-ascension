@@ -1,9 +1,7 @@
 import { REALMS } from '../../data/realms.js';
 import { LAWS } from '../../data/laws.js';
 import { S } from './state.js';
-import { getProficiency } from './systems/proficiency.js';
-import { getEquippedWeapon } from './combat.js';
-import { WEAPONS } from '../data/weapons.js';
+import { getWeaponProficiencyBonuses } from '../features/proficiency/selectors.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -83,7 +81,8 @@ export function foundationGainPerSec(){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   const comprehensionMult = 1 + (S.stats.comprehension - 10) * 0.05;
@@ -113,13 +112,13 @@ export function calcAtk(){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
-  const physiqueMult = 1 + (S.stats.physique - 10) * 0.05;
   const lawBonuses = getLawBonuses();
-  const profBonus = getWeaponProficiencyBonuses().damage;
-  return Math.floor((S.atkBase + profBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk * physiqueMult);
+  const profBonus = getWeaponProficiencyBonuses(S).damage;
+  return Math.floor((S.atkBase + profBonus + S.tempAtk + baseAtk + stageBonus + S.karma.atk*100) * lawBonuses.atk);
 }
 
 export function calcDef(){
@@ -129,25 +128,23 @@ export function calcDef(){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
-  const physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
   const lawBonuses = getLawBonuses();
-  return Math.floor((S.defBase + S.tempDef + baseDef + stageBonus + S.karma.def*100) * lawBonuses.def * physiqueMult);
+  return Math.floor((S.defBase + S.tempDef + baseDef + stageBonus + S.karma.def*100) * lawBonuses.def);
 }
 
 export function getStatEffects() {
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, agility: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   return {
-    physicalDamageMult: 1 + (S.stats.physique - 10) * 0.05,
-    physicalDefenseMult: 1 + (S.stats.physique - 10) * 0.03,
-    miningYieldMult: 1 + (S.stats.physique - 10) * 0.03,
     spellPowerMult: 1 + (S.stats.mind - 10) * 0.06,
     alchemySuccessMult: 1 + (S.stats.mind - 10) * 0.04,
     learningSpeedMult: 1 + (S.stats.mind - 10) * 0.05,
@@ -164,29 +161,18 @@ export function getStatEffects() {
   };
 }
 
-export function getWeaponProficiencyBonuses(state = S) {
-  const weapon = getEquippedWeapon(state);
-  const { value } = getProficiency(weapon.proficiencyKey, state);
-  const level = Math.floor(value / 100);
-  return {
-    damage: level,
-    speed: level * 0.01,
-  };
-}
-
 export function calculatePlayerCombatAttack() {
   const baseAttack = 5;
-  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
   const realmBonus = REALMS[S.realm.tier].atk * S.realm.stage;
-  const profBonus = getWeaponProficiencyBonuses().damage;
-  return baseAttack + profBonus + physiqueBonus + realmBonus;
+  const profBonus = getWeaponProficiencyBonuses(S).damage;
+  return baseAttack + profBonus + realmBonus;
 }
 
 export function calculatePlayerAttackRate() {
   const baseRate = 1.0;
   const dexterityBonus = (S.stats.dexterity - 10) * 0.05;
   const attackSpeedBonus = S.stats.attackSpeed || 0;
-  const profBonus = getWeaponProficiencyBonuses().speed;
+  const profBonus = getWeaponProficiencyBonuses(S).speed;
   return baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus;
 }
 

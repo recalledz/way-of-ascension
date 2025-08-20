@@ -1,36 +1,7 @@
 import { ABILITIES } from '../data/abilities.js';
-import { getEquippedWeapon, processAttack } from './combat.js';
+import { processAttack } from './combat.js';
+import { getEquippedWeapon } from './selectors.js';
 import { S } from './state.js';
-
-/**
- * Get ability slots derived from currently equipped weapon.
- * @param {any} state
- * @returns {Array<import('../data/abilities.js').AbilityDef>}
- */
-export function getAbilitySlots(state = S) {
-  const slots = [];
-  const weapon = getEquippedWeapon(state);
-  const abilityKey = weapon.abilityKeys?.[0];
-  for (let i = 0; i < 6; i++) {
-    if (i === 0 && abilityKey) {
-      const def = ABILITIES[abilityKey];
-      const meetsReq = def && (!def.requiresWeaponType || def.requiresWeaponType === weapon.typeKey);
-      if (meetsReq) {
-        const cooldown = state.abilityCooldowns?.[abilityKey] || 0;
-        slots.push({
-          keybind: i + 1,
-          abilityKey,
-          isReady: cooldown <= 0 && state.qi >= def.costQi,
-          cooldownRemainingMs: cooldown,
-          insufficientQi: state.qi < def.costQi,
-        });
-        continue;
-      }
-    }
-    slots.push({ keybind: i + 1, abilityKey: undefined, isReady: false, cooldownRemainingMs: 0, insufficientQi: false });
-  }
-  return slots;
-}
 
 export function tryCastAbility(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
@@ -84,11 +55,14 @@ function resolvePowerSlash(state) {
   const weapon = getEquippedWeapon(state);
   const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
   const raw = Math.round(1.3 * roll);
-  const enemyDef = state.adventure.currentEnemy?.defense || 0;
-  const damage = Math.max(1, Math.round(raw - enemyDef * 0.6));
-  state.adventure.enemyHP = processAttack(state.adventure.enemyHP, damage, { target: state.adventure.currentEnemy, element: null });
-  state.adventure.combatLog.push(`You used Power Slash for ${damage} Physical damage.`);
-  if (damage > 0) {
+  let dealt = 0;
+  state.adventure.enemyHP = processAttack(
+    state.adventure.enemyHP,
+    raw,
+    { target: state.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
+  );
+  state.adventure.combatLog.push(`You used Power Slash for ${dealt} Physical damage.`);
+  if (dealt > 0) {
     const healed = Math.min(5, state.hpMax - state.hp);
     state.hp += healed;
     state.adventure.playerHP = state.hp;

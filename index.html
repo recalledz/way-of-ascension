@@ -57,7 +57,9 @@
       <div class="chip">Realm: <span id="realmName">Mortal 1</span></div>
       <div class="chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
       <div class="chip">Stones: <span id="stonesVal">0</span></div>
-      <div class="chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span></div>
+      <div class="chip hp-chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span>
+        <div class="hp-bar"><div class="fill" id="hpFill"></div><div class="shield-fill" id="shieldFill"></div></div>
+      </div>
       <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
     <div class="right-actions">
@@ -336,10 +338,9 @@
             <h4> Physique Effects</h4>
             <p class="muted">Current bonuses from your physique stat:</p>
             <div class="stat"><span>Current Physique</span><span id="currentPhysiqueStat">10</span></div>
-            <div class="stat"><span>Mining Bonus</span><span id="physiqueMiningStat">+0%</span></div>
-            <div class="stat"><span>Combat Power</span><span id="physiqueCombatStat">+0</span></div>
+            <div class="stat"><span>HP Bonus</span><span id="physiqueHpStat">+0</span></div>
             <div class="stat"><span>Carry Capacity</span><span id="physiqueCarryStat">+0</span></div>
-            <div class="muted" style="margin-top:8px">Higher physique improves mining yield, combat effectiveness, and carrying capacity</div>
+            <div class="muted" style="margin-top:8px">Higher physique improves health and carrying capacity</div>
           </div>
         </div>
       </section>
@@ -391,7 +392,6 @@
             <h4> Mining Progress</h4>
             <div class="stat"><span>Resources Gained</span><span id="resourcesGained">0</span></div>
             <div class="stat"><span>Mining Rate</span><span id="currentMiningRate">0/sec</span></div>
-            <div class="stat"><span>Physique Bonus</span><span id="physiqueYieldBonus">+0%</span></div>
             <div class="muted" style="margin-top:8px">Mining grants experience over time</div>
           </div>
         </div>
@@ -526,9 +526,8 @@
               <div class="combat-info">
                 <div class="stat"><span>Weapon</span><span id="currentWeapon">Fists</span></div>
                 <div class="stat"><span>Base Damage</span><span id="baseDamage">5</span></div>
-                <div class="stat"><span>Physique Bonus</span><span id="physiqueDamageBonus">+0</span></div>
                 <div class="stat"><span>Attack Rate</span><span id="combatAttackRate">1.0/s</span></div>
-                <div class="muted" style="margin-top:8px">Damage scales with physique stat. Higher dexterity increases attack rate.</div>
+                <div class="muted" style="margin-top:8px">Higher dexterity increases attack rate.</div>
               </div>
             </div>
             
@@ -579,6 +578,24 @@
         <h2>🧙 Character</h2>
         <div class="cards character-cards">
           <div class="card">
+            <h4>Stats</h4>
+            <div class="stat"><span>HP</span><span id="stat-hp">100/100</span></div>
+            <div class="stat"><span>Shield</span><span id="stat-shield">0/0</span></div>
+            <div class="stat"><span>Attack</span><span id="stat-atkBase">5</span></div>
+            <div class="stat"><span>Defense</span><span id="stat-defBase">2</span></div>
+            <div class="stat"><span>Accuracy</span><span id="stat-accuracy">0</span></div>
+            <div class="stat"><span>Dodge</span><span id="stat-dodge">0</span></div>
+            <div class="stat"><span>Physique</span><span id="stat-physique">10</span></div>
+            <div class="stat"><span>Mind</span><span id="stat-mind">10</span></div>
+            <div class="stat"><span>Agility</span><span id="stat-agility">10</span></div>
+            <div class="stat"><span>Dexterity</span><span id="stat-dexterity">10</span></div>
+            <div class="stat"><span>Comprehension</span><span id="stat-comprehension">10</span></div>
+            <div class="stat"><span>Crit Chance</span><span id="stat-criticalChance">5%</span></div>
+            <div class="stat"><span>Attack Speed</span><span id="stat-attackSpeed">1.00</span></div>
+            <div class="stat"><span>Cooldown Reduction</span><span id="stat-cooldownReduction">0%</span></div>
+            <div class="stat"><span>Adventure Speed</span><span id="stat-adventureSpeed">1.00</span></div>
+          </div>
+          <div class="card">
             <h4>Equipment</h4>
             <div class="equip-slots">
               <div class="equip-slot" id="slot-mainhand"><span class="slot-label">Weapon</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
@@ -586,6 +603,9 @@
               <div class="equip-slot" id="slot-torso"><span class="slot-label">Torso</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
               <div class="equip-slot" id="slot-food"><span class="slot-label">Food</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
             </div>
+            <div class="stat" title="Reduces Physical damage. Mitigation = armor / (armor + K × hit), capped at 90%">🛡 <span id="armorVal">0</span></div>
+            <div class="stat" title="Chance to hit enemies">⚔ <span id="accuracyVal">0</span></div>
+            <div class="stat" title="Chance to avoid attacks">👣 <span id="dodgeVal">0</span></div>
           </div>
           <div class="card">
             <h4>Inventory</h4>
@@ -834,6 +854,9 @@
             <h4>Combat Stats</h4>
             <div class="stat"><span>Your ATK</span><span id="atkVal2">5</span></div>
             <div class="stat"><span>Your DEF</span><span id="defVal2">2</span></div>
+            <div class="stat" title="Reduces Physical damage. Mitigation = armor / (armor + K × hit), capped at 90%"><span>🛡 Armor</span><span id="armorVal2">0</span></div>
+            <div class="stat"><span>Accuracy</span><span id="accuracyVal2">0</span></div>
+            <div class="stat"><span>Dodge</span><span id="dodgeVal2">0</span></div>
             <div class="stat"><span>Estimated Win Chance</span><span id="winEst">—</span></div>
           </div>
         </div>

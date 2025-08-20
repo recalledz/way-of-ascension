@@ -15,11 +15,10 @@ import {
   powerMult,
   calcAtk,
   calcDef,
-  getWeaponProficiencyBonuses,
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
-import { initializeFight, processAttack } from '../src/game/combat.js';
+import { initializeFight, processAttack, refillShieldFromQi } from '../src/game/combat.js';
 import { applyRandomAffixes } from '../src/game/affixes.js';
 import {
   updateRealmUI,
@@ -32,7 +31,7 @@ import {
 import { qs, setText, setFill, log } from '../src/game/utils.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
-import { initializeWeaponChip, updateWeaponChip } from '../src/ui/weaponChip.js';
+import { initializeWeaponChip, updateWeaponChip } from '../src/features/weaponGeneration/ui/weaponChip.js';
 import {
   updateActivityAdventure,
   updateAdventureCombat,
@@ -40,7 +39,6 @@ import {
   startBossCombat,
   progressToNextArea,
   retreatFromCombat,
-  updateWeaponProficiencyDisplay,
   updateFoodSlots,
   instakillCurrentEnemy,
   setupAdventureTabs,
@@ -48,6 +46,7 @@ import {
   updateAbilityBar
 
 } from '../src/game/adventure.js';
+import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { forfeitSessionLoot } from '../src/game/systems/sessionLoot.js'; // EQUIP-CHAR-UI
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
@@ -439,10 +438,17 @@ function updateAll(){
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
   setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
   setFill('hpFill', S.hp / S.hpMax);
+  setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
   
   // Combat stats
   setText('atkVal', calcAtk()); setText('defVal', calcDef());
+  setText('armorVal', S.stats?.armor || 0);
+  setText('accuracyVal', S.stats?.accuracy || 0);
+  setText('dodgeVal', S.stats?.dodge || 0);
   setText('atkVal2', calcAtk()); setText('defVal2', calcDef());
+  setText('armorVal2', S.stats?.armor || 0);
+  setText('accuracyVal2', S.stats?.accuracy || 0);
+  setText('dodgeVal2', S.stats?.dodge || 0);
   
   // Activity system display
   if (!S.activities) {
@@ -1154,14 +1160,12 @@ function updateActivityPhysique() {
     
     // Update physique effects display
     const currentPhysique = S.stats.physique || 10;
-    const miningBonus = Math.floor((currentPhysique - 10) * 2);
-    const combatPower = Math.floor((currentPhysique - 10) * 1.5);
-    const carryCapacity = Math.floor((currentPhysique - 10) * 5);
-    
+    const hpBonus = Math.floor((currentPhysique - 10) * 5);
+    const carryCapacity = Math.max(0, currentPhysique - 10);
+
     setText('currentPhysiqueStat', currentPhysique);
-    setText('physiqueMiningStat', `+${Math.max(0, miningBonus)}%`);
-    setText('physiqueCombatStat', `+${Math.max(0, combatPower)}`);
-    setText('physiqueCarryStat', `+${Math.max(0, carryCapacity)}`);
+    setText('physiqueHpStat', `+${Math.max(0, hpBonus)}`);
+    setText('physiqueCarryStat', `+${carryCapacity}`);
   }
 }
 
@@ -1224,14 +1228,8 @@ function updateActivityMining() {
   // Update mining stats
   if (S.activities.mining) {
     setText('resourcesGained', S.mining.resourcesGained || 0);
-    
-    const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-    setText('physiqueYieldBonus', `+${physiqueBonus}%`);
-    
     const baseRate = getMiningRate(S.mining.selectedResource);
-    const bonusRate = baseRate * (physiqueBonus / 100);
-    const totalRate = baseRate + bonusRate;
-    setText('currentMiningRate', `${totalRate.toFixed(1)}/sec`);
+    setText('currentMiningRate', `${baseRate.toFixed(1)}/sec`);
   }
   
   // Update resource rate displays
@@ -1250,12 +1248,10 @@ function getMiningRate(resource) {
 }
 
 function updateMiningRateDisplays() {
-  const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-  
-  const stonesRate = getMiningRate('stones') * (1 + physiqueBonus / 100);
-  const ironRate = getMiningRate('iron') * (1 + physiqueBonus / 100);
-  const iceRate = getMiningRate('ice') * (1 + physiqueBonus / 100);
-  
+  const stonesRate = getMiningRate('stones');
+  const ironRate = getMiningRate('iron');
+  const iceRate = getMiningRate('ice');
+
   setText('stonesRate', `+${stonesRate.toFixed(1)}/sec`);
   setText('ironRate', `+${ironRate.toFixed(1)}/sec`);
   setText('iceRate', `+${iceRate.toFixed(1)}/sec`);
@@ -2049,17 +2045,12 @@ function yieldBase(type){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   
-  // Physique affects mining (ore) yield (3% per point above 10)
-  let physiqueMult = 1;
-  if (type === 'ore') {
-    physiqueMult = 1 + (S.stats.physique - 10) * 0.03;
-  }
-  
-  return base[type] * (1 + S.yieldMult[type]) * physiqueMult;
+  return base[type] * (1 + S.yieldMult[type]);
 }
 
 // Alchemy
@@ -2085,7 +2076,8 @@ function collectBrew(i){
   if (!S.stats) {
     S.stats = {
       physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
+      armor: 0, accuracy: 0, dodge: 0
     };
   }
   
@@ -2151,7 +2143,7 @@ function techSlash(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
   const dmg = calcAtk()*3;
-  S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg);
+  S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' });
   S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
 }
 function techGuard(){
@@ -2163,7 +2155,7 @@ function techBurst(){
   if(!S.combat.hunt){ log('No active hunt','bad'); return; }
   if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
   const need = 0.25*qCap(); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
+  S.qi -= need; const dmg = need/3 + calcAtk(); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' }); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
 }
 
 function updateWinEst(){
@@ -2201,6 +2193,8 @@ function tick(){
   if (!(S.adventure?.inCombat) && !S.combat.hunt) {
     S.hp = clamp(S.hp + 1, 0, S.hpMax);
     if (S.adventure) S.adventure.playerHP = S.hp;
+    const { gained, qiSpent } = refillShieldFromQi(S);
+    if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   }
 
   // Gathering
@@ -2219,9 +2213,7 @@ function tick(){
   
   // Passive mining progression
   if(S.activities.mining && S.mining && S.mining.selectedResource) {
-    const baseRate = getMiningRate(S.mining.selectedResource);
-    const physiqueBonus = Math.floor((S.stats.physique - 10) * 2);
-    const totalRate = baseRate * (1 + physiqueBonus / 100);
+    const totalRate = getMiningRate(S.mining.selectedResource);
     
     // Add resources based on selected type
     switch(S.mining.selectedResource) {
@@ -2312,10 +2304,10 @@ function tick(){
     const ourDPS = Math.max(1, atk - h.eDef*0.6);
     let enemyDPS = Math.max(0, h.eAtk - def*0.7);
     if(guardActive) enemyDPS *= 0.5;
-    h.enemyHP = processAttack(h.enemyHP, ourDPS);
+    h.enemyHP = processAttack(h.enemyHP, ourDPS, { type: 'physical' });
     if(h.regen) h.enemyHP += h.enemyMax * h.regen;
     h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
-    S.hp = processAttack(S.hp, enemyDPS);
+    S.hp = processAttack(S.hp, enemyDPS, { target: S, type: 'physical' });
     if(h.enemyHP<=0){ resolveHunt(true); }
     else if(S.hp<=1){ resolveHunt(false); }
     updateHuntUI();

@@ -1,4 +1,4 @@
-import { generateWeapon } from '../systems/weaponGenerator.js';
+import { generateWeapon } from '../logic.js';
 
 function defaultAnimationsForType(typeKey) {
   switch (typeKey) {

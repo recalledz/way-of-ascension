@@ -1,15 +1,44 @@
 import { S, save } from '../../game/state.js';
-import { WEAPONS } from '../../data/weapons.js';
-import { WEAPON_ICONS } from '../../data/weaponIcons.js';
-import { equipItem, unequip, removeFromInventory } from '../../game/systems/inventory.js';
+import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
+import { WEAPON_ICONS } from '../../features/weaponGeneration/data/weaponIcons.js';
+import { equipItem, unequip, removeFromInventory, recomputePlayerTotals } from '../../game/systems/inventory.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
 let slotFilter = null;
 
 export function renderEquipmentPanel() {
+  recomputePlayerTotals();
   renderEquipment();
   renderInventory();
+  renderStats();
+}
+
+function renderStats() {
+  if (!S.stats) return;
+  const defs = [
+    { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
+    { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
+    { id: 'atkBase', value: () => S.atkBase },
+    { id: 'defBase', value: () => S.defBase },
+    { id: 'physique', stat: 'physique' },
+    { id: 'mind', stat: 'mind' },
+    { id: 'agility', stat: 'agility' },
+    { id: 'dexterity', stat: 'dexterity' },
+    { id: 'comprehension', stat: 'comprehension' },
+    { id: 'accuracy', stat: 'accuracy' },
+    { id: 'dodge', stat: 'dodge' },
+    { id: 'criticalChance', stat: 'criticalChance', format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'attackSpeed', stat: 'attackSpeed', format: v => v.toFixed(2) },
+    { id: 'cooldownReduction', stat: 'cooldownReduction', format: v => `${Math.round(v * 100)}%` },
+    { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) }
+  ];
+  defs.forEach(d => {
+    const el = document.getElementById(`stat-${d.id}`);
+    if (!el) return;
+    const val = d.value ? d.value() : (S.stats[d.stat] ?? 0);
+    el.textContent = d.format ? d.format(val) : val;
+  });
 }
 
 function renderEquipment() {
@@ -31,6 +60,12 @@ function renderEquipment() {
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
   });
+  const armorEl = document.getElementById('armorVal');
+  if (armorEl) armorEl.textContent = S.stats?.armor || 0;
+  const accEl = document.getElementById('accuracyVal');
+  if (accEl) accEl.textContent = S.stats?.accuracy || 0;
+  const dodgeEl = document.getElementById('dodgeVal');
+  if (dodgeEl) dodgeEl.textContent = S.stats?.dodge || 0;
 }
 
 function weaponDetailsText(item) {
