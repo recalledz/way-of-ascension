@@ -4,6 +4,8 @@ import { loadSave, saveDebounced } from "../shared/saveLoad.js";
 // feature slices
 import { proficiencyState } from "../features/proficiency/state.js";
 import { weaponGenerationState } from "../features/weaponGeneration/state.js";
+import { sectState } from "../features/sect/state.js";
+import { recalculateBuildingBonuses } from "../features/sect/mutators.js";
 
 // TEMP bridge to legacy world:
 import engineTick from "../features/progression/logic.js";
@@ -13,11 +15,13 @@ export function createGameController() {
     app: { mode: "town", lastTick: performance.now() },
     proficiency: structuredClone(proficiencyState),
     weaponGen: structuredClone(weaponGenerationState),
+    sect: structuredClone(sectState),
     // legacy root pieces remain attached to `state` until migrated
   };
 
   const hydrated = loadSave(state);
   Object.assign(state, hydrated);
+  recalculateBuildingBonuses(state);
 
   let running = false;
   let acc = 0;
