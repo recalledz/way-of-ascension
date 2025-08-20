@@ -193,7 +193,12 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       └── miningDisplay.js
 │   │   ├── physique/
-│   │   │   └── state.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── physiqueDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js

@@ -6,7 +6,7 @@ Manuals work like skill books in EVE Online: you discover or buy them, queue the
 
 **Manual categories**
 
-* **Ability manuals** – unlock new combat skills, alchemy recipes, advanced gathering methods or cultivation techniques.
+* **Ability manuals** – unlock new combat skills, alchemy recipes, advanced gathering methods or cultivation abilities.
 * **Passive manuals** – increase Qi regen, reduce tribulation damage, boost yields or shorten mining/cooking times.
 * **Law manuals** – integrate with your existing Law system; learning a Law manual might reduce time to switch laws or unlock more powerful law effects.
 * **Weapon proficiency manuals** – boost proficiency gain for a weapon class (e.g. “Sword Arts Volume I” increases sword proficiency rate by 5%).

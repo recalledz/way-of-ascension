@@ -1149,12 +1149,6 @@ function applySkillBonuses(lawKey, skillKey){
   const bonus = skill.bonus;
   
   // Apply various bonuses
-  if(bonus.technique){
-    S.combat.techniques[bonus.technique] = true;
-    log(`Unlocked ${bonus.technique} technique!`, 'good');
-  }
-  
-  
   // Apply cultivation bonuses
   if(bonus.cultivationTalent){
     S.cultivation.talent += bonus.cultivationTalent;
@@ -1276,11 +1270,6 @@ function tick(){
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
   if(S.auto.adventure && !S.activities.adventure){ startActivity('adventure'); }
-
-  // CDs
-  if (S.combat?.cds) {
-    for(const k in S.combat.cds){ if(S.combat.cds[k]>0) S.combat.cds[k]--; }
-  }
 
   // Breakthrough progress
   updateBreakthrough();
