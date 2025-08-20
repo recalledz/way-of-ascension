@@ -177,4 +177,3 @@ export function breakthroughChance(state = progressionState){
   return clamp(totalChance, 0.01, 0.95);
 }
 
-export default function engineTick() {}

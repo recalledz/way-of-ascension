@@ -19,7 +19,7 @@ Other folders such as `scripts/` (build or deployment scripts), `browser-tools-m
 
 #### Runtime Orchestration: GameController
 
-`GameController` is the orchestrator for the runtime: it boots the game, runs the fixed‑step main loop, emits events and handles simple routing such as `state.app.mode`. It deliberately avoids business logic; each feature owns its own rules. A temporary bridge calls `engineTick(state)` each step so legacy systems continue to advance while migration is in progress.
+`GameController` is the orchestrator for the runtime: it boots the game, runs the fixed‑step main loop, emits events and handles simple routing such as `state.app.mode`. It deliberately avoids business logic; each feature owns its own rules. Features register `init` and `tick` hooks with a central registry; the controller invokes these ticks each step.
 
 #### Events Bus
 
@@ -39,7 +39,7 @@ Selectors read from state and mutators write to state. User interfaces never mut
 
 #### Migration Process (Incremental)
 
-Keep `progression/logic.js` intact for now; the controller calls it every step. Migrate features one at a time (loot → inventory → affixes → ability → combat → adventure → engine). After a feature is migrated, remove its responsibilities from `progression/logic.js` and replace them with `TICK` listeners or feature‑local logic.
+Keep `progression/logic.js` intact for now; migrate features one at a time (loot → inventory → affixes → ability → combat → adventure → engine). After a feature is migrated, remove its responsibilities from `progression/logic.js` and replace them with registered `tick` hooks or `TICK` listeners.
 
 #### PR Checklist (Short)
 
