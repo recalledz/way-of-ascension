@@ -1,6 +1,6 @@
 import { processAttack } from '../combat/mutators.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
-import { qCap } from '../../game/engine.js';
+import { qCap } from '../progression/selectors.js';
 
 export function resolveAbilityHit(abilityKey, state) {
   switch (abilityKey) {
@@ -51,7 +51,7 @@ function resolveSeventyFive(state) {
   }
   // Restore Qi to full
   try {
-    state.qi = qCap();
+    state.qi = qCap(state);
   } catch {
     // Fallback if qCap unavailable for some reason
     state.qi = state.qiMax || state.qi || 0;
