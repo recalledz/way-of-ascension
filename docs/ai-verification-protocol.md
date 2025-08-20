@@ -81,7 +81,7 @@ ls -la src/game/ src/data/ data/ ui/ docs/
 const coreFiles = [
   'src/game/state.js',
   'src/game/engine.js', 
-  'src/game/adventure.js',
+  'src/features/adventure/logic.js',
   'ui/index.js',
   'ui/realm.js',
   'index.html',
