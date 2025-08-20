@@ -170,15 +170,6 @@ way-of-ascension/
 │   │   │       └── sectScreen.js
 │   │   ├── karma/
 │   │   ├── alchemy/
-│   │   │   ├── data/
-│   │   │   │   └── recipes.js
-│   │   │   ├── logic.js
-│   │   │   ├── mutators.js
-│   │   │   ├── selectors.js
-│   │   │   ├── state.js
-│   │   │   └── ui/
-│   │   │       └── karmaDisplay.js
-│   │   │       └── alchemyDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -641,7 +632,14 @@ Paths added:
 - `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
 - `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
 - `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
-=======
+
+### Physique Feature (`src/features/physique/`)
+- `src/features/physique/state.js` – Tracks physique training progress and stamina.
+- `src/features/physique/logic.js` – Calculates bonuses from the physique stat such as HP and carry capacity.
+- `src/features/physique/mutators.js` – Handles gaining physique experience and stamina changes.
+- `src/features/physique/selectors.js` – Accessors for physique levels, experience, stamina, and bonuses.
+- `src/features/physique/ui/physiqueDisplay.js` – Renders physique progress and bonuses in the UI.
+
 ### Alchemy Feature
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
 - `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
