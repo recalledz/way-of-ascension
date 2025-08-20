@@ -32,6 +32,7 @@ import {
 } from '../../ui/fx/fx.js';
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
+import { updateFoodSlots } from '../cooking/logic.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
@@ -1023,30 +1024,6 @@ export function setupAdventureTabs() {
   tabsInitialized = true;
 }
 
-export function updateFoodSlots() {
-  if (!S.foodSlots) {
-    S.foodSlots = {
-      slot1: null,
-      slot2: null,
-      slot3: null,
-      lastUsed: 0,
-      cooldown: 5000
-    };
-  }
-  setText('rawMeatCount', S.meat || 0);
-  setText('inventoryRawMeat', S.meat || 0);
-  setText('inventoryCookedMeat', S.cookedMeat || 0);
-  setText('inventoryRawMeatAdventure', S.meat || 0);
-  setText('inventoryCookedMeatAdventure', S.cookedMeat || 0);
-  const cookInput = document.getElementById('cookAmount');
-  if (cookInput) {
-    cookInput.max = S.meat || 0;
-    if (parseInt(cookInput.value) > (S.meat || 0)) {
-      cookInput.value = Math.max(1, S.meat || 0);
-    }
-  }
-}
-
 function findEnemyInfo(type) {
   for (const zone of ZONES) {
     for (const area of zone.areas) {
@@ -1178,7 +1155,7 @@ export function updateActivityAdventure() {
   updateBattleDisplay();
   updateAbilityBar();
   updateAdventureCombat();
-  updateFoodSlots();
+  updateFoodSlots(S);
   updateProgressButton();
   updateBestiaryList();
 }
