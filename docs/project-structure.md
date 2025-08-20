@@ -89,6 +89,15 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── index.js
+│   │   ├── alchemy/
+│   │   │   ├── data/
+│   │   │   │   └── recipes.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── brewPanel.js
 │   │   ├── ability/
 │   │   │   ├── data/
 │   │   │   │   └── abilities.js
@@ -250,7 +259,7 @@ S = {
   buildingBonuses: { /* calculated bonuses */ },
   
   // Auto systems
-  auto: { meditate: true, brewQi: false, adventure: false }
+  auto: { meditate: true, adventure: false }
 }
 ```
 
@@ -512,6 +521,30 @@ function updateAll() {
 #### `src/features/proficiency/ui/weaponProficiencyDisplay.js` - Proficiency HUD
 **Purpose**: Updates HUD elements showing weapon proficiency levels and progress.
 **When to modify**: Adjust proficiency display or formatting.
+
+#### `src/features/alchemy/state.js` - Alchemy Feature State
+**Purpose**: Tracks alchemy level, XP, brewing queue, slot limits, success bonuses, unlock state, and known recipes.
+**When to modify**: Adjust initial alchemy parameters or add new state fields.
+
+#### `src/features/alchemy/logic.js` - Alchemy Tick Processing
+**Purpose**: Advances brew timers and registers the alchemy tick handler.
+**Key Functions**: `tickAlchemy(event, state)` updates brewing progress; `calculateBrewSuccess(recipe, state)` computes success chance.
+**When to modify**: Change brew timing or success calculations.
+
+#### `src/features/alchemy/mutators.js` - Alchemy Mutators
+**Purpose**: State mutations for brewing and recipe management.
+**Key Functions**: `startBrew(state, recipe)`, `completeBrew(state, index)`, `unlockRecipe(state, recipeKey)`.
+
+#### `src/features/alchemy/selectors.js` - Alchemy Selectors
+**Purpose**: Read-only helpers for alchemy state.
+**Key Functions**: `getAlchemyQueue(state)`, `getAlchemySuccessBonus(state)`, `getBrewSuccessChance(recipe, state)`.
+
+#### `src/features/alchemy/data/recipes.js` - Alchemy Recipe Data
+**Purpose**: Defines available pill and elixir recipes.
+
+#### `src/features/alchemy/ui/brewPanel.js` - Alchemy Brewing UI
+**Purpose**: Handles DOM updates for the alchemy tab and queue.
+**When to modify**: Adjust alchemy user interface or visuals.
 
 #### `src/features/progression/state.js` - Progression State Slice
 **Purpose**: Stores realm, cultivation, and law info for the player.
