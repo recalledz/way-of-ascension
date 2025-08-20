@@ -1,10 +1,8 @@
 import { createGameController } from "./game/GameController.js";
-import { mountProficiencyUI } from "./features/proficiency/ui/weaponProficiencyDisplay.js";
+import { mountAllFeatureUIs } from "./features/index.js";
 
 const game = createGameController();
+mountAllFeatureUIs(game.state);
 game.start();
 
-mountProficiencyUI(game.state);
-
-// Optionally expose for debug:
-// window.game = game;
+// window.game = game; // optional for debug
