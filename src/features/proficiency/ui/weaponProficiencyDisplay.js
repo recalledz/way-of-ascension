@@ -1,9 +1,10 @@
-import { S } from '../../../game/state.js';
-import { getEquippedWeapon } from '../../../game/selectors.js';
-import { getProficiency } from '../selectors.js';
-import { WEAPON_TYPES } from '../../weaponGeneration/data/weaponTypes.js';
-import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
-import { setText, setFill } from '../../../game/utils.js';
+import { S } from "../../../game/state.js";
+import { on } from "../../../shared/events.js";
+import { getEquippedWeapon } from "../../../game/selectors.js";
+import { getProficiency } from "../selectors.js";
+import { WEAPON_TYPES } from "../../weaponGeneration/data/weaponTypes.js";
+import { WEAPON_ICONS } from "../../weaponGeneration/data/weaponIcons.js";
+import { setText, setFill } from "../../../game/utils.js";
 
 export function updateWeaponProficiencyDisplay(state = S) {
   const weapon = getEquippedWeapon(state);
@@ -25,4 +26,12 @@ export function updateWeaponProficiencyDisplay(state = S) {
   setFill('weaponExpFill', progress / 100);
   const bonus = 1 + level * 0.01;
   setText('weaponBonus', bonus.toFixed(2));
+}
+
+export function mountProficiencyUI(state) {
+  function render() {
+    updateWeaponProficiencyDisplay(state);
+  }
+  on("RENDER", render);
+  render();
 }
