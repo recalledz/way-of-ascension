@@ -2,7 +2,7 @@ import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from './engine.js';
 import { initializeFight, processAttack, refillShieldFromQi } from './combat.js';
 import { getEquippedWeapon, getAbilitySlots } from './selectors.js';
-import { rollLoot, toLootTableKey } from './systems/loot.js'; // WEAPONS-INTEGRATION
+import { rollLoot, toLootTableKey } from '../features/loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../features/weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../data/abilities.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
@@ -16,7 +16,8 @@ import { getProficiency } from '../features/proficiency/selectors.js';
 import { updateWeaponProficiencyDisplay } from '../features/proficiency/ui/weaponProficiencyDisplay.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from '../../data/zones.js'; // MAP-UI-UPDATE
 import { save } from './state.js'; // MAP-UI-UPDATE
-import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from './systems/sessionLoot.js'; // EQUIP-CHAR-UI
+import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../features/loot/mutators.js'; // EQUIP-CHAR-UI
+import { updateLootTab } from '../features/loot/ui/lootTab.js';
 import {
   playSlashArc,
   playThrustLine,
@@ -1296,18 +1297,6 @@ function updateBestiaryList() {
   });
 }
 
-export function updateLootTab() {
-  const list = document.getElementById('sessionLootList');
-  if (!list) return;
-  list.innerHTML = '';
-  (S.sessionLoot || []).forEach(item => {
-    const row = document.createElement('div');
-    row.className = 'loot-row';
-    const src = item.source ? ` (${item.source})` : '';
-    row.textContent = `${item.qty || 1} ${item.key}${src}`;
-    list.appendChild(row);
-  });
-}
 
 export function updateActivityAdventure() {
   ensureAdventure();
