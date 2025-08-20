@@ -45,10 +45,8 @@ way-of-ascension/
 │       ├── mcp-docs.md
 │       └── mcp.md
 ├── data/
-│   ├── enemies.js
 │   ├── laws.js
-│   ├── realms.js
-│   └── zones.js
+│   └── realms.js
 ├── docs/
 │   ├── To-dos/
 │   │   ├── Balance.md
@@ -80,9 +78,19 @@ way-of-ascension/
 │   └── validate-structure.js
 ├── src/
 │   ├── index.js
-│   ├── data/
-│   │   └── zones.js
 │   ├── features/
+│   │   ├── adventure/
+│   │   │   ├── data/
+│   │   │   │   ├── enemies.js
+│   │   │   │   ├── zoneIds.js
+│   │   │   │   └── zones.js
+│   │   │   ├── ui/
+│   │   │   │   ├── progressBar.js
+│   │   │   │   └── zoneUI.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   └── state.js
 │   │   ├── index.js
 │   │   ├── ability/
 │   │   │   ├── data/
@@ -153,7 +161,6 @@ way-of-ascension/
 │   │   ├── systems/
 │   │   │   ├── loot.js
 │   │   │   └── sessionLoot.js
-│   │   ├── adventure.js
 │   │   ├── engine.js
 │   │   ├── helpers.js
 │   │   ├── migrations.js
@@ -255,7 +262,7 @@ S = {
 
 **When to modify**: Add new calculation functions, modify existing formulas, add bonus systems
 
-#### `adventure.js` - Adventure System
+#### `src/features/adventure/logic.js` - Adventure System
 **Purpose**: Adventure zones, combat, boss challenges, area progression, map UI
 **Key Functions**:
 - `startAdventureCombat()` - Initialize regular combat
@@ -266,10 +273,9 @@ S = {
 - `updateAdventureProgressBar()` - Render horizontal progress bar with zone areas
 - `showMapOverlay()`, `hideMapOverlay()` - Map modal display
 - `updateMapContent()` - Populate map accordion with unlocked zones/areas
-- `showTooltip()`, `hideTooltip()` - Progress segment tooltips
 - `selectAreaById()` - Area selection and navigation
 
-**Dependencies**: `data/zones.js` for zone/area data structure
+**Dependencies**: `src/features/adventure/data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
 
 #### `combat/hit.js` - Hit Chance Calculation
@@ -383,11 +389,11 @@ export const REALMS = [
 **Purpose**: Define cultivation law systems and skill trees
 **When to modify**: Add new laws, modify skill trees, adjust bonuses
 
-#### `enemies.js` - Enemy Data
+#### `src/features/adventure/data/enemies.js` - Enemy Data
 **Purpose**: Define enemies for combat and adventure systems
 **When to modify**: Add new enemies, adjust combat balance
 
-#### `zones.js` - Zone/Area Data Structure
+#### `src/features/adventure/data/zones.js` - Zone/Area Data Structure
 **Purpose**: Centralized zone and area definitions with progressive unlock system
 **Key Functions**:
 - `getZoneById()` - Retrieve zone by ID
