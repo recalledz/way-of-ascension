@@ -5,4 +5,4 @@ const game = createGameController();
 mountAllFeatureUIs(game.state);
 game.start();
 
-// window.game = game; // optional for debug
+// window.game = game; // optional for debugging

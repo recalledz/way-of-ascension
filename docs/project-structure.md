@@ -66,23 +66,27 @@ way-of-ascension/
 │   │   ├── Palms-and-fists.md
 │   │   ├── status-effects.md
 │   │   ├── ui-improvements.md
-│   │   └── weapons-guidlines.md
+│   │   ├── weapons-guidlines.md
+│   │   └── stats-to-implement.md
 │   ├── ai-verification-protocol.md
 │   ├── cultivation-ui-style.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
-│   └── project-structure.md
+│   ├── project-structure.md
+│   └── ARCHITECTURE.md
 ├── node_modules/
 ├── scripts/
 │   ├── test-node.js
 │   └── validate-structure.js
 ├── src/
+│   ├── index.js
 │   ├── data/
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
 │   │   ├── zones.js
 │   │   └── abilities.js
 │   ├── features/
+│   │   ├── index.js
 │   │   ├── loot/
 │   │   │   ├── data/
 │   │   │   │   ├── lootTables.js
@@ -115,6 +119,7 @@ way-of-ascension/
 │   │       └── ui/
 │   │           └── weaponChip.js
 │   ├── game/
+│   │   ├── GameController.js
 │   │   ├── combat/
 │   │   │   ├── attack.js
 │   │   │   ├── hit.js
@@ -133,6 +138,9 @@ way-of-ascension/
 │   │   ├── migrations.js
 │   │   ├── state.js
 │   │   └── utils.js
+│   ├── shared/
+│   │   ├── events.js
+│   │   └── saveLoad.js
 │   └── ui/
 │       ├── fx/
 │       │   └── fx.js
@@ -457,3 +465,36 @@ function updateAll() {
 ### Changelog (`CHANGELOG.md`)
 **Purpose**: Tracks notable changes, additions, and fixes across versions.
 **When to modify**: Whenever implementing new features or documenting releases.
+
+## Recent Snapshot
+
+Paths added:
+
+- `src/game/GameController.js` – orchestrator
+- `src/shared/events.js`
+- `src/shared/saveLoad.js`
+- `src/features/index.js` – UI bootstrap
+- `src/index.js` – entry that bootstraps and starts the controller
+- `docs/ARCHITECTURE.md`
+- `docs/To-dos/stats-to-implement.md`
+
+#### `src/game/GameController.js` - Game Orchestrator
+**Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
+
+#### `src/shared/events.js` - Events Bus
+**Purpose**: Tiny pub/sub (`on`, `off`, `emit`) for global game events.
+
+#### `src/shared/saveLoad.js` - Persistence Helpers
+**Purpose**: Load and save game state, including debounced autosave.
+
+#### `src/features/index.js` - Feature UI Bootstrap
+**Purpose**: Central place to mount all feature user interfaces.
+
+#### `src/index.js` - Entrypoint
+**Purpose**: Minimal bootstrap that creates the controller, mounts feature UIs and starts the game.
+
+#### `docs/ARCHITECTURE.md` - Architecture Overview
+**Purpose**: Documents the controller, events bus and bootstrap pattern.
+
+#### `docs/To-dos/stats-to-implement.md` - Stats Roadmap
+**Purpose**: Lists game stats that still need implementation.

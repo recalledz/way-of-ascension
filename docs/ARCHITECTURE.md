@@ -16,6 +16,33 @@ At the root of the repository you will find the following top‑level folders:
 
 Other folders such as `scripts/` (build or deployment scripts), `browser-tools-mcp/` (internal dev tooling), and `index.html` remain unchanged from the previous structure.
 
+#### Runtime Orchestration: GameController
+
+`GameController` is the orchestrator for the runtime: it boots the game, runs the fixed‑step main loop, emits events and handles simple routing such as `state.app.mode`. It deliberately avoids business logic; each feature owns its own rules. A temporary bridge calls `engineTick(state)` each step so legacy systems continue to advance while migration is in progress.
+
+#### Events Bus
+
+A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. The controller emits `TICK` (fixed step) and `RENDER` (per frame). Feature UIs subscribe to `RENDER` to redraw, and systems can listen to `TICK` for simulation updates.
+
+#### Entrypoint & Bootstrap
+
+`src/index.js` is a minimal entry that creates the controller, mounts feature UIs via `mountAllFeatureUIs(state)` and then calls `start()`. `src/features/index.js` centralises these UI mounts for all features.
+
+#### State Access Rules
+
+Selectors read from state and mutators write to state. User interfaces never mutate state directly.
+
+#### Migration Process (Incremental)
+
+Keep `engine.js` intact for now; the controller calls it every step. Migrate features one at a time (loot → inventory → affixes → ability → combat → adventure → engine). After a feature is migrated, remove its responsibilities from `engine.js` and replace them with `TICK` listeners or feature‑local logic.
+
+#### PR Checklist (Short)
+
+* Entry uses `GameController` only; no duplicate loops or timers exist elsewhere.
+* New or changed UIs subscribe to `RENDER`.
+* State writes go through mutators; reads use selectors.
+* Architecture doc and structure map are updated.
+
 ## Feature folders
 
 Each feature folder under `src/features` follows a consistent internal layout:
