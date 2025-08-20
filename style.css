@@ -81,8 +81,8 @@ body{
 body, #root, #app {
   background:
     image-set(
-      url("/ink-mountains-style2.avif") type("image/avif"),
-      url("/ink-mountains-style2.webp") type("image/webp")
+      url("/assets/background/ink-mountains-style2.avif") type("image/avif"),
+      url("/assets/background/ink-mountains-style2.webp") type("image/webp")
     ) center/cover no-repeat,
     linear-gradient(#f5f1eb, #e9dfd3); /* graceful fallback while loading */
   filter: brightness(var(--bg-dim)) contrast(var(--bg-contrast)) saturate(.95);
