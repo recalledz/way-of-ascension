@@ -36,20 +36,21 @@ import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventor
 import {
   updateActivityAdventure,
   updateAdventureCombat,
+  updateFoodSlots,
+  setupAdventureTabs,
+  updateAbilityBar
+} from '../src/features/adventure/logic.js';
+import {
   startAdventureCombat,
   startBossCombat,
   progressToNextArea,
   retreatFromCombat,
-  updateFoodSlots,
-  instakillCurrentEnemy,
-  setupAdventureTabs,
-  updateAbilityBar
-
-} from '../src/game/adventure.js';
+  instakillCurrentEnemy
+} from '../src/features/adventure/mutators.js';
 import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/inventory/ui/CharacterPanel.js'; // EQUIP-CHAR-UI
-import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
+import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 
@@ -275,7 +276,7 @@ const fmt = n=>{
 }
 
 // Import enemy data from the enemies module
-import { ENEMY_DATA } from '../data/enemies.js';
+import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
 
 // Adventure System Data
 // Enemy data for adventure zones
@@ -2373,7 +2374,7 @@ function initActivityListeners() {
   
   // Adventure Map button event listener - MAP-UI-UPDATE
   document.getElementById('mapButton')?.addEventListener('click', () => {
-    import('../src/game/adventure.js').then(({ showMapOverlay }) => {
+    import('../src/features/adventure/logic.js').then(({ showMapOverlay }) => {
       showMapOverlay();
     });
   });
