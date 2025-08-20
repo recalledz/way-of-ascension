@@ -27,7 +27,6 @@ export const progressionState = {
   karma: { qiRegen: 0, atk: 0, def: 0 },
   pills: { ward: 0 },
   alchemy: { successBonus: 0 },
-  buildingBonuses: { breakthroughBonus: 0 },
   stats: {
     physique: 10,
     mind: 10,

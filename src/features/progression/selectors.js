@@ -1,6 +1,5 @@
 import { progressionState } from './state.js';
 import {
-  clamp,
   getLawBonuses as calcLawBonuses,
   qCap as calcQCap,
   qiRegenPerSec as calcQiRegen,

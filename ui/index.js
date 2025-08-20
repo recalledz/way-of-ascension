@@ -62,196 +62,6 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 
 
-// Sect Buildings System - Progressive unlocks with scaling costs
-const SECT_BUILDINGS = {
-  // Basic Infrastructure (Unlocked from start)
-  meditation_mat: {
-    name: 'Meditation Mat',
-    desc: 'A simple mat for focused cultivation',
-    icon: '🧘',
-    category: 'cultivation',
-    unlockReq: {realm: 0, stage: 1}, // Mortal 1
-    maxLevel: 5,
-    baseCost: {stones: 20},
-    costScaling: 1.8,
-    effects: {
-      1: {qiRegenMult: 0.15, foundationMult: 0.20, desc: '+15% Qi regen, +20% foundation gain'},
-      2: {qiRegenMult: 0.30, foundationMult: 0.40, desc: '+30% Qi regen, +40% foundation gain'},
-      3: {qiRegenMult: 0.50, foundationMult: 0.65, desc: '+50% Qi regen, +65% foundation gain'},
-      4: {qiRegenMult: 0.75, foundationMult: 0.95, desc: '+75% Qi regen, +95% foundation gain'},
-      5: {qiRegenMult: 1.00, foundationMult: 1.30, desc: '+100% Qi regen, +130% foundation gain'}
-    }
-  },
-  
-  spirit_well: {
-    name: 'Spirit Well',
-    desc: 'A well that gathers spiritual energy',
-    icon: '🏺',
-    category: 'cultivation',
-    unlockReq: {realm: 1, stage: 3}, // Qi Refining 3
-    maxLevel: 4,
-    baseCost: {stones: 50, wood: 20},
-    costScaling: 2.0,
-    effects: {
-      1: {qiCapMult: 0.25, desc: '+25% Qi capacity'},
-      2: {qiCapMult: 0.50, desc: '+50% Qi capacity'},
-      3: {qiCapMult: 0.80, desc: '+80% Qi capacity'},
-      4: {qiCapMult: 1.20, desc: '+120% Qi capacity'}
-    }
-  },
-  
-  // Resource Buildings
-  herbal_garden: {
-    name: 'Herbal Garden',
-    desc: 'Cultivated plots for growing spiritual herbs',
-    icon: '🌿',
-    category: 'resources',
-    unlockReq: {realm: 1, stage: 5}, // Qi Refining 5
-    maxLevel: 6,
-    baseCost: {stones: 40, wood: 25},
-    costScaling: 1.9,
-    effects: {
-      1: {herbYield: 0.30, desc: '+30% herb yield'},
-      2: {herbYield: 0.60, desc: '+60% herb yield'},
-      3: {herbYield: 1.00, desc: '+100% herb yield'},
-      4: {herbYield: 1.50, desc: '+150% herb yield'},
-      5: {herbYield: 2.10, desc: '+210% herb yield'},
-      6: {herbYield: 3.00, desc: '+300% herb yield'}
-    }
-  },
-  
-  spirit_mine: {
-    name: 'Spirit Mine',
-    desc: 'Deep shafts that extract spiritual ores',
-    icon: '⛏️',
-    category: 'resources',
-    unlockReq: {realm: 2, stage: 1}, // Foundation 1
-    maxLevel: 5,
-    baseCost: {stones: 80, ore: 15},
-    costScaling: 2.1,
-    effects: {
-      1: {oreYield: 0.40, desc: '+40% ore yield'},
-      2: {oreYield: 0.85, desc: '+85% ore yield'},
-      3: {oreYield: 1.40, desc: '+140% ore yield'},
-      4: {oreYield: 2.10, desc: '+210% ore yield'},
-      5: {oreYield: 3.00, desc: '+300% ore yield'}
-    }
-  },
-  
-  sacred_grove: {
-    name: 'Sacred Grove',
-    desc: 'Ancient trees imbued with spiritual energy',
-    icon: '🌳',
-    category: 'resources',
-    unlockReq: {realm: 2, stage: 3}, // Foundation 3
-    maxLevel: 5,
-    baseCost: {stones: 100, wood: 50, herbs: 20},
-    costScaling: 2.0,
-    effects: {
-      1: {woodYield: 0.50, desc: '+50% wood yield'},
-      2: {woodYield: 1.00, desc: '+100% wood yield'},
-      3: {woodYield: 1.70, desc: '+170% wood yield'},
-      4: {woodYield: 2.50, desc: '+250% wood yield'},
-      5: {woodYield: 3.50, desc: '+350% wood yield'}
-    }
-  },
-  
-  // Advanced Buildings
-  alchemy_lab: {
-    name: 'Alchemy Laboratory',
-    desc: 'Advanced facility for pill refinement - unlocks alchemy',
-    icon: '🏛️',
-    category: 'alchemy',
-    unlockReq: {realm: 1, stage: 5}, // Qi Refining 5 - earlier unlock
-    maxLevel: 4,
-    baseCost: {stones: 100, ore: 40, wood: 60, herbs: 30}, // Reduced cost
-    costScaling: 2.0, // Reduced scaling
-    effects: {
-      1: {alchemyUnlock: true, alchemySlots: 1, alchemySuccess: 0.15, desc: 'Unlocks alchemy, +1 slot, +15% success'},
-      2: {alchemySlots: 1, alchemySuccess: 0.30, desc: '+1 slot, +30% success'},
-      3: {alchemySlots: 2, alchemySuccess: 0.50, desc: '+2 slots, +50% success'},
-      4: {alchemySlots: 2, alchemySuccess: 0.75, desc: '+2 slots, +75% success'}
-    }
-  },
-  
-  training_grounds: {
-    name: 'Training Grounds',
-    desc: 'Facilities for combat training and sparring',
-    icon: '⚔️',
-    category: 'combat',
-    unlockReq: {realm: 2, stage: 7}, // Foundation 7
-    maxLevel: 5,
-    baseCost: {stones: 200, ore: 80, wood: 60},
-    costScaling: 2.2,
-    effects: {
-      1: {atkBase: 3, defBase: 2, desc: '+3 ATK, +2 DEF'},
-      2: {atkBase: 6, defBase: 4, desc: '+6 ATK, +4 DEF'},
-      3: {atkBase: 10, defBase: 7, desc: '+10 ATK, +7 DEF'},
-      4: {atkBase: 15, defBase: 11, desc: '+15 ATK, +11 DEF'},
-      5: {atkBase: 22, defBase: 16, desc: '+22 ATK, +16 DEF'}
-    }
-  },
-  
-  disciple_quarters: {
-    name: 'Disciple Quarters',
-    desc: 'Housing for sect disciples',
-    icon: '🏠',
-    category: 'disciples',
-    unlockReq: {realm: 3, stage: 1}, // Core 1
-    maxLevel: 6,
-    baseCost: {stones: 120, wood: 100},
-    costScaling: 1.7,
-    effects: {
-      1: {disciples: 1, desc: '+1 disciple'},
-      2: {disciples: 2, desc: '+2 disciples'},
-      3: {disciples: 3, desc: '+3 disciples'},
-      4: {disciples: 4, desc: '+4 disciples'},
-      5: {disciples: 6, desc: '+6 disciples'},
-      6: {disciples: 8, desc: '+8 disciples'}
-    }
-  },
-  
-  // Elite Buildings (High-tier unlocks)
-  grand_library: {
-    name: 'Grand Library',
-    desc: 'Repository of ancient cultivation knowledge',
-    icon: '📚',
-    category: 'knowledge',
-    unlockReq: {realm: 3, stage: 5}, // Core 5
-    maxLevel: 3,
-    baseCost: {stones: 500, wood: 300, herbs: 100, cores: 10},
-    costScaling: 2.5,
-    effects: {
-      1: {lawPoints: 5, qiRegenMult: 0.25, desc: '+5 law points, +25% Qi regen'},
-      2: {lawPoints: 10, qiRegenMult: 0.50, desc: '+10 law points, +50% Qi regen'},
-      3: {lawPoints: 20, qiRegenMult: 1.00, desc: '+20 law points, +100% Qi regen'}
-    }
-  },
-  
-  celestial_observatory: {
-    name: 'Celestial Observatory',
-    desc: 'Tower for studying heavenly phenomena',
-    icon: '🔭',
-    category: 'advanced',
-    unlockReq: {realm: 4, stage: 1}, // Nascent 1
-    maxLevel: 2,
-    baseCost: {stones: 800, ore: 400, wood: 300, herbs: 200, cores: 25},
-    costScaling: 3.0,
-    effects: {
-      1: {breakthroughBonus: 0.20, lawPoints: 10, desc: '+20% breakthrough chance, +10 law points'},
-      2: {breakthroughBonus: 0.40, lawPoints: 25, desc: '+40% breakthrough chance, +25 law points'}
-    }
-  }
-};
-
-// Legacy sect actions - will be replaced by building system
-const LEGACY_SECT_ACTIONS = [
-  {name:'Meditation Pavilion', cost:{wood:150, stones:200}, act:s=>{s.qiRegenMult+=0.35; log('Built Meditation Pavilion: +35% Qi regen','good');}},
-  {name:'Refining Hall', cost:{ore:180, stones:250}, act:s=>{s.atkBase+=6; s.defBase+=4; log('Built Refining Hall: +ATK/DEF','good');}},
-  {name:'Herbalists Guild', cost:{herbs:220, stones:220}, act:s=>{s.yieldMult.herbs+=0.5; log('Herbalists Guild formed: big herb yield','good');}},
-  {name:'Library of Dao', cost:{stones:400}, act:s=>{s.auto.meditate=true; document.getElementById('autoMeditate').checked=true; log('Library teaches auto-meditation','good');}}
-];
-
 const KARMA_UPS = [
   {key:'k_qi', name:'Inner Stillness', desc:'+15% Qi regen (permanent)', base:5, mult:1.45, eff:s=>s.karma.qiRegen+=0.15},
   {key:'k_yield', name:'Providence', desc:'+12% resource yield (perm.)', base:5, mult:1.6, eff:s=>s.karma.yield+=0.12},
@@ -294,10 +104,6 @@ function initUI(){
   initializeWeaponChip();
 
   // Assign buttons
-  document.getElementById('tab-gathering').addEventListener('click', e=>{
-    const d = e.target.dataset.assign; if(!d) return; const [res,op]=d.split(':'); const delta=+op; assign(res, delta);
-  });
-
   // Buttons (with safe null checks)
   const meditateBtn = qs('#meditateBtn');
   if (meditateBtn) meditateBtn.addEventListener('click', meditate);
@@ -394,9 +200,7 @@ function initUI(){
   if (debugKillBtn) debugKillBtn.addEventListener('click', instakillCurrentEnemy);
 
 
-  // Safe render calls - only call functions that exist
-  if (typeof renderUpgrades === 'function') renderUpgrades();
-  if (typeof renderSect === 'function') renderSect();
+  // Safe render calls
   renderKarma();
   updateAll();
 }
@@ -466,8 +270,6 @@ function updateAll(){
     setText('adventureProgressText', `${Math.floor(progress * 100)}%`);
   }
   setText('adventureLevel', location);
-  
-  setText('buildingCount', Object.values(S.buildings).filter(level => level > 0).length);
   setText('stonesDisplay', fmt(S.stones));
   
   // Safe call to updateActivityUI if it exists
@@ -479,9 +281,6 @@ function updateAll(){
   setText('pillQi', S.pills.qi); setText('pillBody', S.pills.body); setText('pillWard', S.pills.ward);
   
   // Disciples
-  setText('discTotal', S.disciples); setText('discFree', freeDisciples());
-  setText('assHerb', S.gather.herbs); setText('assOre', S.gather.ore); setText('assWood', S.gather.wood);
-  setText('yieldHerb', yieldBase('herbs').toFixed(1)); setText('yieldOre', yieldBase('ore').toFixed(1)); setText('yieldWood', yieldBase('wood').toFixed(1));
   
   // Alchemy
   setText('alchLvl', S.alchemy.level); setText('alchXp', S.alchemy.xp); setText('slotCount', S.alchemy.maxSlots);
@@ -498,7 +297,7 @@ function updateAll(){
   renderKarma(); 
   if (typeof renderQueue === 'function') renderQueue(); 
   if (typeof renderAlchemyUI === 'function') renderAlchemyUI(); 
-  if (typeof renderBuildings === 'function') renderBuildings();
+
 
   if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
@@ -507,118 +306,6 @@ function updateAll(){
   updateActivityCards();
 }
 
-
-function renderUpgrades(){
-  // Legacy function - now handled by renderBuildings in sect tab
-  // Keep empty to avoid breaking existing calls
-}
-
-function renderSect(){
-  // Legacy function - now handled by renderBuildings
-  renderBuildings();
-}
-
-function renderBuildings(){
-  const container = document.getElementById('buildingsContainer');
-  if(!container) return;
-  
-  container.innerHTML = '';
-  
-  // Group buildings by category
-  const categories = {
-    cultivation: {name: 'Cultivation', buildings: []},
-    resources: {name: 'Resource Production', buildings: []},
-    alchemy: {name: 'Alchemy', buildings: []},
-    combat: {name: 'Combat Training', buildings: []},
-    disciples: {name: 'Disciple Management', buildings: []},
-    knowledge: {name: 'Knowledge & Research', buildings: []},
-    advanced: {name: 'Advanced Structures', buildings: []}
-  };
-  
-  // Sort buildings into categories
-  for(const [buildingKey, building] of Object.entries(SECT_BUILDINGS)){
-    if(categories[building.category]){
-      categories[building.category].buildings.push({key: buildingKey, ...building});
-    }
-  }
-  
-  // Render each category
-  for(const [categoryKey, category] of Object.entries(categories)){
-    if(category.buildings.length === 0) continue;
-    
-    const categoryDiv = document.createElement('div');
-    categoryDiv.className = 'building-category';
-    
-    const categoryTitle = document.createElement('h4');
-    categoryTitle.textContent = category.name;
-    categoryDiv.appendChild(categoryTitle);
-    
-    const buildingsGrid = document.createElement('div');
-    buildingsGrid.className = 'buildings-grid';
-    
-    category.buildings.forEach(building => {
-      const buildingDiv = document.createElement('div');
-      const isUnlocked = isBuildingUnlocked(building.key);
-      const currentLevel = getBuildingLevel(building.key);
-      const canAfford = canAffordBuilding(building.key);
-      const isMaxLevel = currentLevel >= building.maxLevel;
-      
-      buildingDiv.className = `building-card ${isUnlocked ? 'unlocked' : 'locked'} ${canAfford && !isMaxLevel ? 'affordable' : ''}`;
-      
-      let content = `
-        <div class="building-header">
-          <span class="building-icon">${building.icon}</span>
-          <div class="building-info">
-            <div class="building-name">${building.name}</div>
-            <div class="building-level">Level ${currentLevel}/${building.maxLevel}</div>
-          </div>
-        </div>
-        <div class="building-desc">${building.desc}</div>
-      `;
-      
-      if(!isUnlocked){
-        const req = building.unlockReq;
-        const realmName = getRealmName(req.realm);
-        content += `<div class="unlock-req">Unlocks at ${realmName} ${req.stage}</div>`;
-      } else if(isMaxLevel){
-        const effect = building.effects[currentLevel];
-        content += `
-          <div class="current-effect">${effect.desc}</div>
-          <div class="max-level">MAX LEVEL</div>
-        `;
-      } else {
-        const cost = getBuildingCost(building.key);
-        const nextEffect = building.effects[currentLevel + 1];
-        const costStr = Object.entries(cost).map(([k,v])=>`${fmt(v)} ${icon(k)}`).join(' ');
-        
-        content += `
-          <div class="next-effect">${nextEffect.desc}</div>
-          <div class="building-cost">${costStr}</div>
-          <button class="btn ${canAfford ? 'primary' : 'disabled'}" onclick="upgradeBuilding('${building.key}')" ${!canAfford ? 'disabled' : ''}>
-            ${currentLevel === 0 ? 'Build' : 'Upgrade'}
-          </button>
-        `;
-      }
-      
-      buildingDiv.innerHTML = content;
-      buildingsGrid.appendChild(buildingDiv);
-    });
-    
-    categoryDiv.appendChild(buildingsGrid);
-    container.appendChild(categoryDiv);
-  }
-}
-
-function icon(resource) {
-  const icons = {
-    stones: '🪨',
-    herbs: '🌿', 
-    ore: '⛏️',
-    wood: '🪵',
-    cores: '💎'
-  };
-  return icons[resource] || '❓';
-}
 
 function renderKarma(){
   const body=document.getElementById('karmaUpgrades'); 
@@ -1021,15 +708,8 @@ function updateActivitySelectors() {
   
   // Update sect selector
   const sectSelector = document.getElementById('sectSelector');
-  const sectInfo = document.getElementById('sectInfo');
-  
   if (sectSelector) {
     sectSelector.classList.toggle('active', selectedActivity === 'sect');
-  }
-  
-  if (sectInfo) {
-    const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
-    sectInfo.textContent = `${buildingCount} Buildings`;
   }
   updateCurrentTaskDisplay();
 }
@@ -1047,9 +727,6 @@ function updateActivityContent() {
       break;
     case 'cooking':
       updateActivityCooking();
-      break;
-    case 'sect':
-      updateActivitySect();
       break;
   }
 }
@@ -1494,10 +1171,6 @@ function updateSidebarActivities() {
     }
   }
   
-  // Update sect status
-  const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
-  setText('sectLevel', `${buildingCount} Buildings`);
-  
   // Update sect status indicator
   const sectStatus = document.getElementById('sectStatus');
   if (sectStatus) {
@@ -1508,27 +1181,6 @@ function updateSidebarActivities() {
       sectStatus.textContent = 'Inactive';
       sectStatus.classList.remove('active');
     }
-  }
-}
-
-function updateActivitySect() {
-  const buildingCount = Object.values(S.buildings).reduce((sum, level) => sum + (level > 0 ? 1 : 0), 0);
-  setText('buildingCountActivity', buildingCount);
-  setText('stonesActivity', Math.floor(S.stones));
-  
-  const goToSectBtn = document.getElementById('goToSectTab');
-  if (goToSectBtn) {
-    goToSectBtn.onclick = () => {
-      if (typeof switchTab === 'function') {
-        switchTab('sect');
-      } else if (typeof showTab === 'function') {
-        showTab('sect');
-      } else {
-        // Fallback: try to manually switch to sect tab
-        selectActivity('sect');
-        log('Switched to sect management', 'good');
-      }
-    };
   }
 }
 
@@ -1750,25 +1402,8 @@ function initLawSystem(){
     };
   }
   
-  // Ensure buildings object exists
-  if(!S.buildings) {
-    S.buildings = {};
-  }
-  
-  // Ensure building bonuses exist
-  if(!S.buildingBonuses) {
-    S.buildingBonuses = {
-      qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
-      alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
-      disciples: 0, lawPoints: 0, breakthroughBonus: 0
-    };
-  }
-  
   // Check for any laws that should already be unlocked
   checkLawUnlocks();
-  
-  // Apply building effects
-  applyBuildingEffects();
 }
 
 function meditate(){
@@ -1871,174 +1506,6 @@ function applySkillBonuses(lawKey, skillKey){
   }
 }
 
-function isBuildingUnlocked(buildingKey) {
-  const building = SECT_BUILDINGS[buildingKey];
-  if (!building) return false;
-  
-  const req = building.unlockReq;
-  return S.realm.tier >= req.realm && S.realm.stage >= req.stage;
-}
-
-function getBuildingLevel(buildingKey) {
-  return S.buildings[buildingKey] || 0;
-}
-
-function getBuildingCost(buildingKey, targetLevel = null) {
-  const building = SECT_BUILDINGS[buildingKey];
-  if (!building) return null;
-  
-  const currentLevel = getBuildingLevel(buildingKey);
-  const level = targetLevel || (currentLevel + 1);
-  
-  if (level > building.maxLevel) return null;
-  
-  const cost = {};
-  const scaling = Math.pow(building.costScaling, level - 1);
-  
-  for (const [resource, amount] of Object.entries(building.baseCost)) {
-    cost[resource] = Math.floor(amount * scaling);
-  }
-  
-  return cost;
-}
-
-function canAffordBuilding(buildingKey, targetLevel = null) {
-  const cost = getBuildingCost(buildingKey, targetLevel);
-  if (!cost) return false;
-  
-  for (const [resource, amount] of Object.entries(cost)) {
-    if (S[resource] < amount) return false;
-  }
-  
-  return true;
-}
-
-function upgradeBuilding(buildingKey) {
-  const building = SECT_BUILDINGS[buildingKey];
-  if (!building) {
-    log('Building not found!', 'bad');
-    return false;
-  }
-  
-  if (!isBuildingUnlocked(buildingKey)) {
-    log('Building not unlocked yet!', 'bad');
-    return false;
-  }
-  
-  const currentLevel = getBuildingLevel(buildingKey);
-  const targetLevel = currentLevel + 1;
-  
-  if (targetLevel > building.maxLevel) {
-    log('Building already at maximum level!', 'bad');
-    return false;
-  }
-  
-  if (!canAffordBuilding(buildingKey, targetLevel)) {
-    log('Cannot afford building upgrade!', 'bad');
-    return false;
-  }
-  
-  // Pay the cost
-  const cost = getBuildingCost(buildingKey, targetLevel);
-  for (const [resource, amount] of Object.entries(cost)) {
-    S[resource] -= amount;
-  }
-  
-  // Upgrade the building
-  S.buildings[buildingKey] = targetLevel;
-  
-  // Apply effects
-  applyBuildingEffects();
-  
-  const levelText = currentLevel === 0 ? 'built' : `upgraded to level ${targetLevel}`;
-  log(`${building.name} ${levelText}!`, 'good');
-  
-  updateAll();
-  return true;
-}
-
-
-
-function applyBuildingEffects() {
-  // Reset building bonuses
-  S.buildingBonuses = {
-    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
-    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, defBase: 0,
-    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
-  };
-  
-  // Reset cultivation building multiplier (ensure cultivation object exists)
-  if (!S.cultivation) {
-    S.cultivation = {
-      talent: 1.0,
-      comprehension: 1.0,
-      foundationMult: 1.0,
-      pillMult: 1.0,
-      buildingMult: 1.0
-    };
-  }
-  S.cultivation.buildingMult = 1.0;
-  
-  // Apply effects from all built buildings
-  for (const [buildingKey, level] of Object.entries(S.buildings)) {
-    if (level > 0) {
-      const building = SECT_BUILDINGS[buildingKey];
-      if (building && building.effects[level]) {
-        const effects = building.effects[level];
-        
-        for (const [effect, value] of Object.entries(effects)) {
-          if (effect === 'alchemyUnlock' && value) {
-            S.alchemy.unlocked = true;
-            log('Alchemy unlocked! You can now brew pills.', 'good');
-          } else if (effect !== 'desc' && Object.prototype.hasOwnProperty.call(S.buildingBonuses, effect)) {
-            S.buildingBonuses[effect] += value;
-          }
-        }
-      }
-    }
-  }
-  
-  // Apply accumulated bonuses to base stats
-  S.qiRegenMult += S.buildingBonuses.qiRegenMult;
-  S.qiCapMult += S.buildingBonuses.qiCapMult;
-  S.yieldMult.herbs += S.buildingBonuses.herbYield;
-  S.yieldMult.ore += S.buildingBonuses.oreYield;
-  S.yieldMult.wood += S.buildingBonuses.woodYield;
-  S.alchemy.maxSlots += S.buildingBonuses.alchemySlots;
-  S.alchemy.successBonus += S.buildingBonuses.alchemySuccess;
-  S.atkBase += S.buildingBonuses.atkBase;
-  S.defBase += S.buildingBonuses.defBase;
-  S.disciples += S.buildingBonuses.disciples;
-  S.cultivation.buildingMult += S.buildingBonuses.foundationMult;
-  
-  // Law points are added directly when building is upgraded
-  if (S.buildingBonuses.lawPoints > 0) {
-    S.laws.points += S.buildingBonuses.lawPoints;
-    S.buildingBonuses.lawPoints = 0; // Reset to avoid double-adding
-  }
-}
-
-function freeDisciples(){ return S.disciples - (S.gather.herbs + S.gather.ore + S.gather.wood); }
-function assign(type, delta){
-  if(delta>0){ const free=freeDisciples(); const add=Math.min(delta, free); S.gather[type]+=add; }
-  else{ const take=Math.min(-delta, S.gather[type]); S.gather[type]-=take; }
-  updateAll();
-}
-function yieldBase(type){
-  const base = {herbs:1, ore:0.7, wood:0.5};
-  
-  // Ensure stats exist
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
-    };
-  }
-  
-  return base[type] * (1 + S.yieldMult[type]);
-}
-
 // Alchemy
 const RECIPES = {
   qi:{name:'Qi Condensing Pill', cost:{herbs:20, ore:5}, time:30, base:0.80, give:s=>{s.pills.qi++; s.alchemy.xp+=5;}, unlockHint:'Basic alchemy knowledge'},
@@ -2123,11 +1590,6 @@ function tick(){
     const { gained, qiSpent } = refillShieldFromQi(S);
     if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   }
-
-  // Gathering
-  S.herbs += yieldBase('herbs') * S.gather.herbs;
-  S.ore   += yieldBase('ore')   * S.gather.ore;
-  S.wood  += yieldBase('wood')  * S.gather.wood;
 
   // Alchemy
   S.alchemy.queue.forEach(q=>{ if(!q.done){ q.t -= 1; if(q.t<=0){ q.t=0; q.done=true; } }});
