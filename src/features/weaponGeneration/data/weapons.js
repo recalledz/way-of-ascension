@@ -57,7 +57,7 @@ const FIST = {
   tags: ['melee'],
   reqs: { realmMin: 0, proficiencyMin: 0 },
   proficiencyKey: 'fist',
-  abilityKeys: [],
+  abilityKeys: ['seventyFive'],
   animations: defaultAnimationsForType('fist'),
 };
 

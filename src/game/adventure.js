@@ -552,7 +552,7 @@ export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
   const slots = getAbilitySlots(S);
-  const iconMap = { 'pointy-sword': '🗡️' };
+  const iconMap = { 'pointy-sword': '🗡️', 'game-icons:mighty-force': '💥' };
   bar.innerHTML = '';
   slots.forEach((slot, i) => {
     const card = document.createElement('div');
@@ -566,7 +566,8 @@ export function updateAbilityBar() {
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
-      card.title = '130% base Physical. Cost 10 Qi. CD 10s. +5 HP on hit.';
+      const cdSec = (def.cooldownMs || 0) / 1000;
+      card.title = `${def.displayName} — Cost ${def.costQi} Qi, CD ${cdSec}s`;
       if (slot.cooldownRemainingMs > 0) {
         const overlay = document.createElement('div');
         overlay.className = 'cooldown-overlay';

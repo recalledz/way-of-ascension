@@ -16,5 +16,14 @@ export const ABILITIES = {
     tags: ['weapon-skill', 'physical'],
     requiresWeaponType: 'sword',
   },
+  seventyFive: {
+    key: 'seventyFive',
+    displayName: '75%',
+    icon: 'game-icons:mighty-force',
+    costQi: 0,
+    cooldownMs: 0,
+    castTimeMs: 0,
+    tags: ['special']
+  },
   // Leave other abilities out until you define them.
 };

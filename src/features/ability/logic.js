@@ -1,10 +1,14 @@
 import { processAttack } from '../../game/combat.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
+import { qCap } from '../../game/engine.js';
 
 export function resolveAbilityHit(abilityKey, state) {
   switch (abilityKey) {
     case 'powerSlash':
       resolvePowerSlash(state);
+      break;
+    case 'seventyFive':
+      resolveSeventyFive(state);
       break;
     default:
       break;
@@ -28,6 +32,30 @@ function resolvePowerSlash(state) {
     state.adventure.playerHP = state.hp;
     state.adventure.combatLog.push('You recovered 5 HP.');
     showHeal(healed);
+  }
+}
+
+function resolveSeventyFive(state) {
+  if (!state?.adventure) return;
+  // Deal 100% of enemy HP (instant defeat)
+  const before = state.adventure.enemyHP || 0;
+  state.adventure.enemyHP = 0;
+  // Heal player to full
+  const healAmt = Math.max(0, (state.hpMax || 0) - (state.hp || 0));
+  state.hp = state.hpMax;
+  state.adventure.playerHP = state.hpMax;
+  if (!state.adventure.combatLog) state.adventure.combatLog = [];
+  state.adventure.combatLog.push(`You unleash 75%! It deals ${Math.round(before)} true damage and fells the enemy.`);
+  if (healAmt > 0) {
+    state.adventure.combatLog.push(`You are restored for ${healAmt} HP.`);
+    showHeal(healAmt);
+  }
+  // Restore Qi to full
+  try {
+    state.qi = qCap();
+  } catch {
+    // Fallback if qCap unavailable for some reason
+    state.qi = state.qiMax || state.qi || 0;
   }
 }
 
