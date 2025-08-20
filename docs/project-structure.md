@@ -250,7 +250,7 @@ S = {
   buildingBonuses: { /* calculated bonuses */ },
   
   // Auto systems
-  auto: { meditate: true, brewQi: false, hunt: false }
+  auto: { meditate: true, brewQi: false, adventure: false }
 }
 ```
 

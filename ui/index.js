@@ -19,8 +19,7 @@ import {
   calculatePlayerAttackRate
 } from '../src/features/progression/selectors.js';
 import { initializeFight } from '../src/features/combat/mutators.js';
-import { processAttack, refillShieldFromQi } from '../src/features/combat/logic.js';
-import { applyRandomAffixes } from '../src/features/affixes/logic.js';
+import { refillShieldFromQi } from '../src/features/combat/logic.js';
 import {
   updateRealmUI,
   updateActivityCultivation,
@@ -60,13 +59,6 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 
 
-const BEASTS = [
-  {name:'Wild Rabbit', hp:60, atk:2, def:0, reward:{stones:5, herbs:2}},
-  {name:'Boar', hp:180, atk:5, def:2, reward:{stones:15, ore:3}},
-  {name:'Spirit Wolf', hp:420, atk:10, def:4, reward:{stones:35, wood:6}},
-  {name:'Tiger', hp:900, atk:18, def:8, reward:{stones:80, ore:12}},
-  {name:'Dragon Whelp', hp:2400, atk:40, def:18, reward:{stones:220, herbs:30, ore:25}}
-];
 
 
 
@@ -301,10 +293,6 @@ function initUI(){
 
   initializeWeaponChip();
 
-  // Fill beasts
-  const bs = document.getElementById('beastSelect');
-  BEASTS.forEach((b,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=`${b.name} (HP ${b.hp})`; bs.appendChild(o)});
-
   // Assign buttons
   document.getElementById('tab-gathering').addEventListener('click', e=>{
     const d = e.target.dataset.assign; if(!d) return; const [res,op]=d.split(':'); const delta=+op; assign(res, delta);
@@ -317,9 +305,6 @@ function initUI(){
   
   const brewBtn = qs('#brewBtn');
   if (brewBtn) brewBtn.addEventListener('click', addBrew);
-  
-  const huntBtn = qs('#huntBtn');
-  if (huntBtn) huntBtn.addEventListener('click', startHunt);
   
   const useQiPill = qs('#useQiPill');
   if (useQiPill) useQiPill.addEventListener('click', ()=>usePill('qi'));
@@ -343,10 +328,10 @@ function initUI(){
     autoBrewQi.addEventListener('change', e => S.auto.brewQi = e.target.checked);
   }
   
-  const autoHunt = qs('#autoHunt');
-  if (autoHunt) {
-    autoHunt.checked = S.auto.hunt;
-    autoHunt.addEventListener('change', e => S.auto.hunt = e.target.checked);
+  const autoAdventure = qs('#autoAdventure');
+  if (autoAdventure) {
+    autoAdventure.checked = S.auto.adventure;
+    autoAdventure.addEventListener('change', e => S.auto.adventure = e.target.checked);
   }
 
   const reduceMotionToggle = qs('#reduceMotionToggle');
@@ -2107,65 +2092,6 @@ function usePill(type){
   S.pills[type]--; updateAll();
 }
 
-// Combat
-function startHunt(){
-  if(S.combat.hunt){ log('Already hunting','bad'); return; }
-  const i= +document.getElementById('beastSelect').value; const b=BEASTS[i];
-  const { enemyHP, enemyMax, atk, def } = initializeFight(b);
-  const h = {i, name:b.name, base:b, enemyMax, enemyHP, eAtk:atk, eDef:def, regen:0, affixes:[]};
-  applyRandomAffixes(h);
-  S.combat.hunt = h; updateHuntUI();
-}
-
-function updateHuntUI(){
-  const h=S.combat.hunt; const el=qs('#huntStatus');
-  if(!h){ el.textContent='No active hunt.'; setText('enemyHpTxt','—'); setText('ourHpTxt','—'); setFill('enemyFill',0); setFill('ourFill',0); setText('affixList','None'); setText('techStatus',''); return; }
-  const b=h.base; el.textContent=`Fighting ${b.name}…`;
-  setFill('enemyFill', h.enemyHP/h.enemyMax); setText('enemyHpTxt', `${Math.ceil(h.enemyHP)}/${h.enemyMax}`);
-  setFill('ourFill', S.hp/S.hpMax); setText('ourHpTxt', `${Math.ceil(S.hp)}/${S.hpMax}`);
-  setText('affixList', h.affixes.length? h.affixes.join(', '): 'None');
-  const cd = S.combat.cds; setText('techStatus', `Slash ${cd.slash||0}s • Guard ${cd.guard||0}s • Burst ${cd.burst||0}s`);
-}
-function resolveHunt(win){
-  const h=S.combat.hunt; if(!h) return; const b=h.base;
-  if(win){
-    Object.entries(b.reward).forEach(([k,v])=>{ S[k]=(S[k]||0)+v; });
-    S.stones += Math.ceil((S.realm.tier+1)*2);
-    const bonus = h.affixes.length*0.05; const chance = 0.25 + 0.05*b.atk/10 + bonus; if(Math.random()<chance) S.cores += 1;
-    log(`Victory vs ${b.name}! Loot gained.`,'good');
-  }else{
-    S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax*0.25));
-    log(`Defeated by ${b.name}. You limp back, hurt.`,'bad');
-  }
-  S.combat.hunt=null; updateAll();
-}
-
-function techSlash(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
-  if(S.combat.cds.slash>0){ log('Sword Slash on cooldown','bad'); return; }
-  const dmg = calcAtk(S)*3;
-  S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' });
-  S.combat.cds.slash = 8; log('You unleash Sword Slash!','good'); updateHuntUI();
-}
-function techGuard(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
-  if(S.combat.cds.guard>0){ log('Guard on cooldown','bad'); return; }
-  S.combat.guardUntil = S.time + 5; S.combat.cds.guard = 20; log('You assume a guarded stance (5s).','good'); updateHuntUI();
-}
-function techBurst(){
-  if(!S.combat.hunt){ log('No active hunt','bad'); return; }
-  if(S.combat.cds.burst>0){ log('Qi Burst on cooldown','bad'); return; }
-  const need = 0.25*qCap(S); if(S.qi < need){ log('Not enough Qi for Burst (25% required)','bad'); return; }
-  S.qi -= need; const dmg = need/3 + calcAtk(S); S.combat.hunt.enemyHP = processAttack(S.combat.hunt.enemyHP, dmg, { type: 'physical' }); S.combat.cds.burst = 15; log('Qi Burst detonates!','good'); updateHuntUI();
-}
-
-function updateWinEst(){
-  const i= +document.getElementById('beastSelect').value; const b=BEASTS[i]; if(!b){ setText('winEst','—'); return; }
-  const atk = calcAtk(S); const def = calcDef(S); const ourDPS = Math.max(1, atk - b.def*0.6); const enemyDPS = Math.max(0, b.atk - def*0.7);
-  const tKill = b.hp/ourDPS; const tDie = S.hp / Math.max(0.1, enemyDPS);
-  const p = clamp(0.5 + (tDie - tKill)/ (tDie + tKill + 1e-6), 0, 0.99);
-  setText('winEst', Math.round(p*100)+'%');
-}
 
 /* Ascension */
 function calcKarmaGain(){
@@ -2191,7 +2117,7 @@ function tick(){
 
   // Passive Qi regen and out-of-combat HP regen
   S.qi = clamp(S.qi + qiRegenPerSec(S), 0, qCap(S));
-  if (!(S.adventure?.inCombat) && !S.combat.hunt) {
+  if (!(S.adventure?.inCombat)) {
     S.hp = clamp(S.hp + 1, 0, S.hpMax);
     if (S.adventure) S.adventure.playerHP = S.hp;
     const { gained, qiSpent } = refillShieldFromQi(S);
@@ -2290,32 +2216,17 @@ function tick(){
   }
   
   // Auto meditation fallback for old saves
-  if(S.auto.meditate && !S.activities.cultivation) {
+  if(S.auto.meditate && Object.values(S.activities).every(a => !a)) {
     const gain = foundationGainPerSec(S) * 0.5; // Reduced when not actively cultivating
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
   if(S.auto.brewQi && S.alchemy.queue.length < S.alchemy.maxSlots){ if(canPay(RECIPES.qi.cost)) addBrew(); }
-  if(S.auto.hunt && !S.combat.hunt){ startHunt(); }
-
-  // Combat step
-  if(S.combat.hunt){
-    const h=S.combat.hunt;
-    const guardActive = S.time < S.combat.guardUntil;
-    const atk = calcAtk(S), def = calcDef(S);
-    const ourDPS = Math.max(1, atk - h.eDef*0.6);
-    let enemyDPS = Math.max(0, h.eAtk - def*0.7);
-    if(guardActive) enemyDPS *= 0.5;
-    h.enemyHP = processAttack(h.enemyHP, ourDPS, { type: 'physical' });
-    if(h.regen) h.enemyHP += h.enemyMax * h.regen;
-    h.enemyHP = clamp(h.enemyHP, 0, h.enemyMax);
-    S.hp = processAttack(S.hp, enemyDPS, { target: S, type: 'physical' });
-    if(h.enemyHP<=0){ resolveHunt(true); }
-    else if(S.hp<=1){ resolveHunt(false); }
-    updateHuntUI();
-  }
+  if(S.auto.adventure && !S.activities.adventure){ startActivity('adventure'); }
 
   // CDs
-  for(const k in S.combat.cds){ if(S.combat.cds[k]>0) S.combat.cds[k]--; }
+  if (S.combat?.cds) {
+    for(const k in S.combat.cds){ if(S.combat.cds[k]>0) S.combat.cds[k]--; }
+  }
 
   // Breakthrough progress
   updateBreakthrough();
@@ -2325,7 +2236,6 @@ function tick(){
     updateAdventureCombat();
   }
 
-  if(S.time % 2===0) updateWinEst();
   updateSidebarActivities(); // Update progress bars every tick
   updateAll();
   updateAbilityBar();

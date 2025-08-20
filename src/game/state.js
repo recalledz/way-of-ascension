@@ -47,7 +47,7 @@ export const defaultState = () => {
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
   alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
-  combat:{hunt:null, cds:{slash:0,guard:0,burst:0}, guardUntil:0, techniques:{}},
+  combat:{ techniques:{} },
   abilityCooldowns:{},
   actionQueue:[],
   bought:{},
@@ -55,7 +55,7 @@ export const defaultState = () => {
   karma:{qiRegen:0, yield:0, atk:0, def:0},
   // Auto systems - players now begin with meditation disabled and must
   // explicitly start cultivating via the UI.
-  auto:{meditate:false, brewQi:false, hunt:false},
+  auto:{meditate:false, brewQi:false, adventure:false},
   // Activity System - only one can be active at a time
   activities: {
     cultivation: false,
