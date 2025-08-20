@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 
 export function getInventory(state = S) {

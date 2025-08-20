@@ -1,4 +1,4 @@
-import { S, save } from '../../game/state.js';
+import { S, save } from '../../shared/state.js';
 import { addToInventory } from '../inventory/mutators.js';
 
 // EQUIP-CHAR-UI: session loot helpers

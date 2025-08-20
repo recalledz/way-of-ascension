@@ -1,4 +1,4 @@
-import { S } from '../../../game/state.js';
+import { S } from '../../../shared/state.js';
 import { getSessionLoot } from '../selectors.js';
 import { forfeitSessionLoot } from '../mutators.js';
 

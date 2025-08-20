@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 import { ABILITIES } from './data/abilities.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 
