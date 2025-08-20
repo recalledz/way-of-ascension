@@ -1,5 +1,6 @@
 import { initHp } from './helpers.js';
 import { runMigrations, SAVE_VERSION } from './migrations.js';
+import { alchemyState } from '../features/alchemy/state.js';
 
 export function loadSave(){
   try{
@@ -46,7 +47,7 @@ export const defaultState = () => {
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
-  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
+  alchemy: structuredClone(alchemyState), // Start with only Qi recipe
   combat:{ techniques:{} },
   abilityCooldowns:{},
   actionQueue:[],
@@ -55,7 +56,7 @@ export const defaultState = () => {
   karma:{qiRegen:0, yield:0, atk:0, def:0},
   // Auto systems - players now begin with meditation disabled and must
   // explicitly start cultivating via the UI.
-  auto:{meditate:false, brewQi:false, adventure:false},
+  auto:{meditate:false, adventure:false},
   // Activity System - only one can be active at a time
   activities: {
     cultivation: false,
