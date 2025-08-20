@@ -29,7 +29,7 @@ import {
   playShieldDome,
   playSparkBurst,
   setFxTint
-} from '../../ui/fx/fx.js';
+} from '../combat/ui/index.js';
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
 import { updateFoodSlots } from '../cooking/logic.js';

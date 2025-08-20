@@ -114,6 +114,8 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
+│   │   │       ├── fx.js
+│   │   │       └── index.js
 │   │   ├── cooking/
 │   │   │   ├── logic.js
 │   │   │   ├── mutators.js
@@ -222,8 +224,6 @@ way-of-ascension/
 │   │   ├── events.js
 │   │   └── saveLoad.js
 │   └── ui/
-│       ├── fx/
-│       │   └── fx.js
 │       └── sidebar.js
 ├── ui/
 │   ├── components/
@@ -582,7 +582,7 @@ function updateAll() {
 #### `src/features/progression/data/laws.js` - Cultivation Laws
 **Purpose**: Define law bonuses and skill trees.
 
-### UI Effects (`src/ui/fx/`)
+### UI Effects (`src/features/combat/ui/`)
 
 #### `fx.js` - SVG Combat Effects
 **Purpose**: Utility functions for spawning and animating combat visual effects using SVG.
