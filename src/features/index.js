@@ -3,6 +3,7 @@
 
 import { mountProficiencyUI } from "./proficiency/ui/weaponProficiencyDisplay.js";
 import { mountSectUI } from "./sect/ui/sectScreen.js";
+import { mountAlchemyUI } from "./alchemy/ui/alchemyDisplay.js";
 import { mountCookingUI } from "./cooking/ui/cookingDisplay.js";
 // Example placeholder for later:
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
@@ -10,6 +11,7 @@ import { mountCookingUI } from "./cooking/ui/cookingDisplay.js";
 export function mountAllFeatureUIs(state) {
   mountProficiencyUI(state);
   mountSectUI(state);
+  mountAlchemyUI(state);
   mountCookingUI(state);
   // mountWeaponGenUI?.(state);
 }

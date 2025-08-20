@@ -57,7 +57,7 @@ export const defaultState = () => {
   karma:{qiRegen:0, yield:0, atk:0, def:0},
   // Auto systems - players now begin with meditation disabled and must
   // explicitly start cultivating via the UI.
-  auto:{meditate:false, brewQi:false, adventure:false},
+  auto:{meditate:false, adventure:false},
   // Activity System - only one can be active at a time
   activities: {
     cultivation: false,

@@ -168,6 +168,15 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   └── ui/
 │   │   │       └── sectScreen.js
+│   │   ├── alchemy/
+│   │   │   ├── data/
+│   │   │   │   └── recipes.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── alchemyDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -266,7 +275,7 @@ S = {
   buildingBonuses: { /* calculated bonuses */ },
   
   // Auto systems
-  auto: { meditate: true, brewQi: false, adventure: false }
+  auto: { meditate: true, adventure: false }
 }
 ```
 
@@ -624,6 +633,14 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+
+### Alchemy Feature
+- `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
+- `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
+- `src/features/alchemy/mutators.js` – Start/complete brews and unlock new recipes.
+- `src/features/alchemy/selectors.js` – Accessors for brewing queue and success chance calculations.
+- `src/features/alchemy/state.js` – Base alchemy stats including level, XP, and known recipes.
+- `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.
 
 ### Cooking Feature (`src/features/cooking/`)
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
