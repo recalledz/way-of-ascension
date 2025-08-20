@@ -58,7 +58,7 @@ Each feature folder under `src/features` follows a consistent internal layout:
 
 The **Proficiency** module tracks a player’s mastery of different weapon types.  It exposes a `proficiencyState` slice with a `proficiency` map:contentReference[oaicite:5]{index=5}.  The logic file defines `gainProficiency()` and `getProficiency()`; the latter returns both the raw proficiency value and a bonus calculated via a soft‑capping formula:contentReference[oaicite:6]{index=6}.  Mutators simply delegate to the logic functions, ensuring all state changes pass through a single place:contentReference[oaicite:7]{index=7}.  The selectors mirror the logic and provide an additional helper to derive weapon damage/speed bonuses based on the equipped weapon:contentReference[oaicite:8]{index=8}.
 
-On the UI side, `weaponProficiencyDisplay.js` updates HTML elements to display the player’s current proficiency level, progress and bonus.  It imports a selector to get the equipped weapon from the legacy `src/game/selectors.js` and uses feature data (`WEAPON_TYPES` and `WEAPON_ICONS`) for labels and icons:contentReference[oaicite:9]{index=9}.
+On the UI side, `weaponProficiencyDisplay.js` updates HTML elements to display the player’s current proficiency level, progress and bonus.  It imports the equipped weapon selector from `src/features/inventory/selectors.js` and uses feature data (`WEAPON_TYPES` and `WEAPON_ICONS`) for labels and icons:contentReference[oaicite:9]{index=9}.
 
 ### Weapon Generation feature
 
@@ -73,13 +73,12 @@ Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js`
 At the time of writing, the following game systems remain in the `src/game` folder:
 
 * **Combat and adventure:** core fighting mechanics and exploration systems, including `combat.js`, the `combat/` subdirectory (hit resolution and status effects) and `adventure.js`.
-* **Ability system:** casting and resolving active abilities (`abilitySystem.js`).
 * **Engine:** progression and simulation loop (`engine.js`) which ties together cultivation, skills and other systems.
 * **Affixes, helpers and utilities:** general helper functions and item modifier definitions.
-* **Game state and selectors:** a monolithic `state.js` defines the default state for the entire game, and `selectors.js` contains a mix of global selectors (such as `getEquippedWeapon()`). 
+* **Game state:** a monolithic `state.js` defines the default state for the entire game, while selectors like `getEquippedWeapon()` have been migrated into feature folders.
 * **Systems:** some subsystems (inventory, loot, session loot) still live under `src/game/systems`.  They will eventually be migrated into dedicated feature folders like `inventory`, `loot` and `sessionLoot`.
 
-These modules still work, and the new features currently import state or helpers from them.  For example, the proficiency UI pulls the equipped weapon via `getEquippedWeapon()` from the legacy selectors:contentReference[oaicite:16]{index=16}.  The plan is to migrate these systems one at a time into `src/features`, following the incremental roadmap.
+These modules still work, and the new features currently import state or helpers from them.  For example, the proficiency UI pulls the equipped weapon via `getEquippedWeapon()` from the inventory selectors:contentReference[oaicite:16]{index=16}.  The plan is to migrate these systems one at a time into `src/features`, following the incremental roadmap.
 
 ## Future migration plan
 
