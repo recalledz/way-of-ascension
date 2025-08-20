@@ -50,7 +50,7 @@ import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/w
 import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/inventory/ui/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
-import { setReduceMotion } from '../src/ui/fx/fx.js';
+import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 
