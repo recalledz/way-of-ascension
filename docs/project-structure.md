@@ -88,6 +88,7 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── index.js
+│   │   ├── registry.js
 │   │   ├── ability/
 │   │   │   ├── data/
 │   │   │   │   └── abilities.js
@@ -121,6 +122,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── cookingDisplay.js
 │   │   ├── inventory/
@@ -129,6 +131,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       ├── CharacterPanel.js
 │   │   │       └── weaponChip.js
@@ -140,6 +143,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── lootTab.js
 │   │   ├── proficiency/
@@ -149,6 +153,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── weaponProficiencyDisplay.js
 │   │   ├── progression/
@@ -169,6 +174,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── sectScreen.js
 │   │   ├── karma/
@@ -185,6 +191,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── alchemyDisplay.js
 │   │   ├── mining/
@@ -207,6 +214,7 @@ way-of-ascension/
 │   │       │   ├── weaponIcons.js
 │   │       │   ├── weaponTypes.js
 │   │       │   └── weapons.js
+│   │       ├── index.js
 │   │       ├── logic.js
 │   │       ├── mutators.js
 │   │       ├── selectors.js
@@ -543,6 +551,9 @@ function updateAll() {
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
 **When to modify**: Change weapon HUD logic or appearance.
 
+#### `src/features/proficiency/index.js` - Proficiency Feature Registration
+**Purpose**: Registers the proficiency slice and hooks into the feature registry.
+
 #### `src/features/proficiency/state.js` - Proficiency Feature State
 **Purpose**: Maintains the player's proficiency map keyed by weapon type.
 **When to modify**: Adjust underlying storage of proficiency values.
@@ -630,6 +641,7 @@ Paths added:
 - `src/shared/events.js`
 - `src/shared/saveLoad.js`
 - `src/features/index.js` – UI bootstrap
+- `src/features/registry.js` – Feature registration hooks
 - `src/index.js` – entry that bootstraps and starts the controller
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
@@ -645,6 +657,9 @@ Paths added:
 
 #### `src/features/index.js` - Feature UI Bootstrap
 **Purpose**: Central place to mount all feature user interfaces.
+
+#### `src/features/registry.js` - Feature Registry
+**Purpose**: Collects feature `init` and `tick` hooks and exposes helpers to initialise slices and advance ticks.
 
 #### `src/index.js` - Entrypoint
 **Purpose**: Minimal bootstrap that creates the controller, mounts feature UIs and starts the game.
@@ -689,6 +704,7 @@ Paths added:
 - `src/features/physique/ui/physiqueDisplay.js` – Renders physique progress and bonuses in the UI.
 
 ### Alchemy Feature
+- `src/features/alchemy/index.js` – Registers alchemy hooks.
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
 - `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
 - `src/features/alchemy/mutators.js` – Start/complete brews and unlock new recipes.
@@ -703,7 +719,15 @@ Paths added:
 - `src/features/cooking/logic.js` – Handle cooking, food slot usage, and UI updates.
 - `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
 
+### Weapon Generation Feature (`src/features/weaponGeneration/`)
+- `src/features/weaponGeneration/index.js` – Registers weapon generation hooks.
+- `src/features/weaponGeneration/state.js` – Holds the currently generated weapon.
+- `src/features/weaponGeneration/logic.js` – Generates weapons from base types and materials.
+- `src/features/weaponGeneration/mutators.js` – Writes generated weapons into state.
+- `src/features/weaponGeneration/selectors.js` – Helpers to roll and access generated weapons.
+
 ### Sect Feature (`src/features/sect/`)
+- `src/features/sect/index.js` – Registers sect hooks.
 - `src/features/sect/state.js` – Sect buildings and resources.
 - `src/features/sect/mutators.js` – Mutators for building and upgrading sect structures.
 - `src/features/sect/selectors.js` – Accessors for sect data.
