@@ -83,7 +83,7 @@ const coreFiles = [
   'src/features/progression/logic.js',
   'src/features/adventure/logic.js',
   'ui/index.js',
-  'ui/realm.js',
+  'src/features/progression/ui/realm.js',
   'index.html',
   'style.css'
 ];

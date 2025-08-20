@@ -158,7 +158,9 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       └── realm.js
 │   │   ├── sect/
 │   │   │   ├── data/
 │   │   │   │   └── buildings.js
@@ -208,8 +210,7 @@ way-of-ascension/
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
-│   ├── index.js
-│   └── realm.js
+│   └── index.js
 ├── README.md
 ├── CHANGELOG.md
 ├── eslint.config.mjs
@@ -490,7 +491,7 @@ function updateAll() {
 
 **When to modify**: Add new UI elements, modify display logic, add event handlers
 
-#### `realm.js` - Realm UI Components
+#### `src/features/progression/ui/realm.js` - Realm UI Components
 **Purpose**: Realm-specific UI components and cultivation displays
 **When to modify**: Add new realm UI features, modify cultivation interface
 
@@ -549,6 +550,9 @@ function updateAll() {
 #### `src/features/progression/selectors.js` - Progression Selectors
 **Purpose**: Expose derived values like qi capacity, regeneration, and law bonuses.
 **Key Functions**: `qCap(state)`, `qiRegenPerSec(state)`, `getLawBonuses(state)`.
+
+#### `src/features/progression/index.js` - Progression Feature Exports
+**Purpose**: Re-exports realm UI hooks and mutators for easier consumption.
 
 #### `src/features/progression/logic.js` - Progression Calculations
 **Purpose**: Core formulas for cultivation and combat stats.
