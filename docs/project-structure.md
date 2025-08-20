@@ -115,6 +115,13 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
+│   │   ├── cooking/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── cookingDisplay.js
 │   │   ├── inventory/
 │   │   │   ├── data/
 │   │   │   ├── logic.js
@@ -152,6 +159,15 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
+│   │   ├── sect/
+│   │   │   ├── data/
+│   │   │   │   └── buildings.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── sectScreen.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -608,3 +624,18 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+
+### Cooking Feature (`src/features/cooking/`)
+- `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
+- `src/features/cooking/mutators.js` – Manage cooking actions and food slot equipment.
+- `src/features/cooking/selectors.js` – Access success bonus and other cooking state.
+- `src/features/cooking/logic.js` – Handle cooking, food slot usage, and UI updates.
+- `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
+
+### Sect Feature (`src/features/sect/`)
+- `src/features/sect/state.js` – Sect buildings and resources.
+- `src/features/sect/mutators.js` – Mutators for building and upgrading sect structures.
+- `src/features/sect/selectors.js` – Accessors for sect data.
+- `src/features/sect/logic.js` – Core sect calculations and mechanics.
+- `src/features/sect/data/buildings.js` – Building definitions and costs.
+- `src/features/sect/ui/sectScreen.js` – UI for managing the sect.
