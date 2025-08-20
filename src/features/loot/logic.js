@@ -1,6 +1,6 @@
 // WEAPONS-INTEGRATION: basic loot table rolling
-import { LOOT_TABLES } from '../../data/lootTables.js';
-import { rollWeaponDropForZone } from '../../features/weaponGeneration/selectors.js';
+import { LOOT_TABLES } from './data/lootTables.js';
+import { rollWeaponDropForZone } from '../weaponGeneration/selectors.js';
 import { ZONES } from '../../data/zones.js';
 
 export function toLootTableKey(id = '') {

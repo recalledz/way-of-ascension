@@ -42,12 +42,11 @@ import {
   updateFoodSlots,
   instakillCurrentEnemy,
   setupAdventureTabs,
-  updateLootTab,
   updateAbilityBar
 
 } from '../src/game/adventure.js';
 import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
-import { forfeitSessionLoot } from '../src/game/systems/sessionLoot.js'; // EQUIP-CHAR-UI
+import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
@@ -2507,16 +2506,7 @@ function initActivityListeners() {
     updateActivityAdventure();
   });
 
-  document.getElementById('claimLootBtn')?.addEventListener('click', () => {
-    retreatFromCombat();
-    renderEquipmentPanel();
-  });
-  document.getElementById('forfeitLootBtn')?.addEventListener('click', () => {
-    if (confirm('Forfeit all loot?')) {
-      forfeitSessionLoot();
-      updateLootTab();
-    }
-  });
+  setupLootUI({ retreatFromCombat, renderEquipmentPanel });
 }
 
 // Add physique training dummy interaction

@@ -1,4 +1,4 @@
-import { ZONES } from './zones.js';
+import { ZONES } from '../../../data/zones.js';
 
 /** @typedef {{ typeKey:string, materialKey?:string, weight:number }} WeaponLootRow */
 

@@ -1,5 +1,5 @@
 import { weaponGenerationState } from './state.js';
-import { WEAPON_LOOT_TABLES } from '../../data/lootTables.weapons.js';
+import { WEAPON_LOOT_TABLES } from '../loot/data/lootTables.weapons.js';
 import { generateWeapon } from './logic.js';
 
 export function getGeneratedWeapon(state = weaponGenerationState) {
