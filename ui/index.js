@@ -18,7 +18,8 @@ import {
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/game/engine.js';
-import { initializeFight, processAttack, refillShieldFromQi } from '../src/game/combat.js';
+import { initializeFight } from '../src/features/combat/mutators.js';
+import { processAttack, refillShieldFromQi } from '../src/features/combat/logic.js';
 import { applyRandomAffixes } from '../src/features/affixes/logic.js';
 import {
   updateRealmUI,

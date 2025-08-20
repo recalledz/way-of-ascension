@@ -1,4 +1,4 @@
-import { processAttack } from '../../game/combat.js';
+import { processAttack } from '../combat/mutators.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 
 export function resolveAbilityHit(abilityKey, state) {
@@ -15,11 +15,10 @@ function resolvePowerSlash(state) {
   const weapon = getEquippedWeapon(state);
   const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
   const raw = Math.round(1.3 * roll);
-  let dealt = 0;
-  state.adventure.enemyHP = processAttack(
-    state.adventure.enemyHP,
+  const dealt = processAttack(
     raw,
-    { target: state.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
+    { target: state.adventure.currentEnemy, type: 'physical' },
+    state
   );
   state.adventure.combatLog.push(`You used Power Slash for ${dealt} Physical damage.`);
   if (dealt > 0) {

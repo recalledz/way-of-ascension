@@ -1,13 +1,14 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from './engine.js';
-import { initializeFight, processAttack, refillShieldFromQi } from './combat.js';
+import { initializeFight, processAttack } from '../features/combat/mutators.js';
+import { refillShieldFromQi } from '../features/combat/logic.js';
 import { getEquippedWeapon } from '../features/inventory/selectors.js';
 import { getAbilitySlots } from '../features/ability/selectors.js';
 import { rollLoot, toLootTableKey } from '../features/loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../features/weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { ABILITIES } from '../features/ability/data/abilities.js';
-import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
-import { chanceToHit } from './combat/hit.js';
+import { performAttack, decayStunBar } from '../features/combat/attack.js'; // STATUS-REFORM
+import { chanceToHit } from '../features/combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../features/ability/mutators.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, log } from './utils.js';
@@ -641,11 +642,10 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const playerAttack = calculatePlayerCombatAttack();
         const dmg = Math.max(1, Math.round(playerAttack));
-        let dealt = 0;
-        S.adventure.enemyHP = processAttack(
-          S.adventure.enemyHP,
+        const dealt = processAttack(
           dmg,
-          { target: S.adventure.currentEnemy, type: 'physical', onDamage: d => (dealt = d) }
+          { target: S.adventure.currentEnemy, type: 'physical' },
+          S
         );
         const xpGain = Math.max(1, Math.ceil(S.adventure.enemyMaxHP / 30));
         gainProficiency(weapon.proficiencyKey, xpGain, S); // WEAPONS-INTEGRATION
@@ -707,13 +707,11 @@ export function updateAdventureCombat() {
         const hitP = chanceToHit(enemyAcc, playerDodge);
         if (Math.random() < hitP) {
           const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
-          let taken = 0;
-          S.adventure.playerHP = processAttack(
-            S.adventure.playerHP,
+          const taken = processAttack(
             enemyDamage,
-            { target: S, type: 'physical', onDamage: d => (taken = d) }
+            { target: S, type: 'physical' },
+            S
           );
-          S.hp = S.adventure.playerHP;
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
           const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
           performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
