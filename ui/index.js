@@ -62,13 +62,6 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 
 
-const KARMA_UPS = [
-  {key:'k_qi', name:'Inner Stillness', desc:'+15% Qi regen (permanent)', base:5, mult:1.45, eff:s=>s.karma.qiRegen+=0.15},
-  {key:'k_yield', name:'Providence', desc:'+12% resource yield (perm.)', base:5, mult:1.6, eff:s=>s.karma.yield+=0.12},
-  {key:'k_blade', name:'Sword Intent', desc:'+10% ATK (perm.)', base:8, mult:1.7, eff:s=>s.karma.atk+=0.10},
-  {key:'k_shell', name:'Stone Body', desc:'+10% DEF (perm.)', base:8, mult:1.7, eff:s=>s.karma.def+=0.10}
-];
-
 const fmt = n=>{
   if (n>=1e12) return (n/1e12).toFixed(2)+'t';
   if (n>=1e9) return (n/1e9).toFixed(2)+'b';
@@ -200,10 +193,9 @@ function initUI(){
   if (debugKillBtn) debugKillBtn.addEventListener('click', instakillCurrentEnemy);
 
 
-  // Safe render calls
-  renderKarma();
-  updateAll();
-}
+    // Safe render calls
+    updateAll();
+  }
 
 function updateAll(){
   updateRealmUI();
@@ -286,7 +278,6 @@ function updateAll(){
   setText('alchLvl', S.alchemy.level); setText('alchXp', S.alchemy.xp); setText('slotCount', S.alchemy.maxSlots);
   
   // Karma
-  setText('karmaVal', S.karmaPts);
   const ascendBtn = document.getElementById('ascendBtn');
   if (ascendBtn) ascendBtn.disabled = calcKarmaGain() <= 0;
   
@@ -294,9 +285,8 @@ function updateAll(){
   if (typeof updateLawsDisplay === 'function') updateLawsDisplay();
   
   // Safe render function calls
-  renderKarma(); 
-  if (typeof renderQueue === 'function') renderQueue(); 
-  if (typeof renderAlchemyUI === 'function') renderAlchemyUI(); 
+  if (typeof renderQueue === 'function') renderQueue();
+  if (typeof renderAlchemyUI === 'function') renderAlchemyUI();
 
 
   if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
@@ -306,20 +296,6 @@ function updateAll(){
   updateActivityCards();
 }
 
-
-function renderKarma(){
-  const body=document.getElementById('karmaUpgrades'); 
-  if (!body) return; 
-  
-  body.innerHTML='';
-  KARMA_UPS.forEach(k=>{
-    const cost = k.base * Math.pow(k.mult, S.karma[k.key.slice(2)] || 0);
-    const div=document.createElement('div');
-    div.innerHTML=`<button class="btn small" data-karma="${k.key}">${k.name}</button><div class="muted">${k.desc}</div><div class="muted">Cost: ${Math.floor(cost)} karma</div>`;
-    body.appendChild(div);
-  });
-  body.onclick=e=>{const key=e.target?.dataset?.karma; if(!key) return; const k=KARMA_UPS.find(x=>x.key===key); const cost=k.base*Math.pow(k.mult,S.karma[k.key.slice(2)]||0); if(S.karmaPts>=cost){ S.karmaPts-=cost; k.eff(S); updateAll(); }};
-}
 
 function renderAlchemyUI(){
   // Update recipe select based on known recipes and unlock status
@@ -1569,8 +1545,8 @@ if (ascendBtn) {
   ascendBtn.addEventListener('click', ()=>{
     const gain = calcKarmaGain();
     if(!confirm(`Ascend now and earn ${gain} karma? This resets most progress.`)) return;
-    S.karmaPts += gain; S.ascensions++;
-    const keep = {karmaPts:S.karmaPts, ascensions:S.ascensions, karma:S.karma};
+    S.karma.points += gain; S.ascensions++;
+    const keep = { ascensions:S.ascensions, karma:S.karma };
     setState(Object.assign(defaultState(), keep));
     save(); location.reload();
   });

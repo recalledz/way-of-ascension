@@ -2,6 +2,7 @@ import { initHp } from './helpers.js';
 import { runMigrations, SAVE_VERSION } from './migrations.js';
 import { sectState } from '../features/sect/state.js';
 import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
+import { karmaState } from '../features/karma/state.js';
 
 export function loadSave(){
   try{
@@ -53,8 +54,8 @@ export const defaultState = () => {
   abilityCooldowns:{},
   actionQueue:[],
   bought:{},
-  karmaPts:0, ascensions:0,
-  karma:{qiRegen:0, yield:0, atk:0, def:0},
+    ascensions:0,
+    karma: structuredClone(karmaState),
   // Auto systems - players now begin with meditation disabled and must
   // explicitly start cultivating via the UI.
   auto:{meditate:false, brewQi:false, adventure:false},
@@ -143,6 +144,7 @@ export const defaultState = () => {
 
 export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
+S.karma = { ...structuredClone(karmaState), ...S.karma };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the

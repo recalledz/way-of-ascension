@@ -152,6 +152,22 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
+│   │   ├── sect/
+│   │   │   ├── data/
+│   │   │   │   └── buildings.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── sectScreen.js
+│   │   ├── karma/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── karmaDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -446,7 +462,7 @@ export const ZONES = [
 - `initUI()` - Initialize UI elements and event listeners
 - `updateAll()` - Update all UI displays
 - `setText()`, `setFill()` - UI utility functions
-- Render functions: `renderBuildings()`, `renderKarma()`, etc.
+- Render functions: `renderBuildings()`, etc.
 
 **UI Update Pattern**:
 ```javascript
@@ -454,10 +470,9 @@ function updateAll() {
   // Update displays
   setText('elementId', value);
   setFill('fillId', ratio);
-  
+
   // Call specialized render functions
   renderBuildings();
-  renderKarma();
   // etc.
 }
 ```
@@ -608,3 +623,18 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+
+### Sect Feature (`src/features/sect/`)
+- `src/features/sect/data/buildings.js` – Base stats and effects for sect buildings.
+- `src/features/sect/state.js` – Tracks building levels and aggregated bonuses.
+- `src/features/sect/logic.js` – Calculates building costs and total bonuses.
+- `src/features/sect/mutators.js` – Upgrades buildings and recalculates bonuses.
+- `src/features/sect/selectors.js` – Reads building levels and bonus values.
+- `src/features/sect/ui/sectScreen.js` – Renders the sect management interface.
+
+### Karma Feature (`src/features/karma/`)
+- `src/features/karma/state.js` – Stores karma points and purchased bonuses.
+- `src/features/karma/logic.js` – Derives combat and regeneration bonuses from karma.
+- `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
+- `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
+- `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
