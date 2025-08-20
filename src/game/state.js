@@ -3,6 +3,7 @@ import { runMigrations, SAVE_VERSION } from './migrations.js';
 import { sectState } from '../features/sect/state.js';
 import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 import { karmaState } from '../features/karma/state.js';
+import { physiqueState } from '../features/physique/state.js';
 
 export function loadSave(){
   try{
@@ -68,7 +69,7 @@ export const defaultState = () => {
     cooking: false
   },
   // Activity data containers
-  physique: { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 },
+  physique: structuredClone(physiqueState),
   mining: {
     level: 1,
     exp: 0,
@@ -146,6 +147,7 @@ export const defaultState = () => {
 export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
+S.physique = { ...structuredClone(physiqueState), ...S.physique };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the
