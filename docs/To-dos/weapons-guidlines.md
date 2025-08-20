@@ -4,14 +4,14 @@
 ### 🥊 Fist (existing, baseline)
 
 * **Role:** starting unarmed combat; baseline damage, quick attack speed.
-* **Scaling:** Balanced across **Physique** and **Mind** (damage and Qi techniques). Proficiency increases basic damage and attack speed.
-* **Synergies:** Works well with **body‑tempering manuals** and **qi‑channeling** passives. The “Soul‑Piercing Palm” manual (even though it uses palms) could be repurposed to add special fist techniques.
+* **Scaling:** Balanced across **Physique** and **Mind** (damage and Qi abilities). Proficiency increases basic damage and attack speed.
+* **Synergies:** Works well with **body‑tempering manuals** and **qi‑channeling** passives. The “Soul‑Piercing Palm” manual (even though it uses palms) could be repurposed to add special fist abilities.
 
 ---
 
-### ✋ Palm Technique
+### ✋ Palm Ability
 
-* **Theme:** Hand techniques focusing on **stuns**, palm strikes and qi‑infused slaps.
+* **Theme:** Hand abilities focusing on **stuns**, palm strikes and qi‑infused slaps.
 * **Combat feel:** Fast, rhythmic strikes; moderate damage; high chance to inflict short‑term stun or disrupt spellcasting.
 * **Strengths:** Requires little gear (no weapon dependency), making it ideal for **early game** or resource‑scarce runs.  Good for interrupting tribulation or boss skills.
 * **Weaknesses:** Damage falls off in mid/late game without strong manuals or high Physique; stuns often resistible by high‑tier foes.
@@ -78,8 +78,8 @@
 * **Combat feel:** Moderate attack speed; long range; some moves create safe distance.
 * **Strengths:** Can block or deflect enemy attacks; high critical chance on thrust; adds dodge/parry buffs.
 * **Weaknesses:** Less damage per hit than a sword or hammer; demands timing to maximize parries.
-* **Scaling:** Mostly **Agility** (for parry window and thrust speed) with **Physique** for damage; minor **Mind** influences technique usage.
-* **Manual ties:** A “Dragon Spear Manual” could unlock *Dragon’s Tail Sweep* (AoE knockdown) and increase critical damage; higher levels grant a chain‑pull technique.
+* **Scaling:** Mostly **Agility** (for parry window and thrust speed) with **Physique** for damage; minor **Mind** influences ability usage.
+* **Manual ties:** A “Dragon Spear Manual” could unlock *Dragon’s Tail Sweep* (AoE knockdown) and increase critical damage; higher levels grant a chain‑pull ability.
 * **Law synergy:** Wind/Air law increases spear reach and mobility; Metal law adds armor‑piercing effect; Water law improves fluid parry transitions.
 
 ---
