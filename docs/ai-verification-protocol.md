@@ -201,7 +201,7 @@ coreFiles.forEach(file => {
 - **New game data**: `src/features/progression/data/` in appropriate files
 - **New activities**: Activity logic in tick system, UI in activity cards
 - **New buildings**: SECT_BUILDINGS configuration in `ui/index.js`
-- **Save migrations**: `src/shared/utils/migrations.js`
+- **Save migrations**: `src/game/migrations.js` and feature-level `migrations.js`
 - **Event handlers**: `ui/index.js` in `initUI()` function
 
 ## 8. Documentation Standards
