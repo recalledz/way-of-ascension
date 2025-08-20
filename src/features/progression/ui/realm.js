@@ -1,8 +1,8 @@
 /* Realm-specific logic and UI updates */
 
-import { REALMS } from '../src/features/progression/data/realms.js';
-import { LAWS } from '../src/features/progression/data/laws.js';
-import { S } from '../src/game/state.js';
+import { REALMS } from '../data/realms.js';
+import { LAWS } from '../data/laws.js';
+import { S } from '../../../game/state.js';
 import {
   qCap,
   qiRegenPerSec,
@@ -10,9 +10,9 @@ import {
   foundationGainPerSec,
   powerMult,
   breakthroughChance
-} from '../src/features/progression/selectors.js';
-import { advanceRealm, checkLawUnlocks, awardLawPoints } from '../src/features/progression/mutators.js';
-import { qs, setText, log } from '../src/game/utils.js';
+} from '../selectors.js';
+import { advanceRealm, checkLawUnlocks, awardLawPoints } from '../mutators.js';
+import { qs, setText, log } from '../../../game/utils.js';
 
 export function getRealmName(tier) {
   return REALMS[tier].name;
@@ -426,4 +426,3 @@ export function initRealmUI(){
   if (breakthroughBtn) breakthroughBtn.addEventListener('click', tryBreakthrough);
 }
 
-export { advanceRealm, checkLawUnlocks, awardLawPoints };
