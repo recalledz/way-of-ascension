@@ -1,4 +1,4 @@
-import { STATUSES } from '../../data/status.js';
+import { STATUSES } from './data/status.js';
 
 export function applyStatus(target, key, power, state) { // STATUS-REFORM
   const def = STATUSES[key];

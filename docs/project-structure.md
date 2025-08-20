@@ -81,10 +81,7 @@ way-of-ascension/
 ├── src/
 │   ├── index.js
 │   ├── data/
-│   │   ├── status.js
-│   │   ├── statusesByElement.js
-│   │   ├── zones.js
-│   │   └── abilities.js
+│   │   └── zones.js
 │   ├── features/
 │   │   ├── index.js
 │   │   ├── ability/
@@ -101,6 +98,18 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
+│   │   ├── combat/
+│   │   │   ├── attack.js
+│   │   │   ├── data/
+│   │   │   │   ├── status.js
+│   │   │   │   └── statusesByElement.js
+│   │   │   ├── hit.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   ├── statusEngine.js
+│   │   │   └── ui/
 │   │   ├── inventory/
 │   │   │   ├── data/
 │   │   │   ├── logic.js
@@ -141,15 +150,10 @@ way-of-ascension/
 │   │       └── state.js
 │   ├── game/
 │   │   ├── GameController.js
-│   │   ├── combat/
-│   │   │   ├── attack.js
-│   │   │   ├── hit.js
-│   │   │   └── statusEngine.js
 │   │   ├── systems/
 │   │   │   ├── loot.js
 │   │   │   └── sessionLoot.js
 │   │   ├── adventure.js
-│   │   ├── combat.js
 │   │   ├── engine.js
 │   │   ├── helpers.js
 │   │   ├── migrations.js
@@ -561,3 +565,14 @@ Paths added:
 
 #### `docs/To-dos/stats-to-implement.md` - Stats Roadmap
 **Purpose**: Lists game stats that still need implementation.
+
+### Combat Feature (`src/features/combat/`)
+- `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.
+- `src/features/combat/mutators.js` – Stateful combat helpers (`initializeFight`, `processAttack`, `applyStatus`).
+- `src/features/combat/state.js` – Shape of combat-related state values (enemy HP, stun bars).
+- `src/features/combat/selectors.js` – Accessors for combat state like enemy HP and stun bars.
+- `src/features/combat/attack.js` – Applies status effects and stun bar changes when attacks land.
+- `src/features/combat/hit.js` – Chance-to-hit utilities.
+- `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
+- `src/features/combat/data/status.js` – Definitions for all status effects.
+- `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.

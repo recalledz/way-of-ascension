@@ -1,5 +1,5 @@
-import { STATUSES_BY_ELEMENT } from '../../data/statusesByElement.js';
-import { applyStatus } from './statusEngine.js';
+import { STATUSES_BY_ELEMENT } from './data/statusesByElement.js';
+import { applyStatus } from './mutators.js';
 
 export function performAttack(attacker, target, options = {}, state) { // STATUS-REFORM
   const { ability, attackElement, attackIsPhysical, physDamageDealt = 0, isCrit = false, usingPalm = false } = options;
