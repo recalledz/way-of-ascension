@@ -1,6 +1,6 @@
 import { S } from "../../../game/state.js";
 import { on } from "../../../shared/events.js";
-import { getEquippedWeapon } from "../../../game/selectors.js";
+import { getEquippedWeapon } from "../../inventory/selectors.js";
 import { getProficiency } from "../selectors.js";
 import { WEAPON_TYPES } from "../../weaponGeneration/data/weaponTypes.js";
 import { WEAPON_ICONS } from "../../weaponGeneration/data/weaponIcons.js";
