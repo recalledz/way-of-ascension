@@ -78,13 +78,21 @@ way-of-ascension/
 │   └── validate-structure.js
 ├── src/
 │   ├── data/
-│   │   ├── lootTables.js
-│   │   ├── lootTables.weapons.js
 │   │   ├── status.js
 │   │   ├── statusesByElement.js
 │   │   ├── zones.js
 │   │   └── abilities.js
 │   ├── features/
+│   │   ├── loot/
+│   │   │   ├── data/
+│   │   │   │   ├── lootTables.js
+│   │   │   │   └── lootTables.weapons.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── lootTab.js
 │   │   ├── proficiency/
 │   │   │   ├── data/
 │   │   │   │   └── .gitkeep
@@ -268,7 +276,7 @@ export function runMigrations(save) {
 ```
 **When to modify**: When changing save data structure, increment SAVE_VERSION and add migration logic
 
-#### `game/systems/loot.js` - Loot Rolling Utilities
+#### `features/loot/logic.js` - Loot Rolling Utilities
 **Purpose**: Provides weighted random item selection based on zone loot tables.
 **Key Functions**: `rollLoot()`, `toLootTableKey()`, `onEnemyDefeated()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
@@ -278,7 +286,7 @@ export function runMigrations(save) {
 **Key Functions**: `addToInventory()`, `removeFromInventory()`, `equipItem()`, `unequip()`.
 **When to modify**: Expand inventory features or adjust equip logic.
 
-#### `game/systems/sessionLoot.js` - Session Loot Buffer
+#### `features/loot/mutators.js` - Session Loot Buffer
 **Purpose**: Temporarily stores loot until claimed or forfeited after a session.
 **Key Functions**: `addSessionLoot()`, `claimSessionLoot()`, `forfeitSessionLoot()`.
 **When to modify**: Change how loot is staged or distributed post-combat.
