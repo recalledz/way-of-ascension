@@ -84,6 +84,7 @@ way-of-ascension/
 │   │   │   │   ├── progressBar.js
 │   │   │   │   └── zoneUI.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
@@ -93,6 +94,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   └── abilities.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
@@ -100,6 +102,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   └── affixes.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
@@ -110,6 +113,7 @@ way-of-ascension/
 │   │   │   │   └── statusesByElement.js
 │   │   │   ├── hit.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -119,6 +123,7 @@ way-of-ascension/
 │   │   │       └── index.js
 │   │   ├── cooking/
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -128,6 +133,7 @@ way-of-ascension/
 │   │   ├── inventory/
 │   │   │   ├── data/
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -140,6 +146,7 @@ way-of-ascension/
 │   │   │   │   ├── lootTables.js
 │   │   │   │   └── lootTables.weapons.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -150,6 +157,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   └── .gitkeep
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -161,6 +169,7 @@ way-of-ascension/
 │   │   │   │   ├── laws.js
 │   │   │   │   └── realms.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -171,6 +180,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   └── buildings.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -179,6 +189,7 @@ way-of-ascension/
 │   │   │       └── sectScreen.js
 │   │   ├── karma/
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -188,6 +199,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   └── recipes.js
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -196,6 +208,7 @@ way-of-ascension/
 │   │   │       └── alchemyDisplay.js
 │   │   ├── mining/
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -203,6 +216,7 @@ way-of-ascension/
 │   │   │       └── miningDisplay.js
 │   │   ├── physique/
 │   │   │   ├── logic.js
+│   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
@@ -216,11 +230,13 @@ way-of-ascension/
 │   │       │   └── weapons.js
 │   │       ├── index.js
 │   │       ├── logic.js
+│   │       ├── migrations.js
 │   │       ├── mutators.js
 │   │       ├── selectors.js
 │   │       └── state.js
 │   ├── game/
-│   │   └── GameController.js
+│   │   ├── GameController.js
+│   │   └── migrations.js
 │   ├── shared/
 │   │   ├── events.js
 │   │   ├── saveLoad.js
@@ -229,8 +245,7 @@ way-of-ascension/
 │   │   ├── selectors.js
 │   │   └── utils/
 │   │       ├── dom.js
-│   │       ├── hp.js
-│   │       └── migrations.js
+│   │       └── hp.js
 │   └── ui/
 │       └── sidebar.js
 ├── ui/
@@ -364,7 +379,7 @@ Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
 - `getEquippedWeapon(state)` – retrieve the currently equipped weapon.
 - `getAbilitySlots(state)` – derive six ability slots from the equipped weapon.
 
-#### `utils/migrations.js` - Save Migration System
+#### `game/migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
 
 #### `src/features/ability/state.js` - Ability State Slice
@@ -734,3 +749,20 @@ Paths added:
 - `src/features/sect/logic.js` – Core sect calculations and mechanics.
 - `src/features/sect/data/buildings.js` – Building definitions and costs.
 - `src/features/sect/ui/sectScreen.js` – UI for managing the sect.
+
+### Feature Migration Files
+- `src/features/ability/migrations.js` – Save migrations for ability feature.
+- `src/features/adventure/migrations.js` – Save migrations for adventure feature.
+- `src/features/alchemy/migrations.js` – Save migrations for alchemy feature.
+- `src/features/affixes/migrations.js` – Save migrations for affixes feature.
+- `src/features/combat/migrations.js` – Save migrations for combat feature.
+- `src/features/cooking/migrations.js` – Save migrations for cooking feature.
+- `src/features/inventory/migrations.js` – Save migrations for inventory and equipment.
+- `src/features/karma/migrations.js` – Save migrations for karma feature.
+- `src/features/loot/migrations.js` – Save migrations for loot system.
+- `src/features/mining/migrations.js` – Save migrations for mining feature.
+- `src/features/physique/migrations.js` – Save migrations for physique feature.
+- `src/features/proficiency/migrations.js` – Save migrations for weapon proficiencies.
+- `src/features/progression/migrations.js` – Save migrations for core progression stats.
+- `src/features/sect/migrations.js` – Save migrations for sect buildings and bonuses.
+- `src/features/weaponGeneration/migrations.js` – Save migrations for weapon generation.
