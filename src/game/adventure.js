@@ -67,6 +67,15 @@ function getCombatPositions() {
   return { svg, from, to };
 }
 
+// Subtle red-and-break visual on death
+function triggerDeathBreak(target) {
+  const sel = target === 'enemy' ? '.combatant.enemy' : '.combatant.player';
+  const el = document.querySelector(sel);
+  if (!el) return;
+  el.classList.add('death-break');
+  setTimeout(() => el.classList.remove('death-break'), 600);
+}
+
 // Adventure zone and area UI helpers
 function ensureAdventure() {
   if (!S.adventure) {
@@ -725,6 +734,8 @@ export function updateAdventureCombat() {
             }
           }
           if (S.adventure.playerHP <= 0) {
+            // Subtle visual cue for player death
+            try { triggerDeathBreak('player'); } catch (_) {}
             S.adventure.inCombat = false;
             S.adventure.combatLog.push('You have been defeated!');
             log('Defeated in combat! Returning to safety...', 'bad');
@@ -758,6 +769,8 @@ export function updateAdventureCombat() {
 function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
   const enemy = S.adventure.currentEnemy;
+  // Subtle visual cue for enemy defeat
+  try { triggerDeathBreak('enemy'); } catch (_) {}
   const isBoss = S.adventure.isBossFight;
   const areaKey = `${S.adventure.currentZone}-${S.adventure.currentArea}`;
   
