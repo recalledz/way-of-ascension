@@ -1,5 +1,5 @@
-import { initHp } from './helpers.js';
-import { runMigrations, SAVE_VERSION } from './migrations.js';
+import { initHp } from './utils/hp.js';
+import { runMigrations, SAVE_VERSION } from './utils/migrations.js';
 import { sectState } from '../features/sect/state.js';
 import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 import { karmaState } from '../features/karma/state.js';

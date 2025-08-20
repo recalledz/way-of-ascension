@@ -1,5 +1,5 @@
 import { on } from '../../../shared/events.js';
-import { setText, setFill } from '../../../game/utils.js';
+import { setText, setFill } from '../../../shared/utils/dom.js';
 import {
   getPhysiqueLevel,
   getPhysiqueExp,

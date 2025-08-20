@@ -79,7 +79,7 @@ ls -la src/game/ src/data/ data/ ui/ docs/
 ```javascript
 // Verify core game files exist
 const coreFiles = [
-  'src/game/state.js',
+  'src/shared/state.js',
   'src/features/progression/logic.js',
   'src/features/adventure/logic.js',
   'ui/index.js',
@@ -196,12 +196,12 @@ coreFiles.forEach(file => {
 ## Common Locations for Code
 
 - **New calculations**: `src/features/progression/logic.js`
-- **New state properties**: `src/game/state.js` in `defaultState()`
+- **New state properties**: `src/shared/state.js` in `defaultState()`
 - **New UI elements**: `ui/index.js` in appropriate render functions
 - **New game data**: `src/features/progression/data/` in appropriate files
 - **New activities**: Activity logic in tick system, UI in activity cards
 - **New buildings**: SECT_BUILDINGS configuration in `ui/index.js`
-- **Save migrations**: `src/game/migrations.js`
+- **Save migrations**: `src/shared/utils/migrations.js`
 - **Event handlers**: `ui/index.js` in `initUI()` function
 
 ## 8. Documentation Standards

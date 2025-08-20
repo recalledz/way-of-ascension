@@ -1,5 +1,5 @@
 import { on } from '../../../shared/events.js';
-import { setText } from '../../../game/utils.js';
+import { setText } from '../../../shared/utils/dom.js';
 import { getKarmaPoints, getKarmaBonuses } from '../selectors.js';
 
 function render(state){

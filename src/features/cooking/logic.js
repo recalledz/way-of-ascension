@@ -1,4 +1,4 @@
-import { setText, log } from '../../game/utils.js';
+import { setText, log } from '../../shared/utils/dom.js';
 
 export function updateFoodSlots(state) {
   if (!state.foodSlots) {

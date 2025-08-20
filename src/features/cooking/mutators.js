@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 import { cookMeat as logicCookMeat, equipFood as logicEquipFood, useFoodSlot as logicUseFoodSlot } from './logic.js';
 
 export function cookMeat(amount, state = S) {

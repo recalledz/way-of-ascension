@@ -1,5 +1,5 @@
-import { S } from '../../../game/state.js';
-import { setText, setFill } from '../../../game/utils.js';
+import { S } from '../../../shared/state.js';
+import { setText, setFill } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { getCookingYieldBonus } from '../selectors.js';
 import { cookMeat, equipFood, useFoodSlot } from '../mutators.js';

@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 import { getMiningRate as logicGetMiningRate } from './logic.js';
 
 export function getMiningState(state = S) {

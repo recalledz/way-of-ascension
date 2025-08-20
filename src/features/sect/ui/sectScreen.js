@@ -2,7 +2,7 @@ import { SECT_BUILDINGS } from '../data/buildings.js';
 import { getBuildingLevel, getBuildingBonuses } from '../selectors.js';
 import { upgradeBuilding } from '../mutators.js';
 import { on } from '../../../shared/events.js';
-import { setText } from '../../../game/utils.js';
+import { setText } from '../../../shared/utils/dom.js';
 
 function renderBuildings(state){
   const container = document.getElementById('buildingsContainer');

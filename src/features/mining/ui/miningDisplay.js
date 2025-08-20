@@ -1,8 +1,7 @@
-import { S } from '../../../game/state.js';
-import { setText } from '../../../game/utils.js';
+import { S } from '../../../shared/state.js';
+import { setText, log } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { getMiningRate } from '../logic.js';
-import { log } from '../../../game/utils.js';
 
 export function updateActivityMining(state = S) {
   if (!state.mining) return;

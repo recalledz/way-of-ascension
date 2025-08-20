@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 
 export function getSessionLoot(state = S) {
   return state.sessionLoot || [];

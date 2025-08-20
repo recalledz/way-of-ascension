@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 import { selectResource as logicSelectResource, advanceMining as logicAdvanceMining } from './logic.js';
 
 export function selectResource(resource, state = S) {

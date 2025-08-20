@@ -1,4 +1,4 @@
-import { S } from '../../../game/state.js';
+import { S } from '../../../shared/state.js';
 import { ZONES, getZoneById, isAreaUnlocked } from '../data/zones.js';
 
 let currentTooltip = null;
