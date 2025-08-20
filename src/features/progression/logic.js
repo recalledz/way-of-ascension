@@ -4,9 +4,9 @@ import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
 import { karmaQiRegenBonus, karmaAtkBonus, karmaDefBonus } from '../karma/logic.js';
-
+import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
+import { getCookingSuccessBonus } from '../cooking/selectors.js';
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
-
 export function getLawBonuses(state = progressionState){
   let bonuses = {
     atk: 1, def: 1, qiRegen: 1, qiCap: 1, resourceYield: 1,
@@ -195,11 +195,12 @@ export function breakthroughChance(state = progressionState){
   base = base * stageMultiplier - realmPenalty;
 
   const ward = state.pills.ward>0 ? 0.15 : 0;
-  const alchemyBonus = state.alchemy.successBonus * 0.1;
+  const alchemyBonus = getAlchemySuccessBonus(state) * 0.1;
+  const cookingBonus = getCookingSuccessBonus(state) * 0.1;
   const buildingBonus = getBuildingBonuses(state).breakthroughBonus || 0;
   const cultivationBonus = (state.cultivation.talent - 1) * 0.1;
 
-  const totalChance = base + ward + alchemyBonus + buildingBonus + cultivationBonus;
+  const totalChance = base + ward + cookingBonus + buildingBonus + cultivationBonus;
 
   return clamp(totalChance, 0.01, 0.95);
 }

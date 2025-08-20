@@ -58,7 +58,7 @@ export const defaultState = () => {
     karma: structuredClone(karmaState),
   // Auto systems - players now begin with meditation disabled and must
   // explicitly start cultivating via the UI.
-  auto:{meditate:false, brewQi:false, adventure:false},
+  auto:{meditate:false, adventure:false},
   // Activity System - only one can be active at a time
   activities: {
     cultivation: false,
@@ -80,7 +80,8 @@ export const defaultState = () => {
   cooking: {
     level: 1,
     exp: 0,
-    expMax: 100
+    expMax: 100,
+    successBonus: 0,
   },
   adventure: {
     currentZone: 0,
