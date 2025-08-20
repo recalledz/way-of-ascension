@@ -1,17 +1,10 @@
 // Centralized state selectors.
 // Never read state fields directly; use selectors.
 
-import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 import { ABILITIES } from '../data/abilities.js';
 import { S } from './state.js';
-
-export function getEquippedWeapon(state = S) {
-  // WEAPONS-INTEGRATION: respect feature flag and invalid keys
-  if (!state.flags?.weaponsEnabled) return WEAPONS.fist;
-  const eq = state.equipment?.mainhand;
-  const key = typeof eq === 'string' ? eq : eq?.key;
-  return WEAPONS[key] || WEAPONS.fist;
-}
+import { getEquippedWeapon } from '../features/inventory/selectors.js';
+export { getEquippedWeapon };
 
 export function getAbilitySlots(state = S) {
   const slots = [];

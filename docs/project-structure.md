@@ -90,6 +90,8 @@ way-of-ascension/
 │   │   ├── affixes/
 │   │   │   ├── data/
 │   │   │   │   └── affixes.js
+│   │   ├── inventory/
+│   │   │   ├── data/
 │   │   │   ├── logic.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
@@ -124,9 +126,7 @@ way-of-ascension/
 │   │       ├── logic.js
 │   │       ├── mutators.js
 │   │       ├── selectors.js
-│   │       ├── state.js
-│   │       └── ui/
-│   │           └── weaponChip.js
+│   │       └── state.js
 │   ├── game/
 │   │   ├── GameController.js
 │   │   ├── combat/
@@ -134,7 +134,6 @@ way-of-ascension/
 │   │   │   ├── hit.js
 │   │   │   └── statusEngine.js
 │   │   ├── systems/
-│   │   │   ├── inventory.js
 │   │   │   ├── loot.js
 │   │   │   └── sessionLoot.js
 │   │   ├── adventure.js
@@ -152,8 +151,6 @@ way-of-ascension/
 │   └── ui/
 │       ├── fx/
 │       │   └── fx.js
-│       ├── panels/
-│       │   └── CharacterPanel.js
 │       └── sidebar.js
 ├── ui/
 │   ├── components/
@@ -297,10 +294,24 @@ export function runMigrations(save) {
 **Key Functions**: `rollLoot()`, `toLootTableKey()`, `onEnemyDefeated()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
 
-#### `game/systems/inventory.js` - Inventory Management
+#### `src/features/inventory/mutators.js` - Inventory Management
 **Purpose**: Adds, removes, and equips items in the player's inventory and equipment slots.
 **Key Functions**: `addToInventory()`, `removeFromInventory()`, `equipItem()`, `unequip()`.
 **When to modify**: Expand inventory features or adjust equip logic.
+
+#### `src/features/inventory/logic.js` - Equipment Calculations
+**Purpose**: Computes derived player stats and determines valid equip slots.
+**Key Functions**: `recomputePlayerTotals()`, `canEquip()`.
+**When to modify**: Adjust stat calculations or equip rules.
+
+#### `src/features/inventory/selectors.js` - Inventory Selectors
+**Purpose**: Provides helper accessors for inventory and equipment state.
+**Key Functions**: `getInventory()`, `getEquipment()`, `getEquippedWeapon()`.
+**When to modify**: Expose additional inventory state helpers.
+
+#### `src/features/inventory/state.js` - Inventory State Slice
+**Purpose**: Defines default `inventory` and `equipment` state structures.
+**When to modify**: Change initial inventory or equipment layout.
 
 #### `features/loot/mutators.js` - Session Loot Buffer
 **Purpose**: Temporarily stores loot until claimed or forfeited after a session.
@@ -406,7 +417,7 @@ function updateAll() {
 **Dependencies**: Vanilla JS, follows structure in `style.css`.
 **When to modify**: When changing the fundamental structure or style of all progress bars.
 
-#### `src/ui/panels/CharacterPanel.js` - Equipment & Inventory Panel
+#### `src/features/inventory/ui/CharacterPanel.js` - Equipment & Inventory Panel
 **Purpose**: Single source for rendering equipped items and inventory with actions to equip, use, scrap, filter, and view details.
 **Key Functions**: `renderEquipmentPanel()`, `setupEquipmentTab()`.
 **When to modify**: Adjust character gear interface or inventory interactions.
@@ -415,7 +426,7 @@ function updateAll() {
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
 
-#### `src/ui/weaponChip.js` - Weapon Chip HUD
+#### `src/features/inventory/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
 **When to modify**: Change weapon HUD logic or appearance.
 

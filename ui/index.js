@@ -31,7 +31,7 @@ import {
 import { qs, setText, setFill, log } from '../src/game/utils.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
-import { initializeWeaponChip, updateWeaponChip } from '../src/features/weaponGeneration/ui/weaponChip.js';
+import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
 import {
   updateActivityAdventure,
   updateAdventureCombat,
@@ -47,7 +47,7 @@ import {
 } from '../src/game/adventure.js';
 import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
-import { renderEquipmentPanel, setupEquipmentTab } from '../src/ui/panels/CharacterPanel.js'; // EQUIP-CHAR-UI
+import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/inventory/ui/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
 import { tickAbilityCooldowns } from '../src/game/abilitySystem.js';
