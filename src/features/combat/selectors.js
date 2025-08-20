@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 
 export function getEnemyHP(state = S) {
   return state.adventure?.enemyHP || 0;

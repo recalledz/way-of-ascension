@@ -89,6 +89,12 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── index.js
+│   │   ├── activities/
+│   │   │   └── state.js
+│   │   ├── alchemy/
+│   │   │   └── state.js
+│   │   ├── auto/
+│   │   │   └── state.js
 │   │   ├── ability/
 │   │   │   ├── data/
 │   │   │   │   └── abilities.js
@@ -152,6 +158,8 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
+│   │   ├── sect/
+│   │   │   └── state.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -173,7 +181,15 @@ way-of-ascension/
 │   │   └── utils.js
 │   ├── shared/
 │   │   ├── events.js
-│   │   └── saveLoad.js
+│   │   ├── mutators.js
+│   │   ├── saveLoad.js
+│   │   ├── selectors.js
+│   │   ├── state.js
+│   │   └── utils/
+│   │       ├── dom.js
+│   │       ├── hp.js
+│   │       ├── log.js
+│   │       └── migrations.js
 │   └── ui/
 │       ├── fx/
 │       │   └── fx.js
@@ -576,6 +592,13 @@ Paths added:
 - `src/index.js` – entry that bootstraps and starts the controller
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
+- `src/shared/mutators.js`
+- `src/shared/selectors.js`
+- `src/shared/state.js`
+- `src/shared/utils/dom.js`
+- `src/shared/utils/hp.js`
+- `src/shared/utils/log.js`
+- `src/shared/utils/migrations.js`
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
@@ -597,6 +620,27 @@ Paths added:
 
 #### `docs/To-dos/stats-to-implement.md` - Stats Roadmap
 **Purpose**: Lists game stats that still need implementation.
+
+#### `src/shared/mutators.js` - Mutator Delegates
+**Purpose**: Re-exports mutator functions from all features for centralized access.
+
+#### `src/shared/selectors.js` - Selector Delegates
+**Purpose**: Re-exports selectors from features so modules can read state slices without deep imports.
+
+#### `src/shared/state.js` - Root State
+**Purpose**: Composes default state from individual feature slices and handles save/load with migrations.
+
+#### `src/shared/utils/dom.js` - DOM Helpers
+**Purpose**: Utility functions for querying and updating DOM elements (`qs`, `setText`, `setFill`).
+
+#### `src/shared/utils/hp.js` - HP Helpers
+**Purpose**: Provides `initHp()` to create `{ hp, hpMax }` pairs.
+
+#### `src/shared/utils/log.js` - Log Helper
+**Purpose**: Appends messages to the on-page log element.
+
+#### `src/shared/utils/migrations.js` - Save Migrations
+**Purpose**: Contains save file migration steps, `SAVE_VERSION` and `runMigrations()`.
 
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.

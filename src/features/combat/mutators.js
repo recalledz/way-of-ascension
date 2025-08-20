@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 import { initializeFight as baseInitializeFight, processAttack as baseProcessAttack } from './logic.js';
 import { applyStatus as applyStatusBase } from './statusEngine.js';
 

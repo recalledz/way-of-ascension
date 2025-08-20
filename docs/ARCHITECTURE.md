@@ -8,8 +8,9 @@ At the root of the repository you will find the following top‑level folders:
 
 | Folder            | Purpose |
 |-------------------|---------|
-| `src/features/`   | **Feature modules**.  Each subfolder under `features` encapsulates all the data definitions, state slice, mutators, selectors, business logic and any UI components needed for a single game system.  Currently two features have been migrated: **Proficiency** and **Weapon Generation**. |
-| `src/game/`       | **Legacy game logic**.  This folder still contains most of the core gameplay code (combat, adventure, ability system, engine, helpers, etc.).  Over time these modules will be gradually moved into feature folders. |
+| `src/features/`   | **Feature modules**.  Each subfolder under `features` encapsulates all the data definitions, state slice, mutators, selectors, business logic and any UI components needed for a single game system.  Currently two features have been migrated: **Proficiency** and **Weapon Generation**. Minimal `sect`, `alchemy`, `auto`, and `activities` slices exist only to provide building, alchemy, automation, and training state until those systems are fully migrated. |
+| `src/shared/`     | Cross‑feature infrastructure such as the event bus, save/load helpers, shared utilities and the new root `state.js` that composes feature slices. |
+| `src/game/`       | **Legacy game logic**.  This folder now primarily holds the temporary `GameController` while older systems are migrated. |
 | `src/data/`       | Shared static data that has not yet been migrated into feature modules.  Examples include loot tables, status definitions and ability lists. |
 | `src/ui/`         | Legacy user interface code organised by view or component.  Feature UIs being added in the new structure live inside `src/features/<feature>/ui`. |
 | `docs/`           | Project documentation (design guides, UI style guidelines, proficiency explanation, etc.).  This file lives here. |
@@ -54,6 +55,14 @@ Each feature folder under `src/features` follows a consistent internal layout:
 * **`selectors.js`** – Functions that read values from the feature’s state.  They often wrap logic functions to calculate derived values.  The `rollWeaponDropForZone()` selector samples the appropriate loot table and returns a generated weapon based on the current zone:contentReference[oaicite:4]{index=4}.
 * **`ui/`** – Feature‑specific UI modules.  These typically import selectors to display state and call mutators in response to user actions.
 
+### Cross‑feature dependencies
+
+Features remain isolated but often need data from one another. They communicate through `src/shared/selectors.js` and `src/shared/mutators.js`:
+
+* The ability system checks the equipped weapon via inventory selectors.
+* Adventure combat calls combat mutators and pushes rewards through the loot mutators.
+* Proficiency UI reads the current weapon from inventory and exposes bonuses back to combat.
+
 ### Proficiency feature
 
 The **Proficiency** module tracks a player’s mastery of different weapon types.  It exposes a `proficiencyState` slice with a `proficiency` map:contentReference[oaicite:5]{index=5}.  The logic file defines `gainProficiency()` and `getProficiency()`; the latter returns both the raw proficiency value and a bonus calculated via a soft‑capping formula:contentReference[oaicite:6]{index=6}.  Mutators simply delegate to the logic functions, ensuring all state changes pass through a single place:contentReference[oaicite:7]{index=7}.  The selectors mirror the logic and provide an additional helper to derive weapon damage/speed bonuses based on the equipped weapon:contentReference[oaicite:8]{index=8}.
@@ -74,8 +83,8 @@ At the time of writing, the following game systems remain in the `src/game` fold
 
 * **Combat and adventure:** core fighting mechanics and exploration systems, including `combat.js`, the `combat/` subdirectory (hit resolution and status effects) and `adventure.js`.
 * **Engine:** progression and simulation loop (`src/features/progression/logic.js`) which ties together cultivation, skills and other systems.
-* **Affixes, helpers and utilities:** general helper functions and item modifier definitions.
-* **Game state:** a monolithic `state.js` defines the default state for the entire game, while selectors like `getEquippedWeapon()` have been migrated into feature folders.
+* **Affixes and legacy utilities:** some older helper code and item modifier definitions remain here until migrated. Core helpers now live in `src/shared/utils/`.
+* **Game state:** the monolithic `state.js` has been replaced by `src/shared/state.js`, which composes feature slices into a root state.
 * **Systems:** some subsystems (inventory, loot, session loot) still live under `src/game/systems`.  They will eventually be migrated into dedicated feature folders like `inventory`, `loot` and `sessionLoot`.
 
 These modules still work, and the new features currently import state or helpers from them.  For example, the proficiency UI pulls the equipped weapon via `getEquippedWeapon()` from the inventory selectors:contentReference[oaicite:16]{index=16}.  The plan is to migrate these systems one at a time into `src/features`, following the incremental roadmap.

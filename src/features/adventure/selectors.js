@@ -1,4 +1,4 @@
-import { S } from '../../game/state.js';
+import { S } from '../../shared/state.js';
 
 export const getAdventure = (state = S) => state.adventure;
 export const getCurrentZoneIndex = (state = S) => state.adventure?.currentZone ?? 0;

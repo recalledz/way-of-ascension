@@ -1,7 +1,7 @@
 import { progressionState } from './state.js';
 import { REALMS } from './data/realms.js';
 import { LAWS } from './data/laws.js';
-import { log } from '../../game/utils.js';
+import { log } from '../../shared/utils/log.js';
 
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;

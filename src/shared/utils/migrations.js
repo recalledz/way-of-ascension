@@ -1,4 +1,4 @@
-import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
+import { WEAPONS } from '../../features/weaponGeneration/data/weapons.js';
 
 export const migrations = [
   save => {
@@ -113,6 +113,39 @@ export const migrations = [
     if (!save.shield) save.shield = { current: 0, max: 0 };
     if (typeof save.autoFillShieldFromQi === 'undefined') save.autoFillShieldFromQi = true;
     if (save.shield.current > save.shield.max) save.shield.current = save.shield.max;
+  },
+  save => {
+    if (!save.activities) {
+      save.activities = {
+        cultivation: false,
+        physique: false,
+        mining: false,
+        adventure: false,
+        cooking: false,
+      };
+    } else {
+      if (typeof save.activities.cultivation === 'undefined') save.activities.cultivation = false;
+      if (typeof save.activities.physique === 'undefined') save.activities.physique = false;
+      if (typeof save.activities.mining === 'undefined') save.activities.mining = false;
+      if (typeof save.activities.adventure === 'undefined') save.activities.adventure = false;
+      if (typeof save.activities.cooking === 'undefined') save.activities.cooking = false;
+    }
+    if (!save.physique) {
+      save.physique = { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 };
+    }
+    if (!save.mining) {
+      save.mining = {
+        level: 1,
+        exp: 0,
+        expMax: 100,
+        unlockedResources: ['stones'],
+        selectedResource: 'stones',
+        resourcesGained: 0,
+      };
+    }
+    if (!save.cooking) {
+      save.cooking = { level: 1, exp: 0, expMax: 100 };
+    }
   }
 ];
 
