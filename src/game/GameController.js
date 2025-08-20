@@ -6,6 +6,8 @@ import { proficiencyState } from "../features/proficiency/state.js";
 import { weaponGenerationState } from "../features/weaponGeneration/state.js";
 import { sectState } from "../features/sect/state.js";
 import { recalculateBuildingBonuses } from "../features/sect/mutators.js";
+import { alchemyState } from "../features/alchemy/state.js";
+import { tickAlchemy } from "../features/alchemy/logic.js";
 
 // TEMP bridge to legacy world:
 import engineTick from "../features/progression/logic.js";
@@ -16,6 +18,7 @@ export function createGameController() {
     proficiency: structuredClone(proficiencyState),
     weaponGen: structuredClone(weaponGenerationState),
     sect: structuredClone(sectState),
+    alchemy: structuredClone(alchemyState),
     // legacy root pieces remain attached to `state` until migrated
   };
 
@@ -42,6 +45,9 @@ export function createGameController() {
     while (acc >= stepMs) {
       // --- TEMP BRIDGE: keep legacy world advancing ---
       engineTick(state);
+
+      // --- Feature ticks ---
+      tickAlchemy(state, stepMs);
 
       // --- New world: per-feature listeners advance here ---
       emit("TICK", { stepMs, now });

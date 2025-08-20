@@ -3,6 +3,7 @@ import { LAWS } from './data/laws.js';
 import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
+import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
@@ -194,7 +195,7 @@ export function breakthroughChance(state = progressionState){
   base = base * stageMultiplier - realmPenalty;
 
   const ward = state.pills.ward>0 ? 0.15 : 0;
-  const alchemyBonus = state.alchemy.successBonus * 0.1;
+  const alchemyBonus = getAlchemySuccessBonus(state) * 0.1;
   const buildingBonus = getBuildingBonuses(state).breakthroughBonus || 0;
   const cultivationBonus = (state.cultivation.talent - 1) * 0.1;
 

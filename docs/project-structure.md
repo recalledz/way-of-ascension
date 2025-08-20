@@ -152,6 +152,24 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
+│   │   ├── sect/
+│   │   │   ├── data/
+│   │   │   │   └── buildings.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── sectScreen.js
+│   │   ├── alchemy/
+│   │   │   ├── data/
+│   │   │   │   └── recipes.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── alchemyDisplay.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -250,7 +268,7 @@ S = {
   buildingBonuses: { /* calculated bonuses */ },
   
   // Auto systems
-  auto: { meditate: true, brewQi: false, adventure: false }
+  auto: { meditate: true, adventure: false }
 }
 ```
 
@@ -608,3 +626,19 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+
+### Sect Feature
+- `src/features/sect/data/buildings.js` – Defines sect buildings, upgrade costs, and per-level effects.
+- `src/features/sect/logic.js` – Calculates building costs and aggregated bonuses.
+- `src/features/sect/mutators.js` – Upgrades buildings and recomputes bonuses.
+- `src/features/sect/selectors.js` – Retrieves building levels, bonuses, and disciple counts.
+- `src/features/sect/state.js` – Default sect building levels and bonus placeholders.
+- `src/features/sect/ui/sectScreen.js` – Renders the sect management interface.
+
+### Alchemy Feature
+- `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
+- `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
+- `src/features/alchemy/mutators.js` – Start/complete brews and unlock new recipes.
+- `src/features/alchemy/selectors.js` – Accessors for brewing queue and success chance calculations.
+- `src/features/alchemy/state.js` – Base alchemy stats including level, XP, and known recipes.
+- `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.

@@ -109,8 +109,6 @@ function initUI(){
   if (meditateBtn) meditateBtn.addEventListener('click', meditate);
   initRealmUI();
   
-  const brewBtn = qs('#brewBtn');
-  if (brewBtn) brewBtn.addEventListener('click', addBrew);
   
   const useQiPill = qs('#useQiPill');
   if (useQiPill) useQiPill.addEventListener('click', ()=>usePill('qi'));
@@ -128,11 +126,6 @@ function initUI(){
     autoMeditate.addEventListener('change', e => S.auto.meditate = e.target.checked);
   }
   
-  const autoBrewQi = qs('#autoBrewQi');
-  if (autoBrewQi) {
-    autoBrewQi.checked = S.auto.brewQi;
-    autoBrewQi.addEventListener('change', e => S.auto.brewQi = e.target.checked);
-  }
   
   const autoAdventure = qs('#autoAdventure');
   if (autoAdventure) {
@@ -282,9 +275,6 @@ function updateAll(){
   
   // Disciples
   
-  // Alchemy
-  setText('alchLvl', S.alchemy.level); setText('alchXp', S.alchemy.xp); setText('slotCount', S.alchemy.maxSlots);
-  
   // Karma
   setText('karmaVal', S.karmaPts);
   const ascendBtn = document.getElementById('ascendBtn');
@@ -295,10 +285,6 @@ function updateAll(){
   
   // Safe render function calls
   renderKarma(); 
-  if (typeof renderQueue === 'function') renderQueue(); 
-  if (typeof renderAlchemyUI === 'function') renderAlchemyUI(); 
-
-
   if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
   if (typeof updateBreathingStats === 'function') updateBreathingStats();
@@ -321,62 +307,6 @@ function renderKarma(){
   body.onclick=e=>{const key=e.target?.dataset?.karma; if(!key) return; const k=KARMA_UPS.find(x=>x.key===key); const cost=k.base*Math.pow(k.mult,S.karma[k.key.slice(2)]||0); if(S.karmaPts>=cost){ S.karmaPts-=cost; k.eff(S); updateAll(); }};
 }
 
-function renderAlchemyUI(){
-  // Update recipe select based on known recipes and unlock status
-  const recipeSelect = document.getElementById('recipeSelect');
-  const brewBtn = document.getElementById('brewBtn');
-  
-  if(!S.alchemy.unlocked) {
-    recipeSelect.innerHTML = '<option value="">Alchemy not unlocked - Build Alchemy Laboratory</option>';
-    recipeSelect.disabled = true;
-    brewBtn.disabled = true;
-    brewBtn.textContent = '🔒 Locked';
-    return;
-  }
-  
-  recipeSelect.disabled = false;
-  brewBtn.disabled = false;
-  brewBtn.textContent = '🔥 Brew';
-  
-  recipeSelect.innerHTML = '';
-  S.alchemy.knownRecipes.forEach(key => {
-    const recipe = RECIPES[key];
-    if(recipe) {
-      const option = document.createElement('option');
-      option.value = key;
-      const costStr = Object.entries(recipe.cost).map(([res, amt]) => {
-        const icons = {herbs: '🌿', ore: '⛏️', wood: '🪵', stones: '🪨'};
-        return `${amt}${icons[res] || res}`;
-      }).join(' ');
-      option.textContent = `${recipe.name} (${costStr}, ${recipe.time}s, ${Math.floor(recipe.base*100)}%)`;
-      recipeSelect.appendChild(option);
-    }
-  });
-  
-  // Add unknown recipes as disabled options with hints
-  Object.entries(RECIPES).forEach(([key, recipe]) => {
-    if(!S.alchemy.knownRecipes.includes(key)) {
-      const option = document.createElement('option');
-      option.value = '';
-      option.disabled = true;
-      option.textContent = `??? - ${recipe.unlockHint}`;
-      recipeSelect.appendChild(option);
-    }
-  });
-}
-
-function renderQueue(){
-  const tbody = document.getElementById('queueTable');
-  if(!tbody) return;
-  tbody.innerHTML = '';
-  S.alchemy.queue.forEach((q, i) => {
-    const tr = document.createElement('tr');
-    const prog = q.done ? 'Done' : `${q.T - q.t}s`;
-    const btn = q.done ? `<button class="btn small" onclick="collectBrew(${i})">Collect</button>` : '';
-    tr.innerHTML = `<td>${q.name}</td><td>${prog}</td><td>${q.done ? 'Ready' : 'Brewing'}</td><td>${btn}</td>`;
-    tbody.appendChild(tr);
-  });
-}
 
 function updateLawsDisplay(){
   // Update law points display
@@ -1158,18 +1088,6 @@ function updateSidebarActivities() {
     }
   }
   
-  // Update cooking (alchemy system)
-  if (S.alchemy) {
-    setText('cookingLevelSidebar', `Level ${S.alchemy.level}`);
-    const cookingFill = document.getElementById('cookingProgressFillSidebar');
-    if (cookingFill) {
-      // Calculate alchemy experience progress (if xp and level system exists)
-      const expRequired = S.alchemy.level * 100; // Basic progression formula
-      const progressPct = S.alchemy.xp ? Math.floor((S.alchemy.xp % expRequired) / expRequired * 100) : 0;
-      cookingFill.style.width = progressPct + '%';
-      setText('cookingProgressTextSidebar', progressPct + '%');
-    }
-  }
   
   // Update sect status indicator
   const sectStatus = document.getElementById('sectStatus');
@@ -1484,9 +1402,6 @@ function applySkillBonuses(lawKey, skillKey){
     log(`Unlocked ${bonus.technique} technique!`, 'good');
   }
   
-  if(bonus.alchemySlots){
-    S.alchemy.maxSlots += bonus.alchemySlots;
-  }
   
   // Apply cultivation bonuses
   if(bonus.cultivationTalent){
@@ -1506,44 +1421,6 @@ function applySkillBonuses(lawKey, skillKey){
   }
 }
 
-// Alchemy
-const RECIPES = {
-  qi:{name:'Qi Condensing Pill', cost:{herbs:20, ore:5}, time:30, base:0.80, give:s=>{s.pills.qi++; s.alchemy.xp+=5;}, unlockHint:'Basic alchemy knowledge'},
-  body:{name:'Body Tempering Pill', cost:{herbs:10, ore:20, wood:10}, time:45, base:0.70, give:s=>{s.pills.body++; s.alchemy.xp+=7;}, unlockHint:'Found in ancient texts or learned from masters'},
-  ward:{name:'Tribulation Ward Pill', cost:{herbs:50, ore:25, wood:25}, time:120, base:0.60, give:s=>{s.pills.ward++; s.alchemy.xp+=12;}, unlockHint:'Advanced recipe requiring deep cultivation knowledge'}
-};
-function addBrew(){
-  if(!S.alchemy.unlocked) { log('Alchemy not unlocked yet! Build an Alchemy Laboratory.','bad'); return; }
-  if(S.alchemy.queue.length>=S.alchemy.maxSlots){ log('Queue is full','bad'); return; }
-  const key = document.getElementById('recipeSelect').value; const r=RECIPES[key];
-  if(!S.alchemy.knownRecipes.includes(key)) { log('Recipe not known yet!','bad'); return; }
-  if(!pay(r.cost)) { log('Not enough materials','bad'); return; }
-  S.alchemy.queue.push({key, name:r.name, t:r.time, T:r.time, done:false});
-  updateAll();
-}
-function collectBrew(i){
-  const q=S.alchemy.queue[i]; if(!q || !q.done) return;
-  const r=RECIPES[q.key]; 
-  
-  // Ensure stats exist
-  if (!S.stats) {
-    S.stats = {
-      physique: 10, mind: 10, dexterity: 10, comprehension: 10,
-      criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
-    };
-  }
-  
-  // Mind affects alchemy success (4% per point above 10)
-  const mindBonus = (S.stats.mind - 10) * 0.04;
-  const chance = r.base + S.alchemy.successBonus + mindBonus;
-  
-  if(Math.random()<chance){ r.give(S); log(`Brewed ${q.name} successfully!`,'good'); }
-  else { log(`${q.name} failed. You salvage some scraps.`, 'bad'); S.herbs+=Math.floor((r.cost.herbs||0)*0.3); S.ore+=Math.floor((r.cost.ore||0)*0.3); S.wood+=Math.floor((r.cost.wood||0)*0.3); }
-  S.alchemy.queue.splice(i,1);
-  if(S.alchemy.xp>= 30 + 20*(S.alchemy.level-1)){ S.alchemy.level++; S.alchemy.xp=0; log('Alchemy leveled up!','good'); }
-  updateAll();
-}
 
 // Upgrades
 function canPay(cost){ return Object.entries(cost).every(([k,v])=> (S[k]||0) >= v); }
@@ -1590,9 +1467,6 @@ function tick(){
     const { gained, qiSpent } = refillShieldFromQi(S);
     if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   }
-
-  // Alchemy
-  S.alchemy.queue.forEach(q=>{ if(!q.done){ q.t -= 1; if(q.t<=0){ q.t=0; q.done=true; } }});
 
   // Activity-based progression
   if(S.activities.cultivation) {
@@ -1682,7 +1556,6 @@ function tick(){
     const gain = foundationGainPerSec(S) * 0.5; // Reduced when not actively cultivating
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
-  if(S.auto.brewQi && S.alchemy.queue.length < S.alchemy.maxSlots){ if(canPay(RECIPES.qi.cost)) addBrew(); }
   if(S.auto.adventure && !S.activities.adventure){ startActivity('adventure'); }
 
   // CDs
