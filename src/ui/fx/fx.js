@@ -45,11 +45,21 @@ export function playSlashArc(svg, from, to) {
 }
 
 export function playThrustLine(svg, from, to) {
+  // Validate inputs to avoid NaN SVG attributes
+  const valid = (
+    svg && from && to &&
+    Number.isFinite(from.x) && Number.isFinite(from.y) &&
+    Number.isFinite(to.x) && Number.isFinite(to.y)
+  );
+  if (!valid) {
+    // Silently ignore invalid thrusts to prevent console SVG errors
+    return;
+  }
   const line = document.createElementNS(NS, 'line');
-  line.setAttribute('x1', from.x);
-  line.setAttribute('y1', from.y);
-  line.setAttribute('x2', to.x);
-  line.setAttribute('y2', to.y);
+  line.setAttribute('x1', String(from.x));
+  line.setAttribute('y1', String(from.y));
+  line.setAttribute('x2', String(to.x));
+  line.setAttribute('y2', String(to.y));
   line.classList.add('fx-thrust');
   spawn(svg, line, 300);
 }

@@ -44,6 +44,8 @@ function getCombatPositions() {
   const enemyEl = document.querySelector('.combatant.enemy');
   if (!svg || !playerEl || !enemyEl) return null;
   const rect = svg.getBoundingClientRect();
+  // If SVG hasn't been laid out yet, its rect can be 0x0 which would cause NaN (0/0)
+  if (!rect || rect.width === 0 || rect.height === 0) return null;
   const pRect = playerEl.getBoundingClientRect();
   const eRect = enemyEl.getBoundingClientRect();
   const from = {
@@ -54,6 +56,10 @@ function getCombatPositions() {
     x: ((eRect.left - rect.left) / rect.width) * 100,
     y: ((eRect.top + eRect.height / 2 - rect.top) / rect.height) * 50,
   };
+  // Validate computed values
+  if (!Number.isFinite(from.x) || !Number.isFinite(from.y) || !Number.isFinite(to.x) || !Number.isFinite(to.y)) {
+    return null;
+  }
   return { svg, from, to };
 }
 
