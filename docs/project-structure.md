@@ -170,7 +170,30 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       └── sectScreen.js
 │   │   ├── karma/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── karmaDisplay.js
 │   │   ├── alchemy/
+│   │   │   ├── data/
+│   │   │   │   └── recipes.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── alchemyDisplay.js
+│   │   ├── mining/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── miningDisplay.js
+│   │   ├── physique/
+│   │   │   └── state.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -635,6 +658,14 @@ Paths added:
 - `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
 - `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
 - `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
+
+### Mining Feature (`src/features/mining/`)
+- `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
+- `src/features/mining/logic.js` – Handles mining rates, resource gains and experience progression.
+- `src/features/mining/mutators.js` – External wrappers to modify mining state.
+- `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
+- `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
+
 
 ### Physique Feature (`src/features/physique/`)
 - `src/features/physique/state.js` – Tracks physique training progress and stamina.

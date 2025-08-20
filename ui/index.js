@@ -52,6 +52,7 @@ import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/invento
 import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/ui/fx/fx.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
+import { advanceMining } from '../src/features/mining/logic.js';
 
 // Global variables
 const progressBars = {};
@@ -237,10 +238,6 @@ function updateAll(){
   setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
   setText('physiqueProgressText', `${fmt(S.physique.exp)} / ${fmt(S.physique.expMax)} XP`);
   setText('physiqueLevel', `Level ${S.physique.level}`);
-
-  setFill('miningProgressFill', S.mining.exp / S.mining.expMax);
-  setText('miningProgressText', `${fmt(S.mining.exp)} / ${fmt(S.mining.expMax)} XP`);
-  setText('miningLevel', `Level ${S.mining.level}`);
 
   updateCookingSidebar();
 
@@ -801,93 +798,6 @@ function updateActivityPhysique() {
   }
 }
 
-function updateActivityMining() {
-  // Only update if mining activity is initialized
-  if (!S.mining) return;
-  
-  setText('miningLevelActivity', S.mining.level);
-  setText('miningExpActivity', Math.floor(S.mining.exp));
-  setText('miningExpMaxActivity', S.mining.expMax);
-  
-  // Update currently mining display
-  const resourceNames = {
-    stones: 'Spirit Stones',
-    iron: 'Iron Ore',
-    ice: 'Ice Crystal'
-  };
-  
-  if (S.activities.mining) {
-    setText('currentlyMining', resourceNames[S.mining.selectedResource] || 'Unknown');
-  } else {
-    setText('currentlyMining', 'Nothing');
-  }
-  
-  const miningFillActivity = document.getElementById('miningFillActivity');
-  if (miningFillActivity) {
-    miningFillActivity.style.width = (S.mining.exp / S.mining.expMax * 100) + '%';
-  }
-  
-  const startBtn = document.getElementById('startMiningActivity');
-  if (startBtn) {
-    startBtn.textContent = S.activities.mining ? '🛑 Stop Mining' : '⛏️ Start Mining';
-    startBtn.onclick = () => S.activities.mining ? stopActivity('mining') : startActivity('mining');
-  }
-  
-  // Update resource selection visibility based on level
-  const ironOption = document.getElementById('ironOption');
-  const iceOption = document.getElementById('iceOption');
-  
-  if (ironOption) {
-    ironOption.style.display = S.mining.level >= 3 ? 'block' : 'none';
-  }
-  
-  if (iceOption) {
-    iceOption.style.display = S.mining.level >= 15 ? 'block' : 'none';
-  }
-  
-  // Update selected resource radio button
-  const selectedRadio = document.querySelector(`input[name="miningResource"][value="${S.mining.selectedResource}"]`);
-  if (selectedRadio) {
-    selectedRadio.checked = true;
-  }
-  
-  // Show/hide mining stats card
-  const miningStatsCard = document.getElementById('miningStatsCard');
-  if (miningStatsCard) {
-    miningStatsCard.style.display = S.activities.mining ? 'block' : 'none';
-  }
-  
-  // Update mining stats
-  if (S.activities.mining) {
-    setText('resourcesGained', S.mining.resourcesGained || 0);
-    const baseRate = getMiningRate(S.mining.selectedResource);
-    setText('currentMiningRate', `${baseRate.toFixed(1)}/sec`);
-  }
-  
-  // Update resource rate displays
-  updateMiningRateDisplays();
-}
-
-function getMiningRate(resource) {
-  const baseRates = {
-    stones: 3,
-    iron: 1.5,
-    ice: 0.75
-  };
-  
-  const levelBonus = S.mining.level * 0.1;
-  return (baseRates[resource] || 1) * (1 + levelBonus);
-}
-
-function updateMiningRateDisplays() {
-  const stonesRate = getMiningRate('stones');
-  const ironRate = getMiningRate('iron');
-  const iceRate = getMiningRate('ice');
-
-  setText('stonesRate', `+${stonesRate.toFixed(1)}/sec`);
-  setText('ironRate', `+${ironRate.toFixed(1)}/sec`);
-  setText('iceRate', `+${iceRate.toFixed(1)}/sec`);
-}
 
 
 // Update sidebar activity displays
@@ -913,17 +823,6 @@ function updateSidebarActivities() {
     }
   }
 
-  // Update mining
-  if (S.mining) {
-    setText('miningLevel', `Level ${S.mining.level}`);
-    const miningFill = document.getElementById('miningProgressFill');
-    if (miningFill) {
-      const progressPct = Math.floor(S.mining.exp / S.mining.expMax * 100);
-      miningFill.style.width = progressPct + '%';
-      setText('miningProgressText', progressPct + '%');
-    }
-  }
-  
   // Update adventure
   if (S.adventure) {
     const currentZone = ZONES[S.adventure.currentZone];
@@ -1328,40 +1227,7 @@ function tick(){
   }
   
   // Passive mining progression
-  if(S.activities.mining && S.mining && S.mining.selectedResource) {
-    const totalRate = getMiningRate(S.mining.selectedResource);
-    
-    // Add resources based on selected type
-    switch(S.mining.selectedResource) {
-      case 'stones':
-        S.stones += totalRate;
-        break;
-      case 'iron':
-        if (!S.iron) S.iron = 0;
-        S.iron += totalRate;
-        break;
-      case 'ice':
-        if (!S.ice) S.ice = 0;
-        S.ice += totalRate;
-        break;
-    }
-    
-    // Track resources gained for display
-    if (!S.mining.resourcesGained) S.mining.resourcesGained = 0;
-    S.mining.resourcesGained += totalRate;
-    
-    // Mining experience gain (slower than active training)
-    const expGain = 0.5; // 0.5 exp per second
-    S.mining.exp += expGain;
-    
-    // Level up check
-    if (S.mining.exp >= S.mining.expMax) {
-      S.mining.level++;
-      S.mining.exp = 0;
-      S.mining.expMax = Math.floor(S.mining.expMax * 1.3);
-      log(`Mining level up! Level ${S.mining.level}`, 'good');
-    }
-  }
+  advanceMining(S);
   
   // Physique training progression
   if(S.activities.physique && S.physique) {
@@ -1456,19 +1322,6 @@ function initActivityListeners() {
   // Session-based training event listeners
   document.getElementById('startTrainingSession')?.addEventListener('click', startTrainingSession);
   document.getElementById('hitButton')?.addEventListener('click', executeHit);
-  
-  // Mining resource selection event listeners
-  const miningResourceInputs = document.querySelectorAll('input[name="miningResource"]');
-  miningResourceInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
-      if (S.mining) {
-        S.mining.selectedResource = e.target.value;
-        S.mining.resourcesGained = 0; // Reset counter when switching resources
-        log(`Switched mining to ${e.target.value === 'stones' ? 'Spirit Stones' : e.target.value === 'iron' ? 'Iron Ore' : 'Ice Crystal'}`, 'good');
-        updateActivityMining();
-      }
-    });
-  });
   
   // Adventure Map button event listener - MAP-UI-UPDATE
   document.getElementById('mapButton')?.addEventListener('click', () => {

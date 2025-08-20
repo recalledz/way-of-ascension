@@ -3,6 +3,7 @@ import { runMigrations, SAVE_VERSION } from './migrations.js';
 import { sectState } from '../features/sect/state.js';
 import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 import { karmaState } from '../features/karma/state.js';
+import { miningState } from '../features/mining/state.js';
 import { physiqueState } from '../features/physique/state.js';
 
 export function loadSave(){
@@ -70,14 +71,7 @@ export const defaultState = () => {
   },
   // Activity data containers
   physique: structuredClone(physiqueState),
-  mining: {
-    level: 1,
-    exp: 0,
-    expMax: 100,
-    unlockedResources: ['stones'],
-    selectedResource: 'stones',
-    resourcesGained: 0
-  },
+  mining: structuredClone(miningState),
   cooking: {
     level: 1,
     exp: 0,
