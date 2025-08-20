@@ -1,13 +1,14 @@
 import { S } from './state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from './engine.js';
 import { initializeFight, processAttack, refillShieldFromQi } from './combat.js';
-import { getEquippedWeapon, getAbilitySlots } from './selectors.js';
+import { getEquippedWeapon } from '../features/inventory/selectors.js';
+import { getAbilitySlots } from '../features/ability/selectors.js';
 import { rollLoot, toLootTableKey } from '../features/loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../features/weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
-import { ABILITIES } from '../data/abilities.js';
+import { ABILITIES } from '../features/ability/data/abilities.js';
 import { performAttack, decayStunBar } from './combat/attack.js'; // STATUS-REFORM
 import { chanceToHit } from './combat/hit.js';
-import { tryCastAbility, processAbilityQueue } from './abilitySystem.js';
+import { tryCastAbility, processAbilityQueue } from '../features/ability/mutators.js';
 import { ENEMY_DATA } from '../../data/enemies.js';
 import { setText, log } from './utils.js';
 import { applyRandomAffixes } from '../features/affixes/logic.js';
@@ -576,6 +577,7 @@ export function updateAbilityBar() {
       if (slot.insufficientQi) card.classList.add('insufficient');
       card.addEventListener('click', () => {
         if (tryCastAbility(slot.abilityKey)) {
+          S.qi -= ABILITIES[slot.abilityKey].costQi;
           flashAbilityCard(i + 1);
           updateAbilityBar();
         } else {
@@ -1348,6 +1350,7 @@ document.addEventListener('keydown', e => {
     const slot = slots[num - 1];
     if (slot?.abilityKey) {
       if (tryCastAbility(slot.abilityKey)) {
+        S.qi -= ABILITIES[slot.abilityKey].costQi;
         flashAbilityCard(num);
         updateAbilityBar();
       } else {

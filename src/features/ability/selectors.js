@@ -1,10 +1,10 @@
-// Centralized state selectors.
-// Never read state fields directly; use selectors.
+import { S } from '../../game/state.js';
+import { ABILITIES } from './data/abilities.js';
+import { getEquippedWeapon } from '../inventory/selectors.js';
 
-import { ABILITIES } from '../data/abilities.js';
-import { S } from './state.js';
-import { getEquippedWeapon } from '../features/inventory/selectors.js';
-export { getEquippedWeapon };
+export function getAbilityCooldowns(state = S) {
+  return state.abilityCooldowns || {};
+}
 
 export function getAbilitySlots(state = S) {
   const slots = [];
@@ -30,4 +30,3 @@ export function getAbilitySlots(state = S) {
   }
   return slots;
 }
-

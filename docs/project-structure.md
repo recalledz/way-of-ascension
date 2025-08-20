@@ -278,6 +278,53 @@ S = {
 
 #### `migrations.js` - Save Migration System
 **Purpose**: Handle save data structure changes between versions
+
+#### `src/features/ability/state.js` - Ability State Slice
+Tracks ability cooldown timers and pending action queue.
+
+#### `src/features/ability/mutators.js` - Ability Mutators
+Validate casts, tick cooldowns, and process queued ability actions.
+
+#### `src/features/ability/selectors.js` - Ability Selectors
+Expose ability slots and cooldown information using inventory data.
+
+#### `src/features/ability/logic.js` - Ability Resolution
+Resolves ability effects like Power Slash damage and healing.
+
+#### `src/features/ability/data/abilities.js` - Ability Definitions
+Defines metadata for active abilities such as cost and cooldown.
+
+#### `src/features/affixes/state.js` - Affix Feature State
+Holds affix-related tracking data.
+
+#### `src/features/affixes/logic.js` - Affix Logic
+Utilities for applying affixes to generated items.
+
+#### `src/features/affixes/mutators.js` - Affix Mutators
+State mutations for affix acquisition and assignment.
+
+#### `src/features/affixes/selectors.js` - Affix Selectors
+Expose affix information for UI and logic layers.
+
+#### `src/features/inventory/ui/CharacterPanel.js` - Character Panel UI
+Renders the player's equipment and inventory interface.
+
+#### `src/features/inventory/ui/weaponChip.js` - Weapon Chip UI
+Displays a compact summary of the equipped weapon.
+
+```
+src/features/ability/state.js
+src/features/ability/mutators.js
+src/features/ability/selectors.js
+src/features/ability/logic.js
+src/features/ability/data/abilities.js
+src/features/affixes/state.js
+src/features/affixes/logic.js
+src/features/affixes/mutators.js
+src/features/affixes/selectors.js
+src/features/inventory/ui/CharacterPanel.js
+src/features/inventory/ui/weaponChip.js
+```
 **Pattern**:
 ```javascript
 export const SAVE_VERSION = 5;
