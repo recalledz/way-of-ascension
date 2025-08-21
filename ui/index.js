@@ -65,6 +65,8 @@ import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
 import { calcKarmaGain } from '../src/features/karma/selectors.js';
 import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physique/mutators.js';
 import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
+import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
+import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
 
 // Global variables
 const progressBars = {};
@@ -110,15 +112,15 @@ function initUI(){
   // Autos (with safe null checks)
   const autoMeditate = qs('#autoMeditate');
   if (autoMeditate) {
-    autoMeditate.checked = S.auto.meditate;
-    autoMeditate.addEventListener('change', e => S.auto.meditate = e.target.checked);
+    autoMeditate.checked = isAutoMeditate();
+    autoMeditate.addEventListener('change', e => toggleAutoMeditate(e.target.checked));
   }
-  
-  
+
+
   const autoAdventure = qs('#autoAdventure');
   if (autoAdventure) {
-    autoAdventure.checked = S.auto.adventure;
-    autoAdventure.addEventListener('change', e => S.auto.adventure = e.target.checked);
+    autoAdventure.checked = isAutoAdventure();
+    autoAdventure.addEventListener('change', e => toggleAutoAdventure(e.target.checked));
   }
 
   const reduceMotionToggle = qs('#reduceMotionToggle');
@@ -347,9 +349,9 @@ function stopActivity(activityName) {
       log(`Training session complete! ${summary.hits} hits for ${summary.xp} XP`, 'good');
     }
   }
-  if (activityName === 'cultivation' && S.auto) {
+  if (activityName === 'cultivation' && isAutoMeditate()) {
     // Ensure passive meditation doesn't continue when cultivation is stopped
-    S.auto.meditate = false;
+    toggleAutoMeditate(false);
   }
   
   log(`Stopped ${activityName}`, 'neutral');
@@ -738,11 +740,11 @@ function tick(){
   }
   
   // Auto meditation fallback for old saves
-  if(S.auto.meditate && Object.values(S.activities).every(a => !a)) {
+  if(isAutoMeditate() && Object.values(S.activities).every(a => !a)) {
     const gain = foundationGainPerSec(S) * 0.5; // Reduced when not actively cultivating
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
-  if(S.auto.adventure && !S.activities.adventure){ startActivity('adventure'); }
+  if(isAutoAdventure() && !S.activities.adventure){ startActivity('adventure'); }
 
   // Breakthrough progress
   updateBreakthrough();
