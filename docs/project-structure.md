@@ -131,6 +131,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── cookControls.js
 │   │   │       └── cookingDisplay.js
 │   │   ├── inventory/
 │   │   │   ├── data/
@@ -769,7 +770,8 @@ Paths added:
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
 - `src/features/cooking/mutators.js` – Manage cooking actions and food slot equipment.
 - `src/features/cooking/selectors.js` – Access success bonus and other cooking state.
-- `src/features/cooking/logic.js` – Handle cooking, food slot usage, and UI updates.
+- `src/features/cooking/logic.js` – Handle cooking and food slot logic, returning data for the UI.
+- `src/features/cooking/ui/cookControls.js` – Update cook amount input and food slot counts.
 - `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
 
 ### Weapon Generation Feature (`src/features/weaponGeneration/`)

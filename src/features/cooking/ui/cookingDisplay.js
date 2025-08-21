@@ -3,7 +3,7 @@ import { setText, setFill } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { getCookingYieldBonus } from '../selectors.js';
 import { cookMeat, equipFood, useFoodSlot } from '../mutators.js';
-import { updateFoodSlots } from '../logic.js';
+import { updateFoodSlots } from './cookControls.js';
 
 export function updateActivityCooking(state = S) {
   if (!state.cooking) {

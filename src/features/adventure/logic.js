@@ -30,7 +30,7 @@ import {
 } from '../combat/ui/index.js';
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
-import { updateFoodSlots } from '../cooking/logic.js';
+import { updateFoodSlots } from '../cooking/ui/cookControls.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
