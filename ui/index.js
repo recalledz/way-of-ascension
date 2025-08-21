@@ -13,8 +13,6 @@ import {
   foundationGainPerSec,
   foundationGainPerMeditate,
   powerMult,
-  calcAtk,
-  calcDef,
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/features/progression/selectors.js';
@@ -57,6 +55,13 @@ import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
+import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
+import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
+import { updateAdventureProgress } from '../src/features/adventure/ui/adventureDisplay.js';
+import { updateResourceDisplay } from '../src/features/inventory/ui/resourceDisplay.js';
+import { updateKarmaDisplay } from '../src/features/karma/ui/karmaHUD.js';
+import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
+import { calcKarmaGain } from '../src/features/karma/selectors.js';
 
 // Global variables
 const progressBars = {};
@@ -69,7 +74,6 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 // Import enemy data from the enemies module
 import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
-import { updateQiOrbEffect } from '../src/features/progression/ui/qiOrb.js';
 
 // Adventure System Data
 // Enemy data for adventure zones
@@ -176,38 +180,14 @@ function initUI(){
 
 function updateAll(){
   updateRealmUI();
+  updateQiAndFoundation();
 
-  // Qi
-  setText('qiVal', fmt(S.qi)); setText('qiCap', fmt(qCap(S)));
-  setText('qiValL', fmt(S.qi)); setText('qiCapL', fmt(qCap(S)));
-  setText('qiRegen', qiRegenPerSec(S).toFixed(1));
-  setFill('qiFill', S.qi / qCap(S));
-  setFill('qiFill2', S.qi / qCap(S));
-  setText('qiPct', Math.floor(100 * S.qi / qCap(S)) + '%');
-  
-  // Foundation
-  setFill('cultivationProgressFill', S.foundation / fCap(S));
-  setText('cultivationProgressText', `${fmt(S.foundation)} / ${fmt(fCap(S))}`);
-  setText('foundValL', fmt(S.foundation)); setText('foundCapL', fmt(fCap(S)));
-  setFill('foundFill', S.foundation / fCap(S));
-  setFill('foundFill2', S.foundation / fCap(S));
-  setText('foundPct', Math.floor(100 * S.foundation / fCap(S)) + '%');
-  
   // HP
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
   setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
   setFill('hpFill', S.hp / S.hpMax);
   setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
-  
-  // Combat stats
-  setText('atkVal', calcAtk(S)); setText('defVal', calcDef(S));
-  setText('armorVal', S.stats?.armor || 0);
-  setText('accuracyVal', S.stats?.accuracy || 0);
-  setText('dodgeVal', S.stats?.dodge || 0);
-  setText('atkVal2', calcAtk(S)); setText('defVal2', calcDef(S));
-  setText('armorVal2', S.stats?.armor || 0);
-  setText('accuracyVal2', S.stats?.accuracy || 0);
-  setText('dodgeVal2', S.stats?.dodge || 0);
+  updateCombatStats();
   
   // Activity system display
   if (!S.activities) {
@@ -224,37 +204,17 @@ function updateAll(){
 
   updateCookingSidebar();
 
-  const currentZone = ZONES[S.adventure.currentZone];
-  const currentArea = currentZone ? currentZone.areas[S.adventure.currentArea] : null;
-  const location = currentArea ? currentArea.name : 'Village Outskirts';
-  if (currentArea) {
-    const progress = S.adventure.killsInCurrentArea / currentArea.killReq;
-    setFill('adventureProgressFill', progress);
-    setText('adventureProgressText', `${Math.floor(progress * 100)}%`);
-  }
-  setText('adventureLevel', location);
-  setText('stonesDisplay', fmt(S.stones));
+  updateAdventureProgress();
   
   // Safe call to updateActivityUI if it exists
   if (typeof updateActivityUI === 'function') updateActivityUI();
   
-  // Resources
-  setText('stonesVal', fmt(S.stones)); setText('stonesValL', fmt(S.stones));
-  setText('herbVal', fmt(S.herbs)); setText('oreVal', fmt(S.ore)); setText('woodVal', fmt(S.wood)); setText('coreVal', fmt(S.cores));
-  setText('pillQi', S.pills.qi); setText('pillBody', S.pills.body); setText('pillWard', S.pills.ward);
-  
+  updateResourceDisplay();
+
   // Disciples
-  
-  // Karma
-  const ascendBtn = document.getElementById('ascendBtn');
-  if (ascendBtn) ascendBtn.disabled = calcKarmaGain() <= 0;
-  
-  // Laws
-  
-  updateQiOrbEffect();
-  if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
-  if (typeof updateBreathingStats === 'function') updateBreathingStats();
-  if (typeof updateLotusFoundationFill === 'function') updateLotusFoundationFill();
+
+  updateKarmaDisplay();
+  updateLawsUI();
   updateActivityCards();
 
   emit('RENDER');
@@ -1001,9 +961,6 @@ function usePill(type){
 
 
 /* Ascension */
-function calcKarmaGain(){
-  let score = (S.realm.tier*9 + (S.realm.stage-1)) - 3; return Math.max(0, Math.floor(score/6));
-}
 const ascendBtn = document.getElementById('ascendBtn');
 if (ascendBtn) {
   ascendBtn.addEventListener('click', ()=>{
