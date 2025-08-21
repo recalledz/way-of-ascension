@@ -81,6 +81,7 @@ way-of-ascension/
 │   │   │   │   ├── zoneIds.js
 │   │   │   │   └── zones.js
 │   │   │   ├── ui/
+│   │   │   │   ├── adventureDisplay.js
 │   │   │   │   ├── progressBar.js
 │   │   │   │   └── zoneUI.js
 │   │   │   ├── logic.js
@@ -119,6 +120,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
+│   │   │       ├── combatStats.js
 │   │   │       ├── fx.js
 │   │   │       └── index.js
 │   │   ├── cooking/
@@ -140,6 +142,7 @@ way-of-ascension/
 │   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       ├── CharacterPanel.js
+│   │   │       ├── resourceDisplay.js
 │   │   │       └── weaponChip.js
 │   │   ├── loot/
 │   │   │   ├── data/
@@ -175,6 +178,9 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── lawDisplay.js
+│   │   │       ├── lawsHUD.js
+│   │   │       ├── qiDisplay.js
 │   │   │       ├── qiOrb.js
 │   │   │       └── realm.js
 │   │   ├── sect/
@@ -195,7 +201,8 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
-│   │   │       └── karmaDisplay.js
+│   │   │       ├── karmaDisplay.js
+│   │   │       └── karmaHUD.js
 │   │   ├── alchemy/
 │   │   │   ├── data/
 │   │   │   │   └── recipes.js
@@ -249,6 +256,7 @@ way-of-ascension/
 │   │       ├── hp.js
 │   │       └── number.js
 │   └── ui/
+│       ├── app.js
 │       └── sidebar.js
 ├── ui/
 │   ├── components/
@@ -759,6 +767,16 @@ Paths added:
 - `src/features/sect/logic.js` – Core sect calculations and mechanics.
 - `src/features/sect/data/buildings.js` – Building definitions and costs.
 - `src/features/sect/ui/sectScreen.js` – UI for managing the sect.
+
+### Additional UI Components
+- `src/features/adventure/ui/adventureDisplay.js` – Updates adventure progress and location display.
+- `src/features/combat/ui/combatStats.js` – Renders combat statistics like attack, defense, and armor.
+- `src/features/inventory/ui/resourceDisplay.js` – Shows resource quantities and pill counts.
+- `src/features/karma/ui/karmaHUD.js` – Toggles ascend availability based on current karma gain.
+- `src/features/progression/ui/lawDisplay.js` – Presents law selection interface and skill trees.
+- `src/features/progression/ui/lawsHUD.js` – Refreshes law HUD and related visual effects.
+- `src/features/progression/ui/qiDisplay.js` – Updates Qi and foundation bars and values.
+- `src/ui/app.js` – App bootstrap that creates the controller, mounts UI, and starts the game.
 
 ### Feature Migration Files
 - `src/features/ability/migrations.js` – Save migrations for ability feature.
