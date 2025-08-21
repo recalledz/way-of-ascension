@@ -1,4 +1,5 @@
 import { karmaState } from './state.js';
+import { S } from '../../shared/state.js';
 
 function slice(state){
   return state.karma || state;
@@ -27,4 +28,11 @@ export function getAtkBonus(state = karmaState){
 
 export function getDefBonus(state = karmaState){
   return getKarmaBonuses(state).def;
+}
+
+export function calcKarmaGain(state = S) {
+  const tier = state.realm?.tier || 0;
+  const stage = state.realm?.stage || 1;
+  const score = (tier * 9 + (stage - 1)) - 3;
+  return Math.max(0, Math.floor(score / 6));
 }
