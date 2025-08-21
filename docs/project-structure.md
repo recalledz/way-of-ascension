@@ -81,6 +81,7 @@ way-of-ascension/
 │   │   │   │   ├── zoneIds.js
 │   │   │   │   └── zones.js
 │   │   │   ├── ui/
+│   │   │   │   ├── adventureDisplay.js
 │   │   │   │   ├── progressBar.js
 │   │   │   │   └── zoneUI.js
 │   │   │   ├── logic.js
@@ -119,6 +120,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
+│   │   │       ├── combatStats.js
 │   │   │       ├── fx.js
 │   │   │       └── index.js
 │   │   ├── cooking/
@@ -140,6 +142,7 @@ way-of-ascension/
 │   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       ├── CharacterPanel.js
+│   │   │       ├── resourceDisplay.js
 │   │   │       └── weaponChip.js
 │   │   ├── loot/
 │   │   │   ├── data/
@@ -175,6 +178,9 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── lawDisplay.js
+│   │   │       ├── lawsHUD.js
+│   │   │       ├── qiDisplay.js
 │   │   │       ├── qiOrb.js
 │   │   │       └── realm.js
 │   │   ├── sect/
@@ -195,7 +201,8 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
-│   │   │       └── karmaDisplay.js
+│   │   │       ├── karmaDisplay.js
+│   │   │       └── karmaHUD.js
 │   │   ├── alchemy/
 │   │   │   ├── data/
 │   │   │   │   └── recipes.js
@@ -222,7 +229,8 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
-│   │   │       └── physiqueDisplay.js
+│   │   │       ├── physiqueDisplay.js
+│   │   │       └── trainingGame.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── materials.stub.js
@@ -365,6 +373,10 @@ Formats large numbers with shorthand suffixes (k, m, b, t).
 
 **Dependencies**: `src/features/adventure/data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
+
+#### `src/features/adventure/ui/adventureDisplay.js` - Adventure Sidebar Display
+**Purpose**: Renders adventure progress and current area in the sidebar.
+**When to modify**: Adjust adventure sidebar presentation or add new metrics.
 
 #### `combat/hit.js` - Hit Chance Calculation
 **Purpose**: Calculates chance for an attack to hit based on accuracy and dodge with scaling and caps.
@@ -567,6 +579,10 @@ function updateAll() {
 **Key Functions**: `renderEquipmentPanel()`, `setupEquipmentTab()`.
 **When to modify**: Adjust character gear interface or inventory interactions.
 
+#### `src/features/inventory/ui/resourceDisplay.js` - Resource Sidebar Display
+**Purpose**: Shows counts of inventory resources in the sidebar.
+**When to modify**: Update when adding new resource types or changing sidebar layout.
+
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
@@ -625,6 +641,15 @@ function updateAll() {
 
 #### `src/features/progression/data/laws.js` - Cultivation Laws
 **Purpose**: Define law bonuses and skill trees.
+
+#### `src/features/progression/ui/qiDisplay.js` - Qi and Foundation HUD
+**Purpose**: Updates Qi and Foundation bars in the UI.
+
+#### `src/features/progression/ui/lawDisplay.js` - Law Selection UI
+**Purpose**: Shows available laws and their details.
+
+#### `src/features/progression/ui/lawsHUD.js` - Active Laws HUD
+**Purpose**: Displays learned laws and bonuses in the HUD.
 
 ### UI Effects (`src/features/combat/ui/`)
 
@@ -705,6 +730,7 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+- `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
 
 ### Karma Feature (`src/features/karma/`)
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.
@@ -712,6 +738,7 @@ Paths added:
 - `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
 - `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
 - `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
+- `src/features/karma/ui/karmaHUD.js` – Shows karma gain in the sidebar HUD.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
@@ -727,6 +754,7 @@ Paths added:
 - `src/features/physique/mutators.js` – Handles gaining physique experience and stamina changes.
 - `src/features/physique/selectors.js` – Accessors for physique levels, experience, stamina, and bonuses.
 - `src/features/physique/ui/physiqueDisplay.js` – Renders physique progress and bonuses in the UI.
+ - `src/features/physique/ui/trainingGame.js` – UI for the physique training mini-game; logic and state updates live in `logic.js` and `mutators.js`.
 
 ### Alchemy Feature
 - `src/features/alchemy/index.js` – Registers alchemy hooks.
