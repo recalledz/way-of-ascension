@@ -13,6 +13,7 @@
 import { readFileSync, existsSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { join, dirname, normalize, sep } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,6 +59,9 @@ class StructureValidator {
 
     // 5) Architecture checks (content-level)
     this.runArchitectureChecks();
+
+    // 5a) Balance contract validation
+    this.runBalanceValidation();
 
     // 6) Auto-update docs if requested and needed
     if (AUTO_UPDATE && this.newFiles.length > 0) {
@@ -205,6 +209,14 @@ class StructureValidator {
     this.checkNoDomInMutatorsLogicSelectors();
     this.checkCrossSliceWrites();
     this.checkArchitectureDoc();
+  }
+
+  runBalanceValidation() {
+    try {
+      execSync('npm run lint:balance', { stdio: 'inherit', cwd: PROJECT_ROOT });
+    } catch (e) {
+      this.errors.push('Balance contract validation failed');
+    }
   }
 
   checkAppShell() {

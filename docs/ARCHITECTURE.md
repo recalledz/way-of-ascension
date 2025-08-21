@@ -109,3 +109,60 @@ When adding a new game mechanic or extending an existing feature, follow these g
 7. **Build UI components.**  If your feature needs user interaction, put UI modules in `ui/` and import selectors and mutators as needed.
 
 Following these steps ensures that all code related to a feature stays together and that the boundary between data, logic, state mutation, and presentation remains clear.  Over time this organisation will simplify navigation, reduce coupling and make adding new content more predictable:contentReference[oaicite:17]{index=17}.
+
+## Balance
+
+Static data within each feature is paired with a `_balance.contract.js` file.
+Contracts define acceptable ranges for key numeric fields and include
+monotonic checks so that values progress in a single direction. The
+`scripts/balance-validate.js` utility evaluates these contracts and can be
+run with `npm run lint:balance`. Contracts may also specify design targets
+and tolerances to guide tuning without introducing regressions.
+
+
+---
+
+## Appendix: Architecture Contracts (auto-appended by validator)
+
+### App Shell
+- **src/ui/app.js** is the only UI bootstrap (create controller, `registerAllFeatures()`, mount sidebar/debug, start loop).
+- No gameplay logic inside app shell.
+
+### GameController
+- Owns the loop, calls feature `tick(root, dt)`, emits `TICK` and `RENDER`.
+
+### Feature Descriptor Contract
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},                // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {},     // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary bridge until all UIs move to init()
+};
+```
+
+
+---
+
+## Appendix: Architecture Contracts (auto-appended by validator)
+
+### App Shell
+- **src/ui/app.js** is the only UI bootstrap (create controller, `registerAllFeatures()`, mount sidebar/debug, start loop).
+- No gameplay logic inside app shell.
+
+### GameController
+- Owns the loop, calls feature `tick(root, dt)`, emits `TICK` and `RENDER`.
+
+### Feature Descriptor Contract
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},                // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {},     // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary bridge until all UIs move to init()
+};
+```
