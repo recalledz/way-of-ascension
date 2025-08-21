@@ -257,6 +257,7 @@ way-of-ascension/
 │   │       ├── hp.js
 │   │       └── number.js
 │   └── ui/
+│       ├── app.js
 │       └── sidebar.js
 ├── ui/
 │   ├── components/
@@ -582,6 +583,10 @@ function updateAll() {
 #### `src/features/inventory/ui/resourceDisplay.js` - Resource Sidebar Display
 **Purpose**: Shows counts of inventory resources in the sidebar.
 **When to modify**: Update when adding new resource types or changing sidebar layout.
+
+#### `src/ui/app.js` - Application Shell
+**Purpose**: Placeholder root for composing high-level UI modules.
+**When to modify**: Implement global UI bootstrap or layout logic.
 
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.

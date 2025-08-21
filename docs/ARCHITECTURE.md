@@ -27,7 +27,7 @@ A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. 
 
 #### Entrypoint & Bootstrap
 
-`src/index.js` is a minimal entry that creates the controller, mounts feature UIs via `mountAllFeatureUIs(state)` and then calls `start()`. `src/features/index.js` centralises these UI mounts for all features.
+`src/index.js` is a minimal entry that creates the controller, mounts feature UIs via `mountAllFeatureUIs(state)` and then calls `start()`. `src/features/index.js` centralises these UI mounts for all features. A placeholder app shell lives at `src/ui/app.js` for future global UI composition.
 
 #### State Access Rules
 
@@ -58,6 +58,9 @@ Each feature folder under `src/features` follows a consistent internal layout:
 * **`mutators.js`** – Functions that modify the feature’s state slice.  They act as the sole entry point for state mutations, helping you track where changes occur.  The weapon generation mutator, for example, writes a generated weapon into `weaponGenerationState.generated`:contentReference[oaicite:3]{index=3}.
 * **`selectors.js`** – Functions that read values from the feature’s state.  They often wrap logic functions to calculate derived values.  The `rollWeaponDropForZone()` selector samples the appropriate loot table and returns a generated weapon based on the current zone:contentReference[oaicite:4]{index=4}.
 * **`ui/`** – Feature‑specific UI modules.  These typically import selectors to display state and call mutators in response to user actions.
+
+### Feature Descriptor Contract (key + initialState())
+Every feature exports a descriptor object with a unique `key` and an `initialState()` function. The registry uses this contract to compose the root state and bootstrap feature hooks.
 
 ### Proficiency feature
 

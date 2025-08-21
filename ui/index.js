@@ -31,7 +31,8 @@ import { fmt } from '../src/shared/utils/number.js';
 import { emit } from '../src/shared/events.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
-import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
+import { initializeWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
+import { WEAPONS } from '../src/features/weaponGeneration/data/weapons.js';
 import {
   updateActivityAdventure,
   updateAdventureCombat,
@@ -84,7 +85,10 @@ function initUI(){
   // Render sidebar activities
   renderSidebarActivities();
 
-  initializeWeaponChip();
+  const mh = S.equipment?.mainhand;
+  const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
+  const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
+  initializeWeaponChip({ key: mhKey, name: mhName });
   mountTrainingGameUI(S);
 
   // Assign buttons
@@ -198,7 +202,6 @@ function updateAll(){
   }
   updateCurrentTaskDisplay();
 
-    updateWeaponChip();
 
   // Update progression displays
   setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
