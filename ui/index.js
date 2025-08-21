@@ -29,6 +29,7 @@ import {
   checkLawUnlocks,
 } from '../src/features/progression/index.js';
 import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
+import { fmt } from '../src/shared/utils/number.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
 import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
@@ -62,14 +63,6 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 
 
-
-const fmt = n=>{
-  if (n>=1e12) return (n/1e12).toFixed(2)+'t';
-  if (n>=1e9) return (n/1e9).toFixed(2)+'b';
-  if (n>=1e6) return (n/1e6).toFixed(2)+'m';
-  if (n>=1e3) return (n/1e3).toFixed(2)+'k';
-  return Math.floor(n).toString();
-}
 
 // Import enemy data from the enemies module
 import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
