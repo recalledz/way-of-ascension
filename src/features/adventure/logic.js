@@ -779,7 +779,6 @@ export function retreatFromCombat() {
     S.adventure.combatLog.push('You retreated from combat.');
     claimSessionLoot(); // EQUIP-CHAR-UI
     updateLootTab(); // EQUIP-CHAR-UI
-    log('Retreated from combat safely.', 'neutral');
   }
 }
 
