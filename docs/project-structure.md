@@ -245,7 +245,8 @@ way-of-ascension/
 │   │   ├── selectors.js
 │   │   └── utils/
 │   │       ├── dom.js
-│   │       └── hp.js
+│   │       ├── hp.js
+│   │       └── number.js
 │   └── ui/
 │       └── sidebar.js
 ├── ui/
@@ -333,6 +334,9 @@ Utility functions for querying elements, updating text/fill styles and logging t
 
 #### `utils/hp.js` - HP Utilities
 Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
+
+#### `utils/number.js` - Number Formatting Helpers
+Formats large numbers with shorthand suffixes (k, m, b, t).
 
 #### `src/features/progression/logic.js` - Game Calculations
 **Purpose**: Core progression mechanics and calculations
@@ -660,6 +664,7 @@ Paths added:
 - `src/index.js` – entry that bootstraps and starts the controller
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
+- `src/shared/utils/number.js` - number formatting helper
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
