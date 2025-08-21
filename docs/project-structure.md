@@ -64,6 +64,7 @@ way-of-ascension/
 │   │   ├── weapons-guidlines.md
 │   │   └── stats-to-implement.md
 │   ├── ai-verification-protocol.md
+│   ├── balance-protocol.md
 │   ├── cultivation-ui-style.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
@@ -71,12 +72,14 @@ way-of-ascension/
 │   └── ARCHITECTURE.md
 ├── node_modules/
 ├── scripts/
+│   ├── balance-validate.js
 │   └── validate-structure.js
 ├── src/
 │   ├── index.js
 │   ├── features/
 │   │   ├── adventure/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── enemies.js
 │   │   │   │   ├── zoneIds.js
 │   │   │   │   └── zones.js
@@ -93,6 +96,7 @@ way-of-ascension/
 │   │   ├── registry.js
 │   │   ├── ability/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── abilities.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -101,6 +105,7 @@ way-of-ascension/
 │   │   │   └── state.js
 │   │   ├── affixes/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── affixes.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -110,6 +115,7 @@ way-of-ascension/
 │   │   ├── combat/
 │   │   │   ├── attack.js
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── status.js
 │   │   │   │   └── statusesByElement.js
 │   │   │   ├── hit.js
@@ -146,6 +152,7 @@ way-of-ascension/
 │   │   │       └── weaponChip.js
 │   │   ├── loot/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── lootTables.js
 │   │   │   │   └── lootTables.weapons.js
 │   │   │   ├── logic.js
@@ -158,6 +165,7 @@ way-of-ascension/
 │   │   │       └── lootTab.js
 │   │   ├── proficiency/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── .gitkeep
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -169,6 +177,7 @@ way-of-ascension/
 │   │   │       └── weaponProficiencyDisplay.js
 │   │   ├── progression/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── laws.js
 │   │   │   │   └── realms.js
 │   │   │   ├── logic.js
@@ -185,6 +194,7 @@ way-of-ascension/
 │   │   │       └── realm.js
 │   │   ├── sect/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── buildings.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -205,6 +215,7 @@ way-of-ascension/
 │   │   │       └── karmaHUD.js
 │   │   ├── alchemy/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── recipes.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -233,6 +244,7 @@ way-of-ascension/
 │   │   │       └── trainingGame.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
+│   │       │   ├── _balance.contract.js
 │   │       │   ├── materials.stub.js
 │   │       │   ├── weaponIcons.js
 │   │       │   ├── weaponTypes.js
