@@ -818,14 +818,6 @@ function initActivityListeners() {
       } else {
         clearInterval(interval);
         retreatFromCombat();
-        if (typeof globalThis.stopActivity === 'function') {
-          globalThis.stopActivity('adventure');
-        } else {
-          S.activities.adventure = false;
-        }
-        const loss = Math.floor(qCap(S) * 0.25);
-        S.qi = Math.max(0, S.qi - loss);
-        log(`Retreated from combat. Lost ${loss} Qi.`, 'neutral');
         btn.disabled = false;
         btn.classList.remove('warn');
         btn.classList.add('primary');
