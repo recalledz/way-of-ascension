@@ -175,6 +175,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── qiOrb.js
 │   │   │       └── realm.js
 │   │   ├── sect/
 │   │   │   ├── data/
@@ -548,6 +549,10 @@ function updateAll() {
 #### `src/features/progression/ui/realm.js` - Realm UI Components
 **Purpose**: Realm-specific UI components and cultivation displays
 **When to modify**: Add new realm UI features, modify cultivation interface
+
+#### `src/features/progression/ui/qiOrb.js` - Qi Orb Visual Effects
+**Purpose**: Updates the Qi Orb's appearance when foundation approaches its maximum.
+**When to modify**: Change Qi Orb styling or foundation threshold behavior.
 
 #### `components/progressBar.js` - Reusable Progress Bar Component
 **Purpose**: Provides reusable functions to create and update standardized progress bars throughout the UI.

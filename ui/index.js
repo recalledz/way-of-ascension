@@ -66,23 +66,10 @@ let selectedActivity = 'cultivation'; // Current selected activity for the sideb
 
 // Import enemy data from the enemies module
 import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
+import { updateQiOrbEffect } from '../src/features/progression/ui/qiOrb.js';
 
 // Adventure System Data
 // Enemy data for adventure zones
-
-function updateQiOrbEffect(){
-  const qiOrb = document.getElementById('qiOrb');
-  if(!qiOrb) return;
-  
-  // Check if foundation is at maximum capacity
-  const isFoundationMax = S.foundation >= fCap(S) * 0.99; // 99% or higher counts as "max"
-  
-  if(isFoundationMax) {
-    qiOrb.classList.add('foundation-max');
-  } else {
-    qiOrb.classList.remove('foundation-max');
-  }
-}
 
 function initUI(){
   // Render sidebar activities
@@ -267,7 +254,7 @@ function updateAll(){
   if (typeof renderAlchemyUI === 'function') renderAlchemyUI();
 
   renderKarma(); 
-  if (typeof updateQiOrbEffect === 'function') updateQiOrbEffect();
+  updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
   if (typeof updateBreathingStats === 'function') updateBreathingStats();
   if (typeof updateLotusFoundationFill === 'function') updateLotusFoundationFill();
