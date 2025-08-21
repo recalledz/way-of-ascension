@@ -193,6 +193,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── karmaDisplay.js
 │   │   ├── alchemy/
@@ -212,6 +213,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── miningDisplay.js
 │   │   ├── physique/
@@ -220,6 +222,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── physiqueDisplay.js
 │   │   └── weaponGeneration/
@@ -697,6 +700,7 @@ Paths added:
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
 
 ### Karma Feature (`src/features/karma/`)
+- `src/features/karma/index.js` – Registers the karma feature and its UI.
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.
 - `src/features/karma/logic.js` – Derives combat and regeneration bonuses from karma.
 - `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
@@ -704,6 +708,7 @@ Paths added:
 - `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
 
 ### Mining Feature (`src/features/mining/`)
+- `src/features/mining/index.js` – Registers mining logic and UI bindings.
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
 - `src/features/mining/logic.js` – Handles mining rates, resource gains and experience progression.
 - `src/features/mining/mutators.js` – External wrappers to modify mining state.
@@ -712,6 +717,7 @@ Paths added:
 
 
 ### Physique Feature (`src/features/physique/`)
+- `src/features/physique/index.js` – Registers physique feature and sidebar UI.
 - `src/features/physique/state.js` – Tracks physique training progress and stamina.
 - `src/features/physique/logic.js` – Calculates bonuses from the physique stat such as HP and carry capacity.
 - `src/features/physique/mutators.js` – Handles gaining physique experience and stamina changes.
@@ -728,6 +734,7 @@ Paths added:
 - `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.
 
 ### Cooking Feature (`src/features/cooking/`)
+- `src/features/cooking/index.js` – Registers cooking feature and attaches its UI.
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
 - `src/features/cooking/mutators.js` – Manage cooking actions and food slot equipment.
 - `src/features/cooking/selectors.js` – Access success bonus and other cooking state.

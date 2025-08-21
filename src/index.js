@@ -1,8 +1,18 @@
+import { registerAllFeatures, composeInitialState, registeredFeatures } from "./features/registry.js";
 import { createGameController } from "./game/GameController.js";
-import { mountAllFeatureUIs } from "./features/index.js";
+import { emit } from "./shared/events.js";
+import { renderSidebarActivities } from "./ui/sidebar.js";
 
-const game = createGameController();
-mountAllFeatureUIs(game.state);
-game.start();
+async function bootstrap() {
+  await registerAllFeatures();
+  const game = createGameController(composeInitialState());
+  renderSidebarActivities();
+  for (const f of registeredFeatures) {
+    f.mount?.(game.state, { emit });
+  }
+  game.start();
+}
+
+bootstrap();
 
 // window.game = game; // optional for debugging

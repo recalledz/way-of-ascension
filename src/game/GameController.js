@@ -1,20 +1,10 @@
 import { emit } from "../shared/events.js";
 import { loadSave, saveDebounced } from "../shared/saveLoad.js";
 import { recalculateBuildingBonuses } from "../features/sect/mutators.js";
-import { initFeatureState, tickFeatures } from "../features/registry.js";
+import { composeInitialState, tickFeatures } from "../features/registry.js";
 
-// Register feature hooks
-import "../features/proficiency/index.js";
-import "../features/weaponGeneration/index.js";
-import "../features/sect/index.js";
-import "../features/alchemy/index.js";
-
-export function createGameController() {
-  const state = {
-    app: { mode: "town", lastTick: performance.now() },
-    ...initFeatureState(),
-    // legacy root pieces remain attached to `state` until migrated
-  };
+export function createGameController(initialState = composeInitialState()) {
+  const state = initialState;
 
   const hydrated = loadSave(state);
   Object.assign(state, hydrated);

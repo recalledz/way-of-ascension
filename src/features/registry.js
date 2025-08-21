@@ -26,3 +26,34 @@ export function tickFeatures(state, stepMs) {
 }
 
 export { registeredFeatures };
+
+// --- New helpers for feature-first UI mounting ---
+
+/**
+ * Dynamically import and register all feature modules. Features register
+ * themselves via side effects when their index modules run.
+ */
+export async function registerAllFeatures() {
+  await Promise.all([
+    import("./alchemy/index.js"),
+    import("./proficiency/index.js"),
+    import("./sect/index.js"),
+    import("./cooking/index.js"),
+    import("./mining/index.js"),
+    import("./physique/index.js"),
+    import("./karma/index.js"),
+    // weaponGeneration has no UI mount but still participates in state
+    import("./weaponGeneration/index.js"),
+  ]);
+}
+
+/**
+ * Compose the initial application state from all registered feature slices.
+ * Includes the root `app` slice used by the game controller.
+ */
+export function composeInitialState() {
+  return {
+    app: { mode: "town", lastTick: performance.now() },
+    ...initFeatureState(),
+  };
+}
