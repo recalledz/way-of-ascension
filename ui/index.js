@@ -30,6 +30,7 @@ import {
 } from '../src/features/progression/index.js';
 import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
 import { fmt } from '../src/shared/utils/number.js';
+import { emit } from '../src/shared/events.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
 import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
@@ -54,6 +55,7 @@ import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDAT
 import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { advanceMining } from '../src/features/mining/logic.js';
+import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 
 // Global variables
 const progressBars = {};
@@ -249,73 +251,14 @@ function updateAll(){
   // Laws
   if (typeof updateLawsDisplay === 'function') updateLawsDisplay();
   
-  // Safe render function calls
-  if (typeof renderQueue === 'function') renderQueue();
-  if (typeof renderAlchemyUI === 'function') renderAlchemyUI();
-
-  renderKarma(); 
+  renderKarma();
   updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
   if (typeof updateBreathingStats === 'function') updateBreathingStats();
   if (typeof updateLotusFoundationFill === 'function') updateLotusFoundationFill();
   updateActivityCards();
-}
 
-function renderAlchemyUI(){
-  // Update recipe select based on known recipes and unlock status
-  const recipeSelect = document.getElementById('recipeSelect');
-  const brewBtn = document.getElementById('brewBtn');
-  
-  if(!S.alchemy.unlocked) {
-    recipeSelect.innerHTML = '<option value="">Alchemy not unlocked - Build Alchemy Laboratory</option>';
-    recipeSelect.disabled = true;
-    brewBtn.disabled = true;
-    brewBtn.textContent = '🔒 Locked';
-    return;
-  }
-  
-  recipeSelect.disabled = false;
-  brewBtn.disabled = false;
-  brewBtn.textContent = '🔥 Brew';
-  
-  recipeSelect.innerHTML = '';
-  S.alchemy.knownRecipes.forEach(key => {
-    const recipe = RECIPES[key];
-    if(recipe) {
-      const option = document.createElement('option');
-      option.value = key;
-      const costStr = Object.entries(recipe.cost).map(([res, amt]) => {
-        const icons = {herbs: '🌿', ore: '⛏️', wood: '🪵', stones: '🪨'};
-        return `${amt}${icons[res] || res}`;
-      }).join(' ');
-      option.textContent = `${recipe.name} (${costStr}, ${recipe.time}s, ${Math.floor(recipe.base*100)}%)`;
-      recipeSelect.appendChild(option);
-    }
-  });
-  
-  // Add unknown recipes as disabled options with hints
-  Object.entries(RECIPES).forEach(([key, recipe]) => {
-    if(!S.alchemy.knownRecipes.includes(key)) {
-      const option = document.createElement('option');
-      option.value = '';
-      option.disabled = true;
-      option.textContent = `??? - ${recipe.unlockHint}`;
-      recipeSelect.appendChild(option);
-    }
-  });
-}
-
-function renderQueue(){
-  const tbody = document.getElementById('queueTable');
-  if(!tbody) return;
-  tbody.innerHTML = '';
-  S.alchemy.queue.forEach((q, i) => {
-    const tr = document.createElement('tr');
-    const prog = q.done ? 'Done' : `${q.T - q.t}s`;
-    const btn = q.done ? `<button class="btn small" onclick="collectBrew(${i})">Collect</button>` : '';
-    tr.innerHTML = `<td>${q.name}</td><td>${prog}</td><td>${q.done ? 'Ready' : 'Brewing'}</td><td>${btn}</td>`;
-    tbody.appendChild(tr);
-  });
+  emit('RENDER');
 }
 function renderKarma(){
   const body=document.getElementById('karmaUpgrades'); 
@@ -1469,6 +1412,7 @@ window.addEventListener('load', ()=>{
   initActivityListeners();
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
+  mountAlchemyUI(S);
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();
