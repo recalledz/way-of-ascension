@@ -62,6 +62,7 @@ import { updateResourceDisplay } from '../src/features/inventory/ui/resourceDisp
 import { updateKarmaDisplay } from '../src/features/karma/ui/karmaHUD.js';
 import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
 import { calcKarmaGain } from '../src/features/karma/selectors.js';
+import { startApp } from "../src/ui/app.js";
 
 // Global variables
 const progressBars = {};
@@ -1257,19 +1258,6 @@ function addPhysiqueMinigame() {
 
 
 // Init
-window.addEventListener('load', ()=>{
-  initUI();
-  initLawSystem();
-  initActivityListeners();
-  setupAdventureTabs();
-  setupEquipmentTab(); // EQUIP-CHAR-UI
-  mountAlchemyUI(S);
-  mountKarmaUI(S);
-  selectActivity('cultivation'); // Start with cultivation selected
-  updateAll();
-  tick();
-  log('Welcome, cultivator.');
-  setInterval(tick, 1000);
-});
+window.addEventListener('load', () => { startApp(); });
 
 // CHANGELOG: Added weapon HUD integration.
