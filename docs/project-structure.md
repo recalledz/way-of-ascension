@@ -72,6 +72,8 @@ way-of-ascension/
 ├── node_modules/
 ├── scripts/
 │   └── validate-structure.js
+├── test/
+│   └── server.test.js
 ├── src/
 │   ├── index.js
 │   ├── features/

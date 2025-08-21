@@ -5,7 +5,7 @@
   "main": "game.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "validate": "node scripts/validate-structure.js",
     "validate-fix": "node scripts/validate-structure.js --auto-update",
     "start": "node server.js",
