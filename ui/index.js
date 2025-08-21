@@ -56,6 +56,7 @@ import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
+import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 
 // Global variables
 const progressBars = {};
@@ -251,7 +252,6 @@ function updateAll(){
   // Laws
   if (typeof updateLawsDisplay === 'function') updateLawsDisplay();
   
-  renderKarma();
   updateQiOrbEffect();
   if (typeof updateYinYangVisual === 'function') updateYinYangVisual();
   if (typeof updateBreathingStats === 'function') updateBreathingStats();
@@ -259,19 +259,6 @@ function updateAll(){
   updateActivityCards();
 
   emit('RENDER');
-}
-function renderKarma(){
-  const body=document.getElementById('karmaUpgrades'); 
-  if (!body) return; 
-  
-  body.innerHTML='';
-  KARMA_UPS.forEach(k=>{
-    const cost = k.base * Math.pow(k.mult, S.karma[k.key.slice(2)] || 0);
-    const div=document.createElement('div');
-    div.innerHTML=`<button class="btn small" data-karma="${k.key}">${k.name}</button><div class="muted">${k.desc}</div><div class="muted">Cost: ${Math.floor(cost)} karma</div>`;
-    body.appendChild(div);
-  });
-  body.onclick=e=>{const key=e.target?.dataset?.karma; if(!key) return; const k=KARMA_UPS.find(x=>x.key===key); const cost=k.base*Math.pow(k.mult,S.karma[k.key.slice(2)]||0); if(S.karmaPts>=cost){ S.karmaPts-=cost; k.eff(S); updateAll(); }};
 }
 
 
@@ -1413,6 +1400,7 @@ window.addEventListener('load', ()=>{
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
   mountAlchemyUI(S);
+  mountKarmaUI(S);
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();
