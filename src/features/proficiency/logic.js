@@ -6,6 +6,10 @@ function resolveKey(key) {
   return weapon?.proficiencyKey || key;
 }
 
+export function calculateProficiencyXP(enemyMaxHP) {
+  return Math.max(1, Math.ceil(enemyMaxHP / 30));
+}
+
 export function gainProficiency(key, amount, state) {
   state.proficiency = state.proficiency || {};
   const typeKey = resolveKey(key);
