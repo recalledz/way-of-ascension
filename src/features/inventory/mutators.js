@@ -1,5 +1,6 @@
 import { S, save } from '../../shared/state.js';
 import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { emit } from '../../shared/events.js';
 import { recomputePlayerTotals, canEquip } from './logic.js';
 
 export function addToInventory(item, state = S) {
@@ -32,15 +33,11 @@ export function equipItem(item, state = S) {
   state.equipment[slot] = equipData;
   removeFromInventory(id, state);
   console.log('[equip]', 'slot→', slot, 'item→', item.key);
-  if (slot === 'mainhand') {
-    const hud = document.getElementById('currentWeapon');
-    if (hud) hud.textContent = WEAPONS[item.key]?.displayName || item.key;
-    const chip = document.getElementById('weaponName');
-    if (chip) chip.textContent = WEAPONS[item.key]?.displayName || item.key;
-  }
   recomputePlayerTotals(state);
   save?.();
-  return true;
+  const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.key, slot };
+  if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
+  return payload;
 }
 
 export function unequip(slot, state = S) {
@@ -50,12 +47,9 @@ export function unequip(slot, state = S) {
   if (key !== 'fist') addToInventory(item, state);
   state.equipment[slot] = null;
   console.log('[equip]', 'slot→', slot, 'item→', 'none');
-  if (slot === 'mainhand') {
-    const hud = document.getElementById('currentWeapon');
-    if (hud) hud.textContent = 'Fists';
-    const chip = document.getElementById('weaponName');
-    if (chip) chip.textContent = 'fist';
-  }
   recomputePlayerTotals(state);
   save?.();
+  const payload = { key: 'fist', name: 'Fists', slot };
+  if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
+  return payload;
 }
