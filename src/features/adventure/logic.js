@@ -14,9 +14,7 @@ import { ENEMY_DATA } from './data/enemies.js';
 import { setText, log } from '../../shared/utils/dom.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
-import { gainProficiency } from '../proficiency/mutators.js';
-import { getProficiency } from '../proficiency/selectors.js';
-import { updateWeaponProficiencyDisplay } from '../proficiency/ui/weaponProficiencyDisplay.js';
+import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from './data/zones.js'; // MAP-UI-UPDATE
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
@@ -488,9 +486,7 @@ export function updateAdventureCombat() {
           { target: S.adventure.currentEnemy, type: 'physical' },
           S
         );
-        const xpGain = Math.max(1, Math.ceil(S.adventure.enemyMaxHP / 30));
-        gainProficiency(weapon.proficiencyKey, xpGain, S); // WEAPONS-INTEGRATION
-        updateWeaponProficiencyDisplay();
+        gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
         const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
@@ -677,7 +673,6 @@ function defeatEnemy() {
     const bonusXP = Math.max(1, Math.round(enemy.hp / 10));
     const weapon = getEquippedWeapon(S);
     gainProficiency(weapon.proficiencyKey, bonusXP, S);
-    updateWeaponProficiencyDisplay();
     S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
   }
   
@@ -1148,7 +1143,6 @@ export function updateActivityAdventure() {
   }
   const baseAttack = Math.round(calculatePlayerCombatAttack(S));
   setText('baseDamage', baseAttack);
-  updateWeaponProficiencyDisplay();
   updateZoneButtons(selectZone);
   updateAreaGrid(selectArea);
   updateAdventureProgressBar(selectAreaById); // MAP-UI-UPDATE
