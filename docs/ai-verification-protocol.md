@@ -1,320 +1,276 @@
-# 🤖 AI Assistant Verification Protocol
 
-**🚨 MANDATORY ENFORCEMENT: Every AI assistant MUST run validation scripts before ANY changes. 🚨**
+🤖 AI Assistant Verification Protocol (Feature-First & Doc-Sync Enforced)
 
-**AUTOMATED ENFORCEMENT ACTIVE:** This protocol is now automatically enforced via validation scripts.
+🚨 BLOCKING: No AI (or human) changes may land unless structure and docs validation pass.
 
-## 1. MANDATORY ENFORCEMENT COMMANDS
+1) Mandatory commands (must run before any edit)
 
-**EVERY AI ASSISTANT MUST RUN THESE COMMANDS BEFORE ANY CHANGES:**
-
-```bash
-# Step 1: Run mandatory validation (BLOCKS changes if failed)
+# Validate codebase + docs alignment (BLOCKS on failure)
 node scripts/validate-structure.js
 
-# Step 2: If validation fails, auto-update documentation
-node scripts/validate-structure.js --auto-update
+# If it fails, try auto-doc sync (updates project-structure.md & ARCHITECTURE.md stubs)
+node scripts/validate-structure.js --auto-update-docs
 
-# Step 3: Re-run validation to confirm fix
+# Re-run to confirm
 node scripts/validate-structure.js
-```
 
-**🚫 AI CHANGES ARE AUTOMATICALLY BLOCKED UNTIL VALIDATION PASSES 🚫**
+> If validation still fails, STOP and fix the reported items in docs/project-structure.md and/or docs/ARCHITECTURE.md before proceeding.
 
-## 2. Structure Verification Protocol
 
-**Before making ANY changes to the codebase:**
 
-1. **Run validation script** - `node scripts/validate-structure.js`
-2. **Read current project-structure.md** to understand the project layout
-3. **Verify file locations** match the documented structure
-4. **Update project-structure.md** if discrepancies are found
-
-## 2. Automated Verification Checklist
-
-**Run these commands to verify structure:**
-
-```bash
-# Check if all documented files exist
-find . -name "*.js" -o -name "*.md" -o -name "*.html" -o -name "*.css" | sort
-
-# List directory structure
-tree -I 'node_modules|.git' -a
-
-# Check for new files not in documentation
-ls -la src/game/ src/data/ data/ ui/ docs/
-```
-
-## 3. When to Update project-structure.md
-
-**ALWAYS update when:**
-- ✅ Adding new files or directories
-- ✅ Moving/renaming existing files
-- ✅ Changing file purposes or responsibilities
-- ✅ Adding new game systems or features
-- ✅ Modifying the state structure significantly
-- ✅ Creating new documentation files
-
-## 4. Update Process
-
-**Step-by-step process:**
-
-1. **Detect Changes**: Use `list_dir` and `find_by_name` tools to scan structure
-2. **Compare**: Check against current project-structure.md content
-3. **Document**: Update the file tree and descriptions
-4. **Verify**: Ensure all new files have purpose descriptions
-
-## 5. Required Documentation for New Files
-
-**Every new file MUST include:**
-- **Purpose**: What the file does
-- **Key Functions**: Main exports/functions (for .js files)
-- **When to modify**: Guidelines for future changes
-- **Dependencies**: What it imports/requires
-
-## 6. Structure Validation Commands
-
-**AI assistants should run these verification commands:**
-
-```javascript
-// Verify core game files exist
-const coreFiles = [
-  'src/shared/state.js',
-  'src/features/progression/logic.js',
-  'src/features/adventure/logic.js',
-  'ui/index.js',
-  'src/features/progression/ui/realm.js',
-  'index.html',
-  'style.css'
-];
-
-// Check each file exists and document if missing
-coreFiles.forEach(file => {
-  // Use Read tool to verify file exists
-  // Update project-structure.md if file is missing or new
-});
-```
-
-## 7. Mandatory Pre-Change Verification
-
-**Before ANY code modification:**
-
-```markdown
-1. [ ] Read docs/project-structure.md
-2. [ ] Verify current file structure with list_dir
-3. [ ] Check if changes will affect documented structure
-4. [ ] Update documentation BEFORE making changes
-5. [ ] Verify all new files are documented
-```
-
-## Code Patterns and Conventions
-
-### State Management
-- Global state object `S` imported from `state.js`
-- All state changes should go through the global `S` object
-- Call `save()` after significant state changes
-- Use `defaultState()` pattern for new state properties
-
-### Activity System
-- Only one activity can be active at a time via `S.activities`
-- Each activity has its own data container in state
-- Activities are controlled by boolean flags in `S.activities`
-- Foundation gain happens in `tick()` when `S.activities.cultivation` is true
-
-### UI Updates
-- Use `updateAll()` to refresh entire UI
-- Use `setText(id, value)` and `setFill(id, ratio)` for updates
-- Specialized render functions for complex UI sections
-- Event listeners attached in `initUI()`
-
-### Calculation Functions
-- Pure functions that take state as input
-- Return calculated values without side effects
-- Handle missing state properties gracefully with defaults
-- Use consistent naming: `calcX()`, `getXBonuses()`, `xPerSec()`
-
-### Data Structure
-- Configuration data in separate files under `data/`
-- Use consistent object structures across similar systems
-- Include unlock requirements, costs, and effects
-- Support for scaling costs and progressive unlocks
-
-### Save System
-- Version-based migration system
-- Increment `SAVE_VERSION` when changing save structure
-- Add migration logic in `runMigrations()`
-- Graceful handling of missing or corrupted saves
-
-## Adding New Features
-
-### New Game Systems
-1. **State**: Add state properties to `defaultState()` in `state.js`
-2. **Logic**: Add calculation functions to `src/features/progression/logic.js`
-3. **UI**: Add render functions and event handlers to `ui/index.js`
-4. **Data**: Add configuration files to `data/` if needed
-5. **Migration**: Update save version and add migration if needed
-
-### New Activities
-1. Add activity flag to `S.activities` in `defaultState()`
-2. Add activity data container to state
-3. Add activity logic to tick system
-4. Add UI elements and event handlers
-5. Add activity card to HTML structure
-
-### New Resources/Currencies
-1. Add to state in `defaultState()`
-2. Add display elements to UI
-3. Add to resource calculation functions
-4. Add to save/load system
-5. Add icons and formatting
-
-### New Buildings/Upgrades
-1. Add to building configuration (likely in `ui/index.js` SECT_BUILDINGS)
-2. Add unlock requirements and effects
-3. Add to building bonus calculation system
-4. Add to building render system
-
-### New Laws/Skills
-1. Add to `src/features/progression/data/laws.js`
-2. Define skill tree structure
-3. Add bonus calculation logic
-4. Add UI rendering for skill trees
-
-## Best Practices
-
-1. **Consistency**: Follow existing patterns and naming conventions
-2. **State Management**: Always use the global state object `S`
-3. **UI Updates**: Use centralized update functions
-4. **Error Handling**: Handle missing state properties gracefully
-5. **Performance**: Avoid expensive calculations in render loops
-6. **Modularity**: Keep related functionality together
-7. **Documentation**: Comment complex calculations and game mechanics
-8. **Testing**: Test save/load functionality when modifying state
-9. **Migration**: Always provide migration path for save data changes
-10. **Balance**: Consider game balance implications of new features
-
-## Common Locations for Code
-
-- **New calculations**: `src/features/progression/logic.js`
-- **New state properties**: `src/shared/state.js` in `defaultState()`
-- **New UI elements**: `ui/index.js` in appropriate render functions
-- **New game data**: `src/features/progression/data/` in appropriate files
-- **New activities**: Activity logic in tick system, UI in activity cards
-- **New buildings**: SECT_BUILDINGS configuration in `ui/index.js`
-- **Save migrations**: `src/game/migrations.js` and feature-level `migrations.js`
-- **Event handlers**: `ui/index.js` in `initUI()` function
-
-## 8. Documentation Standards
-
-**File descriptions must include:**
-
-```markdown
-#### `filename.js` - Brief Description
-**Purpose**: What this file does
-**Key Functions**: 
-- `functionName()` - What it does
-- `anotherFunction()` - What it does
-**Dependencies**: What it imports
-**When to modify**: When to change this file
-**Size**: Approximate file size if >10KB
-```
-
-## 9. Error Prevention
-
-**Common mistakes to avoid:**
-- ❌ Creating files without updating documentation
-- ❌ Moving files without updating paths in project-structure.md
-- ❌ Adding new directories without documenting their purpose
-- ❌ Changing file responsibilities without updating descriptions
-
-## 10. Verification Script Template
-
-**AI assistants should use this pattern:**
-
-```javascript
-// 1. Check current structure
-const currentStructure = await scanProjectStructure();
-
-// 2. Compare with documented structure  
-const documentedStructure = await readDocStructure();
-
-// 3. Find discrepancies
-const newFiles = findNewFiles(currentStructure, documentedStructure);
-const missingFiles = findMissingFiles(currentStructure, documentedStructure);
-
-// 4. Update documentation
-if (newFiles.length > 0 || missingFiles.length > 0) {
-  await updateDocStructure(newFiles, missingFiles);
-}
-```
-
-## 11. Integration with Memory System
-
-**AI assistants should:**
-- Create memories for significant structural changes
-- Reference project-structure.md in memory creation
-- Update memories when file purposes change
-- Use memories to maintain consistency across conversations
 
 ---
 
-## 🔄 Continuous Maintenance Protocol
+2) Architecture (source of truth) — what the validator enforces
 
-**This document MUST be updated whenever:**
-- New files are added to the project
-- Existing files are moved or renamed  
-- File purposes or responsibilities change
-- New directories are created
-- Dependencies between files change
+App Shell & Engine
 
-**Failure to maintain this documentation will result in:**
-- Inconsistent code organization
-- Difficulty for future AI assistants to understand the project
-- Potential breaking changes due to misunderstanding file purposes
-- Loss of project knowledge and context
+src/ui/app.js: the only bootstrap (create controller, registerAllFeatures(), mount sidebar/debug, start loop).
+
+src/game/GameController.js: runs the loop, calls feature tick(), emits TICK/RENDER.
+
+src/ui/sidebar.js / src/ui/debug.js: global UI only (no gameplay logic).
+
+
+Feature folders (src/features/<feature>/)
+
+state.js: initial slice (_v included).
+
+selectors.js: read-only helpers (pure).
+
+logic.js: rules/math (pure, no DOM, no state writes).
+
+mutators.js: the only writers to the slice (can call logic, may emit events).
+
+ui/*.js: DOM rendering & event handlers only (no state writes, no rules; call mutators/selectors).
+
+migrations.js: per-slice migrations.
+
+index.js (or feature.js): descriptor
+
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},          // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {}, // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary until all UIs move to init()
+};
+
+
+Cross-feature rules
+
+Communicate via events (intents) and selectors (facts).
+
+❌ No cross-slice writes outside an owning feature’s mutators.js.
+
+❌ No DOM in mutators/logic/selectors.
+
+❌ No gameplay logic in src/shared/**.
+
+
 
 ---
 
-## 📋 VERIFICATION CHECKLIST FOR AI ASSISTANTS
+3) Doc-Sync: REQUIRED updates for every structural change
 
-**Before completing any task:**
-- [ ] Structure verified against project-structure.md
-- [ ] New files documented with purpose and functions
-- [ ] File tree updated if changes made
-- [ ] Dependencies and relationships documented
-- [ ] File size estimates updated for large files
-- [ ] Integration points with existing systems noted
+You MUST update both docs:
+
+1. docs/project-structure.md — the living file tree & file purposes
+
+Add/move/rename files & folders
+
+Short “Purpose / Key Exports / When to modify / Dependencies” for each new or changed file
+
+Keep a high-level tree (trim verbose nodes like node_modules)
+
+
+
+2. docs/ARCHITECTURE.md — design rules & contracts
+
+If you add/rename entry points (e.g., app.js), reflect in App Shell section
+
+If you add a feature or split a subfeature (e.g., activity, laws), add its responsibilities and boundaries
+
+If a slice shape changes, bump _v and mention the migration in the Migrations section
+
+Keep the Feature Descriptor Contract verbatim (the validator checks it)
+
+
+
+
+Doc update checklist (blocking)
+
+[ ] project-structure.md file tree reflects new/renamed/removed files
+
+[ ] Each new/changed file has a brief Purpose / Key Functions / Dependencies / When to modify
+
+[ ] ARCHITECTURE.md includes any new features & lifecycle contracts impacted
+
+[ ] If you touched tick/loop/boot, the App Shell & GameController sections are updated
+
+[ ] If you changed slice shape: _v bumped + migration documented
+
+
 
 ---
 
-## 💻 Runtime and Browser Verification
+4) Automated verification (what the validator should check)
 
-**After implementing changes, AI assistants MUST perform runtime verification:**
+> Ensure scripts/validate-structure.js implements or is updated to include these checks:
 
-1.  **Launch the Game**: Start the local development server if it's not already running.
-2.  **Open Browser Preview**: Use the `browser_preview` tool to open a browser window for the game.
-3.  **Check for Console Errors**:
-    *   Open the developer console in the browser preview.
-    *   Look for any new errors or warnings that appeared after the changes.
-    *   Document and fix any errors found.
-4.  **Visually Verify UI Changes**:
-    *   Confirm that the UI changes are rendered correctly as intended.
-    *   Interact with the new UI components to ensure they are functional.
-    *   Check for any visual glitches, layout issues, or broken styles.
-5.  **Confirm Functionality**:
-    *   Test the new feature or fix to ensure it works as expected.
-    *   For example, if a button was added, click it and verify the expected action occurs.
-    *   Check relevant game state values in the console (`S` object) to confirm they are updated correctly.
+
+
+Structure & Contract
+
+Every src/features/*/ has state.js, selectors.js, logic.js, mutators.js, migrations.js, and descriptor (index.js/feature.js).
+
+Descriptor exposes key and initialState(), optional init/tick/nav/mount.
+
+
+Architecture purity
+
+In features/**/ui/*.js: forbid root. writes, S imports, Math.random() rules, setInterval/requestAnimationFrame.
+
+In features/**/(mutators|logic|selectors).js: forbid DOM access (document, window, createElement, querySelector).
+
+In src/shared/**: forbid imports from src/features/** and references to slice keys.
+
+
+App Shell integrity
+
+Ensure src/ui/app.js exists and imports no gameplay modules.
+
+Ensure GameController does not use engineTick and calls tickFeatures.
+
+
+Migrations
+
+Each feature migrations.js exports a migrator and bumps _v.
+
+src/shared/migrations.js (or src/game/migrations.js if that’s your location) calls all feature migrators.
+
+
+Doc-Sync
+
+docs/project-structure.md file list matches actual tree (allow listed ignores).
+
+docs/ARCHITECTURE.md contains the Feature Descriptor Contract block and “App Shell / GameController” sections.
+
+If new files appear without an entry in project-structure.md → fail.
+
+If descriptors/sections are missing in ARCHITECTURE.md → fail.
+
+
+> Optional: --auto-update-docs can append missing doc stubs (tree + “Purpose” boilerplates), but still fail if human review is required.
+
+
+
 
 ---
 
-## 🚨 Critical Reminders
+5) Pre-change checklist (engine + docs)
 
-1. **ALWAYS read docs/project-structure.md first**
-2. **Use list_dir to verify current structure**
-3. **Update documentation BEFORE making changes**
-4. **Document every new file with complete information**
-5. **Create memories for structural changes**
-6. **Follow the verification checklist**
+[ ] Ran node scripts/validate-structure.js (passed)
 
-This protocol ensures consistent project organization and knowledge preservation across all AI interactions.
+[ ] Read docs/project-structure.md and docs/ARCHITECTURE.md
+
+[ ] Planned where code lives by feature (state/logic/mutators/selectors/ui)
+
+[ ] Confirmed cross-feature effects use events/selectors
+
+[ ] Updated both docs (structure + architecture) and re-ran validation
+
+
+
+---
+
+6) Runtime verification
+
+After the change:
+
+1. Start the game, open in browser
+
+
+2. Console is clean (no import/path/timer errors)
+
+
+3. UI responds; events fire; state updates via mutators only
+
+
+4. RENDER refreshes feature UIs; loop runs via GameController
+
+
+5. Saves load; migrations applied
+
+
+
+
+---
+
+7) Forbidden patterns (auto-fail)
+
+UI files mutating root/S or computing rules
+
+DOM usage in mutators/logic/selectors
+
+Cross-slice writes outside owning mutators
+
+Feature logic inside app.js or GameController
+
+New files without entries in both docs
+
+New/changed slice shapes without _v bump + migration doc
+
+
+
+---
+
+8) Required doc templates
+
+project-structure.md entry template
+
+#### `src/features/physique/mutators.js`
+**Purpose:** Slice writers for Physique (sessions, hits, XP, level-ups)  
+**Key Functions:** `startTrainingSession`, `executeHit`, `endTrainingSession`, `tickPhysique`  
+**Dependencies:** `./logic.js`, `../../shared/events.js`  
+**When to modify:** When changing Physique rules/flows or adding new user actions
+
+ARCHITECTURE.md feature template
+
+### Physique Feature
+- **State:** `level, exp, expMax, stamina, session*, cursor*` (_v bumped on schema change)
+- **Mutators:** only writer; emits `PHYSIQUE:*` events for UI feedback
+- **Logic:** pure rules (hit windows, streaks, level curve)
+- **UI:** `ui/trainingGame.js`, DOM only; calls mutators; listens on `RENDER`
+- **Tick:** `tickPhysique` called by GameController
+- **Interactions:** reads progression bonuses via selectors; no cross-slice writes
+
+
+---
+
+9) Commit/PR checklist (must be in PR description)
+
+[ ] validate-structure.js passed locally
+
+[ ] Updated docs/project-structure.md (file tree + entries)
+
+[ ] Updated docs/ARCHITECTURE.md (app shell/feature sections)
+
+[ ] Added/updated per-feature migrations (_v bump) if slice changed
+
+[ ] No forbidden patterns (UI writes, DOM in mutators/logic, etc.)
+
+[ ] Manual runtime smoke test done
+
+
+
+---
+
+compare against the file tree,
+
+check for the descriptor block in ARCHITECTURE.md,
+
+and fail on UI writes / DOM-in-mutators with concrete file+line reports.
+
+
