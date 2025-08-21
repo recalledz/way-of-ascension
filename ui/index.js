@@ -31,6 +31,7 @@ import { fmt } from '../src/shared/utils/number.js';
 import { emit } from '../src/shared/events.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
+import { startApp } from "../src/ui/app.js";
 import { initializeWeaponChip, updateWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
 import {
   updateActivityAdventure,
@@ -1257,19 +1258,6 @@ function addPhysiqueMinigame() {
 
 
 // Init
-window.addEventListener('load', ()=>{
-  initUI();
-  initLawSystem();
-  initActivityListeners();
-  setupAdventureTabs();
-  setupEquipmentTab(); // EQUIP-CHAR-UI
-  mountAlchemyUI(S);
-  mountKarmaUI(S);
-  selectActivity('cultivation'); // Start with cultivation selected
-  updateAll();
-  tick();
-  log('Welcome, cultivator.');
-  setInterval(tick, 1000);
-});
+window.addEventListener('load', () => { startApp(); });
 
 // CHANGELOG: Added weapon HUD integration.
