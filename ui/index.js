@@ -62,6 +62,8 @@ import { updateResourceDisplay } from '../src/features/inventory/ui/resourceDisp
 import { updateKarmaDisplay } from '../src/features/karma/ui/karmaHUD.js';
 import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
 import { calcKarmaGain } from '../src/features/karma/selectors.js';
+import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physique/mutators.js';
+import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
 
 // Global variables
 const progressBars = {};
@@ -83,6 +85,7 @@ function initUI(){
   renderSidebarActivities();
 
   initializeWeaponChip();
+  mountTrainingGameUI(S);
 
   // Assign buttons
   // Buttons (with safe null checks)
@@ -272,24 +275,7 @@ function startActivity(activityName) {
     }
   });
   
-  // Stop any active physique training session
-  if (S.physique && S.physique.training) {
-    S.physique.training.active = false;
-  }
-  
-  if (activityName === 'physique') {
-    // Initialize physique training data
-    if (!S.physique.training) {
-      S.physique.training = {
-        active: false,
-        stamina: 100,
-        maxStamina: 100,
-        cursor: { position: 50, direction: 1, speed: 2 },
-        streak: 0,
-        sessionXP: 0
-      };
-    }
-  } else if (activityName === 'mining') {
+  if (activityName === 'mining') {
     // Initialize mining data
     if (!S.mining.selectedResource) {
       S.mining.selectedResource = 'stones';
@@ -352,9 +338,11 @@ function stopActivity(activityName) {
   S.activities[activityName] = false;
   
   // Stop any active physique training session
-  if (activityName === 'physique' && S.physique) {
-    S.physique.trainingSession = false;
-    S.physique.timingActive = false;
+  if (activityName === 'physique') {
+    const summary = endTrainingSession(S);
+    if (summary) {
+      log(`Training session complete! ${summary.hits} hits for ${summary.xp} XP`, 'good');
+    }
   }
   if (activityName === 'cultivation' && S.auto) {
     // Ensure passive meditation doesn't continue when cultivation is stopped
@@ -468,7 +456,6 @@ function updateActivitySelectors() {
 function updateActivityContent() {
   // Update cultivation activity content
   updateActivityCultivation();
-  updateActivityPhysique();
   switch(selectedActivity) {
     case 'adventure':
       updateActivityAdventure();
@@ -481,100 +468,6 @@ function updateActivityContent() {
       break;
   }
 }
-
-function updateActivityPhysique() {
-  // Only update if physique activity is initialized
-  if (!S.physique) {
-    // Show placeholder values when physique isn't initialized
-    setText('physiqueLevelActivity', '1');
-    setText('physiqueExpActivity', '0');
-    setText('physiqueExpMaxActivity', '100');
-    setText('currentStamina', '100');
-    setText('maxStamina', '100');
-    return;
-  }
-  
-  // Ensure stamina values are valid numbers
-  if (isNaN(S.physique.stamina)) S.physique.stamina = 100;
-  if (isNaN(S.physique.maxStamina)) S.physique.maxStamina = 100;
-  
-  setText('physiqueLevelActivity', S.physique.level || 1);
-  setText('physiqueExpActivity', Math.floor(S.physique.exp || 0));
-  setText('physiqueExpMaxActivity', S.physique.expMax || 100);
-  setText('currentStamina', Math.floor(S.physique.stamina || 100));
-  setText('maxStamina', S.physique.maxStamina || 100);
-  
-  const physiqueFillActivity = document.getElementById('physiqueFillActivity');
-  if (physiqueFillActivity) {
-    const expPercent = ((S.physique.exp || 0) / (S.physique.expMax || 100)) * 100;
-    physiqueFillActivity.style.width = expPercent + '%';
-  }
-  
-  const staminaFill = document.getElementById('staminaFill');
-  if (staminaFill) {
-    const staminaPercent = ((S.physique.stamina || 100) / (S.physique.maxStamina || 100)) * 100;
-    staminaFill.style.width = staminaPercent + '%';
-  }
-  
-  const startBtn = document.getElementById('startPhysiqueActivity');
-  if (startBtn) {
-    startBtn.textContent = S.activities.physique ? '🛑 Stop Training' : '💪 Start Training';
-    startBtn.onclick = () => S.activities.physique ? stopActivity('physique') : startActivity('physique');
-  }
-  
-  // Show/hide training cards based on activity state
-  const activeCard = document.getElementById('activeTrainingCard');
-  const passiveCard = document.getElementById('passiveTrainingCard');
-  const effectsCard = document.getElementById('physiqueEffectsCard');
-  
-  if (activeCard) {
-    activeCard.style.display = S.activities.physique ? 'block' : 'none';
-  }
-  
-  if (passiveCard) {
-    passiveCard.style.display = S.activities.physique ? 'block' : 'none';
-  }
-  
-  if (effectsCard) {
-    effectsCard.style.display = S.activities.physique ? 'block' : 'none';
-  }
-  
-  if (S.activities.physique) {
-    // Update session controls visibility
-    const sessionControls = document.getElementById('sessionControls');
-    const trainingGame = document.getElementById('trainingGame');
-    
-    if (sessionControls && trainingGame) {
-      if (S.physique.trainingSession) {
-        sessionControls.style.display = 'none';
-        trainingGame.style.display = 'block';
-        
-        // Update session stats
-        setText('sessionStamina', Math.floor(S.physique.sessionStamina || 0));
-        setText('sessionHits', S.physique.sessionHits || 0);
-        setText('sessionXP', Math.floor(S.physique.sessionXP || 0));
-      } else {
-        sessionControls.style.display = 'block';
-        trainingGame.style.display = 'none';
-      }
-    }
-    
-    // Update start session button
-    const startSessionBtn = document.getElementById('startTrainingSession');
-    if (startSessionBtn) {
-      const canStart = S.physique.stamina >= 20;
-      startSessionBtn.disabled = !canStart;
-      startSessionBtn.textContent = canStart ? '🚀 Start Training Session' : '😴 Need 20+ Stamina';
-    }
-    
-    // Update passive training stats (reduced to 1/3)
-    const passiveRate = (2 + (S.physique.level * 0.2)) / 3;
-    setText('passiveTrainingRate', `+${passiveRate.toFixed(1)} XP/sec`);
-    setText('passiveXpGained', `${Math.floor(S.physique.passiveXpGained || 0)} XP`);
-    
-  }
-}
-
 
 
 // Update sidebar activity displays
@@ -635,168 +528,6 @@ function updateSidebarActivities() {
 function updateActivityCards() {
   updateActivitySelectors();
   updateActivityContent();
-}
-
-function trainPhysique() {
-  if (!S.activities.physique) {
-    log('You must be training physique to use the training dummy!', 'bad');
-    return;
-  }
-  
-  // Simple mini-game: gain exp based on timing/clicking
-  const baseExp = 5 + Math.floor(Math.random() * 10);
-  const expGain = Math.floor(baseExp * (1 + (S.stats.physique - 10) * 0.1));
-  
-  S.physique.exp += expGain;
-  
-  // Level up check
-  if (S.physique.exp >= S.physique.expMax) {
-    S.physique.level++;
-    S.physique.exp = 0;
-    S.physique.expMax = Math.floor(S.physique.expMax * 1.2);
-    
-    // Award physique stat points
-    const statGain = 1 + Math.floor(S.physique.level / 5);
-    S.stats.physique += statGain;
-    
-    log(`Physique training level up! Level ${S.physique.level}. Physique +${statGain}`, 'good');
-  } else {
-    log(`Training session complete! +${expGain} physique exp`, 'good');
-  }
-  
-  updateAll();
-}
-
-// Mining is now passive - no manual mining function needed
-
-// Session-based physique training functions
-function updateTimingCursor() {
-  if (!S.physique.timingActive || !S.physique.trainingSession) return;
-  
-  // Ensure cursorSpeed exists (for backward compatibility)
-  if (!S.physique.cursorSpeed) S.physique.cursorSpeed = 5;
-  
-  // Move cursor back and forth across the timing bar (accelerating movement)
-  S.physique.cursorPosition += S.physique.cursorDirection * S.physique.cursorSpeed;
-  
-  if (S.physique.cursorPosition >= 100) {
-    S.physique.cursorPosition = 100;
-    S.physique.cursorDirection = -1;
-  } else if (S.physique.cursorPosition <= 0) {
-    S.physique.cursorPosition = 0;
-    S.physique.cursorDirection = 1;
-  }
-  
-  const cursor = document.getElementById('timingCursor');
-  if (cursor) {
-    cursor.style.left = S.physique.cursorPosition + '%';
-  }
-}
-
-function startTrainingSession() {
-  if (!S.physique || S.physique.stamina < 20) return;
-  
-  // Start the training session
-  S.physique.trainingSession = true;
-  S.physique.timingActive = true;
-  S.physique.sessionStamina = S.physique.stamina;
-  S.physique.sessionHits = 0;
-  S.physique.sessionXP = 0;
-  S.physique.cursorPosition = 0;
-  S.physique.cursorDirection = 1;
-  S.physique.cursorSpeed = 7; // Start with faster base speed
-  
-  log('Training session started! Hit the perfect zone for maximum XP!', 'good');
-  updateAll();
-}
-
-function executeHit() {
-  if (!S.physique || !S.physique.trainingSession || !S.physique.timingActive) return;
-  
-  // Calculate hit quality based on cursor position
-  const perfectZoneStart = 45;
-  const perfectZoneEnd = 55;
-  const goodZoneStart = 35;
-  const goodZoneEnd = 65;
-  
-  let hitQuality = 'poor';
-  let xpGain = 3 + Math.random() * 2; // 3-5 XP
-  let hitMessage = 'Poor timing!';
-  let hitColor = '#dc2626'; // Red
-  
-  if (S.physique.cursorPosition >= perfectZoneStart && S.physique.cursorPosition <= perfectZoneEnd) {
-    hitQuality = 'perfect';
-    xpGain = 15 + Math.random() * 10; // 15-25 XP
-    hitMessage = 'PERFECT!';
-    hitColor = '#22c55e'; // Green
-    S.physique.perfectHits++;
-    S.physique.hitStreak++;
-  } else if (S.physique.cursorPosition >= goodZoneStart && S.physique.cursorPosition <= goodZoneEnd) {
-    hitQuality = 'good';
-    xpGain = 8 + Math.random() * 4; // 8-12 XP
-    hitMessage = 'Good!';
-    hitColor = '#f59e0b'; // Yellow
-    S.physique.hitStreak = Math.max(0, S.physique.hitStreak - 1);
-  } else {
-    S.physique.hitStreak = 0;
-  }
-  
-  // Apply streak bonus
-  const streakBonus = Math.min(S.physique.hitStreak * 0.05, 0.5); // Max 50% bonus
-  xpGain *= (1 + streakBonus);
-  
-  // Add to session stats
-  S.physique.sessionHits++;
-  S.physique.sessionXP += xpGain;
-  S.physique.exp += xpGain;
-  
-  // Accelerate cursor with each hit (makes it progressively harder)
-  S.physique.cursorSpeed += 1.5; // Increase speed by 1.5 per hit
-  const maxSpeed = 25; // Cap maximum speed to keep it playable
-  S.physique.cursorSpeed = Math.min(S.physique.cursorSpeed, maxSpeed);
-  
-  // Show hit feedback
-  showHitFeedback(hitMessage, hitColor);
-  
-  updateAll();
-}
-
-function showHitFeedback(message, color) {
-  // Create temporary feedback element
-  const hitButton = document.getElementById('hitButton');
-  if (hitButton) {
-    const originalText = hitButton.textContent;
-    const originalColor = hitButton.style.backgroundColor;
-    
-    hitButton.textContent = message;
-    hitButton.style.backgroundColor = color;
-    hitButton.style.transform = 'scale(1.1)';
-    
-    setTimeout(() => {
-      hitButton.textContent = originalText;
-      hitButton.style.backgroundColor = originalColor;
-      hitButton.style.transform = 'scale(1)';
-    }, 300);
-  }
-}
-
-function endTrainingSession() {
-  if (!S.physique || !S.physique.trainingSession) return;
-  
-  S.physique.trainingSession = false;
-  S.physique.timingActive = false;
-  
-  const totalXP = Math.floor(S.physique.sessionXP);
-  const hits = S.physique.sessionHits;
-  
-  log(`Training session complete! ${hits} hits, +${totalXP} total XP gained!`, 'good');
-  
-  // Reset session stats
-  S.physique.sessionStamina = 0;
-  S.physique.sessionHits = 0;
-  S.physique.sessionXP = 0;
-  
-  updateAll();
 }
 
 function updateActivityUI() {
@@ -998,44 +729,9 @@ function tick(){
   advanceMining(S);
   
   // Physique training progression
-  if(S.activities.physique && S.physique) {
-    // Training session stamina drain
-    if (S.physique.trainingSession) {
-      S.physique.sessionStamina -= 6; // 6 stamina per second during session (3x increase)
-      S.physique.stamina -= 6;
-      
-      // End session when stamina is depleted
-      if (S.physique.sessionStamina <= 0 || S.physique.stamina <= 0) {
-        endTrainingSession();
-      }
-      
-      // Update timing cursor during session
-      if (S.physique.timingActive) {
-        updateTimingCursor();
-      }
-    } else {
-      // Stamina regeneration when not in session (1 stamina per second)
-      if (S.physique.stamina < S.physique.maxStamina) {
-        S.physique.stamina = Math.min(S.physique.stamina + 1, S.physique.maxStamina);
-      }
-    }
-    
-    // Passive training XP gain (slower than active sessions, reduced to 1/3)
-    if (!S.physique.trainingSession) {
-      const passiveRate = (2 + (S.physique.level * 0.2)) / 3;
-      S.physique.exp += passiveRate;
-      S.physique.passiveXpGained += passiveRate;
-    }
-    
-    // Level up check
-    if (S.physique.exp >= S.physique.expMax) {
-      S.physique.level++;
-      S.physique.exp = 0;
-      S.physique.expMax = Math.floor(S.physique.expMax * 1.4);
-      S.physique.maxStamina += 10; // Increase max stamina with level
-      S.stats.physique += 1; // Increase physique stat
-      log(`Physique level up! Level ${S.physique.level} (+1 Physique)`, 'good');
-    }
+  const sessionEnd = tickPhysiqueTraining(S);
+  if(sessionEnd){
+    log(`Training session complete! ${sessionEnd.hits} hits for ${sessionEnd.xp} XP`, 'good');
   }
   
   // Auto meditation fallback for old saves
@@ -1081,10 +777,6 @@ function initActivityListeners() {
   // Activity content event listeners
   document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
   document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
-  
-  // Session-based training event listeners
-  document.getElementById('startTrainingSession')?.addEventListener('click', startTrainingSession);
-  document.getElementById('hitButton')?.addEventListener('click', executeHit);
   
   // Adventure Map button event listener - MAP-UI-UPDATE
   document.getElementById('mapButton')?.addEventListener('click', () => {
@@ -1226,31 +918,6 @@ function initActivityListeners() {
 }
 
 // Add physique training dummy interaction
-function addPhysiqueMinigame() {
-  // Add training dummy button to physique tab when it's implemented
-  // For now, we'll add a simple training button to the cultivation tab
-  const cultivationTab = document.getElementById('tab-cultivation');
-  if (cultivationTab && !document.getElementById('trainDummyBtn')) {
-    const trainingSection = document.createElement('div');
-    trainingSection.innerHTML = `
-      <div class="card" id="physiqueTrainingCard" style="display:none;">
-        <h4>💪 Physique Training</h4>
-        <p class="muted">Train with the training dummy to increase your physical power. Click rapidly to maximize your training effectiveness!</p>
-        <div class="stat"><span>Training Level</span><span id="trainingLevel">1</span></div>
-        <div class="progress-wrap" style="margin:10px 0">
-          <span class="badge">Progress</span>
-          <div class="bar" style="flex:1"><div class="fill" id="trainingFill"></div></div>
-          <span id="trainingPct">0%</span>
-        </div>
-        <button class="btn primary" id="trainDummyBtn">🥊 Train with Dummy</button>
-        <div class="muted" style="margin-top:8px">Requires: Physique Training activity active</div>
-      </div>
-    `;
-    cultivationTab.appendChild(trainingSection);
-    
-    document.getElementById('trainDummyBtn').addEventListener('click', trainPhysique);
-  }
-}
 
 // Mining actions are now handled in the activity panel - no separate function needed
 

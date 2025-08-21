@@ -28,3 +28,20 @@ export function getPhysiqueMaxStamina(state = physiqueState){
 export function getPhysiqueBonuses(state){
   return getPhysiqueEffects(state);
 }
+
+export function isPhysiqueTraining(state = physiqueState){
+  return !!slice(state).trainingSession;
+}
+
+export function getTrainingSessionStats(state = physiqueState){
+  const p = slice(state);
+  return {
+    sessionStamina: p.sessionStamina || 0,
+    sessionHits: p.sessionHits || 0,
+    sessionXP: p.sessionXP || 0,
+  };
+}
+
+export function getTrainingCursorPosition(state = physiqueState){
+  return slice(state).cursorPosition || 0;
+}
