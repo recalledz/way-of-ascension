@@ -780,7 +780,7 @@ function initActivityListeners() {
   
   // Adventure Map button event listener - MAP-UI-UPDATE
   document.getElementById('mapButton')?.addEventListener('click', () => {
-    import('../src/features/adventure/logic.js').then(({ showMapOverlay }) => {
+    import('../src/features/adventure/ui/mapUI.js').then(({ showMapOverlay }) => {
       showMapOverlay();
     });
   });
