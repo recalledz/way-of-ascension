@@ -10,7 +10,6 @@ import {
   qiRegenPerSec,
   fCap,
   foundationGainPerSec,
-  foundationGainPerMeditate,
   powerMult,
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
@@ -39,10 +38,6 @@ import {
 } from '../src/features/adventure/logic.js';
 import { updateActivityCooking, updateCookingSidebar } from '../src/features/cooking/ui/cookingDisplay.js';
 import {
-  startAdventure,
-  startAdventureCombat,
-  startBossCombat,
-  progressToNextArea,
   retreatFromCombat,
   instakillCurrentEnemy
 } from '../src/features/adventure/mutators.js';
@@ -57,7 +52,7 @@ import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
-import { updateAdventureProgress } from '../src/features/adventure/ui/adventureDisplay.js';
+import { updateAdventureProgress, mountAdventureControls } from '../src/features/adventure/ui/adventureDisplay.js';
 import { updateResourceDisplay } from '../src/features/inventory/ui/resourceDisplay.js';
 import { updateKarmaDisplay } from '../src/features/karma/ui/karmaHUD.js';
 import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
@@ -69,6 +64,8 @@ import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/sele
 import { selectActivity, startActivity, stopActivity } from '../src/features/activity/mutators.js';
 import { getSelectedActivity } from '../src/features/activity/selectors.js';
 import { mountActivityUI, updateActivitySelectors } from '../src/features/activity/ui/activityUI.js';
+import { meditate } from '../src/features/progression/mutators.js';
+import { usePill } from '../src/features/inventory/mutators.js';
 
 // Global variables
 const progressBars = {};
@@ -108,18 +105,34 @@ function initUI(){
   // Assign buttons
   // Buttons (with safe null checks)
   const meditateBtn = qs('#meditateBtn');
-  if (meditateBtn) meditateBtn.addEventListener('click', meditate);
+  if (meditateBtn) meditateBtn.addEventListener('click', () => {
+    const gain = meditate(S);
+    log(`Meditated: +${gain.toFixed(1)} Foundation`);
+    updateAll();
+  });
   initRealmUI();
-  
-  
+
+
   const useQiPill = qs('#useQiPill');
-  if (useQiPill) useQiPill.addEventListener('click', ()=>usePill('qi'));
-  
+  if (useQiPill) useQiPill.addEventListener('click', () => {
+    const r = usePill(S, 'qi');
+    if (!r.ok) { log('No pill available', 'bad'); return; }
+    updateAll();
+  });
+
   const useBodyPill = qs('#useBodyPill');
-  if (useBodyPill) useBodyPill.addEventListener('click', ()=>usePill('body'));
-  
+  if (useBodyPill) useBodyPill.addEventListener('click', () => {
+    const r = usePill(S, 'body');
+    if (!r.ok) { log('No pill available', 'bad'); return; }
+    updateAll();
+  });
+
   const useWardPill = qs('#useWardPill');
-  if (useWardPill) useWardPill.addEventListener('click', ()=>usePill('ward'));
+  if (useWardPill) useWardPill.addEventListener('click', () => {
+    const r = usePill(S, 'ward');
+    if (!r.ok) { log('No pill available', 'bad'); return; }
+    updateAll();
+  });
 
   // Autos (with safe null checks)
   const autoMeditate = qs('#autoMeditate');
@@ -362,27 +375,11 @@ function initLawSystem(){
   checkLawUnlocks();
 }
 
-function meditate(){
-  const gain = foundationGainPerMeditate(S);
-  S.foundation = clamp(S.foundation + gain, 0, fCap(S));
-  log(`Meditated: +${gain.toFixed(1)} Foundation`);
-  updateAll();
-}
-
 
 // Upgrades
 function canPay(cost){ return Object.entries(cost).every(([k,v])=> (S[k]||0) >= v); }
 function pay(cost){ if(!canPay(cost)) return false; Object.entries(cost).forEach(([k,v])=> S[k]-=v); return true; }
 function buy(u){ if(S.bought[u.key]) return false; if(!pay(u.cost)) { log('Not enough resources','bad'); return false; } u.apply(S); S.bought[u.key]=true; log(`Bought ${u.name}`,'good'); return true; }
-
-// Pills
-function usePill(type){
-  if(S.pills[type]<=0){ log('No pill available','bad'); return; }
-  if(type==='qi'){ const add = Math.floor(qCap(S)*0.25); S.qi=clamp(S.qi+add,0,qCap(S)); }
-  if(type==='body'){ S.tempAtk+=4; S.tempDef+=3; setTimeout(()=>{ S.tempAtk=Math.max(0,S.tempAtk-4); S.tempDef=Math.max(0,S.tempDef-3); updateAll(); }, 60000); }
-  if(type==='ward'){ /* consumed during breakthrough */ }
-  S.pills[type]--; updateAll();
-}
 
 
 /* Ascension */
@@ -453,96 +450,18 @@ function tick(){
 // Activity selector event listeners
 function initActivityListeners() {
   // Activity content event listeners
-  document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
-  document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
-  
-  // Adventure Map button event listener - MAP-UI-UPDATE
-  document.getElementById('mapButton')?.addEventListener('click', () => {
-    import('../src/features/adventure/ui/mapUI.js').then(({ showMapOverlay }) => {
-      showMapOverlay();
-    });
+  document.getElementById('useQiPillActivity')?.addEventListener('click', () => {
+    const r = usePill(S, 'qi');
+    if (!r.ok) { log('No pill available', 'bad'); return; }
+    updateAll();
+  });
+  document.getElementById('useWardPillActivity')?.addEventListener('click', () => {
+    const r = usePill(S, 'ward');
+    if (!r.ok) { log('No pill available', 'bad'); return; }
+    updateAll();
   });
 
-  function startRetreatCountdown() {
-    const btn = document.getElementById('startBattleButton');
-    if (!S.adventure || !S.adventure.inCombat || !btn) return;
-    let remaining = 5;
-    btn.disabled = true;
-    btn.textContent = `Retreating (${remaining})`;
-    const interval = setInterval(() => {
-      if (S.adventure.playerHP <= 0) {
-        clearInterval(interval);
-        btn.disabled = false;
-        btn.classList.remove('warn');
-        btn.classList.add('primary');
-        btn.textContent = '⚔️ Start Battle';
-        if (typeof globalThis.stopActivity === 'function') {
-          globalThis.stopActivity('adventure');
-        } else {
-          S.activities.adventure = false;
-        }
-        S.qi = 0;
-        updateActivityAdventure();
-        return;
-      }
-      remaining--;
-      if (remaining > 0) {
-        btn.textContent = `Retreating (${remaining})`;
-      } else {
-        clearInterval(interval);
-        retreatFromCombat();
-        btn.disabled = false;
-        btn.classList.remove('warn');
-        btn.classList.add('primary');
-        btn.textContent = '⚔️ Start Battle';
-        updateActivityAdventure();
-      }
-    }, 1000);
-  }
-
-  // Adventure start battle / retreat button event listener
-  const startBtn = document.getElementById('startBattleButton');
-  startBtn?.addEventListener('click', () => {
-    if (S.adventure && S.adventure.inCombat) {
-      startRetreatCountdown();
-      return;
-    }
-
-    // Ensure adventure data is initialized
-    startAdventure();
-
-    // Start the adventure activity if not already active
-    if (!S.activities.adventure) {
-      startActivity(S, 'adventure');
-    }
-
-    // Start combat immediately
-    startAdventureCombat();
-    updateActivityAdventure();
-    startBtn.textContent = '🏃 Retreat';
-    startBtn.classList.remove('primary');
-    startBtn.classList.add('warn');
-  });
-
-  // Adventure progress button event listener
-  document.getElementById('progressButton')?.addEventListener('click', () => {
-    progressToNextArea();
-  });
-  
-  // Adventure boss challenge button event listener
-  document.getElementById('challengeBossButton')?.addEventListener('click', () => {
-    // Ensure adventure data is initialized
-    startAdventure();
-
-    // Start the adventure activity if not already active
-    if (!S.activities.adventure) {
-      startActivity(S, 'adventure');
-    }
-    
-    // Start boss combat
-    startBossCombat();
-    updateActivityAdventure();
-  });
+  mountAdventureControls(S);
 
   setupLootUI({ retreatFromCombat, renderEquipmentPanel });
 }
