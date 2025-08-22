@@ -1,7 +1,9 @@
 import { LAWS } from '../data/laws.js';
 import { S } from '../../../shared/state.js';
 import { setText } from '../../../shared/utils/dom.js';
-import { on } from '../../../shared/events.js';
+import { on, emit } from '../../../shared/events.js';
+import { selectLaw, learnSkill } from '../mutators.js';
+import { canLearnSkill } from '../logic.js';
 
 
 export function updateLawsDisplay(){
@@ -58,9 +60,20 @@ export function renderLawSelection(){
           return bonus ? `<span class="bonus">${bonus}</span>` : '';
         }).join('')}
       </div>
-      ${!isSelected ? `<button class="btn primary" onclick="selectLaw('${lawKey}')">Select Law</button>` : ''}
     `;
-    
+
+    if (!isSelected) {
+      const btn = document.createElement('button');
+      btn.className = 'btn primary';
+      btn.textContent = 'Select Law';
+      btn.addEventListener('click', () => {
+        selectLaw(lawKey);
+        emit('RENDER');
+        updateLawsDisplay();
+      });
+      div.appendChild(btn);
+    }
+
     container.appendChild(div);
   });
 }
@@ -88,10 +101,21 @@ export function renderSkillTrees(){
       <div class="skill-name">${skill.name}</div>
       <div class="skill-desc">${skill.desc}</div>
       <div class="skill-cost">Cost: ${skill.cost} points</div>
-      ${!isLearned && canLearn ? `<button class="btn small" onclick="learnSkill('${S.laws.selected}', '${skillKey}')">Learn</button>` : ''}
       ${isLearned ? '<div class="learned-badge">✓</div>' : ''}
     `;
-    
+
+    if (!isLearned && canLearn) {
+      const btn = document.createElement('button');
+      btn.className = 'btn small';
+      btn.textContent = 'Learn';
+      btn.addEventListener('click', () => {
+        learnSkill(S.laws.selected, skillKey);
+        emit('RENDER');
+        updateLawsDisplay();
+      });
+      skillDiv.appendChild(btn);
+    }
+
     skillsDiv.appendChild(skillDiv);
   });
   
