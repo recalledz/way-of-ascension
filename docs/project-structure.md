@@ -285,6 +285,22 @@ way-of-ascension/
 ├── package-lock.json
 ├── package.json
 ├── server.js
+├── src/features/ability/index.js
+├── src/features/activity/index.js
+├── src/features/activity/mutators.js
+├── src/features/activity/selectors.js
+├── src/features/activity/state.js
+├── src/features/activity/ui/activityUI.js
+├── src/features/adventure/index.js
+├── src/features/adventure/ui/mapUI.js
+├── src/features/affixes/index.js
+├── src/features/automation/index.js
+├── src/features/automation/mutators.js
+├── src/features/automation/selectors.js
+├── src/features/combat/index.js
+├── src/features/karma/index.js
+├── src/features/mining/index.js
+├── src/features/physique/index.js
 └── style.css
 ```
 
@@ -881,3 +897,22 @@ Paths added:
 - `src/features/progression/migrations.js` – Save migrations for core progression stats.
 - `src/features/sect/migrations.js` – Save migrations for sect buildings and bonuses.
 - `src/features/weaponGeneration/migrations.js` – Save migrations for weapon generation.
+
+### Feature Descriptors
+- `src/features/ability/index.js` – Ability feature descriptor.
+- `src/features/activity/index.js` – Activity feature descriptor.
+- `src/features/adventure/index.js` – Adventure feature descriptor.
+- `src/features/affixes/index.js` – Affixes feature descriptor.
+- `src/features/automation/index.js` – Automation feature descriptor.
+- `src/features/combat/index.js` – Combat feature descriptor.
+- `src/features/cooking/index.js` – Cooking feature descriptor.
+- `src/features/inventory/index.js` – Inventory feature descriptor.
+- `src/features/karma/index.js` – Karma feature descriptor.
+- `src/features/loot/index.js` – Loot feature descriptor.
+- `src/features/mining/index.js` – Mining feature descriptor.
+- `src/features/physique/index.js` – Physique feature descriptor.
+- `src/features/alchemy/index.js` – Alchemy feature descriptor.
+- `src/features/proficiency/index.js` – Proficiency feature descriptor.
+- `src/features/progression/index.js` – Progression feature descriptor.
+- `src/features/sect/index.js` – Sect feature descriptor.
+- `src/features/weaponGeneration/index.js` – Weapon generation feature descriptor.

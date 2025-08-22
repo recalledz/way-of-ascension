@@ -1,3 +1,10 @@
+import { progressionState } from "./state.js";
+
+export const ProgressionFeature = {
+  key: "progression",
+  initialState: () => ({ ...progressionState, _v: 0 }),
+};
+
 export {
   updateRealmUI,
   updateActivityCultivation,

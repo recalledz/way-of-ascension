@@ -68,6 +68,12 @@ Each feature folder under `src/features` follows a consistent internal layout:
 ### Feature Descriptor Contract (key + initialState())
 Every feature exports a descriptor object with a unique `key` and an `initialState()` function. The registry uses this contract to compose the root state and bootstrap feature hooks.
 
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+};
+```
 ### Proficiency feature
 
 The **Proficiency** module tracks a player’s mastery of different weapon types.  It exposes a `proficiencyState` slice with a `proficiency` map:contentReference[oaicite:5]{index=5}.  The logic file defines `gainProficiency()` and `getProficiency()`; the latter returns both the raw proficiency value and a bonus calculated via a soft‑capping formula:contentReference[oaicite:6]{index=6}.  Mutators simply delegate to the logic functions, ensuring all state changes pass through a single place:contentReference[oaicite:7]{index=7}.  The selectors mirror the logic and provide an additional helper to derive weapon damage/speed bonuses based on the equipped weapon:contentReference[oaicite:8]{index=8}.
@@ -127,6 +133,30 @@ monotonic checks so that values progress in a single direction. The
 `scripts/balance-validate.js` utility evaluates these contracts and can be
 run with `npm run lint:balance`. Contracts may also specify design targets
 and tolerances to guide tuning without introducing regressions.
+
+
+---
+
+## Appendix: Architecture Contracts (auto-appended by validator)
+
+### App Shell
+- **src/ui/app.js** is the only UI bootstrap (create controller, `registerAllFeatures()`, mount sidebar/debug, start loop).
+- No gameplay logic inside app shell.
+
+### GameController
+- Owns the loop, calls feature `tick(root, dt)`, emits `TICK` and `RENDER`.
+
+### Feature Descriptor Contract
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},                // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {},     // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary bridge until all UIs move to init()
+};
+```
 
 
 ---
