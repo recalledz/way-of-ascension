@@ -16,7 +16,6 @@ import {
   calculatePlayerCombatAttack,
   calculatePlayerAttackRate
 } from '../src/features/progression/selectors.js';
-import { initializeFight } from '../src/features/combat/mutators.js';
 import { refillShieldFromQi } from '../src/features/combat/logic.js';
 import {
   updateRealmUI,
@@ -41,6 +40,7 @@ import {
 } from '../src/features/adventure/logic.js';
 import { updateActivityCooking, updateCookingSidebar } from '../src/features/cooking/ui/cookingDisplay.js';
 import {
+  startAdventure,
   startAdventureCombat,
   startBossCombat,
   progressToNextArea,
@@ -287,26 +287,7 @@ function startActivity(activityName) {
     }
   } else if (activityName === 'adventure') {
     // Initialize adventure and start first combat
-    if (!S.adventure) {
-      const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP: enemyMax,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
-    }
-    
+    startAdventure();
     // Start first combat encounter
     setTimeout(() => startAdventureCombat(), 1000);
   }
@@ -836,27 +817,7 @@ function initActivityListeners() {
     }
 
     // Ensure adventure data is initialized
-    if (!S.adventure) {
-      const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        selectedZone: 0,
-        selectedArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP: enemyMax,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
-    }
+    startAdventure();
 
     // Start the adventure activity if not already active
     if (!S.activities.adventure) {
@@ -879,28 +840,8 @@ function initActivityListeners() {
   // Adventure boss challenge button event listener
   document.getElementById('challengeBossButton')?.addEventListener('click', () => {
     // Ensure adventure data is initialized
-    if (!S.adventure) {
-      const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
-      S.adventure = {
-        currentZone: 0,
-        currentArea: 0,
-        selectedZone: 0,
-        selectedArea: 0,
-        totalKills: 0,
-        areasCompleted: 0,
-        zonesUnlocked: 1,
-        killsInCurrentArea: 0,
-        inCombat: false,
-        playerHP: S.hp,
-        enemyHP,
-        enemyMaxHP: enemyMax,
-        currentEnemy: null,
-        lastPlayerAttack: 0,
-        lastEnemyAttack: 0,
-        combatLog: []
-      };
-    }
-    
+    startAdventure();
+
     // Start the adventure activity if not already active
     if (!S.activities.adventure) {
       startActivity('adventure');
