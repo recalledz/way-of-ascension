@@ -1,68 +1,37 @@
-import { emit } from "../shared/events.js";
-import { loadSave, saveDebounced } from "../shared/saveLoad.js";
-import { recalculateBuildingBonuses } from "../features/sect/mutators.js";
-import { initFeatureState, tickFeatures } from "../features/registry.js";
+import { gameTick } from "./tickRunner.js";
+import { updateAll } from "../ui/render.js";
 
-// Register feature hooks
-import "../features/proficiency/index.js";
-import "../features/weaponGeneration/index.js";
-import "../features/sect/index.js";
-import "../features/alchemy/index.js";
-
-export function createGameController() {
-  const state = {
-    app: { mode: "town", lastTick: performance.now() },
-    ...initFeatureState(),
-    // legacy root pieces remain attached to `state` until migrated
-  };
-
-  const hydrated = loadSave(state);
-  Object.assign(state, hydrated);
-  recalculateBuildingBonuses(state);
-
-  let running = false;
-  let acc = 0;
-  const stepMs = 100;
+export function createGameController(state, ctx = {}) {
+  const root = state;
+  const controller = {};
+  let paused = false;
   let speed = 1;
+  let lastTs = 0;
+  let acc = 0;
+  const stepMs = 1000;
 
-  function start() {
-    if (running) return; running = true;
-    state.app.lastTick = performance.now();
-    requestAnimationFrame(loop);
-  }
-
-  function loop(now) {
-    if (!running) return;
-    const dt = now - state.app.lastTick;
-    state.app.lastTick = now;
-    acc += dt * speed;
-
-    while (acc >= stepMs) {
-      tickFeatures(state, stepMs);
-
-      // --- New world: per-feature listeners advance here ---
-      emit("TICK", { stepMs, now });
-
-      acc -= stepMs;
+  function rafLoop(ts) {
+    if (!lastTs) lastTs = ts;
+    const rawDt = ts - lastTs; lastTs = ts;
+    if (!paused) {
+      acc += rawDt * speed;
+      while (acc >= stepMs) {
+        gameTick(root, stepMs);
+        ctx.emit?.("TICK", { dt: stepMs, ts });
+        acc -= stepMs;
+      }
+      updateAll(root);
     }
-
-    emit("RENDER");          // UIs pull via selectors
-    saveDebounced(state);    // keep autosave behaviour
-    requestAnimationFrame(loop);
+    requestAnimationFrame(rafLoop);
   }
 
-  function pause() { running = false; }
-  function resume() { if (!running) { running = true; state.app.lastTick = performance.now(); requestAnimationFrame(loop); } }
-  function step() {
-    tickFeatures(state, stepMs);
-    emit("TICK", { stepMs, now: performance.now() });
-    emit("RENDER");
-    saveDebounced(state);
-  }
-  function getSpeed() { return speed; }
-  function setSpeed(v) { speed = Number(v) || 1; }
+  controller.start    = () => requestAnimationFrame(rafLoop);
+  controller.pause    = () => { paused = true; };
+  controller.resume   = () => { paused = false; };
+  controller.step     = () => { gameTick(root, stepMs); updateAll(root); };
+  controller.setSpeed = (x) => { speed = Math.max(0.1, Math.min(4, Number(x)||1)); };
+  controller.getSpeed = () => speed;
+  controller.emit     = (type, payload) => ctx.emit?.(type, payload);
 
-  function setMode(next) { state.app.mode = next; emit("MODE_CHANGED", next); }
-
-  return { state, start, setMode, pause, resume, step, getSpeed, setSpeed };
+  return controller;
 }
