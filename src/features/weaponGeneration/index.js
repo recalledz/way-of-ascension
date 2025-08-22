@@ -1,7 +1,6 @@
-import { registerFeature } from "../registry.js";
 import { weaponGenerationState } from "./state.js";
 
-registerFeature({
-  id: "weaponGen",
-  init: () => structuredClone(weaponGenerationState),
-});
+export const WeaponGenerationFeature = {
+  key: "weaponGen",
+  initialState: () => ({ ...weaponGenerationState, _v: 0 }),
+};
