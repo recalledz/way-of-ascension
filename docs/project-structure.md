@@ -86,12 +86,16 @@ way-of-ascension/
 │   │   │   ├── ui/
 │   │   │   │   ├── adventureDisplay.js
 │   │   │   │   ├── progressBar.js
+│   │   │   │   ├── mapUI.js
 │   │   │   │   └── zoneUI.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
+│   │   ├── automation/
+│   │   │   ├── mutators.js
+│   │   │   └── selectors.js
 │   │   ├── index.js
 │   │   ├── registry.js
 │   │   ├── ability/
@@ -375,20 +379,17 @@ Formats large numbers with shorthand suffixes (k, m, b, t).
 **When to modify**: Add new calculation functions, modify existing formulas, add bonus systems
 
 #### `src/features/adventure/logic.js` - Adventure System
-**Purpose**: Adventure zones, combat, boss challenges, area progression, map UI
+**Purpose**: Adventure zones, combat, boss challenges, and area progression
 **Key Functions**:
 - `startAdventureCombat()` - Initialize regular combat
 - `startBossCombat()` - Initialize boss fights
 - `updateActivityAdventure()` - Update adventure UI
 - `progressToNextArea()` - Handle area progression
 - `defeatEnemy()` - Handle enemy defeat and loot
-- `updateAdventureProgressBar()` - Render horizontal progress bar with zone areas
-- `showMapOverlay()`, `hideMapOverlay()` - Map modal display
-- `updateMapContent()` - Populate map accordion with unlocked zones/areas
 - `selectAreaById()` - Area selection and navigation
 
 **Dependencies**: `src/features/adventure/data/zones.js` for zone/area data structure
-**When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
+**When to modify**: Add new zones/areas, modify combat mechanics, or adjust boss system
 
 #### `src/features/adventure/mutators.js` - Adventure Mutators
 Stateful helpers for manipulating adventure progression.
@@ -398,6 +399,10 @@ Stateful helpers for manipulating adventure progression.
 #### `src/features/adventure/ui/adventureDisplay.js` - Adventure Sidebar Display
 **Purpose**: Renders adventure progress and current area in the sidebar.
 **When to modify**: Adjust adventure sidebar presentation or add new metrics.
+
+#### `src/features/adventure/ui/mapUI.js` - Adventure Map Overlay
+**Purpose**: Displays the zone/area map modal and handles area selection.
+**When to modify**: Change map layout, unlocking visuals, or map interactions.
 
 #### `combat/hit.js` - Hit Chance Calculation
 **Purpose**: Calculates chance for an attack to hit based on accuracy and dodge with scaling and caps.
@@ -446,6 +451,14 @@ State mutations for affix acquisition and assignment.
 
 #### `src/features/affixes/selectors.js` - Affix Selectors
 Expose affix information for UI and logic layers.
+
+#### `src/features/automation/mutators.js` - Automation Mutators
+**Purpose**: Toggle automatic actions like meditation and adventure.
+**When to modify**: Add new automation options or adjust toggle logic.
+
+#### `src/features/automation/selectors.js` - Automation Selectors
+**Purpose**: Read automation settings from state.
+**When to modify**: Expose additional automation flags.
 
 #### `src/features/inventory/ui/CharacterPanel.js` - Character Panel UI
 Renders the player's equipment and inventory interface.
@@ -556,28 +569,9 @@ export const ZONES = [
 
 ### User Interface (`ui/`)
 
-#### `index.js` - Main UI Controller
-**Purpose**: UI management, event handling, display updates
-**Key Functions**:
-- `initUI()` - Initialize UI elements and event listeners
-- `updateAll()` - Update all UI displays
-- `setText()`, `setFill()` - UI utility functions
-- Render functions: `renderBuildings()`, etc.
-
-**UI Update Pattern**:
-```javascript
-function updateAll() {
-  // Update displays
-  setText('elementId', value);
-  setFill('fillId', ratio);
-
-  // Call specialized render functions
-  renderBuildings();
-  // etc.
-}
-```
-
-**When to modify**: Add new UI elements, modify display logic, add event handlers
+#### `index.js` - Browser Entrypoint Stub
+**Purpose**: Delegates to the feature-first architecture by invoking the app shell (`src/ui/app.js`) and then loading `src/index.js`.
+**When to modify**: Adjust when the bootstrap or bundling strategy changes.
 
 #### `src/features/progression/ui/realm.js` - Realm UI Components
 **Purpose**: Realm-specific UI components and cultivation displays
@@ -723,6 +717,9 @@ Paths added:
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
 - `src/shared/utils/number.js` - number formatting helper
+- `src/features/adventure/ui/mapUI.js` - map overlay renderer
+- `src/features/automation/mutators.js` - automation toggles
+- `src/features/automation/selectors.js` - automation state accessors
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.

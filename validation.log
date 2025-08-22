@@ -1,7 +1,35 @@
-🤖 ENFORCING AI VERIFICATION PROTOCOL...
+🤖 ENFORCING AI VERIFICATION PROTOCOL (feature-first + doc-sync)...
 
 📋 AI VERIFICATION ENFORCEMENT REPORT
 =====================================
-✅ VERIFICATION PASSED - AI may proceed
+❌ VERIFICATION FAILED - MUST fix before proceeding
+
+🚨 VIOLATIONS DETECTED:
+   • UI state violation: src/features/adventure/ui/adventureDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/adventure/ui/mapUI.js imports S from shared/state.js
+   • UI state violation: src/features/adventure/ui/progressBar.js imports S from shared/state.js
+   • UI state violation: src/features/combat/ui/combatStats.js imports S from shared/state.js
+   • UI state violation: src/features/cooking/ui/cookControls.js imports S from shared/state.js
+   • UI state violation: src/features/cooking/ui/cookingDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/inventory/ui/resourceDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/karma/ui/karmaHUD.js imports S from shared/state.js
+   • UI state violation: src/features/loot/ui/lootTab.js imports S from shared/state.js
+   • UI state violation: src/features/mining/ui/miningDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/proficiency/ui/weaponProficiencyDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/progression/ui/lawDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/progression/ui/qiDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/progression/ui/qiOrb.js imports S from shared/state.js
+   • UI state violation: src/features/progression/ui/realm.js imports S from shared/state.js
+   • DOM in src/features/ability/logic.js. Move DOM to features/<feature>/ui/*.js
+   • DOM in src/features/adventure/logic.js. Move DOM to features/<feature>/ui/*.js
+   • ARCHITECTURE.md: missing Feature Descriptor Contract (key + initialState())
+
+⚠️  WARNINGS:
+   • UI timer: src/features/combat/ui/fx.js uses timers/RAF — prefer feature.tick and RENDER
+   • UI timer: src/features/physique/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
+   • UI rule: src/features/progression/ui/realm.js uses Math.random() — move randomness to logic.js
+   • UI timer: src/features/progression/ui/realm.js uses timers/RAF — prefer feature.tick and RENDER
 
 =====================================
+
+🚫 AI CHANGES BLOCKED UNTIL VALIDATION PASSES

@@ -875,13 +875,5 @@
 
 
   <script type="module" src="ui/index.js"></script>
-  <script type="module">
-    import { mountDevQuickMenu } from "./src/ui/dev/devQuickMenu.js";
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => mountDevQuickMenu());
-    } else {
-      mountDevQuickMenu();
-    }
-  </script>
 </body>
 </html>
