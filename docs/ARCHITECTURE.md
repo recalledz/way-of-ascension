@@ -88,6 +88,10 @@ The `mutators.js` file writes a generated weapon into the state slice and expose
 
 Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js` and `materials.stub.js`.  The `weaponTypes.js` file defines the base DPS, scaling and tags for each weapon type and references signature abilities that are still stubs for later implementation:contentReference[oaicite:14]{index=14}.  The `weapons.js` file builds a list of default weapon items using `generateWeapon()` and exports convenience objects like `WEAPON_FLAGS` and `WEAPON_CONFIG` for quick lookups:contentReference[oaicite:15]{index=15}.
 
+### Activity feature
+
+The Activity module tracks which major task the player is performing. Its `state.js` exports an `activityState` object and an `initialState()` helper that adds the `_v` version tag. Pure helpers such as `isValidActivity(name)` live in `logic.js`, and `migrations.js` exposes an array reserved for future save migrations.
+
 ## Legacy `src/game` modules
 
 The original `src/game` folder has largely been superseded.  With the root state and helpers moved into `src/shared/`, this directory now primarily houses `GameController.js` as a bridge for the legacy world.  Any remaining legacy systems will continue to be migrated into `src/features` until the folder can be retired entirely.

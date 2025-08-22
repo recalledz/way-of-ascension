@@ -287,6 +287,8 @@ way-of-ascension/
 ├── server.js
 ├── src/features/ability/index.js
 ├── src/features/activity/index.js
+├── src/features/activity/logic.js
+├── src/features/activity/migrations.js
 ├── src/features/activity/mutators.js
 ├── src/features/activity/selectors.js
 ├── src/features/activity/state.js
@@ -739,7 +741,9 @@ Paths added:
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
 - `src/shared/utils/number.js` - number formatting helper
-- `src/features/activity/state.js` – activity state slice
+- `src/features/activity/state.js` – activity state slice and `initialState()`
+- `src/features/activity/logic.js` – activity helpers
+- `src/features/activity/migrations.js` – activity save migrations
 - `src/features/activity/selectors.js` – activity selectors
 - `src/features/activity/mutators.js` – activity mutators
 - `src/features/activity/ui/activityUI.js` – activity UI helpers
@@ -772,8 +776,12 @@ Paths added:
 **Purpose**: Lists game stats that still need implementation.
 
 #### `src/features/activity/state.js` - Activity State
-**Purpose**: Ensures activity flags exist on the root state object.
-**Key Functions**: `ensureActivities(state)`.
+**Purpose**: Defines default activity flags and exposes `initialState()`.
+**Exports**: `activityState`, `initialState()`.
+
+#### `src/features/activity/logic.js` - Activity Logic
+**Purpose**: Pure helpers for activity rules.
+**Key Functions**: `isValidActivity(name)`.
 
 #### `src/features/activity/selectors.js` - Activity Selectors
 **Purpose**: Helpers for reading activity state.
@@ -782,6 +790,9 @@ Paths added:
 #### `src/features/activity/mutators.js` - Activity Mutators
 **Purpose**: Select, start, and stop activities while emitting events.
 **Key Functions**: `selectActivity(state, name)`, `startActivity(state, name)`, `stopActivity(state, name)`.
+
+#### `src/features/activity/migrations.js` - Activity Migrations
+**Purpose**: Holds save migrations for the activity slice.
 
 #### `src/features/activity/ui/activityUI.js` - Activity UI
 **Purpose**: Mounts sidebar listeners and refreshes visible activity panels.
@@ -869,9 +880,11 @@ Paths added:
 - `src/features/sect/ui/sectScreen.js` – UI for managing the sect.
 
 ### Activity Feature (`src/features/activity/`)
-- `src/features/activity/state.js` – Ensures the activity flags exist on the root state.
+- `src/features/activity/state.js` – Defines activity flags and provides `initialState()`.
+- `src/features/activity/logic.js` – Validation helpers for activity names.
 - `src/features/activity/selectors.js` – Helpers to read the active and selected activities.
 - `src/features/activity/mutators.js` – Start, stop, or select activities and emit related events.
+- `src/features/activity/migrations.js` – Save migrations for the activity feature.
 - `src/features/activity/ui/activityUI.js` – Mounts sidebar listeners and updates visible activity panels.
 
 ### Adventure Feature (`src/features/adventure/`)
@@ -883,6 +896,7 @@ Paths added:
 
 ### Feature Migration Files
 - `src/features/ability/migrations.js` – Save migrations for ability feature.
+- `src/features/activity/migrations.js` – Save migrations for activity feature.
 - `src/features/adventure/migrations.js` – Save migrations for adventure feature.
 - `src/features/alchemy/migrations.js` – Save migrations for alchemy feature.
 - `src/features/affixes/migrations.js` – Save migrations for affixes feature.
