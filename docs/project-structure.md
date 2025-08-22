@@ -388,6 +388,11 @@ Formats large numbers with shorthand suffixes (k, m, b, t).
 **Dependencies**: `src/features/adventure/data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
 
+#### `src/features/adventure/mutators.js` - Adventure Mutators
+Stateful helpers for manipulating adventure progression.
+- `startAdventure()` - Create and initialize the `S.adventure` state container.
+- `retreatFromCombat()` - Retreat from combat and apply Qi penalty.
+
 #### `src/features/adventure/ui/adventureDisplay.js` - Adventure Sidebar Display
 **Purpose**: Renders adventure progress and current area in the sidebar.
 **When to modify**: Adjust adventure sidebar presentation or add new metrics.

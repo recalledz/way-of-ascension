@@ -10,9 +10,12 @@ import {
 } from './logic.js';
 import { qCap } from '../progression/selectors.js';
 import { S } from '../../shared/state.js';
+import { initializeFight } from '../combat/mutators.js';
+import { adventureState } from './state.js';
 import { log } from '../../shared/utils/dom.js';
 
 export {
+  startAdventure,
   selectZone,
   selectArea,
   selectAreaById,
@@ -21,6 +24,23 @@ export {
   progressToNextArea,
   instakillCurrentEnemy
 };
+
+export function startAdventure(state = S) {
+  if (!state.adventure) {
+    const { enemyHP, enemyMax } = initializeFight({ hp: 0 }, state);
+    state.adventure = {
+      ...structuredClone(adventureState),
+      playerHP: state.hp,
+      enemyHP,
+      enemyMaxHP: enemyMax,
+      lastPlayerAttack: 0,
+      lastEnemyAttack: 0,
+      playerStunBar: 0,
+      enemyStunBar: 0,
+    };
+  }
+  return state.adventure;
+}
 
 export function retreatFromCombat(state = S) {
   baseRetreatFromCombat();
