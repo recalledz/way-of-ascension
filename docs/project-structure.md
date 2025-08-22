@@ -723,6 +723,13 @@ Paths added:
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
 - `src/shared/utils/number.js` - number formatting helper
+- `src/features/activity/state.js` – activity state slice
+- `src/features/activity/selectors.js` – activity selectors
+- `src/features/activity/mutators.js` – activity mutators
+- `src/features/activity/ui/activityUI.js` – activity UI helpers
+- `src/features/adventure/ui/mapUI.js` – adventure map UI
+- `src/features/automation/mutators.js` – automation mutators
+- `src/features/automation/selectors.js` – automation selectors
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
@@ -747,6 +754,34 @@ Paths added:
 
 #### `docs/To-dos/stats-to-implement.md` - Stats Roadmap
 **Purpose**: Lists game stats that still need implementation.
+
+#### `src/features/activity/state.js` - Activity State
+**Purpose**: Ensures activity flags exist on the root state object.
+**Key Functions**: `ensureActivities(state)`.
+
+#### `src/features/activity/selectors.js` - Activity Selectors
+**Purpose**: Helpers for reading activity state.
+**Key Functions**: `getActiveActivity(state)`, `getSelectedActivity(state)`.
+
+#### `src/features/activity/mutators.js` - Activity Mutators
+**Purpose**: Select, start, and stop activities while emitting events.
+**Key Functions**: `selectActivity(state, name)`, `startActivity(state, name)`, `stopActivity(state, name)`.
+
+#### `src/features/activity/ui/activityUI.js` - Activity UI
+**Purpose**: Mounts sidebar listeners and refreshes visible activity panels.
+**Key Functions**: `mountActivityUI(state)`, `updateActivitySelectors(state)`, `updateCurrentTaskDisplay(state)`.
+
+#### `src/features/adventure/ui/mapUI.js` - Adventure Map UI
+**Purpose**: Renders the zone/area selection map overlay.
+**Key Functions**: `showMapOverlay()`, `hideMapOverlay()`.
+
+#### `src/features/automation/mutators.js` - Automation Mutators
+**Purpose**: Toggles options such as auto-meditate and auto-adventure.
+**Key Functions**: `toggleAutoMeditate(value, state)`, `toggleAutoAdventure(value, state)`.
+
+#### `src/features/automation/selectors.js` - Automation Selectors
+**Purpose**: Reads automation settings from state.
+**Key Functions**: `isAutoMeditate(state)`, `isAutoAdventure(state)`.
 
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.
@@ -816,6 +851,19 @@ Paths added:
 - `src/features/sect/logic.js` – Core sect calculations and mechanics.
 - `src/features/sect/data/buildings.js` – Building definitions and costs.
 - `src/features/sect/ui/sectScreen.js` – UI for managing the sect.
+
+### Activity Feature (`src/features/activity/`)
+- `src/features/activity/state.js` – Ensures the activity flags exist on the root state.
+- `src/features/activity/selectors.js` – Helpers to read the active and selected activities.
+- `src/features/activity/mutators.js` – Start, stop, or select activities and emit related events.
+- `src/features/activity/ui/activityUI.js` – Mounts sidebar listeners and updates visible activity panels.
+
+### Adventure Feature (`src/features/adventure/`)
+- `src/features/adventure/ui/mapUI.js` – Displays the area selection map overlay.
+
+### Automation Feature (`src/features/automation/`)
+- `src/features/automation/mutators.js` – Toggles automation options like auto-meditate and auto-adventure.
+- `src/features/automation/selectors.js` – Reads automation settings from state.
 
 ### Feature Migration Files
 - `src/features/ability/migrations.js` – Save migrations for ability feature.
