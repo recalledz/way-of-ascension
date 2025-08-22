@@ -549,25 +549,6 @@ function updateActivityUI() {
   });
 }
 
-// Initialize law system on game start
-function initLawSystem(){
-  // Ensure laws object exists
-  if(!S.laws) {
-    S.laws = {
-      selected: null,
-      unlocked: [],
-      points: 0,
-      trees: {
-        sword: {},
-        formation: {},
-        alchemy: {}
-      }
-    };
-  }
-  
-  // Check for any laws that should already be unlocked
-  checkLawUnlocks();
-}
 
 function meditate(){
   const gain = foundationGainPerMeditate(S);
@@ -779,7 +760,7 @@ function initActivityListeners() {
 // Init
 window.addEventListener('load', ()=>{
   initUI();
-  initLawSystem();
+  checkLawUnlocks();
   initActivityListeners();
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
