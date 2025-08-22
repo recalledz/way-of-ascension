@@ -279,7 +279,7 @@ class StructureValidator {
       }
 
       // Writes to root.* in UI (heuristic: root.<...> = / ++ / -- / .push( / .splice( / .pop()
-      const writePattern = /\broot\.[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)*\s*(?:=|\+\+|--|\.push|\.splice\(|\.pop\(|\.unshift\(|\.shift\()/;
+      const writePattern = /\broot\.[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)*\s*(?:=|\+\+|--|\.push\(|\.splice\(|\.pop\(|\.unshift\(|\.shift\()/;
       if (writePattern.test(txt)) {
         this.errors.push(`UI write violation: ${file} mutates root.* (use mutators)`);
       }
@@ -356,7 +356,7 @@ class StructureValidator {
     }
 
     // Must include Feature Descriptor Contract snippet (key, initialState)
-    const hasContract = /export\s+const\s+.+Feature\s*=\s*{[\s\S]*?\bkey\s*:\s*["'][^"']+["'][\s\S]*?\binitialState\s*:\s*\(\s*=>/m.test(txt);
+    const hasContract = /export\s+const\s+.+Feature\s*=\s*{[\s\S]*?\bkey\s*:\s*["'][^"']+["'][\s\S]*?\binitialState\s*:\s*\(\s*\)\s*=>/m.test(txt);
     if (!hasContract) {
       this.errors.push('ARCHITECTURE.md: missing Feature Descriptor Contract (key + initialState())');
     }
@@ -391,7 +391,7 @@ class StructureValidator {
 
     const needApp = !/src\/ui\/app\.js|app\.js/i.test(content);
     const needGC  = !/GameController/i.test(content);
-    const needContract = !/export\s+const\s+.+Feature\s*=\s*{[\s\S]*?\bkey\b[\s\S]*?\binitialState\s*:\s*\s*=>/m.test(content);
+    const needContract = !/export\s+const\s+.+Feature\s*=\s*{[\s\S]*?\bkey\b[\s\S]*?\binitialState\s*:\s*\(\s*\)\s*=>/m.test(content);
 
     if (needApp || needGC || needContract) {
       changed = true;
