@@ -156,14 +156,6 @@ function initUI(){
       inp.click();
     });
   }
-  const debugBtn = qs('#debugBtn');
-  const debugConsole = qs('#debugConsole');
-  if (debugBtn && debugConsole) {
-    debugBtn.addEventListener('click', () => {
-      debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
-    });
-  }
-
   const debugRunBtn = qs('#debugRunBtn');
   if (debugRunBtn) {
     debugRunBtn.addEventListener('click', () => {

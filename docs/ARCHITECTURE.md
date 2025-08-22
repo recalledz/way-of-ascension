@@ -37,6 +37,12 @@ Selectors read from state and mutators write to state. User interfaces never mut
 
 `src/shared/selectors.js` and `src/shared/mutators.js` re-export each feature's API. Features that need data or behaviour from another slice import through this shared layer, keeping dependencies explicit and avoiding deep relative paths.
 
+### Dev Tools
+- Mini dev menu at `src/ui/dev/devQuickMenu.js` (always available; top-right).
+- Uses `window.__PAUSE/__RESUME/__STEP/__GET_SPEED/__SET_SPEED` if present.
+- Emits `DEV:SET_SEED` for RNG; features/controller may listen to it.
+- If `#debugPanel` exists, it is displayed inside the menu.
+
 #### Migration Process (Incremental)
 
 Keep `progression/logic.js` intact for now; migrate features one at a time (loot → inventory → affixes → ability → combat → adventure → engine). After a feature is migrated, remove its responsibilities from `progression/logic.js` and replace them with registered `tick` hooks or `TICK` listeners.

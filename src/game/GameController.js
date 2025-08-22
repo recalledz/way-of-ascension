@@ -23,6 +23,7 @@ export function createGameController() {
   let running = false;
   let acc = 0;
   const stepMs = 100;
+  let speed = 1;
 
   function start() {
     if (running) return; running = true;
@@ -34,7 +35,7 @@ export function createGameController() {
     if (!running) return;
     const dt = now - state.app.lastTick;
     state.app.lastTick = now;
-    acc += dt;
+    acc += dt * speed;
 
     while (acc >= stepMs) {
       tickFeatures(state, stepMs);
@@ -50,7 +51,18 @@ export function createGameController() {
     requestAnimationFrame(loop);
   }
 
+  function pause() { running = false; }
+  function resume() { if (!running) { running = true; state.app.lastTick = performance.now(); requestAnimationFrame(loop); } }
+  function step() {
+    tickFeatures(state, stepMs);
+    emit("TICK", { stepMs, now: performance.now() });
+    emit("RENDER");
+    saveDebounced(state);
+  }
+  function getSpeed() { return speed; }
+  function setSpeed(v) { speed = Number(v) || 1; }
+
   function setMode(next) { state.app.mode = next; emit("MODE_CHANGED", next); }
 
-  return { state, start, setMode };
+  return { state, start, setMode, pause, resume, step, getSpeed, setSpeed };
 }
