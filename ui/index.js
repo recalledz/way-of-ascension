@@ -66,10 +66,17 @@ import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physiq
 import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
+import { selectActivity, startActivity, stopActivity } from '../src/features/activity/mutators.js';
+import { getSelectedActivity } from '../src/features/activity/selectors.js';
+import { mountActivityUI, updateActivitySelectors } from '../src/features/activity/ui/activityUI.js';
 
 // Global variables
 const progressBars = {};
-let selectedActivity = 'cultivation'; // Current selected activity for the sidebar
+
+// Expose activity controls globally for compatibility
+globalThis.startActivity = name => startActivity(S, name);
+globalThis.stopActivity = name => stopActivity(S, name);
+globalThis.selectActivity = name => selectActivity(S, name);
 
 
 
@@ -188,12 +195,7 @@ function updateAll(){
   setFill('hpFill', S.hp / S.hpMax);
   setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
   updateCombatStats();
-  
-  // Activity system display
-  if (!S.activities) {
-    S.activities = { cultivation: false, physique: false, mining: false, adventure: false, cooking: false };
-  }
-  updateCurrentTaskDisplay();
+  updateActivitySelectors(S);
 
 
   // Update progression displays
@@ -221,219 +223,11 @@ function updateAll(){
 
 
 
-// Activity Management System
-
-function selectActivity(activityType) {
-  selectedActivity = activityType;
-  
-  // Update activity item styling for new compact sidebar
-  const activityItems = document.querySelectorAll('.activity-item');
-  activityItems.forEach(item => {
-    item.classList.remove('active');
-    if (item.dataset.activity === activityType) {
-      item.classList.add('active');
-    }
-  });
-  
-  // Hide all activity content panels
-  const activityPanels = document.querySelectorAll('.activity-content');
-  activityPanels.forEach(panel => panel.style.display = 'none');
-  
-  // Hide all tabs
-  const tabs = document.querySelectorAll('section[id^="tab-"]');
-  tabs.forEach(tab => tab.style.display = 'none');
-  
-  // Show selected activity panel
-  const selectedPanel = document.getElementById(`activity-${activityType}`);
-  if (selectedPanel) {
-    selectedPanel.style.display = 'block';
-  }
-  
-  // Update sidebar selectors
-  updateActivitySelectors();
-  updateActivityContent();
-  
-  log(`Switched to ${activityType} view`, 'neutral');
-}
-
-// Combat calculation functions
-
-
-
-
-
-
-function startActivity(activityName) {
-  // Stop all other activities first (strict exclusivity)
-  Object.keys(S.activities).forEach(key => {
-    if (key !== activityName) {
-      S.activities[key] = false;
-    }
-  });
-  
-  if (activityName === 'mining') {
-    // Initialize mining data
-    if (!S.mining.selectedResource) {
-      S.mining.selectedResource = 'stones';
-    }
-  } else if (activityName === 'adventure') {
-    // Initialize adventure and start first combat
-    startAdventure();
-    // Start first combat encounter
-    setTimeout(() => startAdventureCombat(), 1000);
-  }
-  
-  // Start the requested activity
-  S.activities[activityName] = true;
-  
-  // Log appropriate message
-  switch(activityName) {
-    case 'cultivation':
-      log('Started cultivating. Foundation will increase over time.', 'good');
-      break;
-    case 'physique':
-      log('Started physique training. Use the training interface to gain experience!', 'good');
-      break;
-    case 'mining':
-      log('Started mining operations. Select a resource to mine passively.', 'good');
-      break;
-    case 'adventure':
-      log('Started exploring. Adventure awaits!', 'good');
-      break;
-    case 'cooking':
-      log('Started cooking. Prepare your meals carefully.', 'good');
-      break;
-    default:
-      log(`Started ${activityName}`, 'good');
-  }
-  
-  updateActivitySelectors();
-  updateActivityContent();
-}
-
-function stopActivity(activityName) {
-  S.activities[activityName] = false;
-  
-  // Stop any active physique training session
-  if (activityName === 'physique') {
-    const summary = endTrainingSession(S);
-    if (summary) {
-      log(`Training session complete! ${summary.hits} hits for ${summary.xp} XP`, 'good');
-    }
-  }
-  if (activityName === 'cultivation' && isAutoMeditate()) {
-    // Ensure passive meditation doesn't continue when cultivation is stopped
-    toggleAutoMeditate(false);
-  }
-  
-  log(`Stopped ${activityName}`, 'neutral');
-  updateActivitySelectors();
-  updateActivityContent();
-}
-
-// Expose activity controls globally so other modules like the progression realm UI can access
-// them when binding UI event handlers. Without this, the cultivation start/stop
-// button fails to toggle the activity state.
-window.startActivity = startActivity;
-window.stopActivity = stopActivity;
-
-function updateCurrentTaskDisplay() {
-  const el = document.getElementById('currentTask');
-  if (!el) return;
-  const names = {
-    cultivation: 'Cultivating',
-    physique: 'Physique Training',
-    mining: 'Mining',
-    adventure: 'Adventuring',
-    cooking: 'Cooking'
-  };
-  const active = S.activities ? Object.keys(S.activities).find(key => S.activities[key]) : null;
-  el.textContent = active ? (names[active] || 'Idle') : 'Idle';
-}
-
-function updateActivitySelectors() {
-  // Ensure physique and mining data structures exist
-  if (!S.physique) {
-    S.physique = { level: 1, exp: 0, expMax: 100 };
-  }
-  if (!S.mining) {
-    S.mining = { level: 1, exp: 0, expMax: 100 };
-  }
-  
-  // Update cultivation selector
-  const cultivationSelector = document.getElementById('cultivationSelector');
-  const cultivationFill = document.getElementById('cultivationFill');
-  const cultivationInfo = document.getElementById('cultivationInfo');
-  
-  if (cultivationSelector) {
-    cultivationSelector.classList.toggle('active', selectedActivity === 'cultivation');
-    cultivationSelector.classList.toggle('running', S.activities.cultivation);
-  }
-  
-  if (cultivationFill && cultivationInfo) {
-    const foundationPct = S.foundation / fCap(S) * 100;
-    cultivationFill.style.width = `${foundationPct}%`;
-    cultivationInfo.textContent = S.activities.cultivation ? 'Cultivating...' : 'Foundation Progress';
-  }
-  
-  // Update physique selector
-  const physiqueSelector = document.getElementById('physiqueSelector');
-  const physiqueFill = document.getElementById('physiqueSelectorFill');
-  const physiqueInfo = document.getElementById('physiqueInfo');
-  
-  if (physiqueSelector) {
-    physiqueSelector.classList.toggle('active', selectedActivity === 'physique');
-    physiqueSelector.classList.toggle('running', S.activities.physique);
-  }
-  
-  if (physiqueFill && physiqueInfo) {
-    const expPct = S.physique.exp / S.physique.expMax * 100;
-    physiqueFill.style.width = `${expPct}%`;
-    physiqueInfo.textContent = S.activities.physique ? 'Training...' : `Level ${S.physique.level}`;
-  }
-  
-  // Update mining selector
-  const miningSelector = document.getElementById('miningSelector');
-  const miningFill = document.getElementById('miningSelectorFill');
-  const miningInfo = document.getElementById('miningInfo');
-  
-  if (miningSelector) {
-    miningSelector.classList.toggle('active', selectedActivity === 'mining');
-    miningSelector.classList.toggle('running', S.activities.mining);
-  }
-  
-  if (miningFill && miningInfo) {
-    const expPct = S.mining.exp / S.mining.expMax * 100;
-    miningFill.style.width = `${expPct}%`;
-    miningInfo.textContent = S.activities.mining ? 'Mining...' : `Level ${S.mining.level}`;
-  }
-  
-  // Update adventure selector
-  const adventureSelector = document.getElementById('adventureSelector');
-  const adventureInfo = document.getElementById('adventureInfo');
-  
-  if (adventureSelector) {
-    adventureSelector.classList.toggle('active', selectedActivity === 'adventure');
-    adventureSelector.classList.toggle('running', S.activities.adventure);
-  }
-  
-  if (adventureInfo) {
-    const location = S.adventure && S.adventure.location ? S.adventure.location : 'Village Outskirts';
-    adventureInfo.textContent = S.activities.adventure ? 'Exploring...' : location;
-  }
-  
-  // Update sect selector
-  const sectSelector = document.getElementById('sectSelector');
-  if (sectSelector) {
-    sectSelector.classList.toggle('active', selectedActivity === 'sect');
-  }
-  updateCurrentTaskDisplay();
-}
-
 function updateActivityContent() {
   // Update cultivation activity content
   updateActivityCultivation();
-  switch(selectedActivity) {
+  const selected = getSelectedActivity(S);
+  switch(selected) {
     case 'adventure':
       updateActivityAdventure();
       break;
@@ -491,7 +285,7 @@ function updateSidebarActivities() {
   // Update sect status indicator
   const sectStatus = document.getElementById('sectStatus');
   if (sectStatus) {
-    if (selectedActivity === 'sect') {
+    if (getSelectedActivity(S) === 'sect') {
       sectStatus.textContent = 'Active';
       sectStatus.classList.add('active');
     } else {
@@ -503,7 +297,7 @@ function updateSidebarActivities() {
 
 // Legacy function for compatibility
 function updateActivityCards() {
-  updateActivitySelectors();
+  updateActivitySelectors(S);
   updateActivityContent();
 }
 
@@ -632,7 +426,7 @@ function tick(){
     const gain = foundationGainPerSec(S) * 0.5; // Reduced when not actively cultivating
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
-  if(isAutoAdventure() && !S.activities.adventure){ startActivity('adventure'); }
+  if(isAutoAdventure() && !S.activities.adventure){ startActivity(S, 'adventure'); }
 
   // Breakthrough progress
   updateBreakthrough();
@@ -651,22 +445,6 @@ function tick(){
 
 // Activity selector event listeners
 function initActivityListeners() {
-  // New compact sidebar activity listeners
-  const activityItems = document.querySelectorAll('.activity-item[data-activity]');
-  activityItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const activityType = item.dataset.activity;
-      selectActivity(activityType);
-    });
-  });
-  
-  // Legacy selectors (if they exist)
-  document.getElementById('cultivationSelector')?.addEventListener('click', () => selectActivity('cultivation'));
-  document.getElementById('physiqueSelector')?.addEventListener('click', () => selectActivity('physique'));
-  document.getElementById('miningSelector')?.addEventListener('click', () => selectActivity('mining'));
-  document.getElementById('adventureSelector')?.addEventListener('click', () => selectActivity('adventure'));
-  document.getElementById('sectSelector')?.addEventListener('click', () => selectActivity('sect'));
-  
   // Activity content event listeners
   document.getElementById('useQiPillActivity')?.addEventListener('click', () => usePill('qi'));
   document.getElementById('useWardPillActivity')?.addEventListener('click', () => usePill('ward'));
@@ -728,7 +506,7 @@ function initActivityListeners() {
 
     // Start the adventure activity if not already active
     if (!S.activities.adventure) {
-      startActivity('adventure');
+      startActivity(S, 'adventure');
     }
 
     // Start combat immediately
@@ -751,7 +529,7 @@ function initActivityListeners() {
 
     // Start the adventure activity if not already active
     if (!S.activities.adventure) {
-      startActivity('adventure');
+      startActivity(S, 'adventure');
     }
     
     // Start boss combat
@@ -772,12 +550,13 @@ function initActivityListeners() {
 window.addEventListener('load', ()=>{
   initUI();
   initLawSystem();
+  mountActivityUI(S);
   initActivityListeners();
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
   mountAlchemyUI(S);
   mountKarmaUI(S);
-  selectActivity('cultivation'); // Start with cultivation selected
+  selectActivity(S, 'cultivation'); // Start with cultivation selected
   updateAll();
   tick();
   log('Welcome, cultivator.');
