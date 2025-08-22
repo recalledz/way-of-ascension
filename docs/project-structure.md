@@ -556,28 +556,9 @@ export const ZONES = [
 
 ### User Interface (`ui/`)
 
-#### `index.js` - Main UI Controller
-**Purpose**: UI management, event handling, display updates
-**Key Functions**:
-- `initUI()` - Initialize UI elements and event listeners
-- `updateAll()` - Update all UI displays
-- `setText()`, `setFill()` - UI utility functions
-- Render functions: `renderBuildings()`, etc.
-
-**UI Update Pattern**:
-```javascript
-function updateAll() {
-  // Update displays
-  setText('elementId', value);
-  setFill('fillId', ratio);
-
-  // Call specialized render functions
-  renderBuildings();
-  // etc.
-}
-```
-
-**When to modify**: Add new UI elements, modify display logic, add event handlers
+#### `index.js` - Browser Entrypoint Stub
+**Purpose**: Delegates to the feature-first architecture by invoking the app shell (`src/ui/app.js`) and then loading `src/index.js`.
+**When to modify**: Adjust when the bootstrap or bundling strategy changes.
 
 #### `src/features/progression/ui/realm.js` - Realm UI Components
 **Purpose**: Realm-specific UI components and cultivation displays
