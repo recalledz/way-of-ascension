@@ -271,6 +271,8 @@ way-of-ascension/
 │   │       └── number.js
 │   └── ui/
 │       ├── app.js
+│       ├── dev/
+│       │   └── devQuickMenu.js
 │       └── sidebar.js
 ├── ui/
 │   ├── components/
@@ -604,6 +606,9 @@ function updateAll() {
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
+
+#### `src/ui/dev/devQuickMenu.js`
+**Purpose:** Tiny top-right Dev button and menu. Uses existing `window.__*` hooks if present; emits `DEV:SET_SEED` for RNG.
 
 #### `src/features/inventory/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
