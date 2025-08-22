@@ -61,25 +61,23 @@ import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physiq
 import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
-import { selectActivity, startActivity, stopActivity } from '../src/features/activity/mutators.js';
+import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../src/features/activity/mutators.js';
 import { getSelectedActivity } from '../src/features/activity/selectors.js';
-import { mountActivityUI, updateActivitySelectors } from '../src/features/activity/ui/activityUI.js';
+import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } from '../src/features/activity/ui/activityUI.js';
 import { meditate } from '../src/features/progression/mutators.js';
 import { usePill } from '../src/features/inventory/mutators.js';
 
 // Global variables
 const progressBars = {};
 
-// Expose activity controls globally for compatibility
-globalThis.startActivity = name => startActivity(S, name);
-globalThis.stopActivity = name => stopActivity(S, name);
-globalThis.selectActivity = name => {
-  selectActivity(S, name);
-  updateActivitySelectors(S);
-  if (typeof globalThis.updateActivityContent === 'function') {
-    globalThis.updateActivityContent();
-  }
-};
+// Activity Management System (delegates to feature)
+function selectActivity(activityType) { selectActivityMut(S, activityType); }
+function startActivity(activityName)  { startActivityMut(S, activityName); }
+function stopActivity(activityName)   { stopActivityMut(S, activityName); }
+
+// Back-compat for older UI
+window.startActivity = startActivity;
+window.stopActivity  = stopActivity;
 
 
 
@@ -105,34 +103,18 @@ function initUI(){
   // Assign buttons
   // Buttons (with safe null checks)
   const meditateBtn = qs('#meditateBtn');
-  if (meditateBtn) meditateBtn.addEventListener('click', () => {
-    const gain = meditate(S);
-    log(`Meditated: +${gain.toFixed(1)} Foundation`);
-    updateAll();
-  });
+  if (meditateBtn) meditateBtn.addEventListener('click', () => { const g = meditate(S); log(`Meditated: +${g.toFixed(1)} Foundation`); updateAll(); });
   initRealmUI();
 
 
   const useQiPill = qs('#useQiPill');
-  if (useQiPill) useQiPill.addEventListener('click', () => {
-    const r = usePill(S, 'qi');
-    if (!r.ok) { log('No pill available', 'bad'); return; }
-    updateAll();
-  });
+  if (useQiPill) useQiPill.addEventListener('click', ()=>{ usePill(S,'qi'); updateAll(); });
 
   const useBodyPill = qs('#useBodyPill');
-  if (useBodyPill) useBodyPill.addEventListener('click', () => {
-    const r = usePill(S, 'body');
-    if (!r.ok) { log('No pill available', 'bad'); return; }
-    updateAll();
-  });
+  if (useBodyPill) useBodyPill.addEventListener('click', ()=>{ usePill(S,'body'); updateAll(); });
 
   const useWardPill = qs('#useWardPill');
-  if (useWardPill) useWardPill.addEventListener('click', () => {
-    const r = usePill(S, 'ward');
-    if (!r.ok) { log('No pill available', 'bad'); return; }
-    updateAll();
-  });
+  if (useWardPill) useWardPill.addEventListener('click', ()=>{ usePill(S,'ward'); updateAll(); });
 
   // Autos (with safe null checks)
   const autoMeditate = qs('#autoMeditate');
@@ -198,11 +180,11 @@ function initUI(){
 
   const debugKillBtn = qs('#debugKillBtn');
   if (debugKillBtn) debugKillBtn.addEventListener('click', instakillCurrentEnemy);
+  setupLootUI({ retreatFromCombat, renderEquipmentPanel });
 
-
-    // Safe render calls
-    updateAll();
-  }
+  // Safe render calls
+  updateAll();
+}
 
 function updateAll(){
   updateRealmUI();
@@ -214,7 +196,7 @@ function updateAll(){
   setFill('hpFill', S.hp / S.hpMax);
   setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
   updateCombatStats();
-  updateActivitySelectors(S);
+  updateCurrentTaskDisplay(S);
 
 
   // Update progression displays
@@ -225,9 +207,9 @@ function updateAll(){
   updateCookingSidebar();
 
   updateAdventureProgress();
-  
-  // Safe call to updateActivityUI if it exists
-  if (typeof updateActivityUI === 'function') updateActivityUI();
+
+  // activity UI refresh:
+  updateActivitySelectors(S);
   
   updateResourceDisplay();
 
@@ -430,7 +412,7 @@ function tick(){
     const gain = foundationGainPerSec(S) * 0.5; // Reduced when not actively cultivating
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
-  if(isAutoAdventure() && !S.activities.adventure){ startActivity(S, 'adventure'); }
+  if(isAutoAdventure() && !S.activities.adventure){ startActivity('adventure'); }
 
   // Breakthrough progress
   updateBreakthrough();
@@ -440,35 +422,10 @@ function tick(){
     updateAdventureCombat();
   }
 
-  updateSidebarActivities(); // Update progress bars every tick
+  updateActivitySelectors(S); // Update activity progress bars every tick
   updateAll();
   updateAbilityBar();
 }
-
-
-
-// Activity selector event listeners
-function initActivityListeners() {
-  // Activity content event listeners
-  document.getElementById('useQiPillActivity')?.addEventListener('click', () => {
-    const r = usePill(S, 'qi');
-    if (!r.ok) { log('No pill available', 'bad'); return; }
-    updateAll();
-  });
-  document.getElementById('useWardPillActivity')?.addEventListener('click', () => {
-    const r = usePill(S, 'ward');
-    if (!r.ok) { log('No pill available', 'bad'); return; }
-    updateAll();
-  });
-
-  mountAdventureControls(S);
-
-  setupLootUI({ retreatFromCombat, renderEquipmentPanel });
-}
-
-// Add physique training dummy interaction
-
-// Mining actions are now handled in the activity panel - no separate function needed
 
 
 
@@ -477,12 +434,12 @@ window.addEventListener('load', ()=>{
   initUI();
   initLawSystem();
   mountActivityUI(S);
-  initActivityListeners();
+  mountAdventureControls(S);
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
   mountAlchemyUI(S);
   mountKarmaUI(S);
-  selectActivity(S, 'cultivation'); // Start with cultivation selected
+  selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();
   log('Welcome, cultivator.');
