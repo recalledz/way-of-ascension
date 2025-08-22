@@ -256,9 +256,23 @@ way-of-ascension/
 │   │       ├── mutators.js
 │   │       ├── selectors.js
 │   │       └── state.js
+│   ├── features/
+│   │   ├── activity/
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── activityUI.js
+│   │   ├── adventure/
+│   │   │   └── ui/
+│   │   │       └── mapUI.js
+│   │   └── automation/
+│   │       ├── mutators.js
+│   │       └── selectors.js
 │   ├── game/
 │   │   ├── GameController.js
-│   │   └── migrations.js
+│   │   ├── migrations.js
+│   │   └── tickRunner.js
 │   ├── shared/
 │   │   ├── events.js
 │   │   ├── saveLoad.js
@@ -273,11 +287,11 @@ way-of-ascension/
 │       ├── app.js
 │       ├── dev/
 │       │   └── devQuickMenu.js
+│       ├── render.js
 │       └── sidebar.js
 ├── ui/
-│   ├── components/
-│   │   └── progressBar.js
-│   └── index.js
+│   └── components/
+│       └── progressBar.js
 ├── README.md
 ├── CHANGELOG.md
 ├── eslint.config.mjs
@@ -605,8 +619,12 @@ function updateAll() {
 **When to modify**: Update when adding new resource types or changing sidebar layout.
 
 #### `src/ui/app.js` - Application Shell
-**Purpose**: Placeholder root for composing high-level UI modules.
-**When to modify**: Implement global UI bootstrap or layout logic.
+**Purpose**: Single UI entrypoint; mounts all feature UIs; starts GameController.
+**When to modify**: Adjust global UI bootstrap or initialization behaviour.
+
+#### `src/ui/render.js` - Render Aggregator
+**Purpose**: Aggregates per-feature UI refresh; called once per frame by controller.
+**When to modify**: Update when adding or removing HUD and activity panels.
 
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
@@ -733,6 +751,10 @@ Paths added:
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
+
+#### `src/game/tickRunner.js` - Tick Runner
+**Purpose**: Tick logic extracted from legacy ui/index.js; pure state updates.
+**When to modify**: Extend core per-tick rules.
 
 #### `src/shared/events.js` - Events Bus
 **Purpose**: Tiny pub/sub (`on`, `off`, `emit`) for global game events.

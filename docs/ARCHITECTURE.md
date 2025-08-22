@@ -25,9 +25,10 @@ Other folders such as `scripts/` (build or deployment scripts), `browser-tools-m
 
 A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. The controller emits `TICK` (fixed step) and `RENDER` (per frame). Feature UIs subscribe to `RENDER` to redraw, and systems can listen to `TICK` for simulation updates.
 
-#### Entrypoint & Bootstrap
-
-`src/index.js` is a minimal entry that creates the controller, mounts feature UIs via `mountAllFeatureUIs(state)` and then calls `start()`. `src/features/index.js` centralises these UI mounts for all features. A placeholder app shell lives at `src/ui/app.js` for future global UI composition.
+## App Shell
+- `src/ui/app.js` is the only UI entrypoint.
+- All DOM mounting happens in feature-level `ui/*` or here as lightweight glue.
+- The main loop lives in `GameController`; per-frame calls: `gameTick(root, dtMs)` then `updateAll(root)`.
 
 #### State Access Rules
 
@@ -53,6 +54,11 @@ Keep `progression/logic.js` intact for now; migrate features one at a time (loot
 * New or changed UIs subscribe to `RENDER`.
 * State writes go through mutators; reads use selectors.
 * Architecture doc and structure map are updated.
+
+## Alchemy vs Consumables
+- Alchemy creates items (recipes, crafting, UI).
+- Inventory/Consumables consumes items (apply timed effects via `shared/effects.js`, decrement counts).
+- Effects are deterministic & ticked (no setTimeout).
 
 ## Feature folders
 
