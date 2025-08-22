@@ -295,8 +295,11 @@ way-of-ascension/
 ├── src/features/adventure/ui/mapUI.js
 ├── src/features/affixes/index.js
 ├── src/features/automation/index.js
+├── src/features/automation/logic.js
+├── src/features/automation/migrations.js
 ├── src/features/automation/mutators.js
 ├── src/features/automation/selectors.js
+├── src/features/automation/state.js
 ├── src/features/combat/index.js
 ├── src/features/karma/index.js
 ├── src/features/mining/index.js
@@ -744,8 +747,11 @@ Paths added:
 - `src/features/activity/mutators.js` – activity mutators
 - `src/features/activity/ui/activityUI.js` – activity UI helpers
 - `src/features/adventure/ui/mapUI.js` – adventure map UI
+- `src/features/automation/logic.js` – automation logic helpers
+- `src/features/automation/migrations.js` – automation save migrations
 - `src/features/automation/mutators.js` – automation mutators
 - `src/features/automation/selectors.js` – automation selectors
+- `src/features/automation/state.js` – automation state slice
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
@@ -790,6 +796,18 @@ Paths added:
 #### `src/features/adventure/ui/mapUI.js` - Adventure Map UI
 **Purpose**: Renders the zone/area selection map overlay.
 **Key Functions**: `showMapOverlay()`, `hideMapOverlay()`.
+
+#### `src/features/automation/state.js` - Automation State
+**Purpose**: Defines default automation flags and provides `initialState()`.
+**Key Exports**: `automationState`, `initialState()`.
+
+#### `src/features/automation/logic.js` - Automation Logic
+**Purpose**: Pure helpers for automation calculations.
+**Key Functions**: `slice(root)`, `isAnyAutomationEnabled(root)`.
+
+#### `src/features/automation/migrations.js` - Automation Migrations
+**Purpose**: Save migrations for automation slice.
+**Key Exports**: `migrations` array.
 
 #### `src/features/automation/mutators.js` - Automation Mutators
 **Purpose**: Toggles options such as auto-meditate and auto-adventure.
@@ -878,6 +896,9 @@ Paths added:
 - `src/features/adventure/ui/mapUI.js` – Displays the area selection map overlay.
 
 ### Automation Feature (`src/features/automation/`)
+- `src/features/automation/state.js` – Default automation flags and `initialState()` helper.
+- `src/features/automation/logic.js` – Pure helpers for automation calculations.
+- `src/features/automation/migrations.js` – Save migrations for automation feature.
 - `src/features/automation/mutators.js` – Toggles automation options like auto-meditate and auto-adventure.
 - `src/features/automation/selectors.js` – Reads automation settings from state.
 
@@ -886,6 +907,7 @@ Paths added:
 - `src/features/adventure/migrations.js` – Save migrations for adventure feature.
 - `src/features/alchemy/migrations.js` – Save migrations for alchemy feature.
 - `src/features/affixes/migrations.js` – Save migrations for affixes feature.
+- `src/features/automation/migrations.js` – Save migrations for automation feature.
 - `src/features/combat/migrations.js` – Save migrations for combat feature.
 - `src/features/cooking/migrations.js` – Save migrations for cooking feature.
 - `src/features/inventory/migrations.js` – Save migrations for inventory and equipment.
