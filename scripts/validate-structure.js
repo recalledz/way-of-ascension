@@ -174,6 +174,7 @@ class StructureValidator {
     // Required core files (updated for app shell + arch)
     const coreFiles = [
       'src/ui/app.js',
+      'src/ui/render.js',
       'src/game/GameController.js',
       'docs/project-structure.md',
       'docs/ARCHITECTURE.md',
