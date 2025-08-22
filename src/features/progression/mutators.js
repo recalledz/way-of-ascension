@@ -2,6 +2,7 @@ import { progressionState } from './state.js';
 import { REALMS } from './data/realms.js';
 import { LAWS } from './data/laws.js';
 import { log } from '../../shared/utils/dom.js';
+import { canLearnSkill } from './logic.js';
 
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;
@@ -110,4 +111,31 @@ export function awardLawPoints(state = progressionState) {
 export function selectLaw(lawKey, state = progressionState) {
   if (!state.laws.unlocked.includes(lawKey)) return;
   state.laws.selected = lawKey;
+}
+
+export function learnSkill(lawKey, skillKey, state = progressionState) {
+  if (!canLearnSkill(lawKey, skillKey, state)) {
+    log?.('Cannot learn this skill yet!', 'bad');
+    return false;
+  }
+
+  const skill = LAWS[lawKey].tree[skillKey];
+  state.laws.points -= skill.cost;
+  state.laws.trees[lawKey][skillKey] = true;
+
+  applySkillBonuses(lawKey, skillKey, state);
+  log?.(`Learned ${skill.name}!`, 'good');
+  return true;
+}
+
+function applySkillBonuses(lawKey, skillKey, state = progressionState) {
+  const skill = LAWS[lawKey].tree[skillKey];
+  const bonus = skill.bonus || {};
+
+  state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
+
+  if (bonus.cultivationTalent) state.cultivation.talent += bonus.cultivationTalent;
+  if (bonus.comprehension) state.cultivation.comprehension = (state.cultivation.comprehension || 0) + bonus.comprehension;
+  if (bonus.foundationMult) state.cultivation.foundationMult += bonus.foundationMult;
+  if (bonus.pillMult) state.cultivation.pillMult += bonus.pillMult;
 }

@@ -177,3 +177,22 @@ export function breakthroughChance(state = progressionState){
   return clamp(totalChance, 0.01, 0.95);
 }
 
+export function canLearnSkill(lawKey, skillKey, state = progressionState) {
+  const skill = LAWS[lawKey]?.tree?.[skillKey];
+  if (!skill) return false;
+
+  const learned = state.laws.trees[lawKey] || {};
+  if (learned[skillKey]) return false;
+
+  if (state.laws.points < skill.cost) return false;
+
+  if (skill.prereq) {
+    if (Array.isArray(skill.prereq)) {
+      return skill.prereq.every(p => learned[p]);
+    }
+    return !!learned[skill.prereq];
+  }
+
+  return true;
+}
+

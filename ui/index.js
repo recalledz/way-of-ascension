@@ -3,7 +3,6 @@
 
 // Way of Ascension — Modular JS
 
-import { LAWS } from '../src/features/progression/data/laws.js';
 import { S, defaultState, save, setState } from '../src/shared/state.js';
 import {
   clamp,
@@ -575,90 +574,6 @@ function meditate(){
   S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   log(`Meditated: +${gain.toFixed(1)} Foundation`);
   updateAll();
-}
-
-// Law System Functions
-function selectLaw(lawKey){
-  if(!S.laws.unlocked.includes(lawKey)){
-    log('Law not unlocked yet!', 'bad');
-    return;
-  }
-  
-  if(S.laws.selected === lawKey){
-    log('Already following this law!', 'bad');
-    return;
-  }
-  
-  S.laws.selected = lawKey;
-  const law = LAWS[lawKey];
-  log(`You have chosen to follow the ${law.name}!`, 'good');
-  updateAll();
-}
-
-function canLearnSkill(lawKey, skillKey){
-  const skill = LAWS[lawKey].tree[skillKey];
-  if(!skill) return false;
-  
-  // Check if already learned
-  if(S.laws.trees[lawKey][skillKey]) return false;
-  
-  // Check law points
-  if(S.laws.points < skill.cost) return false;
-  
-  // Check prerequisites
-  if(skill.prereq){
-    if(Array.isArray(skill.prereq)){
-      // Multiple prerequisites - all must be met
-      for(const prereq of skill.prereq){
-        if(!S.laws.trees[lawKey][prereq]) return false;
-      }
-    } else {
-      // Single prerequisite
-      if(!S.laws.trees[lawKey][skill.prereq]) return false;
-    }
-  }
-  
-  return true;
-}
-
-function learnSkill(lawKey, skillKey){
-  if(!canLearnSkill(lawKey, skillKey)){
-    log('Cannot learn this skill yet!', 'bad');
-    return;
-  }
-  
-  const skill = LAWS[lawKey].tree[skillKey];
-  S.laws.points -= skill.cost;
-  S.laws.trees[lawKey][skillKey] = true;
-  
-  // Apply skill bonuses
-  applySkillBonuses(lawKey, skillKey);
-  
-  log(`Learned ${skill.name}!`, 'good');
-  updateAll();
-}
-
-function applySkillBonuses(lawKey, skillKey){
-  const skill = LAWS[lawKey].tree[skillKey];
-  const bonus = skill.bonus;
-  
-  // Apply various bonuses
-  // Apply cultivation bonuses
-  if(bonus.cultivationTalent){
-    S.cultivation.talent += bonus.cultivationTalent;
-  }
-  
-  if(bonus.comprehension){
-    S.cultivation.comprehension += bonus.comprehension;
-  }
-  
-  if(bonus.foundationMult){
-    S.cultivation.foundationMult += bonus.foundationMult;
-  }
-  
-  if(bonus.pillMult){
-    S.cultivation.pillMult += bonus.pillMult;
-  }
 }
 
 
