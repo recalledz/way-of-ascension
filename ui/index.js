@@ -3,6 +3,7 @@
 
 // Way of Ascension — Modular JS
 
+import './mobile.js';
 import { S, defaultState, save, setState } from '../src/shared/state.js';
 import {
   clamp,

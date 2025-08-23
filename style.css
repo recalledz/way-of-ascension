@@ -4103,3 +4103,28 @@ tr:last-child td {
             drop-shadow(0 0 0.25rem rgba(179, 36, 36, 0.35));
   }
 }
+
+/* Responsive adjustments */
+@media screen and (max-width: 800px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+
+  main aside.left {
+    display: none;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .btn {
+    padding: 2vh 4vw;
+    font-size: 4vw;
+    margin: 1vh 0;
+  }
+}
