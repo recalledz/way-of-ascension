@@ -29,7 +29,8 @@ import {
   playChakram,
   playShieldDome,
   playSparkBurst,
-  setFxTint
+  setFxTint,
+  showFloatingText
 } from '../combat/ui/index.js';
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
@@ -309,8 +310,10 @@ export function updateAdventureCombat() {
       const enemyDodge = S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
+        const critChance = S.stats?.criticalChance || 0;
+        const isCrit = Math.random() < critChance;
         const playerAttack = calculatePlayerCombatAttack(S);
-        const dmg = Math.max(1, Math.round(playerAttack));
+        const dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
         const dealt = processAttack(
           dmg,
           { target: S.adventure.currentEnemy, type: 'physical' },
@@ -319,6 +322,10 @@ export function updateAdventureCombat() {
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
+        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
+        if (enemyBar) {
+          showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
+        }
         const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
         const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
         performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
@@ -363,6 +370,10 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
+        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
+        if (enemyBar) {
+          showFloatingText({ targetEl: enemyBar, result: 'miss' });
+        }
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
@@ -373,13 +384,20 @@ export function updateAdventureCombat() {
         const playerDodge = S.stats?.dodge || 0;
         const hitP = chanceToHit(enemyAcc, playerDodge);
         if (Math.random() < hitP) {
-          const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          const critChance = S.adventure.currentEnemy?.stats?.criticalChance ?? S.adventure.currentEnemy?.criticalChance ?? 0;
+          const isCrit = Math.random() < critChance;
+          const baseDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
           const taken = processAttack(
             enemyDamage,
             { target: S, type: 'physical' },
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
+          const playerBar = document.querySelector('.combatant.player .health-bar');
+          if (playerBar) {
+            showFloatingText({ targetEl: playerBar, result: isCrit ? 'crit' : 'hit', amount: taken });
+          }
           const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
           performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
           S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
@@ -417,6 +435,10 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
+          const playerBar = document.querySelector('.combatant.player .health-bar');
+          if (playerBar) {
+            showFloatingText({ targetEl: playerBar, result: 'miss' });
+          }
         }
       }
     }
