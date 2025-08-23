@@ -492,6 +492,38 @@ function setupMobileUI() {
   apply(mq);
 }
 
+function setupStatusToggle() {
+  const row = qs('#statusRow');
+  const toggle = qs('#statusToggle');
+  const cluster = qs('#statusCluster');
+  if (!row || !toggle || !cluster) return;
+  function firstFocusable() {
+    return cluster.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  }
+  function close() {
+    row.setAttribute('data-open', 'false');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('click', outside, true);
+    window.removeEventListener('keydown', esc);
+    toggle.textContent = 'Status \u25BE';
+    toggle.focus();
+  }
+  function open() {
+    row.setAttribute('data-open', 'true');
+    toggle.setAttribute('aria-expanded', 'true');
+    const f = firstFocusable();
+    f && f.focus();
+    toggle.textContent = 'Status \u25B4';
+    document.addEventListener('click', outside, true);
+    window.addEventListener('keydown', esc);
+  }
+  function esc(e) { if (e.key === 'Escape') close(); }
+  function outside(e) { if (!row.contains(e.target)) close(); }
+  toggle.addEventListener('click', () => {
+    row.getAttribute('data-open') === 'true' ? close() : open();
+  });
+}
+
 function enableDebug() {
   if (!window.DEBUG) return;
   document.documentElement.classList.add('debug-overflow');
@@ -510,6 +542,7 @@ function enableDebug() {
 window.addEventListener('load', ()=>{
   initUI();
   setupMobileUI();
+  setupStatusToggle();
   enableDebug();
   initLawSystem();
   mountActivityUI(S);
