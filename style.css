@@ -3575,6 +3575,21 @@ tr:last-child td {
   color: #16a34a !important;
 }
 
+.activity-item[data-activity="cultivation"].breakthrough-ready {
+  border-color: #fbbf24;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.7);
+  animation: cultivation-gold-sheen 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes cultivation-gold-sheen {
+  from {
+    box-shadow: 0 0 4px rgba(251, 191, 36, 0.5);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.9);
+  }
+}
+
 .activity-info {
   flex-grow: 1;
 }
