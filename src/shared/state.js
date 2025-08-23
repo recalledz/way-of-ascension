@@ -113,7 +113,7 @@ export const defaultState = () => {
   // Combat Proficiency
   proficiency: {},
 
-  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, torso: null, food: null }, // EQUIP-CHAR-UI
+  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null }, // EQUIP-CHAR-UI
   inventory: [],
   sessionLoot: [], // EQUIP-CHAR-UI
   flags: { weaponsEnabled: true },

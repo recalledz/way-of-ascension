@@ -46,14 +46,14 @@ function renderEquipment() {
   const slots = [
     { key: 'mainhand', label: 'Weapon' },
     { key: 'head', label: 'Head' },
-    { key: 'torso', label: 'Torso' },
+    { key: 'body', label: 'Body' },
     { key: 'food', label: 'Food' }
   ];
   slots.forEach(s => {
     const el = document.getElementById(`slot-${s.key}`);
     if (!el) return;
     const item = S.equipment[s.key];
-    const name = item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty';
+    const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
     const iconKey = item?.key ? WEAPONS[item.key]?.proficiencyKey : null;
     const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
     const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${name}` : name;
@@ -88,7 +88,7 @@ function showDetails(item) {
     const text = weaponDetailsText(item);
     if (text) window.alert(text);
   } else {
-    window.alert(item.key);
+    window.alert(item.name || item.key);
   }
 }
 
@@ -97,7 +97,8 @@ function createInventoryRow(item) {
   row.className = 'inventory-row';
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
-  const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${item.key}` : item.key;
+  const displayName = item.name || item.key;
+  const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
   row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';
@@ -147,7 +148,7 @@ function canEquipToSlot(item, slot) {
   switch (slot) {
     case 'mainhand': return item.type === 'weapon';
     case 'head':
-    case 'torso': return item.type === 'armor' && item.slot === slot;
+    case 'body': return item.type === 'armor' && item.slot === slot;
     case 'food': return item.type === 'food';
   }
   return false;

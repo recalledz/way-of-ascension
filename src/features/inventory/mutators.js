@@ -36,7 +36,7 @@ export function equipItem(item, state = S) {
   console.log('[equip]', 'slot→', slot, 'item→', item.key);
   recomputePlayerTotals(state);
   save?.();
-  const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.key, slot };
+  const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.name || item.key, slot };
   if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
   return payload;
 }

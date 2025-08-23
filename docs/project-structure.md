@@ -158,6 +158,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── lootTables.js
+│   │   │   │   ├── lootTables.gear.js
 │   │   │   │   └── lootTables.weapons.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -246,6 +247,12 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       ├── physiqueDisplay.js
 │   │   │       └── trainingGame.js
+│   │   ├── gearGeneration/
+│   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
+│   │   │   │   └── bodyBases.js
+│   │   │   ├── logic.js
+│   │   │   └── selectors.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
 │   │       │   ├── _balance.contract.js
@@ -494,6 +501,10 @@ export function runMigrations(save) {
 **Purpose**: Provides weighted random item selection based on zone loot tables.
 **Key Functions**: `rollLoot()`, `toLootTableKey()`, `onEnemyDefeated()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
+
+#### `src/features/loot/data/lootTables.gear.js` - Gear Loot Tables
+**Purpose**: Defines starter zone body gear drops and their weights.
+**When to modify**: Add or rebalance gear drops for zones.
 
 #### `src/features/inventory/mutators.js` - Inventory Management
 **Purpose**: Adds, removes, and equips items in the player's inventory and equipment slots.
@@ -880,6 +891,12 @@ Paths added:
 - `src/features/cooking/logic.js` – Handle cooking and food slot logic, returning data for the UI.
 - `src/features/cooking/ui/cookControls.js` – Update cook amount input and food slot counts.
 - `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
+
+### Gear Generation Feature (`src/features/gearGeneration/`)
+- `src/features/gearGeneration/logic.js` – Generates body gear from base definitions and materials.
+- `src/features/gearGeneration/selectors.js` – Rolls zone gear drops using gear loot tables.
+- `src/features/gearGeneration/data/bodyBases.js` – Base body armor definitions (iron cuirass, leather tunic, cotton robe).
+- `src/features/gearGeneration/data/_balance.contract.js` – Balance contract placeholder for gear generation.
 
 ### Weapon Generation Feature (`src/features/weaponGeneration/`)
 - `src/features/weaponGeneration/index.js` – Registers weapon generation hooks.
