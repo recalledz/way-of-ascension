@@ -58,7 +58,32 @@
       <div class="chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
       <div class="chip">Stones: <span id="stonesVal">0</span></div>
       <div class="chip hp-chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span>
-        <div class="hp-bar"><div class="fill" id="hpFill"></div><div class="shield-fill" id="shieldFill"></div></div>
+        <div class="hp-bar" id="hpBar" role="img" aria-label="HP 100/100, Shield 0/0">
+          <div class="fill" id="hpFill"></div>
+          <svg class="shield-overlay" id="shieldOverlay" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" style="display:none">
+            <defs>
+              <mask id="hpMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="100" height="8">
+                <rect id="hpMaskRect" x="0" y="0" width="0" height="8" rx="4" ry="4" fill="#fff" />
+              </mask>
+              <linearGradient id="shieldGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#3cf" stop-opacity="0.7" />
+                <stop offset="100%" stop-color="#0ff" stop-opacity="0.3" />
+              </linearGradient>
+              <linearGradient id="shieldShimmer" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#fff0" />
+                <stop offset="50%" stop-color="#fff8" />
+                <stop offset="100%" stop-color="#fff0" />
+                <animate attributeName="x1" from="-1" to="1" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="x2" from="0" to="2" dur="2s" repeatCount="indefinite" />
+              </linearGradient>
+            </defs>
+            <g id="shieldGroup" mask="url(#hpMask)">
+              <rect id="shieldFill" class="shield-fill" x="0" y="0" width="0" height="8" rx="4" fill="url(#shieldGradient)" />
+              <rect class="shield-shimmer" x="0" y="0" width="100" height="8" fill="url(#shieldShimmer)" />
+            </g>
+          </svg>
+          <span id="hpA11y" class="sr-only">HP 100/100, Shield 0/0</span>
+        </div>
       </div>
       <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
