@@ -4151,3 +4151,23 @@ tr:last-child td {
 }
 html.reduce-motion #sidebar{transition:none;}
 html.reduce-motion .drawer-scrim{transition:none;}
+
+/* Floating combat text */
+.fct{
+  position:absolute;
+  pointer-events:none;
+  color:#fff;
+  text-shadow:0 0 2px #000;
+  font-weight:400;
+  user-select:none;
+  z-index:9999;
+  will-change:transform,opacity;
+}
+.fct-crit{
+  color:#ffd700;
+  font-weight:700;
+}
+.fct-miss{
+  color:#9ab;
+  font-style:italic;
+}
