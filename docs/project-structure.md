@@ -73,6 +73,7 @@ way-of-ascension/
 ├── node_modules/
 ├── scripts/
 │   ├── balance-validate.js
+│   ├── scan-codex-output.js
 │   └── validate-structure.js
 ├── src/
 │   ├── index.js

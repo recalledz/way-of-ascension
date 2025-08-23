@@ -10,7 +10,8 @@
     "validate-fix": "node scripts/validate-structure.js --auto-update",
     "start": "node server.js",
     "enforce-ai": "node .windsurf/ai-enforcement.js",
-    "lint:balance": "node scripts/balance-validate.js"
+    "lint:balance": "node scripts/balance-validate.js",
+    "scan-output": "node scripts/scan-codex-output.js"
   },
   "repository": {
     "type": "git",
