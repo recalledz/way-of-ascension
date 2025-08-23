@@ -16,6 +16,9 @@
   --danger: #b32424; /* clearer alert red */
   --shadow: 0 10px 30px rgba(45, 37, 32, 0.25); /* Soft brown shadow */
   --radius: 16px;
+  --gap: 20px;
+  --pad: 16px;
+  --header-h: 76px;
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
@@ -4118,6 +4121,36 @@ tr:last-child td {
             drop-shadow(0 0 0.25rem rgba(179, 36, 36, 0.35));
   }
 }
+
+.hamburger{display:none;background:none;border:none;font-size:1.5rem;line-height:1;padding:4px;cursor:pointer;}
+.drawer-scrim{position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity .3s;z-index:1000;}
+.drawer-scrim.active{opacity:1;pointer-events:auto;}
+.debug-overflow *{outline:1px dashed red;}
+
+@media (max-width:768px){
+  :root{--gap:12px;--pad:12px;--header-h:64px;}
+  html,body{overflow-x:hidden;}
+  .mist-layer{inset:-10vh 0;}
+  header{position:sticky;top:0;z-index:1000;flex-direction:column;align-items:stretch;gap:var(--gap);padding:var(--pad);min-height:var(--header-h);}
+  .brand{width:100%;display:flex;align-items:center;justify-content:space-between;}
+  .hamburger{display:block;}
+  .topbar{display:flex;gap:var(--gap);overflow-x:auto;}
+  #taskChip,#realmChip,#stonesChip{display:none;}
+  main{display:block;height:auto;}
+  #sidebar{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:80%;transform:translateX(-100%);transition:transform .3s;background:linear-gradient(180deg,var(--panel),#ebe0c8);z-index:1001;padding:var(--pad);}
+  #sidebar.open{transform:translateX(0);}
+  body.drawer-open{overflow:hidden;}
+  .content{padding:var(--pad);}
+  img,canvas{max-width:100%;height:auto;}
+  .hp-chip .hp-bar{width:100%;max-width:100%;}
+  .chip{padding:calc(var(--pad)/2) var(--pad);min-height:44px;}
+}
+@media (prefers-reduced-motion:reduce){
+  #sidebar{transition:none;}
+  .drawer-scrim{transition:none;}
+}
+html.reduce-motion #sidebar{transition:none;}
+html.reduce-motion .drawer-scrim{transition:none;}
 
 /* Floating combat text */
 .fct{
