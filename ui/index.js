@@ -54,7 +54,9 @@ import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
 import { ensureMindState } from '../src/features/mind/index.js';
+import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
 import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
+import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
 import { updateAdventureProgress, mountAdventureControls } from '../src/features/adventure/ui/adventureDisplay.js';
@@ -229,7 +231,9 @@ function updateAll(){
   updateKarmaDisplay();
   updateLawsUI();
   updateActivityCards();
+  renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+  renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
 
   emit('RENDER');
 }
@@ -250,9 +254,17 @@ function updateActivityContent() {
     case 'cooking':
       updateActivityCooking();
       break;
-    case 'mind':
-      renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+    case 'mind': {
+      const active = document.querySelector('.mind-tab-btn.active')?.dataset.tab;
+      if (active === 'mindMain') {
+        renderMindMainTab(document.getElementById('mindMainTab'), S);
+      } else if (active === 'mindPuzzles') {
+        renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
+      } else {
+        renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+      }
       break;
+    }
   }
 }
 globalThis.updateActivityContent = updateActivityContent;
@@ -558,11 +570,14 @@ window.addEventListener('load', ()=>{
   mountActivityUI(S);
   mountAdventureControls(S);
   setupAdventureTabs();
+  setupMindTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
   mountAlchemyUI(S);
   mountKarmaUI(S);
   mountSectUI(S);
+  renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+  renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();

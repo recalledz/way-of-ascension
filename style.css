@@ -1965,6 +1965,50 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   box-shadow: none;
 }
 
+/* Mind Activity Tabs */
+.mind-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #3b82f6;
+}
+
+.mind-tab-btn {
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 2px solid #3b82f6;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  font-family: 'Trajan Pro', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.mind-tab-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--ink);
+  border-bottom-color: #2563eb;
+}
+
+.mind-tab-btn.active {
+  background: transparent;
+  color: var(--ink);
+  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.mind-tab-content {
+  display: none;
+}
+
+.mind-tab-content.active {
+  display: block;
+}
+
 .cultivation-tab-content {
   display: none;
 }

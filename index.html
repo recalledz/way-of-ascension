@@ -837,7 +837,14 @@
       </section>
 
       <section id="activity-mind" class="activity-content" style="display:none;">
-        <div id="mindReadingTab"></div>
+        <div class="mind-tabs">
+          <button class="mind-tab-btn active" data-tab="mindMain">Main</button>
+          <button class="mind-tab-btn" data-tab="mindReading">Reading</button>
+          <button class="mind-tab-btn" data-tab="mindPuzzles">Puzzles</button>
+        </div>
+        <div id="mindMainTab" class="mind-tab-content active"></div>
+        <div id="mindReadingTab" class="mind-tab-content" style="display:none;"></div>
+        <div id="mindPuzzlesTab" class="mind-tab-content" style="display:none;"></div>
       </section>
 
       <section id="tab-combat">
