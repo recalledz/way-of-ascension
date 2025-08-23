@@ -1,7 +1,7 @@
 // src/features/activity/ui/activityUI.js
 import { selectActivity } from "../mutators.js";
 import { getActiveActivity } from "../selectors.js";
-import { fCap } from "../../progression/selectors.js";
+import { fCap, qCap } from "../../progression/selectors.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -57,6 +57,12 @@ export function updateActivitySelectors(root) {
     const foundationPct = (root.foundation / fCap(root)) * 100;
     cultivationFill.style.width = `${foundationPct}%`;
     cultivationInfo.textContent = root.activities?.cultivation ? 'Cultivating...' : 'Foundation Progress';
+  }
+
+  const cultivationTab = document.querySelector('.activity-item[data-activity="cultivation"]');
+  if (cultivationTab) {
+    const breakthroughReady = root.foundation >= fCap(root) && (root.qi ?? 0) >= qCap(root);
+    cultivationTab.classList.toggle('breakthrough-ready', breakthroughReady);
   }
 
   // Physique
