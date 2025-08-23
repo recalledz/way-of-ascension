@@ -19,6 +19,9 @@
   --gap: 20px;
   --pad: 16px;
   --header-h: 76px;
+  --tabs-h: 0px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --float-pad: 0px;
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
@@ -133,6 +136,12 @@ h1, .ability-name {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
 }
 
 .card {
@@ -4158,7 +4167,11 @@ tr:last-child td {
   #sidebar.open{transform:translateX(0);}
   body.drawer-open{overflow:hidden;}
   .content{padding:var(--pad);}
-  .activity-content{padding:var(--pad);}
+    .activity-content{padding:var(--pad);}
+    .tab-bar{position:sticky;top:var(--header-h);z-index:999;background:var(--panel);}
+    .tab-content{min-height:calc(100dvh - var(--header-h) - var(--tabs-h) - var(--safe-bottom));max-height:calc(100dvh - var(--header-h) - var(--tabs-h) - var(--safe-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--float-pad);}
+    .tab-content>.card{width:100%;max-width:100%;}
+    .tab-content>.card:only-child{flex:1;}
   img,canvas{max-width:100%;height:auto;}
   .hp-chip .hp-bar{width:100%;max-width:100%;}
   .chip{padding:calc(var(--pad)/2) var(--pad);min-height:44px;}
