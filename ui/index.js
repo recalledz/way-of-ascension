@@ -53,6 +53,8 @@ import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
+import { ensureMindState } from '../src/features/mind/index.js';
+import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
 import { updateAdventureProgress, mountAdventureControls } from '../src/features/adventure/ui/adventureDisplay.js';
@@ -94,6 +96,9 @@ import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
 // Enemy data for adventure zones
 
 function initUI(){
+  // Ensure Mind feature state exists for UI reads
+  ensureMindState(S);
+
   // Render sidebar activities
   renderSidebarActivities();
 
@@ -208,6 +213,7 @@ function updateAll(){
   setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
   setText('physiqueProgressText', `${fmt(S.physique.exp)} / ${fmt(S.physique.expMax)} XP`);
   setText('physiqueLevel', `Level ${S.physique.level}`);
+  setText('mindLevel', `Level ${S.mind.level}`);
 
   updateCookingSidebar();
 
@@ -223,6 +229,7 @@ function updateAll(){
   updateKarmaDisplay();
   updateLawsUI();
   updateActivityCards();
+  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
 
   emit('RENDER');
 }
@@ -242,6 +249,9 @@ function updateActivityContent() {
       break;
     case 'cooking':
       updateActivityCooking();
+      break;
+    case 'mind':
+      renderMindReadingTab(document.getElementById('mindReadingTab'), S);
       break;
   }
 }
@@ -552,6 +562,7 @@ window.addEventListener('load', ()=>{
   mountAlchemyUI(S);
   mountKarmaUI(S);
   mountSectUI(S);
+  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();
