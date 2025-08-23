@@ -39,6 +39,11 @@ function render(state){
 }
 
 export function mountSectUI(state){
-  on('RENDER', () => render(state));
-  render(state);
+  const rerender = () => render(state);
+  on('RENDER', rerender);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', rerender, { once: true });
+  } else {
+    rerender();
+  }
 }

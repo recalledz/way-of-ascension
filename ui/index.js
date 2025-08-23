@@ -51,6 +51,7 @@ import { setupAbilityUI } from '../src/features/ability/ui.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
+import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
 import { updateAdventureProgress, mountAdventureControls } from '../src/features/adventure/ui/adventureDisplay.js';
@@ -439,6 +440,7 @@ window.addEventListener('load', ()=>{
   mountAdventureControls(S);
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
+  mountSectUI(S);
   mountAlchemyUI(S);
   mountKarmaUI(S);
   selectActivity('cultivation'); // Start with cultivation selected
