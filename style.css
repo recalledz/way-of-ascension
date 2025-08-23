@@ -1631,9 +1631,14 @@ h1{font-size:20px; margin:0; letter-spacing:.5px}
 /* STYLE-GUIDE-UPDATE: Parchment chip style */
 .chip{background:var(--panel); border:1px solid var(--accent); padding:8px 12px; border-radius:999px; font-size:12px; box-shadow: inset 0 1px 3px rgba(139, 117, 95, 0.2);}
 .hp-chip{display:flex; flex-direction:column; align-items:flex-start;}
-.hp-chip .hp-bar{position:relative; width:100px; height:8px; background:rgba(239,68,68,0.3); border-radius:4px; margin-top:2px;}
-.hp-chip .hp-bar .fill{height:100%; background:linear-gradient(90deg,#ef4444,#f87171); border-radius:4px; transition:width 0.3s ease; width:0%;}
-.hp-chip .hp-bar .shield-fill{position:absolute; top:0; left:0; height:2px; background:cyan; border-radius:4px; width:0%; transition:width 0.3s ease;}
+.hp-chip .hp-bar{position:relative; width:100px; height:8px; background:rgba(239,68,68,0.3); border-radius:4px; margin-top:2px; overflow:hidden;}
+.hp-chip .hp-bar .fill{height:100%; background:linear-gradient(90deg,#ef4444,#f87171); border-radius:4px; transition:width .2s ease; width:0%;}
+.hp-chip .hp-bar svg.shield-overlay,
+.health-bar svg.shield-overlay{position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;}
+#shieldFill,#hpMaskRect,#playerShieldFill,#playerHpMaskRect{transition:width .2s ease;}
+.shield-shimmer{opacity:.5; mix-blend-mode:screen; transform-origin:0 0; transform-box:fill-box; animation:shield-shimmer 2s linear infinite;}
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+@keyframes shield-shimmer{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
 
 main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 

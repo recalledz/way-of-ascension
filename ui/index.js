@@ -195,11 +195,23 @@ function updateAll(){
   updateRealmUI();
   updateQiAndFoundation();
 
-  // HP
+  // HP & Shield
+  const hpFrac = Math.max(0, Math.min(1, S.hp / S.hpMax));
+  const shieldFrac = S.shield?.max ? Math.max(0, Math.min(1, S.shield.current / S.shield.max)) : 0;
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
   setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
-  setFill('hpFill', S.hp / S.hpMax);
-  setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
+  setFill('hpFill', hpFrac);
+  setFill('hpMaskRect', hpFrac);
+  setFill('shieldFill', shieldFrac);
+  const shieldOverlay = document.getElementById('shieldOverlay');
+  if (shieldOverlay) {
+    shieldOverlay.style.display = shieldFrac > 0 ? 'block' : 'none';
+  }
+  const ariaText = `HP ${fmt(S.hp)}/${fmt(S.hpMax)}, Shield ${fmt(S.shield?.current||0)}/${fmt(S.shield?.max||0)}`;
+  const hpBar = document.getElementById('hpBar');
+  if (hpBar) hpBar.setAttribute('aria-label', ariaText);
+  const sr = document.getElementById('hpA11y');
+  if (sr) sr.textContent = ariaText;
   updateCombatStats();
   updateCurrentTaskDisplay(S);
 
