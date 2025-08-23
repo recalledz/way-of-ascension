@@ -138,6 +138,34 @@ export const defaultState = () => {
   };
 };
 
+export function validateState(candidate) {
+  const template = defaultState();
+  function sanitize(obj, tmpl) {
+    if (typeof tmpl !== 'object' || tmpl === null) {
+      return typeof obj === typeof tmpl ? obj : null;
+    }
+    if (Array.isArray(tmpl)) {
+      return Array.isArray(obj) ? obj : null;
+    }
+    const keys = Object.keys(tmpl);
+    if (keys.length === 0) {
+      return typeof obj === 'object' && obj !== null ? { ...obj } : null;
+    }
+    if (typeof obj !== 'object' || obj === null) return null;
+    for (const key of Object.keys(obj)) {
+      if (!(key in tmpl)) return null;
+    }
+    const out = {};
+    for (const key of keys) {
+      const val = sanitize(obj[key], tmpl[key]);
+      if (val === null) return null;
+      out[key] = val;
+    }
+    return out;
+  }
+  return sanitize(candidate, template);
+}
+
 export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
@@ -178,5 +206,9 @@ export function save(){
 }
 
 export function setState(newState){
-  S = newState;
+  runMigrations(newState);
+  const sanitized = validateState(newState);
+  if (sanitized) {
+    S = sanitized;
+  }
 }
