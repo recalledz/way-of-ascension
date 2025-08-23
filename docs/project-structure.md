@@ -130,6 +130,7 @@ way-of-ascension/
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
 │   │   │       ├── combatStats.js
+│   │   │       ├── combatText.js
 │   │   │       ├── fx.js
 │   │   │       └── index.js
 │   │   ├── cooking/
@@ -723,6 +724,11 @@ function updateAll() {
 **Key Functions**: `playSlashArc()`, `playThrustLine()`, `playRingShockwave()`, `playBeam()`, `playChakram()`, `playShieldDome()`, `playSparkBurst()`, `setFxTint()`, `setReduceMotion()`.
 **When to modify**: Extend or adjust visual effect primitives.
 
+#### `combatText.js` - Combat Text UI
+**Purpose**: Displays floating combat messages for critical hits and misses.
+**Key Functions**: `setupCombatText()`.
+**When to modify**: Add new combat text types or adjust display behavior.
+
 ### HTML Structure (`index.html`)
 **Purpose**: Main game interface structure
 **Key Elements**:
@@ -850,6 +856,7 @@ Paths added:
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
 - `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
+- `src/features/combat/ui/combatText.js` – Shows floating combat messages for critical hits and misses.
 
 ### Karma Feature (`src/features/karma/`)
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.

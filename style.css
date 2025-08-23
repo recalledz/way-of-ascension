@@ -4051,6 +4051,9 @@ tr:last-child td {
 .ability-card.shake { animation:ability-shake 0.3s; }
 @keyframes ability-shake { 0%{transform:translateX(0);}25%{transform:translateX(-2px);}50%{transform:translateX(2px);}75%{transform:translateX(-2px);}100%{transform:translateX(0);} }
 .heal-float { position:fixed; color:#0f0; font-weight:bold; pointer-events:none; animation:heal-float 1s forwards; }
+.crit-float, .miss-float { position:fixed; font-weight:bold; pointer-events:none; animation:heal-float 1s forwards; }
+.crit-float { color:#f00; }
+.miss-float { color:#fff; }
 @keyframes heal-float { from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(-20px);} }
 
 /* --- Subtle death red-tint + break effect for combatants --- */

@@ -1,5 +1,5 @@
 import { S, save } from '../../shared/state.js';
-import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from '../progression/selectors.js';
+import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap, getStatEffects } from '../progression/selectors.js';
 import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
@@ -14,6 +14,7 @@ import { chanceToHit } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, log } from '../../shared/utils/dom.js';
+import { emit } from '../../shared/events.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
@@ -309,7 +310,9 @@ export function updateAdventureCombat() {
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
         const playerAttack = calculatePlayerCombatAttack(S);
-        const dmg = Math.max(1, Math.round(playerAttack));
+        let dmg = Math.max(1, Math.round(playerAttack));
+        const isCrit = Math.random() < (getStatEffects(S).totalCritChance || 0);
+        if (isCrit) dmg = Math.round(dmg * 2);
         const dealt = processAttack(
           dmg,
           { target: S.adventure.currentEnemy, type: 'physical' },
@@ -317,11 +320,12 @@ export function updateAdventureCombat() {
         );
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
-        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
+        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}${isCrit ? ' (Critical!)' : ''}`);
         const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
         const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-        performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
+        performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm', isCrit }, S); // STATUS-REFORM
         S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
+        if (isCrit) emit('COMBAT:CRIT', { amount: dealt, target: 'enemy' });
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -362,6 +366,7 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
+        emit('COMBAT:MISS', { target: 'enemy' });
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
@@ -372,16 +377,20 @@ export function updateAdventureCombat() {
         const playerDodge = S.stats?.dodge || 0;
         const hitP = chanceToHit(enemyAcc, playerDodge);
         if (Math.random() < hitP) {
-          const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          let enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          const enemyCritChance = S.adventure.currentEnemy?.stats?.criticalChance ?? S.adventure.currentEnemy?.criticalChance ?? 0;
+          const enemyIsCrit = Math.random() < enemyCritChance;
+          if (enemyIsCrit) enemyDamage = Math.round(enemyDamage * 2);
           const taken = processAttack(
             enemyDamage,
             { target: S, type: 'physical' },
             S
           );
-          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
+          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you${enemyIsCrit ? ' (Critical!)' : ''}`);
           const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
-          performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
+          performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken, isCrit: enemyIsCrit }, S); // STATUS-REFORM
           S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
+          if (enemyIsCrit) emit('COMBAT:CRIT', { amount: taken, target: 'player' });
           if (weapon.typeKey === 'focus') {
             const pos = getCombatPositions();
             if (pos) {
@@ -416,6 +425,7 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
+          emit('COMBAT:MISS', { target: 'player' });
         }
       }
     }
