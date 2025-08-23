@@ -339,6 +339,29 @@ function hideCultivationProgressModal() {
   }
 }
 
+function showBreakthroughResult(success, info = {}) {
+  const overlay = document.getElementById('breakthroughResultOverlay');
+  const title = document.getElementById('breakthroughResultTitle');
+  const body = document.getElementById('breakthroughResultBody');
+  if (!overlay || !title || !body) return;
+
+  if (success) {
+    title.textContent = 'Breakthrough Succeeded!';
+    body.innerHTML = `<p class="good">Advanced to ${info.realmName} ${info.stage}.</p>` +
+      `<p>Stats increased:</p><ul><li>${info.statMsg}</li><li>${info.extraMsg}</li></ul>`;
+  } else {
+    title.textContent = 'Breakthrough Failed';
+    body.innerHTML = '<p class="bad">Tribulation backlash! Breakthrough failed.</p>';
+  }
+
+  overlay.style.display = 'flex';
+}
+
+function hideBreakthroughResult() {
+  const overlay = document.getElementById('breakthroughResultOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
 export function setupProgressToggle() {
   const toggleBtn = document.getElementById('toggleProgressBtn');
   const closeBtn = document.getElementById('closeProgressBtn');
@@ -405,13 +428,15 @@ export function updateBreakthrough() {
     if(Math.random() < ch) {
       S.qi = 0;
       S.foundation = 0;
-      advanceRealm();
+      const info = advanceRealm();
       log('Breakthrough succeeded! Realm advanced.', 'good');
+      showBreakthroughResult(true, info);
     } else {
       S.qi = 0;
       S.foundation = Math.max(0, S.foundation - Math.ceil(fCap(S) * 0.25));
       S.hp = Math.max(1, S.hp - Math.ceil(S.hpMax * 0.2));
       log('Tribulation backlash! Breakthrough failed.', 'bad');
+      showBreakthroughResult(false);
     }
 
     S.breakthrough.inProgress = false;
@@ -424,5 +449,11 @@ export function updateBreakthrough() {
 export function initRealmUI(){
   const breakthroughBtn = qs('#breakthroughBtn');
   if (breakthroughBtn) breakthroughBtn.addEventListener('click', tryBreakthrough);
+
+  const closeBtn = qs('#closeBreakthroughResultBtn');
+  const overlay = qs('#breakthroughResultOverlay');
+  const backdrop = overlay?.querySelector('.modal-backdrop');
+  if (closeBtn) closeBtn.addEventListener('click', hideBreakthroughResult);
+  if (backdrop) backdrop.addEventListener('click', hideBreakthroughResult);
 }
 
