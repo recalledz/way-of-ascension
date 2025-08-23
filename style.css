@@ -525,7 +525,7 @@ html.reduce-motion .rune-ring .orbit {
   opacity: 0;
 }
 
-/* Particle halo around head/upper torso */
+/* Particle halo around head/upper body */
 .particle-halo {
   position: absolute;
   top: 0;

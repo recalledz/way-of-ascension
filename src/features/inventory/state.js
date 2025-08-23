@@ -1,4 +1,4 @@
 export const inventoryState = {
   inventory: [],
-  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, torso: null, food: null },
+  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null },
 };
