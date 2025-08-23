@@ -10,7 +10,10 @@ export function setText(id, v) {
 export function setFill(id, ratio) {
   ratio = clamp(ratio, 0, 1);
   const el = document.getElementById(id);
-  if (el) el.style.width = (ratio * 100).toFixed(1) + '%';
+  if (!el) return;
+  const w = (ratio * 100).toFixed(1) + '%';
+  if (el instanceof SVGElement) el.setAttribute('width', w);
+  else el.style.width = w;
 }
 
 export function log(msg, cls = '') {
