@@ -1,7 +1,7 @@
 import { S } from '../../../shared/state.js';
 import { setFill, setText } from '../../../shared/utils/dom.js';
 import { ZONES } from '../data/zones.js';
-import { startAdventure, startAdventureCombat, startBossCombat, progressToNextArea, retreatFromCombat } from '../mutators.js';
+import { startAdventure, startAdventureCombat, startBossCombat, progressToNextArea, retreatFromCombat, resetQiOnRetreat } from '../mutators.js';
 import { updateActivityAdventure } from '../logic.js';
 
 export function updateAdventureProgress(state = S) {
@@ -36,7 +36,7 @@ export function mountAdventureControls(root) {
         btn.classList.remove('warn'); btn.classList.add('primary');
         btn.textContent = '⚔️ Start Battle';
         (globalThis.stopActivity?.('adventure'));
-        root.qi = 0;
+        resetQiOnRetreat(root);
         updateActivityAdventure();
         return;
       }

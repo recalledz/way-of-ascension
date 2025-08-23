@@ -52,3 +52,13 @@ export function retreatFromCombat(state = S) {
   }
   log(`Retreated from combat. Lost ${loss} Qi.`, 'neutral');
 }
+
+/**
+ * Reset the player's Qi to zero when retreating due to defeat.
+ * Used when a retreat countdown ends because the player was killed mid-retreat.
+ *
+ * @param {object} state - The game state (defaults to shared state S).
+ */
+export function resetQiOnRetreat(state = S) {
+  state.qi = 0;
+}

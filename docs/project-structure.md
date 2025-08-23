@@ -413,6 +413,7 @@ Formats large numbers with shorthand suffixes (k, m, b, t).
 Stateful helpers for manipulating adventure progression.
 - `startAdventure()` - Create and initialize the `S.adventure` state container.
 - `retreatFromCombat()` - Retreat from combat and apply Qi penalty.
+- `resetQiOnRetreat()` - Reset Qi to zero when the player dies while retreating.
 
 #### `src/features/adventure/ui/adventureDisplay.js` - Adventure Sidebar Display
 **Purpose**: Renders adventure progress and current area in the sidebar.
