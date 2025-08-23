@@ -157,6 +157,7 @@ export function updateBattleDisplay() {
   setText('playerAttack', Math.round(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
+  setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
@@ -961,8 +962,9 @@ export function updateActivityAdventure() {
     S.adventure.bestiary = {};
   }
   const currentZone = ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
+  let currentArea = null;
   if (currentZone && currentZone.areas) {
-    const currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
+    currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
     if (currentArea) {
       setText('currentLocationText', `${currentZone.name} - ${currentArea.name}`);
       setText('killsRequired', `${S.adventure.killsInCurrentArea}/${currentArea.killReq}`);
@@ -983,6 +985,19 @@ export function updateActivityAdventure() {
   }
   const baseAttack = Math.round(calculatePlayerCombatAttack(S));
   setText('baseDamage', baseAttack);
+  const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
+  if (enemyData) {
+    const enemyDodge = enemyData.stats?.dodge ?? enemyData.dodge ?? 0;
+    const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
+    setText('hitChance', `${Math.round(hitP * 100)}%`);
+    const enemyAcc = enemyData.stats?.accuracy ?? enemyData.accuracy ?? 0;
+    const evadeP = 1 - chanceToHit(enemyAcc, S.stats?.dodge || 0);
+    setText('evadeChance', `${Math.round(evadeP * 100)}%`);
+  } else {
+    setText('hitChance', '--');
+    setText('evadeChance', '--');
+  }
+  setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
   updateZoneButtons();
   updateAreaGrid();
   updateAdventureProgressBar(selectAreaById); // MAP-UI-UPDATE
