@@ -34,6 +34,14 @@ export function updateActivitySelectors(root) {
 
   const selected = root.ui?.selectedActivity || 'cultivation';
 
+  // Generic highlight for dynamically rendered sidebar items
+  document.querySelectorAll('.activity-item[data-activity]')
+    .forEach(el => {
+      const act = el.dataset.activity;
+      el.classList.toggle('active', act === selected);
+      el.classList.toggle('running', !!root.activities?.[act]);
+    });
+
   document.querySelectorAll('.activity-content')
     .forEach(panel => {
       panel.style.display = panel.id === `activity-${selected}` ? 'block' : 'none';
@@ -95,7 +103,14 @@ export function updateActivitySelectors(root) {
 export function updateCurrentTaskDisplay(root) {
   const el = document.getElementById('currentTask');
   if (!el) return;
-  const map = { cultivation:'Cultivating', physique:'Physique Training', mining:'Mining', adventure:'Adventuring', cooking:'Cooking' };
+  const map = {
+    cultivation: 'Cultivating',
+    physique: 'Physique Training',
+    mining: 'Mining',
+    adventure: 'Adventuring',
+    cooking: 'Cooking',
+    alchemy: 'Brewing'
+  };
   const active = getActiveActivity(root);
   el.textContent = active ? (map[active] || 'Idle') : 'Idle';
 }

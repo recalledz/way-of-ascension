@@ -45,6 +45,15 @@ export function renderSidebarActivities() {
       cost: {}
     },
     {
+      id: 'alchemy',
+      label: 'Alchemy',
+      icon: '<iconify-icon icon="mdi:flask" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'alchemyLevelSidebar',
+      initialLevel: 'Level 1',
+      cost: {},
+    },
+    {
       id: 'adventure',
       label: 'Adventure',
       icon: '<iconify-icon icon="lucide:mountain" class="ui-icon"></iconify-icon>',

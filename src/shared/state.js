@@ -66,7 +66,8 @@ export const defaultState = () => {
     physique: false,
     mining: false,
     adventure: false,
-    cooking: false
+    cooking: false,
+    alchemy: false
   },
   // Activity data containers
   physique: structuredClone(physiqueState),
