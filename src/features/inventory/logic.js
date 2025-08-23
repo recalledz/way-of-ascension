@@ -8,10 +8,16 @@ export function recomputePlayerTotals(player) {
   let shieldMax = 0;
   const equipped = Object.values(player.equipment || {});
   for (const item of equipped) {
-    if (item && item.defense?.armor) armor += item.defense.armor;
-    if (item && item.shield?.max) shieldMax += item.shield.max;
-    if (item && item.stats?.accuracy) accuracy += item.stats.accuracy;
-    if (item && item.stats?.dodge) dodge += item.stats.dodge;
+    if (!item) continue;
+    if (item.defense) {
+      armor += item.defense.armor || 0;
+      dodge += item.defense.dodge || 0;
+      shieldMax += item.defense.qiShield || 0;
+    }
+    if (item.offense) accuracy += item.offense.accuracy || 0;
+    if (item.shield?.max) shieldMax += item.shield.max; // legacy support
+    if (item.stats?.accuracy) accuracy += item.stats.accuracy; // legacy support
+    if (item.stats?.dodge) dodge += item.stats.dodge; // legacy support
   }
   player.stats = player.stats || {};
   player.stats.armor = armor;
@@ -31,7 +37,7 @@ export function canEquip(item) {
     case 'weapon':
       return { slot: 'mainhand' };
     case 'armor':
-      if (item.slot === 'head' || item.slot === 'torso') return { slot: item.slot };
+      if (item.slot === 'head' || item.slot === 'body') return { slot: item.slot };
       break;
     case 'food':
       return { slot: 'food' };

@@ -32,11 +32,20 @@ export const migrations = [
       }
     }
     if (!save.equipment || typeof save.equipment !== 'object') {
-      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, torso: null, food: null };
+      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null };
     } else {
       if (!save.equipment.mainhand) save.equipment.mainhand = { key: 'fist', type: 'weapon' };
       if (typeof save.equipment.head === 'undefined') save.equipment.head = null;
-      if (typeof save.equipment.torso === 'undefined') save.equipment.torso = null;
+      if (typeof save.equipment.body === 'undefined') {
+        if (typeof save.equipment.torso !== 'undefined') {
+          save.equipment.body = save.equipment.torso;
+          delete save.equipment.torso;
+        } else {
+          save.equipment.body = null;
+        }
+      } else if (typeof save.equipment.torso !== 'undefined') {
+        delete save.equipment.torso;
+      }
       if (typeof save.equipment.food === 'undefined') save.equipment.food = null;
     }
     if (!Array.isArray(save.sessionLoot)) save.sessionLoot = [];

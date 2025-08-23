@@ -6,6 +6,8 @@ import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getAbilitySlots } from '../ability/selectors.js';
 import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
+import { rollGearDropForZone } from '../gearGeneration/selectors.js';
+import { addToInventory } from '../inventory/mutators.js';
 import { ABILITIES } from '../ability/data/abilities.js';
 import { performAttack, decayStunBar } from '../combat/attack.js'; // STATUS-REFORM
 import { chanceToHit } from '../combat/hit.js';
@@ -16,6 +18,7 @@ import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
 import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from './data/zones.js'; // MAP-UI-UPDATE
+import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
 import {
@@ -491,6 +494,12 @@ function defeatEnemy() {
     if (drop) {
       addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'mat', qty: 1, source: area?.name });
       lootEntries.push([drop, 1]);
+    }
+
+    const gear = rollGearDropForZone(ZONE_IDS.STARTING);
+    if (gear) {
+      addToInventory(gear, S);
+      lootEntries.push([gear.name, 1]);
     }
   }
   
