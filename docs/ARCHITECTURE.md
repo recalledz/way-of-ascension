@@ -27,7 +27,7 @@ A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. 
 
 #### Entrypoint & Bootstrap
 
-`src/index.js` is a minimal entry that creates the controller, mounts feature UIs via `mountAllFeatureUIs(state)` and then calls `start()`. `src/features/index.js` centralises these UI mounts for all features. A placeholder app shell lives at `src/ui/app.js` for future global UI composition.
+`src/ui/app.js` exports `initApp()`, which creates the game controller, mounts feature UIs via `mountAllFeatureUIs(state)`, mounts debug helpers and starts the loop. `src/index.js` is a minimal entry that simply calls `initApp()`.
 
 #### State Access Rules
 
