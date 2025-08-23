@@ -2,6 +2,7 @@ import { emit } from "../shared/events.js";
 import { loadSave, saveDebounced } from "../shared/saveLoad.js";
 import { recalculateBuildingBonuses } from "../features/sect/mutators.js";
 import { initFeatureState, tickFeatures } from "../features/registry.js";
+import { ensureMindState, onTick as mindOnTick } from "../features/mind/index.js";
 
 // Register feature hooks
 import "../features/proficiency/index.js";
@@ -18,6 +19,7 @@ export function createGameController() {
 
   const hydrated = loadSave(state);
   Object.assign(state, hydrated);
+  ensureMindState(state);
   recalculateBuildingBonuses(state);
 
   let running = false;
@@ -39,6 +41,7 @@ export function createGameController() {
 
     while (acc >= stepMs) {
       tickFeatures(state, stepMs);
+      mindOnTick(state, stepMs / 1000);
 
       // --- New world: per-feature listeners advance here ---
       emit("TICK", { stepMs, now });
@@ -55,6 +58,7 @@ export function createGameController() {
   function resume() { if (!running) { running = true; state.app.lastTick = performance.now(); requestAnimationFrame(loop); } }
   function step() {
     tickFeatures(state, stepMs);
+    mindOnTick(state, stepMs / 1000);
     emit("TICK", { stepMs, now: performance.now() });
     emit("RENDER");
     saveDebounced(state);
