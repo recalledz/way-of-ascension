@@ -745,7 +745,8 @@ Paths added:
 - `src/shared/saveLoad.js`
 - `src/features/index.js` – UI bootstrap
 - `src/features/registry.js` – Feature registration hooks
-- `src/index.js` – entry that bootstraps and starts the controller
+- `src/ui/app.js` – creates the controller, mounts feature UIs and starts the loop
+- `src/index.js` – minimal entry that calls `initApp()`
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
 - `src/shared/utils/number.js` - number formatting helper
@@ -775,8 +776,11 @@ Paths added:
 #### `src/features/registry.js` - Feature Registry
 **Purpose**: Collects feature `init` and `tick` hooks and exposes helpers to initialise slices and advance ticks.
 
+#### `src/ui/app.js` - App Bootstrap
+**Purpose**: Creates the controller, mounts feature UIs and debug tools, then starts the game loop.
+
 #### `src/index.js` - Entrypoint
-**Purpose**: Minimal bootstrap that creates the controller, mounts feature UIs and starts the game.
+**Purpose**: Minimal entry that calls `initApp()`.
 
 #### `docs/ARCHITECTURE.md` - Architecture Overview
 **Purpose**: Documents the controller, events bus and bootstrap pattern.
