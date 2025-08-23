@@ -23,7 +23,7 @@ Other folders such as `scripts/` (build or deployment scripts), `browser-tools-m
 
 #### Events Bus
 
-A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. The controller emits `TICK` (fixed step) and `RENDER` (per frame). Feature UIs subscribe to `RENDER` to redraw, and systems can listen to `TICK` for simulation updates.
+A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. The controller emits `TICK` (fixed step) and `RENDER` (per frame). Feature UIs subscribe to `RENDER` to redraw, and systems can listen to `TICK` for simulation updates. Mutators can also broadcast domain events; for example `startActivity` emits `ACTIVITY:START` with the root state and activity name so features like mining can initialise themselves without direct dependencies.
 
 #### Entrypoint & Bootstrap
 

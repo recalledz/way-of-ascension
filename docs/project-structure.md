@@ -786,7 +786,7 @@ Paths added:
 **Key Functions**: `getActiveActivity(state)`, `getSelectedActivity(state)`.
 
 #### `src/features/activity/mutators.js` - Activity Mutators
-**Purpose**: Select, start, and stop activities while emitting events.
+**Purpose**: Select, start, and stop activities while emitting events. `startActivity` broadcasts `ACTIVITY:START` with the root state and activity name.
 **Key Functions**: `selectActivity(state, name)`, `startActivity(state, name)`, `stopActivity(state, name)`.
 
 #### `src/features/activity/ui/activityUI.js` - Activity UI
@@ -840,7 +840,7 @@ Paths added:
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
 - `src/features/mining/logic.js` – Handles mining rates, resource gains and experience progression.
-- `src/features/mining/mutators.js` – External wrappers to modify mining state.
+- `src/features/mining/mutators.js` – External wrappers to modify mining state and listeners for `ACTIVITY:START` to apply default values.
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
 

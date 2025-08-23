@@ -13,10 +13,7 @@ export function startActivity(root, name) {
   for (const k of Object.keys(root.activities)) root.activities[k] = (k === name);
 
   // Let features react without coupling:
-  emit("ACTIVITY:START", { name });
-
-  // Convenience side-effects that used to live in ui/index.js:
-  if (name === "mining") root.mining ??= { level: 1, exp: 0, expMax: 100, selectedResource: root.mining?.selectedResource || "stones" };
+  emit("ACTIVITY:START", { root, name });
 }
 
 export function stopActivity(root, name) {
