@@ -9,7 +9,7 @@ import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGR
 import { ABILITIES } from '../ability/data/abilities.js';
 import { performAttack, decayStunBar } from '../combat/attack.js'; // STATUS-REFORM
 import { chanceToHit } from '../combat/hit.js';
-import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
+import { tryCastAbility } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, log } from '../../shared/utils/dom.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
@@ -73,7 +73,7 @@ function triggerDeathBreak(target) {
   const el = document.querySelector(sel);
   if (!el) return;
   el.classList.add('death-break');
-  setTimeout(() => el.classList.remove('death-break'), 600);
+  el.addEventListener('animationend', () => el.classList.remove('death-break'), { once: true });
 }
 
 // Adventure zone and area UI helpers
@@ -242,7 +242,7 @@ export function updateAbilityBar() {
       }
       if (slot.insufficientQi) card.classList.add('insufficient');
       card.addEventListener('click', () => {
-        if (tryCastAbility(slot.abilityKey)) {
+        if (tryCastAbility(slot.abilityKey, S, Math.random())) {
           S.qi -= ABILITIES[slot.abilityKey].costQi;
           flashAbilityCard(i + 1);
           updateAbilityBar();
@@ -267,20 +267,19 @@ function flashAbilityCard(index) {
   const el = document.querySelector(`.ability-card[data-slot='${index}']`);
   if (!el) return;
   el.classList.add('flash');
-  setTimeout(() => el.classList.remove('flash'), 150);
+  el.addEventListener('animationend', () => el.classList.remove('flash'), { once: true });
 }
 
 function shakeAbilityCard(index) {
   const el = document.querySelector(`.ability-card[data-slot='${index}']`);
   if (!el) return;
   el.classList.add('shake');
-  setTimeout(() => el.classList.remove('shake'), 300);
+  el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
 }
 
 export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
-  processAbilityQueue(S);
-  // If an ability reduced enemy HP to 0, resolve defeat immediately
+  // Ability effects resolve via feature tick; if enemy HP hits 0, resolve defeat immediately
   if (S.adventure.currentEnemy && S.adventure.enemyHP <= 0) {
     defeatEnemy();
     return;
@@ -337,7 +336,15 @@ export function updateAdventureCombat() {
               case 'flurry': {
                 const mid = { x: (pos.from.x + pos.to.x) / 2, y: pos.from.y };
                 playSlashArc(pos.svg, pos.from, mid);
-                setTimeout(() => playSlashArc(pos.svg, mid, pos.to), 80);
+                const start = performance.now();
+                const animate = (now) => {
+                  if (now - start >= 80) {
+                    playSlashArc(pos.svg, mid, pos.to);
+                  } else {
+                    requestAnimationFrame(animate);
+                  }
+                };
+                requestAnimationFrame(animate);
                 playSparkBurst(pos.svg, pos.to);
                 break;
               }
@@ -988,7 +995,7 @@ document.addEventListener('keydown', e => {
     const slots = getAbilitySlots(S);
     const slot = slots[num - 1];
     if (slot?.abilityKey) {
-      if (tryCastAbility(slot.abilityKey)) {
+      if (tryCastAbility(slot.abilityKey, S, Math.random())) {
         S.qi -= ABILITIES[slot.abilityKey].costQi;
         flashAbilityCard(num);
         updateAbilityBar();

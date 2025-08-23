@@ -3,7 +3,7 @@ import { ABILITIES } from './data/abilities.js';
 import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 
-export function tryCastAbility(abilityKey, state = S) {
+export function tryCastAbility(abilityKey, state = S, roll = 0) {
   const ability = ABILITIES[abilityKey];
   if (!ability) return false;
   if (!state.adventure?.inCombat) return false;
@@ -16,12 +16,14 @@ export function tryCastAbility(abilityKey, state = S) {
   if (!state.abilityCooldowns) state.abilityCooldowns = {};
   state.abilityCooldowns[abilityKey] = ability.cooldownMs;
   if (!state.actionQueue) state.actionQueue = [];
-  const enqueue = () => state.actionQueue.push({ type: 'ABILITY_HIT', abilityKey });
-  if (ability.castTimeMs > 0) setTimeout(enqueue, ability.castTimeMs);
-  else {
-    enqueue();
-    processAbilityQueue(state);
-  }
+
+  state.actionQueue.push({
+    type: 'ABILITY_HIT',
+    abilityKey,
+    roll,
+    timeRemaining: ability.castTimeMs || 0,
+  });
+
   return true;
 }
 
@@ -32,10 +34,22 @@ export function tickAbilityCooldowns(dtMs, state = S) {
   }
 }
 
-export function processAbilityQueue(state = S) {
+function tickActionQueue(dtMs, state = S) {
   if (!state.actionQueue || !state.actionQueue.length) return;
-  while (state.actionQueue.length) {
-    const action = state.actionQueue.shift();
-    if (action.type === 'ABILITY_HIT') resolveAbilityHit(action.abilityKey, state);
+  const ready = [];
+  for (const action of state.actionQueue) {
+    action.timeRemaining = Math.max(0, (action.timeRemaining || 0) - dtMs);
+    if (action.timeRemaining === 0) ready.push(action);
   }
+  state.actionQueue = state.actionQueue.filter(a => a.timeRemaining > 0);
+  for (const action of ready) {
+    if (action.type === 'ABILITY_HIT') {
+      resolveAbilityHit(action.abilityKey, state, { roll: action.roll });
+    }
+  }
+}
+
+export function tickAbility(state = S, dtMs) {
+  tickAbilityCooldowns(dtMs, state);
+  tickActionQueue(dtMs, state);
 }

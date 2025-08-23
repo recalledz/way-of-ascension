@@ -4046,7 +4046,8 @@ tr:last-child td {
 .ability-card.cooling { opacity:0.6; }
 .cooldown-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.6); color:#fff; display:flex; align-items:center; justify-content:center; }
 .ability-card.insufficient { filter:grayscale(1); }
-.ability-card.flash { box-shadow:0 0 4px 2px var(--accent); }
+.ability-card.flash { box-shadow:0 0 4px 2px var(--accent); animation:ability-flash 0.15s; }
+@keyframes ability-flash { from{box-shadow:0 0 4px 2px var(--accent);} to{box-shadow:none;} }
 .ability-card.shake { animation:ability-shake 0.3s; }
 @keyframes ability-shake { 0%{transform:translateX(0);}25%{transform:translateX(-2px);}50%{transform:translateX(2px);}75%{transform:translateX(-2px);}100%{transform:translateX(0);} }
 .heal-float { position:fixed; color:#0f0; font-weight:bold; pointer-events:none; animation:heal-float 1s forwards; }

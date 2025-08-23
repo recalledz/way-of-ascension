@@ -77,7 +77,15 @@ function showHitFeedback(message, color){
     el.textContent = message;
     el.style.color = color;
     el.style.opacity = '1';
-    setTimeout(() => { el.style.opacity = '0'; }, 500);
+    const start = performance.now();
+    const fade = (now) => {
+      if (now - start >= 500) {
+        el.style.opacity = '0';
+      } else {
+        requestAnimationFrame(fade);
+      }
+    };
+    requestAnimationFrame(fade);
   }
 }
 

@@ -1,11 +1,12 @@
 import { processAttack } from '../combat/mutators.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { qCap } from '../progression/selectors.js';
+import { showHeal } from '../combat/ui/fx.js';
 
-export function resolveAbilityHit(abilityKey, state) {
+export function resolveAbilityHit(abilityKey, state, { roll = 0 } = {}) {
   switch (abilityKey) {
     case 'powerSlash':
-      resolvePowerSlash(state);
+      resolvePowerSlash(state, roll);
       break;
     case 'seventyFive':
       resolveSeventyFive(state);
@@ -15,10 +16,10 @@ export function resolveAbilityHit(abilityKey, state) {
   }
 }
 
-function resolvePowerSlash(state) {
+function resolvePowerSlash(state, roll) {
   const weapon = getEquippedWeapon(state);
-  const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
-  const raw = Math.round(1.3 * roll);
+  const scaled = Math.floor(roll * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
+  const raw = Math.round(1.3 * scaled);
   const dealt = processAttack(
     raw,
     { target: state.adventure.currentEnemy, type: 'physical' },
@@ -58,15 +59,3 @@ function resolveSeventyFive(state) {
   }
 }
 
-function showHeal(amount) {
-  const el = document.getElementById('hpVal');
-  if (!el) return;
-  const rect = el.getBoundingClientRect();
-  const note = document.createElement('div');
-  note.className = 'heal-float';
-  note.textContent = `+${amount}`;
-  note.style.left = rect.left + 'px';
-  note.style.top = rect.top - 20 + 'px';
-  document.body.appendChild(note);
-  setTimeout(() => note.remove(), 1000);
-}

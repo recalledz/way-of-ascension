@@ -130,7 +130,7 @@ export function mountDevQuickMenu() {
 
   // Consolidate existing dev panels if present (non-breaking)
   // Move any #debugPanel/#debugConsole into our panel
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     const existing = document.getElementById("debugPanel") || document.getElementById("debugConsole");
     if (existing && !panel.contains(existing)) {
       existing.style.display = "block";
@@ -143,7 +143,7 @@ export function mountDevQuickMenu() {
       wrap.appendChild(existing);
       panel.append(hdr, wrap);
     }
-  }, 0);
+  });
 
   // Toggle
   btn.onclick = () => { panel.style.display = panel.style.display === "none" ? "block" : "none"; };

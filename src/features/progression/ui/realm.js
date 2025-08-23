@@ -53,7 +53,7 @@ export function updateActivityCultivation() {
   const foundationNumbers = document.querySelector('.foundation-inline');
   if (foundationNumbers && currentFoundation > prevFoundation) {
     foundationNumbers.classList.add('flash');
-    setTimeout(() => foundationNumbers.classList.remove('flash'), 600);
+    foundationNumbers.addEventListener('animationend', () => foundationNumbers.classList.remove('flash'), { once: true });
   }
   
   // Pulse effect when at max foundation

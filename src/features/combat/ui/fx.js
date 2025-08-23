@@ -11,14 +11,15 @@ export function setReduceMotion(v) {
   reduceMotion = v;
 }
 
-function spawn(svg, el, duration = 400) {
+function spawn(svg, el) {
   if (!svg || reduceMotion || active >= MAX_FX) return;
   active++;
   svg.appendChild(el);
-  setTimeout(() => {
+  const remove = () => {
     if (el.parentNode === svg) svg.removeChild(el);
     active--;
-  }, duration);
+  };
+  el.addEventListener('animationend', remove, { once: true });
 }
 
 export function setFxTint(svg, tint = 'auto') {
@@ -41,7 +42,7 @@ export function playSlashArc(svg, from, to) {
   const midY = Math.min(from.y, to.y) - 10;
   path.setAttribute('d', `M${from.x},${from.y} Q${midX},${midY} ${to.x},${to.y}`);
   path.classList.add('fx-stroke');
-  spawn(svg, path, 400);
+  spawn(svg, path);
 }
 
 export function playThrustLine(svg, from, to) {
@@ -61,7 +62,7 @@ export function playThrustLine(svg, from, to) {
   line.setAttribute('x2', String(to.x));
   line.setAttribute('y2', String(to.y));
   line.classList.add('fx-thrust');
-  spawn(svg, line, 300);
+  spawn(svg, line);
 }
 
 export function playRingShockwave(svg, center, radius = 20) {
@@ -71,7 +72,7 @@ export function playRingShockwave(svg, center, radius = 20) {
   circle.setAttribute('r', 0);
   circle.style.setProperty('--fx-radius', radius);
   circle.classList.add('fx-ring');
-  spawn(svg, circle, 600);
+  spawn(svg, circle);
 }
 
 function playRuneCircle(svg, at) {
@@ -81,7 +82,7 @@ function playRuneCircle(svg, at) {
   const use = document.createElementNS(NS, 'use');
   use.setAttribute('href', '#rune-circle');
   g.appendChild(use);
-  spawn(svg, g, 600);
+  spawn(svg, g);
 }
 
 export function playBeam(svg, from, to) {
@@ -92,7 +93,7 @@ export function playBeam(svg, from, to) {
   line.setAttribute('x2', to.x);
   line.setAttribute('y2', to.y);
   line.classList.add('fx-beam');
-  spawn(svg, line, 400);
+  spawn(svg, line);
 }
 
 export function playChakram(svg, from, to) {
@@ -117,12 +118,12 @@ export function playChakram(svg, from, to) {
       requestAnimationFrame(animate);
     } else {
       svg.removeChild(g);
+      active--;
     }
   }
   if (!reduceMotion && active < MAX_FX) {
     active++;
     requestAnimationFrame(animate);
-    setTimeout(() => { active--; }, duration);
   } else if (svg.contains(g)) {
     svg.removeChild(g);
   }
@@ -134,11 +135,24 @@ export function playShieldDome(svg, center, radius = 25) {
   circle.setAttribute('cy', center.y);
   circle.style.setProperty('--fx-radius', radius);
   circle.classList.add('fx-shield');
-  spawn(svg, circle, 600);
+  spawn(svg, circle);
 }
 
 export function playSparkBurst(svg, center) {
   playRingShockwave(svg, center, 6);
+}
+
+export function showHeal(amount) {
+  const el = document.getElementById('hpVal');
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const note = document.createElement('div');
+  note.className = 'heal-float';
+  note.textContent = `+${amount}`;
+  note.style.left = rect.left + 'px';
+  note.style.top = rect.top - 20 + 'px';
+  document.body.appendChild(note);
+  note.addEventListener('animationend', () => note.remove(), { once: true });
 }
 
 export { reduceMotion };
