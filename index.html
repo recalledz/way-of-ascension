@@ -115,12 +115,12 @@
         <div class="cultivation-header">
           
         </div>
-        <div class="cultivation-tabs">
+        <div class="cultivation-tabs tab-bar">
           <button class="cultivation-tab-btn active" data-tab="cultivation">Cultivation</button>
           <button class="cultivation-tab-btn" data-tab="stats">Stats</button>
         </div>
 
-        <div id="cultivationSubTab" class="cultivation-tab-content active">
+        <div id="cultivationSubTab" class="cultivation-tab-content tab-content active">
           <div class="cultivation-layout">
             <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
@@ -262,7 +262,7 @@
         </div>
 
         <div id="statsSubTab" class="cultivation-tab-content" style="display:none;">
-          <div class="cards">
+          <div class="cards tab-content">
             <div class="card">
               <h4>Breakthrough Details</h4>
               <div class="stat"><span>Success Chance</span><span id="btChanceActivity">0%</span></div>
@@ -294,7 +294,7 @@
 
       <section id="activity-physique" class="activity-content" style="display:none;">
         <h2> Physique Training</h2>
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Training Status</h4>
             <div class="stat"><span>Physique Level</span><span id="physiqueLevelActivity">1</span></div>
@@ -360,7 +360,7 @@
 
       <section id="activity-mining" class="activity-content" style="display:none;">
         <h2> Mining</h2>
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Mining Status</h4>
             <div class="stat"><span>Mining Level</span><span id="miningLevelActivity">1</span></div>
@@ -423,7 +423,7 @@
             </div>
           </div>
         
-        <div class="cards adventure-cards"> <!-- MAP-UI-UPDATE -->
+        <div class="cards adventure-cards tab-content"> <!-- MAP-UI-UPDATE -->
           
           <!-- Persistent Battle Display -->
           <div class="card battle-card expanded-battle"> <!-- MAP-UI-UPDATE -->
@@ -524,7 +524,7 @@
           
           <!-- Adventure Tabs -->
           <div class="card adventure-tabs-card">
-            <div class="adventure-tabs">
+            <div class="adventure-tabs tab-bar">
               <button class="adventure-tab-btn active" data-tab="progress">📊 Progress</button>
               <button class="adventure-tab-btn" data-tab="bestiary">📖 Bestiary</button>
               <button class="adventure-tab-btn" data-tab="loot">💰 Loot</button>
@@ -592,7 +592,7 @@
 
       <section id="activity-character" class="activity-content" style="display:none;">
         <h2>🧙 Character</h2>
-        <div class="cards character-cards">
+        <div class="cards character-cards tab-content">
           <div class="card">
             <h4>Stats</h4>
             <div class="stat"><span>HP</span><span id="stat-hp">100/100</span></div>
@@ -639,7 +639,7 @@
 
       <section id="activity-sect" class="activity-content" style="display:none;">
         <h2>🏛️ Sect Management</h2>
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Sect Buildings</h4>
             <p class="muted">Construct and upgrade buildings to enhance your sect's capabilities. Buildings unlock as you advance in cultivation and provide powerful bonuses.</p>
@@ -650,7 +650,7 @@
 
       <section id="activity-cooking" class="activity-content" style="display:none;">
         <h2>🍳 Cooking</h2>
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Cooking Skill</h4>
             <div class="stat"><span>Level</span><span id="cookingLevel">1</span></div>
@@ -718,8 +718,8 @@
         </div>
       </section>
 
-      <section id="tab-cultivation">
-        <div class="cards">
+      <section id="tab-cultivation" class="activity-content">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Cultivation Training</h4>
             <p class="muted">Meditate to gain <strong>Foundation</strong>. Qi regenerates passively. Both must be full to attempt a breakthrough. Pills can boost success.</p>
@@ -751,8 +751,8 @@
         </div>
       </section>
 
-      <section id="tab-laws">
-        <div class="cards">
+      <section id="tab-laws" class="activity-content">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Cultivation Laws</h4>
             <p class="muted">Choose your cultivation path after reaching Foundation stage. Each law provides unique bonuses and unlocks powerful skill trees.</p>
@@ -771,8 +771,8 @@
         </div>
       </section>
 
-      <section id="tab-gathering">
-        <div class="cards">
+      <section id="tab-gathering" class="activity-content">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Disciples</h4>
             <p class="muted">Assign disciples to gather herbs, ore, and wood. Yields scale with upgrades.</p>
@@ -811,7 +811,7 @@
 
       <section id="activity-alchemy" class="activity-content" style="display:none;">
         <h2>⚗️ Alchemy</h2>
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Alchemy Cauldron</h4>
             <p class="muted">Brew pills that boost cultivation and breakthroughs. Success grows with Alchemy level.</p>
@@ -836,8 +836,8 @@
         </div>
       </section>
 
-      <section id="tab-combat">
-        <div class="cards">
+      <section id="tab-combat" class="activity-content">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Combat Stats</h4>
             <div class="stat"><span>Your ATK</span><span id="atkVal2">5</span></div>

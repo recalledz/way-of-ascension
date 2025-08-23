@@ -507,6 +507,7 @@ function setupStatusToggle() {
     window.removeEventListener('keydown', esc);
     toggle.textContent = 'Status \u25BE';
     toggle.focus();
+    requestAnimationFrame(updateViewportVars);
   }
   function open() {
     row.setAttribute('data-open', 'true');
@@ -516,6 +517,7 @@ function setupStatusToggle() {
     toggle.textContent = 'Status \u25B4';
     document.addEventListener('click', outside, true);
     window.addEventListener('keydown', esc);
+    requestAnimationFrame(updateViewportVars);
   }
   function esc(e) { if (e.key === 'Escape') close(); }
   function outside(e) { if (!row.contains(e.target)) close(); }
@@ -536,12 +538,32 @@ function enableDebug() {
   check();
 }
 
+function updateViewportVars() {
+  const root = document.documentElement;
+  const header = document.querySelector('header');
+  const bars = document.querySelectorAll('.tab-bar');
+  let activeBar = null;
+  for (const b of bars) {
+    if (b.offsetParent !== null) { activeBar = b; break; }
+  }
+  if (header) root.style.setProperty('--header-h', `${header.offsetHeight}px`);
+  root.style.setProperty('--tabs-h', activeBar ? `${activeBar.offsetHeight}px` : '0px');
+}
+
+window.addEventListener('resize', updateViewportVars);
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.cultivation-tab-btn') || e.target.closest('.adventure-tab-btn') || e.target.closest('[data-activity]')) {
+    requestAnimationFrame(updateViewportVars);
+  }
+});
+
 
 
 // Init
 window.addEventListener('load', ()=>{
   initUI();
   setupMobileUI();
+  updateViewportVars();
   setupStatusToggle();
   enableDebug();
   initLawSystem();
