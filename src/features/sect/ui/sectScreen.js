@@ -1,5 +1,6 @@
 import { SECT_BUILDINGS } from '../data/buildings.js';
 import { getBuildingLevel, getBuildingBonuses } from '../selectors.js';
+import { getBuildingCost } from '../logic.js';
 import { upgradeBuilding } from '../mutators.js';
 import { on } from '../../../shared/events.js';
 import { setText } from '../../../shared/utils/dom.js';
@@ -13,9 +14,29 @@ function renderBuildings(state){
     const next = level + 1;
     const row = document.createElement('div');
     row.className = 'building-row';
+
     const label = document.createElement('span');
     label.textContent = `${b.icon} ${b.name} (Lv ${level})`;
     row.appendChild(label);
+
+    const effect = document.createElement('span');
+    if(next > b.maxLevel){
+      effect.textContent = b.effects[level]?.desc || '';
+    } else {
+      effect.textContent = b.effects[next]?.desc || '';
+    }
+    row.appendChild(effect);
+
+    const costSpan = document.createElement('span');
+    if(next > b.maxLevel){
+      costSpan.textContent = 'Max level';
+    } else {
+      const cost = getBuildingCost(key, next);
+      const costStr = Object.entries(cost).map(([res, amt]) => `${amt} ${res}`).join(', ');
+      costSpan.textContent = `Cost: ${costStr}`;
+    }
+    row.appendChild(costSpan);
+
     const btn = document.createElement('button');
     btn.textContent = next > b.maxLevel ? 'Max' : 'Upgrade';
     btn.disabled = next > b.maxLevel;
@@ -23,6 +44,7 @@ function renderBuildings(state){
       if(upgradeBuilding(state, key)) render(state);
     });
     row.appendChild(btn);
+
     container.appendChild(row);
   }
 }
