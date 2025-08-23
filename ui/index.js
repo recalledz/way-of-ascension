@@ -3,7 +3,7 @@
 
 // Way of Ascension — Modular JS
 
-import { S, defaultState, save, setState } from '../src/shared/state.js';
+import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
   clamp,
   qCap,
@@ -165,7 +165,7 @@ function initUI(){
   if (importBtn) {
     importBtn.addEventListener('click', async()=>{
       const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
+      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ const parsed = JSON.parse(r.result); const v = validateState(parsed); if(!v) throw new Error('bad'); setState(v); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
       inp.click();
     });
   }
@@ -444,11 +444,118 @@ function tick(){
   updateAbilityBar();
 }
 
+function setupMobileUI() {
+  const menu = qs('#menuButton');
+  const sidebar = qs('#sidebar');
+  const scrim = qs('#drawerScrim');
+  if (!menu || !sidebar || !scrim) return;
+  const mq = window.matchMedia('(max-width: 768px)');
+  let first, last;
+  function trap(e) {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); (last || first).focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); (first || last).focus(); }
+  }
+  function close(focusMenu = true) {
+    sidebar.classList.remove('open');
+    scrim.classList.remove('active');
+    scrim.hidden = true;
+    document.body.classList.remove('drawer-open');
+    menu.setAttribute('aria-expanded', 'false');
+    sidebar.setAttribute('aria-hidden', 'true');
+    window.removeEventListener('keydown', esc);
+    window.removeEventListener('keydown', trap);
+    if (focusMenu) menu.focus();
+  }
+  function esc(e) { if (e.key === 'Escape') close(); }
+  function open() {
+    const focusables = sidebar.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    first = focusables[0];
+    last = focusables[focusables.length - 1];
+    sidebar.classList.add('open');
+    scrim.hidden = false;
+    scrim.classList.add('active');
+    document.body.classList.add('drawer-open');
+    menu.setAttribute('aria-expanded', 'true');
+    sidebar.setAttribute('aria-hidden', 'false');
+    (first || sidebar).focus();
+    window.addEventListener('keydown', esc);
+    window.addEventListener('keydown', trap);
+  }
+  menu.addEventListener('click', open);
+  scrim.addEventListener('click', () => close());
+  function apply(e) {
+    if (e.matches) {
+      sidebar.setAttribute('role', 'dialog');
+      sidebar.setAttribute('aria-modal', 'true');
+      close(false);
+    } else {
+      sidebar.removeAttribute('aria-hidden');
+      sidebar.removeAttribute('role');
+      sidebar.removeAttribute('aria-modal');
+      sidebar.classList.remove('open');
+      scrim.classList.remove('active');
+      scrim.hidden = true;
+      document.body.classList.remove('drawer-open');
+      menu.setAttribute('aria-expanded', 'false');
+    }
+  }
+  mq.addEventListener('change', apply);
+  apply(mq);
+}
+
+function setupStatusToggle() {
+  const row = qs('#statusRow');
+  const toggle = qs('#statusToggle');
+  const cluster = qs('#statusCluster');
+  if (!row || !toggle || !cluster) return;
+  function firstFocusable() {
+    return cluster.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  }
+  function close() {
+    row.setAttribute('data-open', 'false');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('click', outside, true);
+    window.removeEventListener('keydown', esc);
+    toggle.textContent = 'Status \u25BE';
+    toggle.focus();
+  }
+  function open() {
+    row.setAttribute('data-open', 'true');
+    toggle.setAttribute('aria-expanded', 'true');
+    const f = firstFocusable();
+    f && f.focus();
+    toggle.textContent = 'Status \u25B4';
+    document.addEventListener('click', outside, true);
+    window.addEventListener('keydown', esc);
+  }
+  function esc(e) { if (e.key === 'Escape') close(); }
+  function outside(e) { if (!row.contains(e.target)) close(); }
+  toggle.addEventListener('click', () => {
+    row.getAttribute('data-open') === 'true' ? close() : open();
+  });
+}
+
+function enableDebug() {
+  if (!window.DEBUG) return;
+  document.documentElement.classList.add('debug-overflow');
+  const check = () => {
+    const w = document.documentElement.scrollWidth;
+    const vw = document.documentElement.clientWidth;
+    if (w > vw) console.warn('[layout] overflow', w - vw);
+  };
+  window.addEventListener('resize', check);
+  check();
+}
+
 
 
 // Init
 window.addEventListener('load', ()=>{
   initUI();
+  setupMobileUI();
+  setupStatusToggle();
+  enableDebug();
   initLawSystem();
   mountActivityUI(S);
   mountAdventureControls(S);

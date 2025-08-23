@@ -29,7 +29,8 @@ import {
   playChakram,
   playShieldDome,
   playSparkBurst,
-  setFxTint
+  setFxTint,
+  showFloatingText
 } from '../combat/ui/index.js';
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
@@ -163,6 +164,7 @@ export function updateBattleDisplay() {
   setText('playerAttack', Math.round(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
+  setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
@@ -314,8 +316,10 @@ export function updateAdventureCombat() {
       const enemyDodge = S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
+        const critChance = S.stats?.criticalChance || 0;
+        const isCrit = Math.random() < critChance;
         const playerAttack = calculatePlayerCombatAttack(S);
-        const dmg = Math.max(1, Math.round(playerAttack));
+        const dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
         const dealt = processAttack(
           dmg,
           { target: S.adventure.currentEnemy, type: 'physical' },
@@ -324,6 +328,10 @@ export function updateAdventureCombat() {
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
+        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
+        if (enemyBar) {
+          showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
+        }
         const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
         const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
         performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
@@ -368,6 +376,10 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
+        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
+        if (enemyBar) {
+          showFloatingText({ targetEl: enemyBar, result: 'miss' });
+        }
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
@@ -378,13 +390,20 @@ export function updateAdventureCombat() {
         const playerDodge = S.stats?.dodge || 0;
         const hitP = chanceToHit(enemyAcc, playerDodge);
         if (Math.random() < hitP) {
-          const enemyDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          const critChance = S.adventure.currentEnemy?.stats?.criticalChance ?? S.adventure.currentEnemy?.criticalChance ?? 0;
+          const isCrit = Math.random() < critChance;
+          const baseDamage = Math.round(S.adventure.currentEnemy.attack || 5);
+          const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
           const taken = processAttack(
             enemyDamage,
             { target: S, type: 'physical' },
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
+          const playerBar = document.querySelector('.combatant.player .health-bar');
+          if (playerBar) {
+            showFloatingText({ targetEl: playerBar, result: isCrit ? 'crit' : 'hit', amount: taken });
+          }
           const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
           performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
           S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
@@ -422,6 +441,10 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
+          const playerBar = document.querySelector('.combatant.player .health-bar');
+          if (playerBar) {
+            showFloatingText({ targetEl: playerBar, result: 'miss' });
+          }
         }
       }
     }
@@ -967,8 +990,9 @@ export function updateActivityAdventure() {
     S.adventure.bestiary = {};
   }
   const currentZone = ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
+  let currentArea = null;
   if (currentZone && currentZone.areas) {
-    const currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
+    currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
     if (currentArea) {
       setText('currentLocationText', `${currentZone.name} - ${currentArea.name}`);
       setText('killsRequired', `${S.adventure.killsInCurrentArea}/${currentArea.killReq}`);
@@ -989,6 +1013,19 @@ export function updateActivityAdventure() {
   }
   const baseAttack = Math.round(calculatePlayerCombatAttack(S));
   setText('baseDamage', baseAttack);
+  const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
+  if (enemyData) {
+    const enemyDodge = enemyData.stats?.dodge ?? enemyData.dodge ?? 0;
+    const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
+    setText('hitChance', `${Math.round(hitP * 100)}%`);
+    const enemyAcc = enemyData.stats?.accuracy ?? enemyData.accuracy ?? 0;
+    const evadeP = 1 - chanceToHit(enemyAcc, S.stats?.dodge || 0);
+    setText('evadeChance', `${Math.round(evadeP * 100)}%`);
+  } else {
+    setText('hitChance', '--');
+    setText('evadeChance', '--');
+  }
+  setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
   updateZoneButtons();
   updateAreaGrid();
   updateAdventureProgressBar(selectAreaById); // MAP-UI-UPDATE

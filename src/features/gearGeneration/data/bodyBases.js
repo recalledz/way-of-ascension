@@ -11,8 +11,8 @@ export const BODY_BASES = {
     displayName: 'Leather Tunic',
     slot: 'body',
     defenseType: 'dodge',
-    baseDefense: { dodge: 40 },
-    baseOffense: { accuracy: 10 },
+    baseDefense: { dodge: 15 },
+    baseOffense: { accuracy: 5 },
   },
   cotton_robe: {
     key: 'cotton_robe',
