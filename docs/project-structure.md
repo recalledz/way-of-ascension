@@ -130,6 +130,7 @@ way-of-ascension/
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
 │   │   │       ├── combatStats.js
+│   │   │       ├── floatingText.js
 │   │   │       ├── fx.js
 │   │   │       └── index.js
 │   │   ├── cooking/
@@ -723,6 +724,11 @@ function updateAll() {
 **Key Functions**: `playSlashArc()`, `playThrustLine()`, `playRingShockwave()`, `playBeam()`, `playChakram()`, `playShieldDome()`, `playSparkBurst()`, `setFxTint()`, `setReduceMotion()`.
 **When to modify**: Extend or adjust visual effect primitives.
 
+#### `src/features/combat/ui/floatingText.js` - Floating Combat Text
+**Purpose**: Renders animated combat text (damage numbers, misses, critical hits) above HP bars.
+**Key Functions**: `showFloatingText()`, `setFloatingTextEnabled()`.
+**When to modify**: Change floating combat text behavior or styling.
+
 ### HTML Structure (`index.html`)
 **Purpose**: Main game interface structure
 **Key Elements**:
@@ -771,6 +777,7 @@ Paths added:
 - `src/features/automation/mutators.js` – automation mutators
 - `src/features/automation/selectors.js` – automation selectors
 - `src/features/automation/state.js` – automation state slice
+- `src/features/combat/ui/floatingText.js` – floating combat text renderer
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.

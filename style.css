@@ -4118,3 +4118,23 @@ tr:last-child td {
             drop-shadow(0 0 0.25rem rgba(179, 36, 36, 0.35));
   }
 }
+
+/* Floating combat text */
+.fct{
+  position:absolute;
+  pointer-events:none;
+  color:#fff;
+  text-shadow:0 0 2px #000;
+  font-weight:400;
+  user-select:none;
+  z-index:9999;
+  will-change:transform,opacity;
+}
+.fct-crit{
+  color:#ffd700;
+  font-weight:700;
+}
+.fct-miss{
+  color:#9ab;
+  font-style:italic;
+}
