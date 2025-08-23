@@ -18,8 +18,14 @@ export function getFoodSlotData(state) {
 }
 
 export function cookMeat(amount, state) {
-  const amt = parseInt(amount) || 1;
-  if ((state.meat || 0) < amt) {
+  const parsed = Number(amount);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    console.warn(`Invalid cook amount: ${amount}`);
+    return;
+  }
+  const availableMeat = state.meat || 0;
+  const amt = Math.min(parsed, availableMeat);
+  if (amt < 1) {
     log('Not enough raw meat!', 'bad');
     return;
   }
