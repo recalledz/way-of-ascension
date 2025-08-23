@@ -8,6 +8,7 @@ import { clamp, fCap, foundationGainPerMeditate } from './selectors.js';
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;
   const oldRealm = state.realm.tier;
+  const result = { type: wasRealmAdvancement ? 'realm' : 'stage' };
 
   state.realm.stage++;
   if (state.realm.stage > REALMS[state.realm.tier].stages) {
@@ -17,6 +18,8 @@ export function advanceRealm(state = progressionState) {
 
   const currentRealm = REALMS[state.realm.tier];
   log?.(`Advanced to ${currentRealm.name} ${state.realm.stage}!`, 'good');
+  result.realmName = currentRealm.name;
+  result.stage = state.realm.stage;
 
   if (wasRealmAdvancement) {
     const realmBonus = Math.max(1, Math.floor(state.realm.tier * 1.5));
@@ -24,6 +27,7 @@ export function advanceRealm(state = progressionState) {
     state.defBase += realmBonus;
     state.hpMax += Math.floor(state.hpMax * 0.25);
     state.hp = state.hpMax;
+    result.statMsg = `ATK +${realmBonus * 2}, DEF +${realmBonus}, HP +25%`;
 
     state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
     state.stats = state.stats || {
@@ -34,6 +38,7 @@ export function advanceRealm(state = progressionState) {
 
     state.cultivation.talent += 0.15;
     state.cultivation.foundationMult += 0.08;
+    result.extraMsg = `Talent +15%, Comprehension +10%, Foundation Mult +8%`;
 
     const realmStatPoints = 3 + state.realm.tier;
     state.stats.physique += Math.ceil(realmStatPoints * 0.3);
@@ -51,6 +56,7 @@ export function advanceRealm(state = progressionState) {
     state.defBase += Math.floor(stageBonus * 0.7);
     state.hpMax += Math.floor(state.hpMax * 0.08);
     state.hp = Math.min(state.hpMax, state.hp + Math.floor(state.hpMax * 0.5));
+    result.statMsg = `ATK +${stageBonus}, DEF +${Math.floor(stageBonus * 0.7)}, HP +8%`;
 
     state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
     state.stats = state.stats || {
@@ -60,6 +66,7 @@ export function advanceRealm(state = progressionState) {
     };
 
     state.cultivation.talent += 0.03;
+    result.extraMsg = `Talent +3%, Comprehension +2%`;
 
     const stageStatPoints = 1 + Math.floor(state.realm.tier * 0.5);
     const statDistribution = Math.random();
@@ -79,6 +86,7 @@ export function advanceRealm(state = progressionState) {
 
   checkLawUnlocks(state);
   awardLawPoints(state);
+  return result;
 }
 
 export function checkLawUnlocks(state = progressionState) {
