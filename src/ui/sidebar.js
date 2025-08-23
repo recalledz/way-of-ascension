@@ -54,6 +54,15 @@ export function renderSidebarActivities() {
       cost: {},
     },
     {
+      id: 'mind',
+      label: 'Mind',
+      icon: '<iconify-icon icon="mdi:brain" class="ui-icon" width="20"></iconify-icon>',
+      group: 'management',
+      levelId: 'mindLevel',
+      initialLevel: 'Level 1',
+      cost: {},
+    },
+    {
       id: 'adventure',
       label: 'Adventure',
       icon: '<iconify-icon icon="lucide:mountain" class="ui-icon"></iconify-icon>',
