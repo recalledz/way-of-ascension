@@ -120,7 +120,7 @@
           <button class="cultivation-tab-btn" data-tab="stats">Stats</button>
         </div>
 
-        <div id="cultivationSubTab" class="cultivation-tab-content active">
+        <div id="cultivationSubTab" class="cultivation-tab-content tab-content active">
           <div class="cultivation-layout">
             <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
@@ -261,7 +261,7 @@
           </div>
         </div>
 
-        <div id="statsSubTab" class="cultivation-tab-content" style="display:none;">
+        <div id="statsSubTab" class="cultivation-tab-content tab-content" style="display:none;">
           <div class="cards">
             <div class="card">
               <h4>Breakthrough Details</h4>
@@ -294,7 +294,7 @@
 
       <section id="activity-physique" class="activity-content" style="display:none;">
         <h2> Physique Training</h2>
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Training Status</h4>
             <div class="stat"><span>Physique Level</span><span id="physiqueLevelActivity">1</span></div>
@@ -532,7 +532,7 @@
             </div>
             
             <!-- Progress Tab -->
-            <div id="progressTab" class="adventure-tab-content active">
+            <div id="progressTab" class="adventure-tab-content tab-content active">
               <div class="stat"><span>Total Kills</span><span id="totalKills">0</span></div>
               <div class="stat"><span>Areas Completed</span><span id="areasCompleted">0</span></div>
               <div class="stat"><span>Zones Unlocked</span><span id="zonesUnlocked">1</span></div>
@@ -548,14 +548,14 @@
             </div>
             
             <!-- Bestiary Tab -->
-            <div id="bestiaryTab" class="adventure-tab-content" style="display: none;">
+            <div id="bestiaryTab" class="adventure-tab-content tab-content" style="display: none;">
               <div class="bestiary-list" id="bestiaryList">
                 <div class="muted">Defeat enemies to unlock their information...</div>
               </div>
             </div>
 
             <!-- Loot Tab -->
-            <div id="lootTab" class="adventure-tab-content" style="display: none;">
+            <div id="lootTab" class="adventure-tab-content tab-content" style="display: none;">
               <div class="muted warn">Items here are not safe. Retreat to claim; death forfeits them.</div>
               <div class="session-loot-list" id="sessionLootList"></div>
               <div class="loot-actions" style="text-align:right; margin-top:8px;">
@@ -565,7 +565,7 @@
             </div>
             
             <!-- Proficiencies Tab -->
-            <div id="proficienciesTab" class="adventure-tab-content" style="display: none;">
+            <div id="proficienciesTab" class="adventure-tab-content tab-content" style="display: none;">
               <div class="stat"><span id="weaponLabel">Fists Level</span><span id="weaponLevel">1</span></div>
               <div class="stat"><span>Experience</span><span id="weaponExp">0</span> / <span id="weaponExpMax">100</span></div>
               <div class="activity-progress-bar"><div class="progress-fill" id="weaponExpFill"></div></div>
@@ -752,7 +752,7 @@
       </section>
 
       <section id="tab-laws">
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Cultivation Laws</h4>
             <p class="muted">Choose your cultivation path after reaching Foundation stage. Each law provides unique bonuses and unlocks powerful skill trees.</p>
@@ -772,7 +772,7 @@
       </section>
 
       <section id="tab-gathering">
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Disciples</h4>
             <p class="muted">Assign disciples to gather herbs, ore, and wood. Yields scale with upgrades.</p>
@@ -837,7 +837,7 @@
       </section>
 
       <section id="tab-combat">
-        <div class="cards">
+        <div class="cards tab-content">
           <div class="card">
             <h4>Combat Stats</h4>
             <div class="stat"><span>Your ATK</span><span id="atkVal2">5</span></div>

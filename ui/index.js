@@ -536,12 +536,25 @@ function enableDebug() {
   check();
 }
 
+function updateTabHeights() {
+  const root = document.documentElement;
+  const header = qs('header');
+  if (header) root.style.setProperty('--header-h', `${header.offsetHeight}px`);
+  document.querySelectorAll('.tab-content').forEach(el => {
+    const prev = el.previousElementSibling;
+    const h = prev ? prev.offsetHeight : 0;
+    el.style.setProperty('--tabs-h', `${h}px`);
+  });
+}
+window.addEventListener("resize", updateTabHeights);
+
 
 
 // Init
 window.addEventListener('load', ()=>{
   initUI();
   setupMobileUI();
+  updateTabHeights();
   setupStatusToggle();
   enableDebug();
   initLawSystem();
