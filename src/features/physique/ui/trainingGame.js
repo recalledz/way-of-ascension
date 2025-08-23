@@ -82,6 +82,13 @@ function showHitFeedback(message, color){
 }
 
 export function mountTrainingGameUI(state){
+  // Ensure the associated Physique cards are visible when the feature mounts
+  const cardIds = ['activeTrainingCard', 'passiveTrainingCard', 'physiqueEffectsCard'];
+  for (const id of cardIds) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'block';
+  }
+
   const startBtn = document.getElementById('startTrainingSession');
   if(startBtn){
     startBtn.addEventListener('click', () => {
