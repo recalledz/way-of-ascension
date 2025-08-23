@@ -64,6 +64,7 @@ way-of-ascension/
 │   │   ├── weapons-guidlines.md
 │   │   └── stats-to-implement.md
 │   ├── ai-verification-protocol.md
+│   ├── balance-protocol.md
 │   ├── cultivation-ui-style.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
@@ -71,35 +72,43 @@ way-of-ascension/
 │   └── ARCHITECTURE.md
 ├── node_modules/
 ├── scripts/
+│   ├── balance-validate.js
+│   ├── scan-codex-output.js
 │   └── validate-structure.js
 ├── src/
 │   ├── index.js
 │   ├── features/
 │   │   ├── adventure/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── enemies.js
 │   │   │   │   ├── zoneIds.js
 │   │   │   │   └── zones.js
 │   │   │   ├── ui/
+│   │   │   │   ├── adventureDisplay.js
 │   │   │   │   ├── progressBar.js
 │   │   │   │   └── zoneUI.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
+│   │   │   ├── ui.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── index.js
 │   │   ├── registry.js
 │   │   ├── ability/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── abilities.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
+│   │   │   ├── ui.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── affixes/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── affixes.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -109,6 +118,7 @@ way-of-ascension/
 │   │   ├── combat/
 │   │   │   ├── attack.js
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── status.js
 │   │   │   │   └── statusesByElement.js
 │   │   │   ├── hit.js
@@ -119,6 +129,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
+│   │   │       ├── combatStats.js
 │   │   │       ├── fx.js
 │   │   │       └── index.js
 │   │   ├── cooking/
@@ -129,6 +140,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── cookControls.js
 │   │   │       └── cookingDisplay.js
 │   │   ├── inventory/
 │   │   │   ├── data/
@@ -140,9 +152,11 @@ way-of-ascension/
 │   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       ├── CharacterPanel.js
+│   │   │       ├── resourceDisplay.js
 │   │   │       └── weaponChip.js
 │   │   ├── loot/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── lootTables.js
 │   │   │   │   └── lootTables.weapons.js
 │   │   │   ├── logic.js
@@ -155,6 +169,7 @@ way-of-ascension/
 │   │   │       └── lootTab.js
 │   │   ├── proficiency/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── .gitkeep
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -166,6 +181,7 @@ way-of-ascension/
 │   │   │       └── weaponProficiencyDisplay.js
 │   │   ├── progression/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── laws.js
 │   │   │   │   └── realms.js
 │   │   │   ├── logic.js
@@ -175,9 +191,14 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── lawDisplay.js
+│   │   │       ├── lawsHUD.js
+│   │   │       ├── qiDisplay.js
+│   │   │       ├── qiOrb.js
 │   │   │       └── realm.js
 │   │   ├── sect/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── buildings.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -194,9 +215,11 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
-│   │   │       └── karmaDisplay.js
+│   │   │       ├── karmaDisplay.js
+│   │   │       └── karmaHUD.js
 │   │   ├── alchemy/
 │   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── recipes.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -221,9 +244,11 @@ way-of-ascension/
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   └── ui/
-│   │   │       └── physiqueDisplay.js
+│   │   │       ├── physiqueDisplay.js
+│   │   │       └── trainingGame.js
 │   │   └── weaponGeneration/
 │   │       ├── data/
+│   │       │   ├── _balance.contract.js
 │   │       │   ├── materials.stub.js
 │   │       │   ├── weaponIcons.js
 │   │       │   ├── weaponTypes.js
@@ -245,8 +270,12 @@ way-of-ascension/
 │   │   ├── selectors.js
 │   │   └── utils/
 │   │       ├── dom.js
-│   │       └── hp.js
+│   │       ├── hp.js
+│   │       └── number.js
 │   └── ui/
+│       ├── app.js
+│       ├── dev/
+│       │   └── devQuickMenu.js
 │       └── sidebar.js
 ├── ui/
 │   ├── components/
@@ -259,6 +288,25 @@ way-of-ascension/
 ├── package-lock.json
 ├── package.json
 ├── server.js
+├── src/features/ability/index.js
+├── src/features/activity/index.js
+├── src/features/activity/mutators.js
+├── src/features/activity/selectors.js
+├── src/features/activity/state.js
+├── src/features/activity/ui/activityUI.js
+├── src/features/adventure/index.js
+├── src/features/adventure/ui/mapUI.js
+├── src/features/affixes/index.js
+├── src/features/automation/index.js
+├── src/features/automation/logic.js
+├── src/features/automation/migrations.js
+├── src/features/automation/mutators.js
+├── src/features/automation/selectors.js
+├── src/features/automation/state.js
+├── src/features/combat/index.js
+├── src/features/karma/index.js
+├── src/features/mining/index.js
+├── src/features/physique/index.js
 └── style.css
 ```
 
@@ -334,6 +382,9 @@ Utility functions for querying elements, updating text/fill styles and logging t
 #### `utils/hp.js` - HP Utilities
 Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
 
+#### `utils/number.js` - Number Formatting Helpers
+Formats large numbers with shorthand suffixes (k, m, b, t).
+
 #### `src/features/progression/logic.js` - Game Calculations
 **Purpose**: Core progression mechanics and calculations
 **Key Functions**:
@@ -361,6 +412,16 @@ Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
 **Dependencies**: `src/features/adventure/data/zones.js` for zone/area data structure
 **When to modify**: Add new zones/areas, modify combat mechanics, adjust boss system, enhance map UI
 
+#### `src/features/adventure/mutators.js` - Adventure Mutators
+Stateful helpers for manipulating adventure progression.
+- `startAdventure()` - Create and initialize the `S.adventure` state container.
+- `retreatFromCombat()` - Retreat from combat and apply Qi penalty.
+- `resetQiOnRetreat()` - Reset Qi to zero when the player dies while retreating.
+
+#### `src/features/adventure/ui/adventureDisplay.js` - Adventure Sidebar Display
+**Purpose**: Renders adventure progress and current area in the sidebar.
+**When to modify**: Adjust adventure sidebar presentation or add new metrics.
+
 #### `combat/hit.js` - Hit Chance Calculation
 **Purpose**: Calculates chance for an attack to hit based on accuracy and dodge with scaling and caps.
 **Key Functions**:
@@ -386,16 +447,19 @@ Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
 Tracks ability cooldown timers and pending action queue.
 
 #### `src/features/ability/mutators.js` - Ability Mutators
-Validate casts, tick cooldowns, and process queued ability actions.
+Validate casts, tick cooldowns, apply ability results, and emit events for UI effects.
 
 #### `src/features/ability/selectors.js` - Ability Selectors
 Expose ability slots and cooldown information using inventory data.
 
 #### `src/features/ability/logic.js` - Ability Resolution
-Resolves ability effects like Power Slash damage and healing.
+Pure computations describing ability effects like Power Slash damage and healing.
 
 #### `src/features/ability/data/abilities.js` - Ability Definitions
 Defines metadata for active abilities such as cost and cooldown.
+
+#### `src/features/ability/ui.js` - Ability UI Helpers
+Listens for `ABILITY:HEAL` events and displays floating heal numbers.
 
 #### `src/features/affixes/state.js` - Affix Feature State
 Holds affix-related tracking data.
@@ -545,6 +609,10 @@ function updateAll() {
 **Purpose**: Realm-specific UI components and cultivation displays
 **When to modify**: Add new realm UI features, modify cultivation interface
 
+#### `src/features/progression/ui/qiOrb.js` - Qi Orb Visual Effects
+**Purpose**: Updates the Qi Orb's appearance when foundation approaches its maximum.
+**When to modify**: Change Qi Orb styling or foundation threshold behavior.
+
 #### `components/progressBar.js` - Reusable Progress Bar Component
 **Purpose**: Provides reusable functions to create and update standardized progress bars throughout the UI.
 **Key Functions**:
@@ -558,9 +626,20 @@ function updateAll() {
 **Key Functions**: `renderEquipmentPanel()`, `setupEquipmentTab()`.
 **When to modify**: Adjust character gear interface or inventory interactions.
 
+#### `src/features/inventory/ui/resourceDisplay.js` - Resource Sidebar Display
+**Purpose**: Shows counts of inventory resources in the sidebar.
+**When to modify**: Update when adding new resource types or changing sidebar layout.
+
+#### `src/ui/app.js` - Application Shell
+**Purpose**: Placeholder root for composing high-level UI modules.
+**When to modify**: Implement global UI bootstrap or layout logic.
+
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
+
+#### `src/ui/dev/devQuickMenu.js`
+**Purpose:** Tiny top-right Dev button and menu. Uses existing `window.__*` hooks if present; emits `DEV:SET_SEED` for RNG.
 
 #### `src/features/inventory/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
@@ -617,6 +696,15 @@ function updateAll() {
 #### `src/features/progression/data/laws.js` - Cultivation Laws
 **Purpose**: Define law bonuses and skill trees.
 
+#### `src/features/progression/ui/qiDisplay.js` - Qi and Foundation HUD
+**Purpose**: Updates Qi and Foundation bars in the UI.
+
+#### `src/features/progression/ui/lawDisplay.js` - Law Selection UI
+**Purpose**: Shows available laws and their details.
+
+#### `src/features/progression/ui/lawsHUD.js` - Active Laws HUD
+**Purpose**: Displays learned laws and bonuses in the HUD.
+
 ### UI Effects (`src/features/combat/ui/`)
 
 #### `fx.js` - SVG Combat Effects
@@ -657,9 +745,21 @@ Paths added:
 - `src/shared/saveLoad.js`
 - `src/features/index.js` – UI bootstrap
 - `src/features/registry.js` – Feature registration hooks
-- `src/index.js` – entry that bootstraps and starts the controller
+- `src/ui/app.js` – creates the controller, mounts feature UIs and starts the loop
+- `src/index.js` – minimal entry that calls `initApp()`
 - `docs/ARCHITECTURE.md`
 - `docs/To-dos/stats-to-implement.md`
+- `src/shared/utils/number.js` - number formatting helper
+- `src/features/activity/state.js` – activity state slice
+- `src/features/activity/selectors.js` – activity selectors
+- `src/features/activity/mutators.js` – activity mutators
+- `src/features/activity/ui/activityUI.js` – activity UI helpers
+- `src/features/adventure/ui/mapUI.js` – adventure map UI
+- `src/features/automation/logic.js` – automation logic helpers
+- `src/features/automation/migrations.js` – automation save migrations
+- `src/features/automation/mutators.js` – automation mutators
+- `src/features/automation/selectors.js` – automation selectors
+- `src/features/automation/state.js` – automation state slice
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
@@ -676,14 +776,57 @@ Paths added:
 #### `src/features/registry.js` - Feature Registry
 **Purpose**: Collects feature `init` and `tick` hooks and exposes helpers to initialise slices and advance ticks.
 
+#### `src/ui/app.js` - App Bootstrap
+**Purpose**: Creates the controller, mounts feature UIs and debug tools, then starts the game loop.
+
 #### `src/index.js` - Entrypoint
-**Purpose**: Minimal bootstrap that creates the controller, mounts feature UIs and starts the game.
+**Purpose**: Minimal entry that calls `initApp()`.
 
 #### `docs/ARCHITECTURE.md` - Architecture Overview
 **Purpose**: Documents the controller, events bus and bootstrap pattern.
 
 #### `docs/To-dos/stats-to-implement.md` - Stats Roadmap
 **Purpose**: Lists game stats that still need implementation.
+
+#### `src/features/activity/state.js` - Activity State
+**Purpose**: Ensures activity flags exist on the root state object.
+**Key Functions**: `ensureActivities(state)`.
+
+#### `src/features/activity/selectors.js` - Activity Selectors
+**Purpose**: Helpers for reading activity state.
+**Key Functions**: `getActiveActivity(state)`, `getSelectedActivity(state)`.
+
+#### `src/features/activity/mutators.js` - Activity Mutators
+**Purpose**: Select, start, and stop activities while emitting events. `startActivity` broadcasts `ACTIVITY:START` with the root state and activity name.
+**Key Functions**: `selectActivity(state, name)`, `startActivity(state, name)`, `stopActivity(state, name)`.
+
+#### `src/features/activity/ui/activityUI.js` - Activity UI
+**Purpose**: Mounts sidebar listeners and refreshes visible activity panels.
+**Key Functions**: `mountActivityUI(state)`, `updateActivitySelectors(state)`, `updateCurrentTaskDisplay(state)`.
+
+#### `src/features/adventure/ui/mapUI.js` - Adventure Map UI
+**Purpose**: Renders the zone/area selection map overlay.
+**Key Functions**: `showMapOverlay()`, `hideMapOverlay()`.
+
+#### `src/features/automation/state.js` - Automation State
+**Purpose**: Defines default automation flags and provides `initialState()`.
+**Key Exports**: `automationState`, `initialState()`.
+
+#### `src/features/automation/logic.js` - Automation Logic
+**Purpose**: Pure helpers for automation calculations.
+**Key Functions**: `slice(root)`, `isAnyAutomationEnabled(root)`.
+
+#### `src/features/automation/migrations.js` - Automation Migrations
+**Purpose**: Save migrations for automation slice.
+**Key Exports**: `migrations` array.
+
+#### `src/features/automation/mutators.js` - Automation Mutators
+**Purpose**: Toggles options such as auto-meditate and auto-adventure.
+**Key Functions**: `toggleAutoMeditate(value, state)`, `toggleAutoAdventure(value, state)`.
+
+#### `src/features/automation/selectors.js` - Automation Selectors
+**Purpose**: Reads automation settings from state.
+**Key Functions**: `isAutoMeditate(state)`, `isAutoAdventure(state)`.
 
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.
@@ -695,6 +838,7 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+- `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
 
 ### Karma Feature (`src/features/karma/`)
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.
@@ -702,11 +846,12 @@ Paths added:
 - `src/features/karma/mutators.js` – Modifies karma points and upgrade values.
 - `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
 - `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
+- `src/features/karma/ui/karmaHUD.js` – Shows karma gain in the sidebar HUD.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
 - `src/features/mining/logic.js` – Handles mining rates, resource gains and experience progression.
-- `src/features/mining/mutators.js` – External wrappers to modify mining state.
+- `src/features/mining/mutators.js` – External wrappers to modify mining state and listeners for `ACTIVITY:START` to apply default values.
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
 
@@ -717,6 +862,7 @@ Paths added:
 - `src/features/physique/mutators.js` – Handles gaining physique experience and stamina changes.
 - `src/features/physique/selectors.js` – Accessors for physique levels, experience, stamina, and bonuses.
 - `src/features/physique/ui/physiqueDisplay.js` – Renders physique progress and bonuses in the UI.
+ - `src/features/physique/ui/trainingGame.js` – UI for the physique training mini-game; logic and state updates live in `logic.js` and `mutators.js`.
 
 ### Alchemy Feature
 - `src/features/alchemy/index.js` – Registers alchemy hooks.
@@ -731,7 +877,8 @@ Paths added:
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
 - `src/features/cooking/mutators.js` – Manage cooking actions and food slot equipment.
 - `src/features/cooking/selectors.js` – Access success bonus and other cooking state.
-- `src/features/cooking/logic.js` – Handle cooking, food slot usage, and UI updates.
+- `src/features/cooking/logic.js` – Handle cooking and food slot logic, returning data for the UI.
+- `src/features/cooking/ui/cookControls.js` – Update cook amount input and food slot counts.
 - `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
 
 ### Weapon Generation Feature (`src/features/weaponGeneration/`)
@@ -750,11 +897,28 @@ Paths added:
 - `src/features/sect/data/buildings.js` – Building definitions and costs.
 - `src/features/sect/ui/sectScreen.js` – UI for managing the sect.
 
+### Activity Feature (`src/features/activity/`)
+- `src/features/activity/state.js` – Ensures the activity flags exist on the root state.
+- `src/features/activity/selectors.js` – Helpers to read the active and selected activities.
+- `src/features/activity/mutators.js` – Start, stop, or select activities and emit related events.
+- `src/features/activity/ui/activityUI.js` – Mounts sidebar listeners and updates visible activity panels.
+
+### Adventure Feature (`src/features/adventure/`)
+- `src/features/adventure/ui/mapUI.js` – Displays the area selection map overlay.
+
+### Automation Feature (`src/features/automation/`)
+- `src/features/automation/state.js` – Default automation flags and `initialState()` helper.
+- `src/features/automation/logic.js` – Pure helpers for automation calculations.
+- `src/features/automation/migrations.js` – Save migrations for automation feature.
+- `src/features/automation/mutators.js` – Toggles automation options like auto-meditate and auto-adventure.
+- `src/features/automation/selectors.js` – Reads automation settings from state.
+
 ### Feature Migration Files
 - `src/features/ability/migrations.js` – Save migrations for ability feature.
 - `src/features/adventure/migrations.js` – Save migrations for adventure feature.
 - `src/features/alchemy/migrations.js` – Save migrations for alchemy feature.
 - `src/features/affixes/migrations.js` – Save migrations for affixes feature.
+- `src/features/automation/migrations.js` – Save migrations for automation feature.
 - `src/features/combat/migrations.js` – Save migrations for combat feature.
 - `src/features/cooking/migrations.js` – Save migrations for cooking feature.
 - `src/features/inventory/migrations.js` – Save migrations for inventory and equipment.
@@ -766,3 +930,22 @@ Paths added:
 - `src/features/progression/migrations.js` – Save migrations for core progression stats.
 - `src/features/sect/migrations.js` – Save migrations for sect buildings and bonuses.
 - `src/features/weaponGeneration/migrations.js` – Save migrations for weapon generation.
+
+### Feature Descriptors
+- `src/features/ability/index.js` – Ability feature descriptor.
+- `src/features/activity/index.js` – Activity feature descriptor.
+- `src/features/adventure/index.js` – Adventure feature descriptor.
+- `src/features/affixes/index.js` – Affixes feature descriptor.
+- `src/features/automation/index.js` – Automation feature descriptor.
+- `src/features/combat/index.js` – Combat feature descriptor.
+- `src/features/cooking/index.js` – Cooking feature descriptor.
+- `src/features/inventory/index.js` – Inventory feature descriptor.
+- `src/features/karma/index.js` – Karma feature descriptor.
+- `src/features/loot/index.js` – Loot feature descriptor.
+- `src/features/mining/index.js` – Mining feature descriptor.
+- `src/features/physique/index.js` – Physique feature descriptor.
+- `src/features/alchemy/index.js` – Alchemy feature descriptor.
+- `src/features/proficiency/index.js` – Proficiency feature descriptor.
+- `src/features/progression/index.js` – Progression feature descriptor.
+- `src/features/sect/index.js` – Sect feature descriptor.
+- `src/features/weaponGeneration/index.js` – Weapon generation feature descriptor.

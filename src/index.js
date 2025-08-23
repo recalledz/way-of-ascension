@@ -1,8 +1,3 @@
-import { createGameController } from "./game/GameController.js";
-import { mountAllFeatureUIs } from "./features/index.js";
+import { initApp } from "./ui/app.js";
 
-const game = createGameController();
-mountAllFeatureUIs(game.state);
-game.start();
-
-// window.game = game; // optional for debugging
+initApp();

@@ -1,7 +1,6 @@
-import { registerFeature } from "../registry.js";
 import { sectState } from "./state.js";
 
-registerFeature({
-  id: "sect",
-  init: () => structuredClone(sectState),
-});
+export const SectFeature = {
+  key: "sect",
+  initialState: () => ({ ...sectState, _v: 0 }),
+};

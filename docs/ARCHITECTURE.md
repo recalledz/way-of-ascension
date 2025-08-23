@@ -23,11 +23,11 @@ Other folders such as `scripts/` (build or deployment scripts), `browser-tools-m
 
 #### Events Bus
 
-A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. The controller emits `TICK` (fixed step) and `RENDER` (per frame). Feature UIs subscribe to `RENDER` to redraw, and systems can listen to `TICK` for simulation updates.
+A tiny pub/sub lives in `src/shared/events.js` exposing `on`, `off` and `emit`. The controller emits `TICK` (fixed step) and `RENDER` (per frame). Feature UIs subscribe to `RENDER` to redraw, and systems can listen to `TICK` for simulation updates. Mutators can also broadcast domain events; for example `startActivity` emits `ACTIVITY:START` with the root state and activity name so features like mining can initialise themselves without direct dependencies. Ability mutators emit `ABILITY:HEAL` with the healed amount so the UI can show floating heal numbers.
 
 #### Entrypoint & Bootstrap
 
-`src/index.js` is a minimal entry that creates the controller, mounts feature UIs via `mountAllFeatureUIs(state)` and then calls `start()`. `src/features/index.js` centralises these UI mounts for all features.
+`src/ui/app.js` exports `initApp()`, which creates the game controller, mounts feature UIs via `mountAllFeatureUIs(state)`, mounts debug helpers and starts the loop. `src/index.js` is a minimal entry that simply calls `initApp()`.
 
 #### State Access Rules
 
@@ -36,6 +36,12 @@ Selectors read from state and mutators write to state. User interfaces never mut
 #### Cross-feature access
 
 `src/shared/selectors.js` and `src/shared/mutators.js` re-export each feature's API. Features that need data or behaviour from another slice import through this shared layer, keeping dependencies explicit and avoiding deep relative paths.
+
+### Dev Tools
+- Mini dev menu at `src/ui/dev/devQuickMenu.js` (always available; top-right).
+- Uses `window.__PAUSE/__RESUME/__STEP/__GET_SPEED/__SET_SPEED` if present.
+- Emits `DEV:SET_SEED` for RNG; features/controller may listen to it.
+- If `#debugPanel` exists, it is displayed inside the menu.
 
 #### Migration Process (Incremental)
 
@@ -59,6 +65,15 @@ Each feature folder under `src/features` follows a consistent internal layout:
 * **`selectors.js`** – Functions that read values from the feature’s state.  They often wrap logic functions to calculate derived values.  The `rollWeaponDropForZone()` selector samples the appropriate loot table and returns a generated weapon based on the current zone:contentReference[oaicite:4]{index=4}.
 * **`ui/`** – Feature‑specific UI modules.  These typically import selectors to display state and call mutators in response to user actions.
 
+### Feature Descriptor Contract (key + initialState())
+Every feature exports a descriptor object with a unique `key` and an `initialState()` function. The registry uses this contract to compose the root state and bootstrap feature hooks.
+
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+};
+```
 ### Proficiency feature
 
 The **Proficiency** module tracks a player’s mastery of different weapon types.  It exposes a `proficiencyState` slice with a `proficiency` map:contentReference[oaicite:5]{index=5}.  The logic file defines `gainProficiency()` and `getProficiency()`; the latter returns both the raw proficiency value and a bonus calculated via a soft‑capping formula:contentReference[oaicite:6]{index=6}.  Mutators simply delegate to the logic functions, ensuring all state changes pass through a single place:contentReference[oaicite:7]{index=7}.  The selectors mirror the logic and provide an additional helper to derive weapon damage/speed bonuses based on the equipped weapon:contentReference[oaicite:8]{index=8}.
@@ -72,6 +87,13 @@ The **Weapon Generation** module is responsible for constructing and dropping we
 The `mutators.js` file writes a generated weapon into the state slice and exposes a `clearGeneratedWeapon()` helper to reset it:contentReference[oaicite:12]{index=12}.  Selectors include `getGeneratedWeapon()` and `rollWeaponDropForZone()`, which uses weighted loot tables to return a randomly generated weapon based on the current zone:contentReference[oaicite:13]{index=13}.
 
 Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js` and `materials.stub.js`.  The `weaponTypes.js` file defines the base DPS, scaling and tags for each weapon type and references signature abilities that are still stubs for later implementation:contentReference[oaicite:14]{index=14}.  The `weapons.js` file builds a list of default weapon items using `generateWeapon()` and exports convenience objects like `WEAPON_FLAGS` and `WEAPON_CONFIG` for quick lookups:contentReference[oaicite:15]{index=15}.
+
+### Automation feature
+
+The **Automation** module stores flags for enabling background actions such as meditation and adventuring.
+Its `state.js` defines `automationState` and an `initialState()` helper that adds version metadata.
+`logic.js` contains pure calculations like `isAnyAutomationEnabled()` for derived checks.
+Mutators flip automation flags while selectors read them, and `migrations.js` exports an array for save upgrades.
 
 ## Legacy `src/game` modules
 
@@ -109,3 +131,84 @@ When adding a new game mechanic or extending an existing feature, follow these g
 7. **Build UI components.**  If your feature needs user interaction, put UI modules in `ui/` and import selectors and mutators as needed.
 
 Following these steps ensures that all code related to a feature stays together and that the boundary between data, logic, state mutation, and presentation remains clear.  Over time this organisation will simplify navigation, reduce coupling and make adding new content more predictable:contentReference[oaicite:17]{index=17}.
+
+## Balance
+
+Static data within each feature is paired with a `_balance.contract.js` file.
+Contracts define acceptable ranges for key numeric fields and include
+monotonic checks so that values progress in a single direction. The
+`scripts/balance-validate.js` utility evaluates these contracts and can be
+run with `npm run lint:balance`. Contracts may also specify design targets
+and tolerances to guide tuning without introducing regressions.
+
+
+---
+
+## Appendix: Architecture Contracts (auto-appended by validator)
+
+### App Shell
+- **src/ui/app.js** is the only UI bootstrap (create controller, `registerAllFeatures()`, mount sidebar/debug, start loop).
+- No gameplay logic inside app shell.
+
+### GameController
+- Owns the loop, calls feature `tick(root, dt)`, emits `TICK` and `RENDER`.
+
+### Feature Descriptor Contract
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},                // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {},     // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary bridge until all UIs move to init()
+};
+```
+
+
+---
+
+## Appendix: Architecture Contracts (auto-appended by validator)
+
+### App Shell
+- **src/ui/app.js** is the only UI bootstrap (create controller, `registerAllFeatures()`, mount sidebar/debug, start loop).
+- No gameplay logic inside app shell.
+
+### GameController
+- Owns the loop, calls feature `tick(root, dt)`, emits `TICK` and `RENDER`.
+
+### Feature Descriptor Contract
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},                // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {},     // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary bridge until all UIs move to init()
+};
+```
+
+
+---
+
+## Appendix: Architecture Contracts (auto-appended by validator)
+
+### App Shell
+- **src/ui/app.js** is the only UI bootstrap (create controller, `registerAllFeatures()`, mount sidebar/debug, start loop).
+- No gameplay logic inside app shell.
+
+### GameController
+- Owns the loop, calls feature `tick(root, dt)`, emits `TICK` and `RENDER`.
+
+### Feature Descriptor Contract
+```js
+export const <name>Feature = {
+  key: "<sliceKey>",
+  initialState: () => ({ ...defaults, _v: 0 }),
+  init(root, ctx) {},                // subscribe to events, optional mount
+  tick(root, dtMs, now, ctx) {},     // optional
+  nav: { id, label, order, visible(root), onSelect(root, ctx) }, // optional
+  mount: fn, // temporary bridge until all UIs move to init()
+};
+```

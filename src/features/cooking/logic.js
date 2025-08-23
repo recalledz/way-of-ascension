@@ -1,6 +1,6 @@
-import { setText, log } from '../../shared/utils/dom.js';
+import { log } from '../../shared/utils/dom.js';
 
-export function updateFoodSlots(state) {
+export function getFoodSlotData(state) {
   if (!state.foodSlots) {
     state.foodSlots = {
       slot1: null,
@@ -10,18 +10,11 @@ export function updateFoodSlots(state) {
       cooldown: 5000,
     };
   }
-  setText('rawMeatCount', state.meat || 0);
-  setText('inventoryRawMeat', state.meat || 0);
-  setText('inventoryCookedMeat', state.cookedMeat || 0);
-  setText('inventoryRawMeatAdventure', state.meat || 0);
-  setText('inventoryCookedMeatAdventure', state.cookedMeat || 0);
-  const cookInput = document.getElementById('cookAmount');
-  if (cookInput) {
-    cookInput.max = state.meat || 0;
-    if (parseInt(cookInput.value) > (state.meat || 0)) {
-      cookInput.value = Math.max(1, state.meat || 0);
-    }
-  }
+  return {
+    meat: state.meat || 0,
+    cookedMeat: state.cookedMeat || 0,
+    cookAmountMax: state.meat || 0,
+  };
 }
 
 export function cookMeat(amount, state) {
@@ -47,7 +40,6 @@ export function cookMeat(amount, state) {
   }
   const bonusText = cookedAmount > amt ? ` (+${cookedAmount - amt} bonus)` : '';
   log(`Cooked ${amt} meat into ${cookedAmount} cooked meat${bonusText}!`, 'good');
-  updateFoodSlots(state);
 }
 
 export function equipFood(foodType, slotNumber, state) {
@@ -115,5 +107,4 @@ export function useFoodSlot(slotNumber, state) {
   if (state.adventure && state.adventure.inCombat) {
     state.adventure.playerHP = state.hp;
   }
-  updateFoodSlots(state);
 }
