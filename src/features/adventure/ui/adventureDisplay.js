@@ -3,6 +3,7 @@ import { setFill, setText } from '../../../shared/utils/dom.js';
 import { ZONES } from '../data/zones.js';
 import { startAdventure, startAdventureCombat, startBossCombat, progressToNextArea, retreatFromCombat, resetQiOnRetreat } from '../mutators.js';
 import { updateActivityAdventure } from '../logic.js';
+import { clamp } from '../../progression/selectors.js';
 
 export function updateAdventureProgress(state = S) {
   if (!state.adventure) return;
@@ -10,7 +11,7 @@ export function updateAdventureProgress(state = S) {
   const currentArea = currentZone ? currentZone.areas[state.adventure.currentArea] : null;
   const location = currentArea ? currentArea.name : 'Village Outskirts';
   if (currentArea) {
-    const progress = state.adventure.killsInCurrentArea / currentArea.killReq;
+    const progress = clamp(state.adventure.killsInCurrentArea / currentArea.killReq, 0, 1);
     setFill('adventureProgressFill', progress);
     setText('adventureProgressText', `${Math.floor(progress * 100)}%`);
   }
