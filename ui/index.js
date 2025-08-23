@@ -3,7 +3,7 @@
 
 // Way of Ascension — Modular JS
 
-import { S, defaultState, save, setState } from '../src/shared/state.js';
+import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
   clamp,
   qCap,
@@ -165,7 +165,7 @@ function initUI(){
   if (importBtn) {
     importBtn.addEventListener('click', async()=>{
       const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
+      inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ const parsed = JSON.parse(r.result); const v = validateState(parsed); if(!v) throw new Error('bad'); setState(v); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
       inp.click();
     });
   }
