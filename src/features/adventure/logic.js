@@ -532,11 +532,17 @@ function defeatEnemy() {
 
   const { gained, qiSpent } = refillShieldFromQi(S);
   if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
+  const zone = ZONES[S.adventure.currentZone];
+  const area = zone?.areas?.[S.adventure.currentArea];
 
   if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
-    startAdventureCombat();
-    updateActivityAdventure();
+    const killReq = area?.killReq ?? Infinity;
+    if (S.adventure.killsInCurrentArea < killReq) {
+      startAdventureCombat();
+    }
   }
+
+  updateActivityAdventure();
   updateLootTab(); // EQUIP-CHAR-UI
 }
 
