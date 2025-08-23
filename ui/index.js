@@ -307,7 +307,7 @@ function updateActivityCards() {
 
 function updateActivityUI() {
   // Update activity status displays
-  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'cooking'];
+  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'cooking', 'alchemy'];
 
   activities.forEach(activity => {
     const statusEl = document.getElementById(`${activity}Status`);

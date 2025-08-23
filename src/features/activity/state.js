@@ -7,6 +7,7 @@ export function ensureActivities(root) {
       mining: false,
       adventure: false,
       cooking: false,
+      alchemy: false,
       sect: false,
     };
   }

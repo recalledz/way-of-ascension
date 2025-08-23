@@ -10,6 +10,7 @@ function renderAlchemyUI(state) {
   setText('alchLvl', state.alchemy.level);
   setText('alchXp', state.alchemy.xp);
   setText('slotCount', getMaxSlots(state));
+  setText('alchemyLevelSidebar', `Level ${state.alchemy.level}`);
 
   const recipeSelect = document.getElementById('recipeSelect');
   const brewBtn = document.getElementById('brewBtn');
