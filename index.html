@@ -115,12 +115,12 @@
         <div class="cultivation-header">
           
         </div>
-        <div class="cultivation-tabs">
+        <div class="cultivation-tabs tab-bar">
           <button class="cultivation-tab-btn active" data-tab="cultivation">Cultivation</button>
           <button class="cultivation-tab-btn" data-tab="stats">Stats</button>
         </div>
 
-        <div id="cultivationSubTab" class="cultivation-tab-content active">
+        <div id="cultivationSubTab" class="cultivation-tab-content tab-content active">
           <div class="cultivation-layout">
             <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
@@ -261,7 +261,7 @@
           </div>
         </div>
 
-        <div id="statsSubTab" class="cultivation-tab-content" style="display:none;">
+        <div id="statsSubTab" class="cultivation-tab-content tab-content" style="display:none;">
           <div class="cards">
             <div class="card">
               <h4>Breakthrough Details</h4>
@@ -524,7 +524,7 @@
           
           <!-- Adventure Tabs -->
           <div class="card adventure-tabs-card">
-            <div class="adventure-tabs">
+            <div class="adventure-tabs tab-bar">
               <button class="adventure-tab-btn active" data-tab="progress">📊 Progress</button>
               <button class="adventure-tab-btn" data-tab="bestiary">📖 Bestiary</button>
               <button class="adventure-tab-btn" data-tab="loot">💰 Loot</button>
@@ -532,7 +532,7 @@
             </div>
             
             <!-- Progress Tab -->
-            <div id="progressTab" class="adventure-tab-content active">
+            <div id="progressTab" class="adventure-tab-content tab-content active">
               <div class="stat"><span>Total Kills</span><span id="totalKills">0</span></div>
               <div class="stat"><span>Areas Completed</span><span id="areasCompleted">0</span></div>
               <div class="stat"><span>Zones Unlocked</span><span id="zonesUnlocked">1</span></div>
@@ -548,14 +548,14 @@
             </div>
             
             <!-- Bestiary Tab -->
-            <div id="bestiaryTab" class="adventure-tab-content" style="display: none;">
+            <div id="bestiaryTab" class="adventure-tab-content tab-content" style="display: none;">
               <div class="bestiary-list" id="bestiaryList">
                 <div class="muted">Defeat enemies to unlock their information...</div>
               </div>
             </div>
 
             <!-- Loot Tab -->
-            <div id="lootTab" class="adventure-tab-content" style="display: none;">
+            <div id="lootTab" class="adventure-tab-content tab-content" style="display: none;">
               <div class="muted warn">Items here are not safe. Retreat to claim; death forfeits them.</div>
               <div class="session-loot-list" id="sessionLootList"></div>
               <div class="loot-actions" style="text-align:right; margin-top:8px;">
@@ -565,7 +565,7 @@
             </div>
             
             <!-- Proficiencies Tab -->
-            <div id="proficienciesTab" class="adventure-tab-content" style="display: none;">
+            <div id="proficienciesTab" class="adventure-tab-content tab-content" style="display: none;">
               <div class="stat"><span id="weaponLabel">Fists Level</span><span id="weaponLevel">1</span></div>
               <div class="stat"><span>Experience</span><span id="weaponExp">0</span> / <span id="weaponExpMax">100</span></div>
               <div class="activity-progress-bar"><div class="progress-fill" id="weaponExpFill"></div></div>
