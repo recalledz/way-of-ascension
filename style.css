@@ -3638,6 +3638,7 @@ tr:last-child td {
 
 #miningProgressFill {
   background: linear-gradient(90deg, #f59e0b, #d97706) !important; /* Orange for mining */
+  width: 0%;
 }
 
 #cookingProgressFillSidebar {
