@@ -47,6 +47,7 @@ import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/invento
 import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
 import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
+import { setupAbilityUI } from '../src/features/ability/ui.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
@@ -99,6 +100,7 @@ function initUI(){
   const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
   initializeWeaponChip({ key: mhKey, name: mhName });
   mountTrainingGameUI(S);
+  setupAbilityUI();
 
   // Assign buttons
   // Buttons (with safe null checks)

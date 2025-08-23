@@ -90,6 +90,7 @@ way-of-ascension/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
+│   │   │   ├── ui.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── index.js
@@ -101,6 +102,7 @@ way-of-ascension/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
+│   │   │   ├── ui.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
 │   │   ├── affixes/
@@ -444,16 +446,19 @@ Stateful helpers for manipulating adventure progression.
 Tracks ability cooldown timers and pending action queue.
 
 #### `src/features/ability/mutators.js` - Ability Mutators
-Validate casts, tick cooldowns, and process queued ability actions.
+Validate casts, tick cooldowns, apply ability results, and emit events for UI effects.
 
 #### `src/features/ability/selectors.js` - Ability Selectors
 Expose ability slots and cooldown information using inventory data.
 
 #### `src/features/ability/logic.js` - Ability Resolution
-Resolves ability effects like Power Slash damage and healing.
+Pure computations describing ability effects like Power Slash damage and healing.
 
 #### `src/features/ability/data/abilities.js` - Ability Definitions
 Defines metadata for active abilities such as cost and cooldown.
+
+#### `src/features/ability/ui.js` - Ability UI Helpers
+Listens for `ABILITY:HEAL` events and displays floating heal numbers.
 
 #### `src/features/affixes/state.js` - Affix Feature State
 Holds affix-related tracking data.
