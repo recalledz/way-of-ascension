@@ -51,6 +51,7 @@ import { setupAbilityUI } from '../src/features/ability/ui.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
+import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
 import { updateAdventureProgress, mountAdventureControls } from '../src/features/adventure/ui/adventureDisplay.js';
@@ -164,6 +165,13 @@ function initUI(){
       const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
       inp.onchange=()=>{ const f=inp.files[0]; const r=new FileReader(); r.onload=()=>{ try{ setState(JSON.parse(r.result)); save(); location.reload(); }catch{ alert('Invalid file'); } }; r.readAsText(f); };
       inp.click();
+    });
+  }
+  const manageSectBtn = qs('#manageSectActivity');
+  if (manageSectBtn) {
+    manageSectBtn.addEventListener('click', () => {
+      if (typeof switchTab === 'function') switchTab('sect');
+      else if (typeof showTab === 'function') showTab('sect');
     });
   }
   const debugRunBtn = qs('#debugRunBtn');
@@ -439,6 +447,7 @@ window.addEventListener('load', ()=>{
   mountAdventureControls(S);
   setupAdventureTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
+  mountSectUI(S);
   mountAlchemyUI(S);
   mountKarmaUI(S);
   selectActivity('cultivation'); // Start with cultivation selected

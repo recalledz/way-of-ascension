@@ -20,7 +20,11 @@ export function mountActivityUI(root) {
   document.getElementById('physiqueSelector')?.addEventListener('click', () => handle('physique'));
   document.getElementById('miningSelector')?.addEventListener('click', () => handle('mining'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
-  document.getElementById('sectSelector')?.addEventListener('click', () => handle('sect'));
+  document.getElementById('sectSelector')?.addEventListener('click', () => {
+    handle('sect');
+    if (typeof switchTab === 'function') switchTab('sect');
+    else if (typeof showTab === 'function') showTab('sect');
+  });
 
   // Initial paint
   updateActivitySelectors(root);
