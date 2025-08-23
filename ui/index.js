@@ -432,11 +432,64 @@ function tick(){
   updateAbilityBar();
 }
 
+function setupMobileUI() {
+  const menu = qs('#menuButton');
+  const sidebar = qs('#sidebar');
+  const scrim = qs('#drawerScrim');
+  if (!menu || !sidebar || !scrim) return;
+  const focusable = sidebar.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  function trap(e) {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); (last || first).focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); (first || last).focus(); }
+  }
+  function close() {
+    sidebar.classList.remove('open');
+    scrim.classList.remove('active');
+    scrim.hidden = true;
+    document.body.classList.remove('drawer-open');
+    menu.setAttribute('aria-expanded', 'false');
+    sidebar.setAttribute('aria-hidden', 'true');
+    window.removeEventListener('keydown', esc);
+    window.removeEventListener('keydown', trap);
+    menu.focus();
+  }
+  function esc(e) { if (e.key === 'Escape') close(); }
+  menu.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    scrim.hidden = false;
+    scrim.classList.add('active');
+    document.body.classList.add('drawer-open');
+    menu.setAttribute('aria-expanded', 'true');
+    sidebar.setAttribute('aria-hidden', 'false');
+    (first || sidebar).focus();
+    window.addEventListener('keydown', esc);
+    window.addEventListener('keydown', trap);
+  });
+  scrim.addEventListener('click', close);
+}
+
+function enableDebug() {
+  if (!window.DEBUG) return;
+  document.documentElement.classList.add('debug-overflow');
+  const check = () => {
+    const w = document.documentElement.scrollWidth;
+    const vw = document.documentElement.clientWidth;
+    if (w > vw) console.warn('[layout] overflow', w - vw);
+  };
+  window.addEventListener('resize', check);
+  check();
+}
+
 
 
 // Init
 window.addEventListener('load', ()=>{
   initUI();
+  setupMobileUI();
+  enableDebug();
   initLawSystem();
   mountActivityUI(S);
   mountAdventureControls(S);

@@ -41,6 +41,7 @@
     <div class="elemental-ice"></div>
   </div>
   <header>
+    <button id="menuButton" class="hamburger" aria-label="Menu" aria-controls="sidebar" aria-expanded="false">☰</button>
     <div class="brand">
       <div class="qi-orb" id="qiOrb" aria-hidden="true">
         <svg class="yin-yang-svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
@@ -53,14 +54,14 @@
       </div>
     </div>
     <div class="topbar" id="top-chips">
-      <div class="chip">Task: <span id="currentTask">Idle</span></div>
-      <div class="chip">Realm: <span id="realmName">Mortal 1</span></div>
-      <div class="chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
-      <div class="chip">Stones: <span id="stonesVal">0</span></div>
+      <div class="chip" id="taskChip">Task: <span id="currentTask">Idle</span></div>
+      <div class="chip" id="realmChip">Realm: <span id="realmName">Mortal 1</span></div>
+      <div class="chip" id="qiChip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
+      <div class="chip" id="stonesChip">Stones: <span id="stonesVal">0</span></div>
       <div class="chip hp-chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span>
         <div class="hp-bar"><div class="fill" id="hpFill"></div><div class="shield-fill" id="shieldFill"></div></div>
       </div>
-      <div class="chip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
+      <div class="chip" id="reduceMotionChip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
     </div>
     <div class="right-actions">
       <button class="btn small ghost" id="saveBtn">💾 Save</button>
@@ -70,8 +71,9 @@
     </div>
   </header>
 
+  <div id="drawerScrim" class="drawer-scrim" hidden></div>
   <main>
-    <aside class="left">
+    <aside class="left" id="sidebar" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
       
       <!-- Leveling Activities Group -->
       <div class="activity-group">
