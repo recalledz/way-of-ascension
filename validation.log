@@ -24,6 +24,7 @@
 
 ⚠️  WARNINGS:
    • UI timer: src/features/adventure/ui/adventureDisplay.js uses timers/RAF — prefer feature.tick and RENDER
+   • UI timer: src/features/combat/ui/combatText.js uses timers/RAF — prefer feature.tick and RENDER
    • UI timer: src/features/combat/ui/fx.js uses timers/RAF — prefer feature.tick and RENDER
    • UI timer: src/features/physique/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
    • UI rule: src/features/progression/ui/realm.js uses Math.random() — move randomness to logic.js

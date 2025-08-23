@@ -48,6 +48,7 @@ import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDAT
 import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { setupAbilityUI } from '../src/features/ability/ui.js';
+import { setupCombatText } from '../src/features/combat/ui/combatText.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
@@ -104,6 +105,7 @@ function initUI(){
   mountTrainingGameUI(S);
   mountMiningUI(S);
   setupAbilityUI();
+  setupCombatText();
 
   // Assign buttons
   // Buttons (with safe null checks)
