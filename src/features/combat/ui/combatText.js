@@ -17,8 +17,9 @@ function showFloat(target, text, className) {
   const note = document.createElement('div');
   note.className = className;
   note.textContent = text;
-  note.style.left = rect.left + 'px';
+  note.style.left = rect.left + rect.width / 2 + 'px';
   note.style.top = rect.top - 20 + 'px';
+  note.style.transform = 'translateX(-50%)';
   document.body.appendChild(note);
   setTimeout(() => note.remove(), 1000);
 }
