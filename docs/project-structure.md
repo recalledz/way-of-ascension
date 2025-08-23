@@ -280,7 +280,8 @@ way-of-ascension/
 ├── ui/
 │   ├── components/
 │   │   └── progressBar.js
-│   └── index.js
+│   ├── index.js
+│   └── mobile.js
 ├── README.md
 ├── CHANGELOG.md
 ├── eslint.config.mjs
@@ -604,6 +605,10 @@ function updateAll() {
 ```
 
 **When to modify**: Add new UI elements, modify display logic, add event handlers
+
+#### `mobile.js` - Mobile Enhancements
+**Purpose**: Handles responsive canvas resizing and touch input mapping for mobile devices.
+**When to modify**: Adjust mobile layout behavior or touch controls.
 
 #### `src/features/progression/ui/realm.js` - Realm UI Components
 **Purpose**: Realm-specific UI components and cultivation displays
