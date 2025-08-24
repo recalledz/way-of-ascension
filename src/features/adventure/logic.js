@@ -139,12 +139,16 @@ export function updateBattleDisplay() {
   ensureAdventure();
   const playerHP = S.adventure.playerHP || S.hp || 100;
   const playerMaxHP = S.hpMax || 100;
+  const hpFrac = playerMaxHP ? playerHP / playerMaxHP : 0;
+  const shieldMax = S.shield?.max || 0;
+  const shieldCur = S.shield?.current || 0;
+  const shieldFrac = shieldMax ? shieldCur / shieldMax : 0;
   setText('playerHealthText', `${Math.round(playerHP)}/${Math.round(playerMaxHP)}`);
-  const playerHealthFill = document.getElementById('playerHealthFill');
-  if (playerHealthFill) {
-    const playerHealthPct = (playerHP / playerMaxHP) * 100;
-    playerHealthFill.style.width = `${playerHealthPct}%`;
-  }
+  setFill('playerHealthFill', hpFrac);
+  setFill('advHpMaskRect', hpFrac);
+  setFill('advShieldFill', shieldFrac);
+  const advOverlay = document.getElementById('advShieldOverlay');
+  if (advOverlay) advOverlay.style.display = shieldFrac > 0 ? '' : 'none';
   const playerQi = S.qi || 0;
   const playerMaxQi = qCap(S);
   setText('playerQiText', `${Math.round(playerQi)}/${Math.round(playerMaxQi)}`);
