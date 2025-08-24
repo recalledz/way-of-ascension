@@ -10,7 +10,7 @@ import { rollGearDropForZone } from '../gearGeneration/selectors.js';
 import { addToInventory } from '../inventory/mutators.js';
 import { ABILITIES } from '../ability/data/abilities.js';
 import { performAttack, decayStunBar } from '../combat/attack.js'; // STATUS-REFORM
-import { chanceToHit } from '../combat/hit.js';
+import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
@@ -311,7 +311,7 @@ export function updateAdventureCombat() {
     }
     if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       S.adventure.lastPlayerAttack = now;
-      const enemyDodge = S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0;
+      const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
@@ -1013,7 +1013,7 @@ export function updateActivityAdventure() {
   setText('baseDamage', baseAttack);
   const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
   if (enemyData) {
-    const enemyDodge = enemyData.stats?.dodge ?? enemyData.dodge ?? 0;
+    const enemyDodge = (enemyData.stats?.dodge ?? enemyData.dodge ?? 0) + DODGE_BASE;
     const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
     setText('hitChance', `${Math.round(hitP * 100)}%`);
     const enemyAcc = enemyData.stats?.accuracy ?? enemyData.accuracy ?? 0;

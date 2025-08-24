@@ -1,3 +1,4 @@
+import { ACCURACY_BASE, DODGE_BASE } from '../combat/hit.js';
 export const progressionState = {
   qi: 100,
   qiCapMult: 0,
@@ -38,7 +39,7 @@ export const progressionState = {
     cooldownReduction: 0,
     adventureSpeed: 1.0,
     armor: 0,
-    accuracy: 0,
-    dodge: 0,
+    accuracy: ACCURACY_BASE,
+    dodge: DODGE_BASE,
   },
 };
