@@ -43,6 +43,96 @@ export const MANUALS = {
       { attackRatePct: 3, qiCostPct: -3 },  // L2 → total +6% rate, -6% cost
       { attackRatePct: 4, qiCostPct: -4 }   // L3 → total +10% rate, -10% cost
     ]
+  },
+
+  qiWellspringBasics: {
+    id: 'qiWellspringBasics',
+    name: 'Qi Wellspring Basics',
+    category: 'Qi',
+    xpRate: 0.31,
+    reqLevel: 1,
+    maxLevel: 3,
+    // Multiplies Max Qi and Qi regen
+    effects: [
+      { qiMaxPct: 5, qiRegenPct: 5 },  // L1
+      { qiMaxPct: 5, qiRegenPct: 5 },  // L2 → total +10% Max Qi, +10% regen
+      { qiMaxPct: 7, qiRegenPct: 8 }   // L3 → total +17% Max Qi, +18% regen
+    ]
+  },
+
+  foundationSittingDrills: {
+    id: 'foundationSittingDrills',
+    name: 'Foundation Sitting Drills',
+    category: 'Cultivation',
+    xpRate: 0.30,
+    reqLevel: 1,
+    maxLevel: 3,
+    // Boosts Foundation gain rate
+    effects: [
+      { foundationGainPct: 6 },        // L1
+      { foundationGainPct: 6 },        // L2 → total +12%
+      { foundationGainPct: 8 }         // L3 → total +20%
+    ]
+  },
+
+  mentalDisciplineI: {
+    id: 'mentalDisciplineI',
+    name: 'Mental Discipline I',
+    category: 'Mind',
+    xpRate: 0.33,
+    reqLevel: 1,
+    maxLevel: 3,
+    // Global Mind XP boost (reading, proficiency, crafting)
+    effects: [
+      { mindXpGainPct: 5 },            // L1
+      { mindXpGainPct: 5 },            // L2 → total +10%
+      { mindXpGainPct: 7 }             // L3 → total +17%
+    ]
+  },
+
+  bodyConditioningNotes: {
+    id: 'bodyConditioningNotes',
+    name: 'Body Conditioning Notes',
+    category: 'Physique',
+    xpRate: 0.29,
+    reqLevel: 1,
+    maxLevel: 3,
+    // Boosts Physique XP gains
+    effects: [
+      { physiqueXpGainPct: 5 },        // L1
+      { physiqueXpGainPct: 5 },        // L2 → total +10%
+      { physiqueXpGainPct: 10 }        // L3 → total +20%
+    ]
+  },
+
+  ironFistTreatiseI: {
+    id: 'ironFistTreatiseI',
+    name: 'Iron Fist Treatise I',
+    category: 'Combat',
+    xpRate: 0.32,
+    reqLevel: 1,
+    maxLevel: 3,
+    // Big fist damage per level and fist proficiency gain
+    effects: [
+      { fistDamagePct: 15, fistProficiencyXpPct: 10 },  // L1
+      { fistDamagePct: 15, fistProficiencyXpPct: 10 },  // L2 → total +30% dmg, +20% prof XP
+      { fistDamagePct: 15, fistProficiencyXpPct: 10 }   // L3 → total +45% dmg, +30% prof XP
+    ]
+  },
+
+  wardShieldBasics: {
+    id: 'wardShieldBasics',
+    name: 'Ward Shield Basics',
+    category: 'Defense',
+    xpRate: 0.30,
+    reqLevel: 1,
+    maxLevel: 3,
+    // Increases Qi Shield capacity (pair later with your shield calc)
+    effects: [
+      { qiShieldCapacityPct: 10 },     // L1
+      { qiShieldCapacityPct: 10 },     // L2 → total +20%
+      { qiShieldCapacityPct: 15 }      // L3 → total +35%
+    ]
   }
 };
 
