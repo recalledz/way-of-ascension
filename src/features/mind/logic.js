@@ -31,3 +31,12 @@ export function levelForXp(xp) {
   return lvl;
 }
 
+export function xpProgress(xp) {
+  let need = 50;
+  while (xp >= need) {
+    xp -= need;
+    need = Math.ceil(need * 1.35);
+  }
+  return { current: xp, next: need };
+}
+

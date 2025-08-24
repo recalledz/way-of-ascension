@@ -60,6 +60,8 @@ export function renderSidebarActivities() {
       group: 'management',
       levelId: 'mindLevel',
       initialLevel: 'Level 1',
+      progressFillId: 'mindProgressFill',
+      progressTextId: 'mindProgressText',
       cost: {},
     },
     {
