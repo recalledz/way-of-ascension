@@ -8,6 +8,7 @@ import {
   calcFromCraft,
   applyPuzzleMultiplier,
   levelForXp,
+  applyManualEffects,
 } from './logic.js';
 
 export function awardFromProficiency(S, profXp) {
@@ -61,8 +62,10 @@ export function onTick(S, dt) {
   S.mind.xp += applied;
   const rec = S.mind.manualProgress[id];
   rec.xp += add;
-  if (rec.xp >= manual.reqLevel * 100) {
+  const level = Math.floor(rec.xp / (manual.reqLevel * 100));
+  if (!rec.done && rec.xp >= manual.reqLevel * 100) {
     rec.done = true;
+    applyManualEffects(S, manual, level);
   }
   S.mind.level = levelForXp(S.mind.xp);
 }
