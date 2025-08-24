@@ -6,6 +6,7 @@ import { getBuildingBonuses } from '../sect/selectors.js';
 import { karmaQiRegenBonus, karmaAtkBonus, karmaDefBonus } from '../karma/logic.js';
 import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 import { getCookingSuccessBonus } from '../cooking/selectors.js';
+import { getTunable } from '../../shared/tunables.js';
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 export function getLawBonuses(state = progressionState){
   let bonuses = {
@@ -144,7 +145,8 @@ export function calculatePlayerCombatAttack(state = progressionState) {
   const baseAttack = 5;
   const realmBonus = REALMS[state.realm.tier].atk * state.realm.stage;
   const profBonus = getWeaponProficiencyBonuses(state).damage;
-  return baseAttack + profBonus + realmBonus;
+  const mult = getTunable('combat.damageMult', 1);
+  return (baseAttack + profBonus + realmBonus) * mult;
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
@@ -152,7 +154,8 @@ export function calculatePlayerAttackRate(state = progressionState) {
   const dexterityBonus = (state.stats.dexterity - 10) * 0.05;
   const attackSpeedBonus = state.stats.attackSpeed || 0;
   const profBonus = getWeaponProficiencyBonuses(state).speed;
-  return baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus;
+  const mult = getTunable('combat.attackRateMult', 1);
+  return (baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus) * mult;
 }
 
 export function breakthroughChance(state = progressionState){

@@ -1,6 +1,7 @@
 import { createGameController } from "../game/GameController.js";
 import { mountAllFeatureUIs } from "../features/index.js";
 import { mountDevQuickMenu } from "./dev/devQuickMenu.js";
+import { mountBalanceTuner, ENABLE_BALANCE_TUNER } from "./dev/balanceTuner.js";
 
 // Bootstraps the game controller, mounts feature UIs and starts the loop.
 export function initApp() {
@@ -17,9 +18,13 @@ export function initApp() {
   window.__SET_SPEED = (v) => game.setSpeed(v);
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => mountDevQuickMenu());
+    document.addEventListener("DOMContentLoaded", () => {
+      mountDevQuickMenu();
+      if (ENABLE_BALANCE_TUNER) mountBalanceTuner();
+    });
   } else {
     mountDevQuickMenu();
+    if (ENABLE_BALANCE_TUNER) mountBalanceTuner();
   }
 }
 

@@ -1,9 +1,12 @@
 import { proficiencyState } from './state.js';
 import { getProficiency as resolveProficiency } from './logic.js';
 import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { getTunable } from '../../shared/tunables.js';
 
 export function getProficiency(key, state = proficiencyState) {
-  return resolveProficiency(key, state);
+  const res = resolveProficiency(key, state);
+  const xpMult = getTunable('proficiency.xpGainMult', 1);
+  return { ...res, xpMult };
 }
 
 export function getWeaponProficiencyBonuses(state = proficiencyState) {
