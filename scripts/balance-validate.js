@@ -1,50 +1,39 @@
 #!/usr/bin/env node
 
-import { readdirSync, statSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import url from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
-const FEATURES_DIR = join(ROOT, 'src', 'features');
+const ROOT = path.dirname(url.fileURLToPath(import.meta.url));
+const SRC = path.resolve(ROOT, '..', 'src');
 
-let errors = [];
-
-async function validate() {
-  const features = readdirSync(FEATURES_DIR).filter(f => {
-    const full = join(FEATURES_DIR, f);
-    return statSync(full).isDirectory();
-  });
-
-  for (const feat of features) {
-    const dataDir = join(FEATURES_DIR, feat, 'data');
-    if (!existsSync(dataDir)) continue;
-    const contract = join(dataDir, '_balance.contract.js');
-    if (!existsSync(contract)) {
-      errors.push(`Missing contract for feature: ${feat}`);
-      continue;
-    }
-    try {
-      const mod = await import(contract);
-      if (!mod.default) {
-        errors.push(`Contract does not export default object: ${contract}`);
-      }
-    } catch (e) {
-      errors.push(`Failed loading contract ${contract}: ${e.message}`);
-    }
+async function findContracts(dir, out = []) {
+  const ents = await fs.promises.readdir(dir, { withFileTypes: true });
+  for (const e of ents) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) await findContracts(p, out);
+    else if (e.isFile() && e.name.endsWith('_balance.contract.js')) out.push(p);
   }
-
-  if (errors.length) {
-    console.error('Balance validation failed:');
-    for (const e of errors) console.error(' - ' + e);
-    process.exit(1);
-  } else {
-    console.log('Balance validation passed.');
-  }
+  return out;
 }
 
-validate().catch(e => {
-  console.error(e);
-  process.exit(1);
-});
+const files = await findContracts(SRC);
+let total = 0, failed = 0;
+for (const file of files) {
+  const mod = await import(url.pathToFileURL(file).href);
+  if (typeof mod.validate !== 'function') {
+    console.log(`SKIP  ${path.relative(SRC, file)} (no validate())`);
+    continue;
+  }
+  total++;
+  const res = await mod.validate();
+  if (res.ok) {
+    console.log(`PASS  ${path.relative(SRC, file)}`);
+  } else {
+    failed++;
+    console.log(`FAIL  ${path.relative(SRC, file)}`);
+    for (const err of res.errors) console.log(`  - ${err}`);
+  }
+}
+console.log(`\nContracts: ${total} checked, ${failed} failed.`);
+process.exit(failed ? 1 : 0);
