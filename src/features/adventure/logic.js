@@ -346,10 +346,9 @@ export function updateAdventureCombat() {
         if (enemyBar) {
           showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
-        const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
-        const mainKey = typeof S.equipment?.mainhand === 'string' ? S.equipment.mainhand : S.equipment?.mainhand?.key;
-        performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, usingPalm: mainKey === 'palm' }, S); // STATUS-REFORM
-        S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
+          const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
+          performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, weapon }, S); // STATUS-REFORM
+          S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');

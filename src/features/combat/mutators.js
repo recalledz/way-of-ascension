@@ -47,6 +47,6 @@ export function processAttack(damage, options = {}, state = S) {
   return dealt;
 }
 
-export function applyStatus(target, key, power, state = S) {
-  return applyStatusBase(target, key, power, state);
+export function applyStatus(target, key, power, state = S, options) {
+  return applyStatusBase(target, key, power, state, options);
 }

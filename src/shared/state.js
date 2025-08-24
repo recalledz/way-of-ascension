@@ -47,7 +47,12 @@ export const defaultState = () => {
     adventureSpeed: 1.0, // Adventure/exploration speed multiplier
     armor: 0,           // Total armor from gear and bonuses
     accuracy: ACCURACY_BASE,        // Chance to hit with attacks
-    dodge: DODGE_BASE           // Chance to avoid attacks
+    dodge: DODGE_BASE,          // Chance to avoid attacks
+    stunBuildMult: 0,           // Bonus stun build applied by attacker
+    stunDurationMult: 0,        // Bonus stun duration applied by attacker
+    stunResist: 0,              // Resistance to stun effects
+    ccResist: 0,                // Resistance to crowd control duration
+    stunBuildTakenReduction: 0  // Reduction to stun build taken
   },
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
