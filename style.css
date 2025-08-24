@@ -2416,6 +2416,14 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .card h4{margin:0 0 8px; font-size:15px}
 .muted{color:var(--muted); font-size:12px}
 
+/* Character tab cards */
+.character-cards{
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+  max-height:calc(100vh - 120px);
+}
+
 /* Adventure Layout - MAP-UI-UPDATE */
 .adventure-layout {
   display: flex;
