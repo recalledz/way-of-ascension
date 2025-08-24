@@ -53,9 +53,9 @@ import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
-import { ensureMindState, xpProgress as mindXpProgress } from '../src/features/mind/index.js';
+import { ensureMindState, xpProgress as mindXpProgress, onTick as mindOnTick } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
-import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
+import { renderMindReadingTab, mountMindReadingUI } from '../src/features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
@@ -422,6 +422,9 @@ function tick(){
   S.time++;
   tickAbilityCooldowns(1000);
 
+  // Mind manual progression
+  mindOnTick(S, 1);
+
   // Passive Qi regen and out-of-combat HP regen
   S.qi = clamp(S.qi + qiRegenPerSec(S), 0, qCap(S));
   if (!(S.adventure?.inCombat)) {
@@ -633,6 +636,7 @@ window.addEventListener('load', ()=>{
   mountAlchemyUI(S);
   mountKarmaUI(S);
   mountSectUI(S);
+  mountMindReadingUI(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
