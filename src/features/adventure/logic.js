@@ -13,7 +13,7 @@ import { performAttack, decayStunBar } from '../combat/attack.js'; // STATUS-REF
 import { chanceToHit } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
-import { setText, log } from '../../shared/utils/dom.js';
+import { setText, setFill, log } from '../../shared/utils/dom.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
@@ -139,12 +139,16 @@ export function updateBattleDisplay() {
   ensureAdventure();
   const playerHP = S.adventure.playerHP || S.hp || 100;
   const playerMaxHP = S.hpMax || 100;
+  const hpFrac = playerMaxHP ? playerHP / playerMaxHP : 0;
+  const shieldMax = S.shield?.max || 0;
+  const shieldCur = S.shield?.current || 0;
+  const shieldFrac = shieldMax ? shieldCur / shieldMax : 0;
   setText('playerHealthText', `${Math.round(playerHP)}/${Math.round(playerMaxHP)}`);
-  const playerHealthFill = document.getElementById('playerHealthFill');
-  if (playerHealthFill) {
-    const playerHealthPct = (playerHP / playerMaxHP) * 100;
-    playerHealthFill.style.width = `${playerHealthPct}%`;
-  }
+  setFill('playerHealthFill', hpFrac);
+  setFill('advHpMaskRect', hpFrac);
+  setFill('advShieldFill', shieldFrac);
+  const advOverlay = document.getElementById('advShieldOverlay');
+  if (advOverlay) advOverlay.style.display = shieldFrac > 0 ? '' : 'none';
   const playerQi = S.qi || 0;
   const playerMaxQi = qCap(S);
   setText('playerQiText', `${Math.round(playerQi)}/${Math.round(playerMaxQi)}`);
