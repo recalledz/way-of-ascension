@@ -24,6 +24,8 @@ export function startReading(S, manualId) {
   S.mind.activeManualId = manualId;
   if (!S.mind.manualProgress[manualId]) {
     S.mind.manualProgress[manualId] = { xp: 0, done: false };
+  } else {
+    S.mind.manualProgress[manualId].done = false;
   }
   return true;
 }
@@ -55,13 +57,16 @@ export function onTick(S, dt) {
   if (!id) return;
   const manual = getManual(id);
   if (!manual) return;
+  const rec = S.mind.manualProgress[id];
+  if (!rec || rec.done) return;
   const add = calcFromManual(manual, dt);
   const applied = applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.fromReading += add;
   S.mind.xp += applied;
-  const rec = S.mind.manualProgress[id];
   rec.xp += add;
-  if (rec.xp >= manual.reqLevel * 100) {
+  const maxXp = (manual.maxLevel || 1) * 100;
+  if (rec.xp >= maxXp) {
+    rec.xp = maxXp;
     rec.done = true;
   }
   S.mind.level = levelForXp(S.mind.xp);

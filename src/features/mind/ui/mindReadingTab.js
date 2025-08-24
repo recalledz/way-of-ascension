@@ -2,6 +2,7 @@
 
 import { listManuals, getManual } from '../data/manuals.js';
 import { startReading, stopReading } from '../mutators.js';
+import { formatDuration } from '../../../shared/utils/time.js';
 
 /**
  * Render the Mind Reading tab UI.
@@ -17,16 +18,25 @@ export function renderMindReadingTab(rootEl, S) {
     const manual = getManual(activeId);
     if (manual) {
       const rec = S.mind.manualProgress[activeId] || { xp: 0 };
-      const max = manual.reqLevel * 100;
-      const ratio = Math.min(rec.xp / max, 1);
+      const maxXp = (manual.maxLevel || 1) * 100;
+      const ratio = Math.min(rec.xp / maxXp, 1);
+      const level = Math.floor(rec.xp / 100);
+      const nextLevelXp = Math.min((level + 1) * 100, maxXp);
+      const xpToNext = nextLevelXp - rec.xp;
+      const xpToMax = maxXp - rec.xp;
+      const timeToNext = manual.xpRate > 0 ? xpToNext / manual.xpRate : Infinity;
+      const timeToMax = manual.xpRate > 0 ? xpToMax / manual.xpRate : Infinity;
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
         <h3>Reading: ${manual.name}</h3>
+        <div>Level: ${Math.min(level, manual.maxLevel)} / ${manual.maxLevel}</div>
         <div class="progress-bar">
           <div class="progress-fill" style="width:${(ratio * 100).toFixed(1)}%"></div>
-          <div class="progress-text">${rec.xp.toFixed(0)} / ${max}</div>
+          <div class="progress-text">${rec.xp.toFixed(0)} / ${maxXp}</div>
         </div>
+        <div>Time to next level: ${xpToNext > 0 ? formatDuration(timeToNext) : 'Done'}</div>
+        <div>Time to max level: ${xpToMax > 0 ? formatDuration(timeToMax) : 'Done'}</div>
       `;
       const stopBtn = document.createElement('button');
       stopBtn.className = 'btn small';
