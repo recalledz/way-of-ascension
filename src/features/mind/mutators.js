@@ -55,7 +55,7 @@ export function onTick(S, dt) {
   if (!id) return;
   const manual = getManual(id);
   if (!manual) return;
-  const add = calcFromManual(manual, dt);
+  const add = calcFromManual(manual, dt, S.stats);
   const applied = applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.fromReading += add;
   S.mind.xp += applied;
