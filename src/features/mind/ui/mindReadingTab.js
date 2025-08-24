@@ -2,7 +2,7 @@
 
 import { listManuals, getManual } from '../data/manuals.js';
 import { stopReading } from '../mutators.js';
-import { calcManualSpeed } from '../logic.js';
+import { calcManualSpeedDetails } from '../logic.js';
 import { emit, on } from '../../../shared/events.js';
 
 // Mapping of manual effect keys to human readable labels
@@ -14,6 +14,21 @@ const EFFECT_LABELS = {
   attackRatePct: 'Attack Rate',
   qiCostPct: 'Qi Cost'
 };
+
+function cap(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function renderSpeedInfo(manual, stats) {
+  const info = calcManualSpeedDetails(manual, stats);
+  const total = ((info.mult - 1) * 100).toFixed(0);
+  const parts = Object.keys(manual.statWeights || {}).map(stat => {
+    const pct = (info.contributions[stat] || 0) * 100;
+    const sign = pct >= 0 ? '+' : '';
+    return `${cap(stat)} ${sign}${pct.toFixed(0)}%`;
+  }).join(', ');
+  return `<div>Reading Speed: ${total >= 0 ? '+' : ''}${total}% (${parts})</div>`;
+}
 
 // Render an unordered list of manual effects per level
 function renderEffects(manual) {
@@ -55,7 +70,8 @@ export function renderMindReadingTab(rootEl, S) {
     const manual = getManual(activeId);
     if (manual) {
       const rec = S.mind.manualProgress[activeId] || { xp: 0, level: 0 };
-      const speed = calcManualSpeed(manual, S.stats);
+      const speedInfo = calcManualSpeedDetails(manual, S.stats);
+      const speed = speedInfo.mult;
       const xpRate = manual.xpRate * speed;
       const needed = manual.baseTimeSec * manual.levelTimeMult[rec.level] * manual.xpRate;
       const ratio = Math.min(rec.xp / needed, 1);
@@ -76,6 +92,7 @@ export function renderMindReadingTab(rootEl, S) {
           <div>Next Level: ${formatTime(timeToNext)}</div>
           <div>Max Level: ${formatTime(timeToMax)}</div>
         </div>
+        ${renderSpeedInfo(manual, S.stats)}
         ${renderEffects(manual)}
       `;
       const stopBtn = document.createElement('button');
@@ -99,6 +116,7 @@ export function renderMindReadingTab(rootEl, S) {
       <div><iconify-icon icon="iconoir:page-flip"></iconify-icon> <strong>${m.name}</strong></div>
       <div>${m.category}</div>
       <div>Req Level: ${m.reqLevel}</div>
+      ${renderSpeedInfo(m, S.stats)}
       ${renderEffects(m)}
     `;
     const btn = document.createElement('button');

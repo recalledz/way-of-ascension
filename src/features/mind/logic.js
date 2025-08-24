@@ -20,6 +20,35 @@ export function calcManualSpeed(manual, stats) {
   return Math.min(mult, cap);
 }
 
+// Return detailed reading speed information including per-stat
+// contributions and the final multiplier after caps.
+export function calcManualSpeedDetails(manual, stats) {
+  const weights = manual?.statWeights;
+  if (!weights || !stats) return { mult: 1, contributions: {} };
+
+  const parts = {};
+  let boost = 0;
+  for (const [stat, weight] of Object.entries(weights)) {
+    const val = (stats[stat] ?? 0) - 10;
+    if (val > 0) {
+      const inc = val * weight;
+      parts[stat] = inc;
+      boost += inc;
+    } else {
+      parts[stat] = 0;
+    }
+  }
+  const uncappedMult = 1 + boost / 10;
+  const cap = 1 + (manual?.maxSpeedBoostPct || 0) / 100;
+  const mult = Math.min(uncappedMult, cap);
+  const factor = boost > 0 ? (mult - 1) / (boost / 10) : 0;
+  const contributions = {};
+  for (const [stat, inc] of Object.entries(parts)) {
+    contributions[stat] = (inc / 10) * factor;
+  }
+  return { mult, contributions };
+}
+
 export function calcFromManual(manual, dt, stats) {
   if (!manual) return 0;
   const speed = calcManualSpeed(manual, stats);
