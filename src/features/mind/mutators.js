@@ -34,6 +34,23 @@ export function stopReading(S) {
   S.mind.activeManualId = null;
 }
 
+export function debugLevelManual(S) {
+  const id = S.mind.activeManualId;
+  if (!id) return false;
+  const manual = getManual(id);
+  if (!manual) return false;
+  const rec = S.mind.manualProgress[id] || { xp: 0, level: 0 };
+  if (rec.level >= manual.maxLevel) return false;
+  rec.level += 1;
+  rec.xp = 0;
+  applyManualEffects(S, manual, rec.level);
+  if (rec.level >= manual.maxLevel) {
+    stopReading(S);
+  }
+  S.mind.manualProgress[id] = rec;
+  return true;
+}
+
 export function craftTalisman(S, talismanId) {
   const t = getTalisman(talismanId);
   if (!t) return false;
@@ -83,5 +100,9 @@ export function onTick(S, dt) {
 
 on('mind/manuals/startReading', ({ root, manualId }) => {
   startReading(root, manualId);
+});
+
+on('mind/manuals/debugLevelUp', ({ root }) => {
+  debugLevelManual(root);
 });
 

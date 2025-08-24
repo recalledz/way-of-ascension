@@ -16,6 +16,7 @@ export {
   awardFromProficiency,
   startReading,
   stopReading,
+  debugLevelManual,
   craftTalisman,
   solvePuzzle,
   onTick,

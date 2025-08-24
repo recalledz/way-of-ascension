@@ -1,6 +1,9 @@
 // src/ui/dev/devQuickMenu.js
-// UI-only mini dev menu: no gameplay imports. Uses window.__* hooks if present,
-// and emits DEV:SET_SEED if the event bus is available.
+// UI-only mini dev menu. Uses window.__* hooks if present and emits events
+// through the shared bus for debugging helpers.
+
+import { emit } from '../../shared/events.js';
+import { S } from '../../shared/state.js';
 
 let mounted = false;
 
@@ -97,6 +100,14 @@ export function mountDevQuickMenu() {
   });
   seedWrap.append(seedIn, seedBtn);
   panel.appendChild(row("RNG", seedWrap));
+
+  // Mind debug helpers
+  const mindWrap = el("div");
+  mindWrap.style.display = "flex";
+  mindWrap.style.gap = "6px";
+  const manualBtn = smallBtn("Manual+1", () => emit('mind/manuals/debugLevelUp', { root: S }));
+  mindWrap.append(manualBtn);
+  panel.appendChild(row("Mind", mindWrap));
 
   // Auto-mount console using Eruda
   const consoleHdr = el("div", { textContent: "Console" });
