@@ -53,7 +53,7 @@ import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
-import { ensureMindState } from '../src/features/mind/index.js';
+import { ensureMindState, xpProgress as mindXpProgress } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
 import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
@@ -215,6 +215,9 @@ function updateAll(){
   setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
   setText('physiqueProgressText', `${fmt(S.physique.exp)} / ${fmt(S.physique.expMax)} XP`);
   setText('physiqueLevel', `Level ${S.physique.level}`);
+  const mindProg = mindXpProgress(S.mind.xp);
+  setFill('mindProgressFill', mindProg.current / mindProg.next);
+  setText('mindProgressText', `${fmt(mindProg.current)} / ${fmt(mindProg.next)} XP`);
   setText('mindLevel', `Level ${S.mind.level}`);
 
   updateCookingSidebar();
