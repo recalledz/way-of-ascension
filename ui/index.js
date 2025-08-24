@@ -53,7 +53,7 @@ import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
-import { ensureMindState } from '../src/features/mind/index.js';
+import { ensureMindState, onTick as mindOnTick } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
 import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
@@ -427,7 +427,10 @@ function tick(){
   
   // Passive mining progression
   advanceMining(S);
-  
+
+  // Manual reading progression
+  mindOnTick(S, 1);
+
   // Physique training progression
   const sessionEnd = tickPhysiqueTraining(S);
   if(sessionEnd){
