@@ -2,6 +2,7 @@
 
 import { listManuals, getManual } from '../data/manuals.js';
 import { startReading, stopReading } from '../mutators.js';
+import { calcManualSpeed } from '../logic.js';
 
 // Mapping of manual effect keys to human readable labels
 const EFFECT_LABELS = {
@@ -43,6 +44,7 @@ export function renderMindReadingTab(rootEl, S) {
       const rec = S.mind.manualProgress[activeId] || { xp: 0 };
       const max = manual.reqLevel * 100;
       const ratio = Math.min(rec.xp / max, 1);
+      const speed = calcManualSpeed(manual, S.stats);
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
@@ -51,6 +53,7 @@ export function renderMindReadingTab(rootEl, S) {
           <div class="progress-fill" style="width:${(ratio * 100).toFixed(1)}%"></div>
           <div class="progress-text">${rec.xp.toFixed(0)} / ${max}</div>
         </div>
+        <div class="manual-speed">Speed +${((speed - 1) * 100).toFixed(0)}%</div>
         ${renderEffects(manual)}
       `;
       const stopBtn = document.createElement('button');
@@ -70,10 +73,12 @@ export function renderMindReadingTab(rootEl, S) {
   for (const m of listManuals()) {
     const item = document.createElement('div');
     item.className = 'card';
+    const speed = calcManualSpeed(m, S.stats);
     item.innerHTML = `
       <div><iconify-icon icon="iconoir:page-flip"></iconify-icon> <strong>${m.name}</strong></div>
       <div>${m.category}</div>
       <div>Req Level: ${m.reqLevel}</div>
+      <div class="manual-speed">Speed +${((speed - 1) * 100).toFixed(0)}%</div>
       ${renderEffects(m)}
     `;
     const btn = document.createElement('button');
