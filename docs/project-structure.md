@@ -231,6 +231,20 @@ way-of-ascension/
 │   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── alchemyDisplay.js
+│   │   ├── mind/
+│   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
+│   │   │   │   ├── manuals.js
+│   │   │   │   └── talismans.js
+│   │   │   ├── index.js
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       ├── mindMainTab.js
+│   │   │       ├── mindPuzzlesTab.js
+│   │   │       └── mindReadingTab.js
 │   │   ├── mining/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -651,7 +665,7 @@ function updateAll() {
 **When to modify**: Adjust sidebar activities or their presentation.
 
 #### `src/ui/dev/devQuickMenu.js`
-**Purpose:** Tiny top-right Dev button and menu. Uses existing `window.__*` hooks if present; emits `DEV:SET_SEED` for RNG.
+**Purpose:** Tiny top-right Dev button and menu. Uses existing `window.__*` hooks when available, emits `DEV:SET_SEED` for RNG, and exposes a Mind helper to level up the active manual for debugging.
 
 #### `src/features/inventory/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
@@ -865,6 +879,19 @@ Paths added:
 - `src/features/karma/selectors.js` – Accessors for karma points and bonus values.
 - `src/features/karma/ui/karmaDisplay.js` – Displays karma information in the cultivation stats tab.
 - `src/features/karma/ui/karmaHUD.js` – Shows karma gain in the sidebar HUD.
+
+### Mind Feature (`src/features/mind/`)
+- `src/features/mind/state.js` – Stores mind XP, multipliers, manual progress and puzzle counts.
+- `src/features/mind/logic.js` – Calculates XP gains, level thresholds and applies manual or talisman effects.
+- `src/features/mind/mutators.js` – Starts/stops reading, crafts talismans, handles puzzles and debug manual level-ups.
+- `src/features/mind/selectors.js` – Accessors for current mind stats and progress.
+- `src/features/mind/index.js` – Bundles mind exports and event listeners.
+- `src/features/mind/data/manuals.js` – Manual definitions with requirements, timers and max levels.
+- `src/features/mind/data/talismans.js` – Talisman definitions and their bonuses.
+- `src/features/mind/data/_balance.contract.js` – Balance snapshot for mind-related data.
+- `src/features/mind/ui/mindMainTab.js` – Renders summary view for the Mind feature.
+- `src/features/mind/ui/mindPuzzlesTab.js` – Displays puzzle progress and multiplier info.
+- `src/features/mind/ui/mindReadingTab.js` – Lists manuals and controls reading actions.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
