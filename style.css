@@ -4262,6 +4262,21 @@ tr:last-child td {
   .log-sheet[data-open="true"]{transform:translateY(0);}
   .log-sheet[data-open="false"] .log{display:none;}
   .log{position:relative;left:auto;right:auto;bottom:auto;height:auto;flex:1;overflow-y:auto;}
+
+  /* Ensure cards and contents fit small screens */
+  .cards{grid-template-columns:1fr;}
+  .cards .card{width:100%;box-sizing:border-box;}
+  .cards .card h4{font-size:1rem;}
+  .cards .btn{font-size:0.9rem;}
+  .cultivation-layout{gap:12px;}
+  .cultivation-visualization-container{height:300px;min-height:200px;}
+  .cultivation-controls-card{font-size:0.85rem;}
+  .cultivation-buttons{gap:6px;}
+  .cultivation-btn{font-size:0.85rem;padding:6px 8px;}
+  .adventure-cards{grid-template-columns:1fr;}
+  .combat-display{gap:10px;}
+  .combat-controls{gap:8px;}
+  .combat-controls .btn{flex:1;font-size:0.85rem;padding:6px 8px;min-width:0;}
 }
 @media (prefers-reduced-motion:reduce){
   #sidebar{transition:none;}
