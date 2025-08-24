@@ -7,8 +7,23 @@ export function calcFromProficiency(profXp) {
   return Math.max(0, profXp) * 0.25;
 }
 
-export function calcFromManual(manual, dt) {
-  return manual ? manual.xpRate * dt : 0;
+export function calcManualSpeed(manual, stats) {
+  const weights = manual?.statWeights;
+  if (!weights || !stats) return 1;
+  let boost = 0;
+  for (const [stat, weight] of Object.entries(weights)) {
+    const val = (stats[stat] ?? 0) - 10;
+    if (val > 0) boost += val * weight;
+  }
+  const mult = 1 + boost / 10;
+  const cap = 1 + (manual?.maxSpeedBoostPct || 0) / 100;
+  return Math.min(mult, cap);
+}
+
+export function calcFromManual(manual, dt, stats) {
+  if (!manual) return 0;
+  const speed = calcManualSpeed(manual, stats);
+  return manual.xpRate * dt * speed;
 }
 
 export function calcFromCraft(talisman) {

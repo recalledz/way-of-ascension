@@ -4,6 +4,7 @@ export { defaultMindState, ensureMindState } from './state.js';
 
 export {
   calcFromProficiency,
+  calcManualSpeed,
   calcFromManual,
   calcFromCraft,
   applyPuzzleMultiplier,
