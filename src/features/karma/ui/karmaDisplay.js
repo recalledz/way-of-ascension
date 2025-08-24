@@ -24,12 +24,12 @@ const defaultUpgrades = [
     eff: state => { state.karma.atk = (state.karma.atk || 0) + 0.1; },
   },
   {
-    key: 'kDef',
-    name: 'Defense',
-    desc: 'Increase defense by 10%',
+    key: 'kArmor',
+    name: 'Armor',
+    desc: 'Increase armor by 10%',
     base: 10,
     mult: 1.5,
-    eff: state => { state.karma.def = (state.karma.def || 0) + 0.1; },
+    eff: state => { state.karma.armor = (state.karma.armor || 0) + 0.1; },
   },
 ];
 
@@ -39,7 +39,7 @@ function render(state){
   const bonuses = getKarmaBonuses(state);
   setText('karmaPoints', getKarmaPoints(state));
   setText('karmaAtkBonus', `${(bonuses.atk * 100).toFixed(0)}%`);
-  setText('karmaDefBonus', `${(bonuses.def * 100).toFixed(0)}%`);
+  setText('karmaArmorBonus', `${(bonuses.armor * 100).toFixed(0)}%`);
   setText('karmaQiRegenBonus', `${(bonuses.qiRegen * 100).toFixed(0)}%`);
 
   const body = document.getElementById('karmaUpgrades');

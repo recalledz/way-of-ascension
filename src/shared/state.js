@@ -33,7 +33,7 @@ export const defaultState = () => {
   realm: { tier: 0, stage: 1 },
   wood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
-  atkBase:5, defBase:2, tempAtk:0, tempDef:0,
+  atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
   // Expanded Stat System
   stats: {
     physique: 10,        // Physical power

@@ -53,8 +53,8 @@ export function applyArmor(rawPhysDamage, armor) {
 export function initializeFight(enemy) {
   const { hp: enemyHP, hpMax: enemyMax } = initHp(enemy.hp || 0);
   const atk = Math.round(enemy.atk ?? enemy.attack ?? 0);
-  const def = Math.round(enemy.def ?? enemy.defense ?? 0);
-  return { enemyHP, enemyMax, atk, def };
+  const armor = Math.round(enemy.armor ?? enemy.def ?? 0);
+  return { enemyHP, enemyMax, atk, armor };
 }
 
 export function applyWeaponDamage(base, weapon = 'fist') {
@@ -75,7 +75,7 @@ export function processAttack(currentHP, damage, options = {}) {
   const { element, target, type, onDamage } = options;
   let adjusted = applyResists(damage, element, target);
   if (type === 'physical') {
-    const armor = target?.stats?.armor ?? target?.armor ?? target?.defense ?? 0;
+    const armor = target?.stats?.armor ?? target?.armor ?? 0;
     adjusted = applyArmor(adjusted, armor);
   }
   adjusted = routeDamageThroughQiShield(adjusted, target);

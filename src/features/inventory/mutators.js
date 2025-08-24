@@ -65,7 +65,7 @@ export function usePill(root, type) {
   }
   if (type === 'body') {
     root.tempAtk = (root.tempAtk || 0) + 4;
-    root.tempDef = (root.tempDef || 0) + 3;
+    root.tempArmor = (root.tempArmor || 0) + 3;
     // NOTE: timer remains in UI for now; long-term move to a timed effect system
   }
   if (type === 'ward') {

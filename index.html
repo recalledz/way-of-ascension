@@ -308,7 +308,7 @@
               <div class="stat"><span>Building Mult</span><span id="cultivationBuildingMult">1.0x</span></div>
               <div class="stat"><span>Karma Points</span><span id="karmaPoints">0</span></div>
               <div class="stat"><span>Karma ATK Bonus</span><span id="karmaAtkBonus">0%</span></div>
-              <div class="stat"><span>Karma DEF Bonus</span><span id="karmaDefBonus">0%</span></div>
+              <div class="stat"><span>Karma Armor Bonus</span><span id="karmaArmorBonus">0%</span></div>
               <div class="stat"><span>Karma Qi Regen</span><span id="karmaQiRegenBonus">0%</span></div>
               <div class="muted" style="margin-top:8px">These multipliers enhance foundation gain, pill effectiveness, and breakthrough chances</div>
             </div>
@@ -637,7 +637,7 @@
             <div class="stat"><span>HP</span><span id="stat-hp">100/100</span></div>
             <div class="stat"><span>Shield</span><span id="stat-shield">0/0</span></div>
             <div class="stat"><span>Attack</span><span id="stat-atkBase">5</span></div>
-            <div class="stat"><span>Defense</span><span id="stat-defBase">2</span></div>
+            <div class="stat"><span>Base Armor</span><span id="stat-armorBase">2</span></div>
             <div class="stat"><span>Armor</span><span id="stat-armor">0</span></div>
             <div class="stat"><span>Accuracy</span><span id="stat-accuracy">0</span></div>
             <div class="stat"><span>Dodge</span><span id="stat-dodge">0</span></div>
@@ -775,7 +775,7 @@
             </div>
             <div class="row">
               <button class="btn" id="useQiPill"> Use Qi Pill (+25% Qi)</button>
-              <button class="btn" id="useBodyPill"> Use Body Pill (+ATK/DEF boost)</button>
+              <button class="btn" id="useBodyPill"> Use Body Pill (+ATK/Armor boost)</button>
               <button class="btn" id="useWardPill"> Use Ward Pill (+Breakthrough chance)</button>
             </div>
             <div class="muted" style="margin-top:8px">Breakthrough chance: <span id="btChance">0</span>%</div>
@@ -894,7 +894,6 @@
           <div class="card">
             <h4>Combat Stats</h4>
             <div class="stat"><span>Your ATK</span><span id="atkVal2">5</span></div>
-            <div class="stat"><span>Your DEF</span><span id="defVal2">2</span></div>
             <div class="stat" title="Reduces Physical damage. Mitigation = armor / (armor + K × hit), capped at 90%"><span>🛡 Armor</span><span id="armorVal2">0</span></div>
             <div class="stat"><span>Accuracy</span><span id="accuracyVal2">0</span></div>
             <div class="stat"><span>Dodge</span><span id="dodgeVal2">0</span></div>

@@ -1,8 +1,8 @@
 export const AFFIXES = {
   Armored: {
     color: '#3b82f6',
-    desc: '+40% defense - reduces incoming damage',
-    apply: h => { h.eDef *= 1.4; }
+    desc: '+40% armor - reduces incoming damage',
+    apply: h => { h.eArmor *= 1.4; }
   },
   Frenzied: {
     color: '#ef4444',

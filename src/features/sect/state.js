@@ -9,7 +9,7 @@ export const sectState = {
     alchemySlots: 0,
     alchemySuccess: 0,
     atkBase: 0,
-    defBase: 0,
+    armorBase: 0,
     disciples: 0,
     lawPoints: 0,
     breakthroughBonus: 0,

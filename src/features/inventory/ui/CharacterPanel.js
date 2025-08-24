@@ -21,7 +21,7 @@ function renderStats() {
     { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
     { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
     { id: 'atkBase', value: () => S.atkBase },
-    { id: 'defBase', value: () => S.defBase },
+    { id: 'armorBase', value: () => S.armorBase },
     { id: 'armor', stat: 'armor' },
     { id: 'physique', stat: 'physique' },
     { id: 'mind', stat: 'mind' },
