@@ -1,4 +1,5 @@
 import { progressionState } from './state.js';
+import { ACCURACY_BASE, DODGE_BASE } from '../combat/hit.js';
 import { REALMS } from './data/realms.js';
 import { LAWS } from './data/laws.js';
 import { log } from '../../shared/utils/dom.js';
@@ -33,7 +34,7 @@ export function advanceRealm(state = progressionState) {
     state.stats = state.stats || {
       physique: 10, mind: 10, dexterity: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
+      armor: 0, accuracy: ACCURACY_BASE, dodge: DODGE_BASE
     };
 
     state.cultivation.talent += 0.15;
@@ -62,7 +63,7 @@ export function advanceRealm(state = progressionState) {
     state.stats = state.stats || {
       physique: 10, mind: 10, dexterity: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: 0, dodge: 0
+      armor: 0, accuracy: ACCURACY_BASE, dodge: DODGE_BASE
     };
 
     state.cultivation.talent += 0.03;
