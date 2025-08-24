@@ -5,6 +5,7 @@ import { craftTalisman } from '../mutators.js';
 import { listTalismans } from '../data/talismans.js';
 import { renderMindReadingTab } from './mindReadingTab.js';
 import { renderMindPuzzlesTab } from './mindPuzzlesTab.js';
+import { renderMindStatsTab } from './mindStatsTab.js';
 import { S, save } from '../../../shared/state.js';
 
 let lastXp = 0;
@@ -114,6 +115,9 @@ export function setupMindTabs() {
           break;
         case 'mindReading':
           renderMindReadingTab(content, S);
+          break;
+        case 'mindStats':
+          renderMindStatsTab(content, S);
           break;
         case 'mindPuzzles':
           renderMindPuzzlesTab(content, S);

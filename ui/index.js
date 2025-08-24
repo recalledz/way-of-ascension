@@ -57,6 +57,7 @@ import { ensureMindState, xpProgress as mindXpProgress, onTick as mindOnTick } f
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
 import { renderMindReadingTab, mountMindReadingUI } from '../src/features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
+import { renderMindStatsTab } from '../src/features/mind/ui/mindStatsTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
 import { updateAdventureProgress, mountAdventureControls } from '../src/features/adventure/ui/adventureDisplay.js';
@@ -245,6 +246,7 @@ function updateAll(){
   updateActivityCards();
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+  renderMindStatsTab(document.getElementById('mindStatsTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
 
   emit('RENDER');
@@ -270,10 +272,12 @@ function updateActivityContent() {
       const active = document.querySelector('.mind-tab-btn.active')?.dataset.tab;
       if (active === 'mindMain') {
         renderMindMainTab(document.getElementById('mindMainTab'), S);
-      } else if (active === 'mindPuzzles') {
-        renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
-      } else {
+      } else if (active === 'mindReading') {
         renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+      } else if (active === 'mindStats') {
+        renderMindStatsTab(document.getElementById('mindStatsTab'), S);
+      } else {
+        renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
       }
       break;
     }
@@ -639,6 +643,7 @@ window.addEventListener('load', ()=>{
   mountMindReadingUI(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+  renderMindStatsTab(document.getElementById('mindStatsTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
