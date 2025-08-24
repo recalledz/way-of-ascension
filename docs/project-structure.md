@@ -296,7 +296,8 @@ way-of-ascension/
 │   │   └── utils/
 │   │       ├── dom.js
 │   │       ├── hp.js
-│   │       └── number.js
+│   │       ├── number.js
+│   │       └── stats.js
 │   └── ui/
 │       ├── app.js
 │       ├── dev/
@@ -409,6 +410,9 @@ Contains `initHp()` to create `{ hp, hpMax }` objects from a maximum value.
 
 #### `utils/number.js` - Number Formatting Helpers
 Formats large numbers with shorthand suffixes (k, m, b, t).
+
+#### `utils/stats.js` - Stat Utilities
+Merges base stats with modifier objects.
 
 #### `src/features/progression/logic.js` - Game Calculations
 **Purpose**: Core progression mechanics and calculations
