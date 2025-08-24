@@ -8,6 +8,7 @@ export {
   calcFromCraft,
   applyPuzzleMultiplier,
   levelForXp,
+  xpProgress,
 } from './logic.js';
 
 export {
