@@ -55,7 +55,7 @@ import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
 import { ensureMindState, xpProgress as mindXpProgress } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
-import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
+import { renderMindReadingTab, mountMindReadingUI } from '../src/features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../src/features/combat/ui/combatStats.js';
@@ -624,6 +624,7 @@ window.addEventListener('load', ()=>{
   mountAlchemyUI(S);
   mountKarmaUI(S);
   mountSectUI(S);
+  mountMindReadingUI(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);

@@ -10,6 +10,7 @@ import {
   levelForXp,
   applyManualEffects,
 } from './logic.js';
+import { on } from '../../shared/events.js';
 
 export function awardFromProficiency(S, profXp) {
   const add = calcFromProficiency(profXp);
@@ -22,10 +23,10 @@ export function startReading(S, manualId) {
   const m = getManual(manualId);
   if (!m) return false;
   if (S.mind.level < m.reqLevel) return false;
+  const rec = S.mind.manualProgress[manualId] || { xp: 0, level: 0 };
+  if (rec.level >= m.maxLevel) return false;
+  S.mind.manualProgress[manualId] = rec;
   S.mind.activeManualId = manualId;
-  if (!S.mind.manualProgress[manualId]) {
-    S.mind.manualProgress[manualId] = { xp: 0, done: false };
-  }
   return true;
 }
 
@@ -56,17 +57,31 @@ export function onTick(S, dt) {
   if (!id) return;
   const manual = getManual(id);
   if (!manual) return;
+  const rec = S.mind.manualProgress[id] || { xp: 0, level: 0 };
+  if (rec.level >= manual.maxLevel) {
+    stopReading(S);
+    return;
+  }
   const add = calcFromManual(manual, dt, S.stats);
   const applied = applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.fromReading += add;
   S.mind.xp += applied;
-  const rec = S.mind.manualProgress[id];
   rec.xp += add;
-  const level = Math.floor(rec.xp / (manual.reqLevel * 100));
-  if (!rec.done && rec.xp >= manual.reqLevel * 100) {
-    rec.done = true;
-    applyManualEffects(S, manual, level);
+
+  const needed = manual.baseTimeSec * manual.levelTimeMult[rec.level] * manual.xpRate;
+  if (rec.xp >= needed) {
+    rec.xp -= needed;
+    rec.level += 1;
+    applyManualEffects(S, manual, rec.level);
+    if (rec.level >= manual.maxLevel) {
+      stopReading(S);
+    }
   }
+  S.mind.manualProgress[id] = rec;
   S.mind.level = levelForXp(S.mind.xp);
 }
+
+on('mind/manuals/startReading', ({ root, manualId }) => {
+  startReading(root, manualId);
+});
 
