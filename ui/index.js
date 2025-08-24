@@ -203,10 +203,19 @@ function updateAll(){
   updateQiAndFoundation();
 
   // HP
+  const hpFrac = S.hpMax ? S.hp / S.hpMax : 0;
+  const shieldMax = S.shield?.max || 0;
+  const shieldCur = S.shield?.current || 0;
+  const shieldFrac = shieldMax ? shieldCur / shieldMax : 0;
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
   setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
-  setFill('hpFill', S.hp / S.hpMax);
-  setFill('shieldFill', S.shield?.max ? S.shield.current / S.shield.max : 0);
+  setFill('hpFill', hpFrac);
+  setFill('hpMaskRect', hpFrac);
+  setFill('shieldFill', shieldFrac);
+  const overlay = qs('.shield-overlay');
+  if (overlay) overlay.style.display = shieldFrac > 0 ? '' : 'none';
+  const hpA11y = qs('#hpA11y');
+  if (hpA11y) hpA11y.textContent = `HP ${fmt(S.hp)}/${fmt(S.hpMax)}, Shield ${fmt(shieldCur)}/${fmt(shieldMax)}`;
   updateCombatStats();
   updateCurrentTaskDisplay(S);
 
