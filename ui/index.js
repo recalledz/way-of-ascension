@@ -549,13 +549,58 @@ function setupStatusToggle() {
   });
 }
 
-function enableDebug() {
+function setupLogSheet() {
+  const sheet = qs('#logSheet');
+  const toggle = qs('#logToggle');
+  if (!sheet || !toggle) return;
+  const mq = window.matchMedia('(max-width: 768px)');
+  function setHeight() {
+    if (!mq.matches) {
+      document.documentElement.style.setProperty('--bottom-log-h', '0px');
+      return;
+    }
+    const h = sheet.getAttribute('data-open') === 'true'
+      ? sheet.getBoundingClientRect().height
+      : toggle.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+  }
+  function close() {
+    sheet.setAttribute('data-open', 'false');
+    toggle.setAttribute('aria-expanded', 'false');
+    sheet.removeAttribute('role');
+    sheet.removeAttribute('aria-modal');
+    toggle.textContent = 'Log \u25BE';
+    toggle.focus();
+    setHeight();
+    window.removeEventListener('keydown', esc);
+  }
+  function open() {
+    sheet.setAttribute('data-open', 'true');
+    toggle.setAttribute('aria-expanded', 'true');
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    toggle.textContent = 'Log \u25B4';
+    setHeight();
+    window.addEventListener('keydown', esc);
+  }
+  function esc(e) { if (e.key === 'Escape') close(); }
+  toggle.addEventListener('click', () => {
+    sheet.getAttribute('data-open') === 'true' ? close() : open();
+  });
+  window.addEventListener('resize', setHeight);
+  mq.addEventListener('change', setHeight);
+  setHeight();
+}
+
+function enableLayoutDebug() {
   if (!window.DEBUG) return;
-  document.documentElement.classList.add('debug-overflow');
+  document.documentElement.classList.add('layout-debug');
   const check = () => {
-    const w = document.documentElement.scrollWidth;
-    const vw = document.documentElement.clientWidth;
-    if (w > vw) console.warn('[layout] overflow', w - vw);
+    document.querySelectorAll('body *').forEach(el => {
+      if (el.scrollWidth > el.clientWidth + 1) {
+        console.warn('[layout]', el);
+      }
+    });
   };
   window.addEventListener('resize', check);
   check();
@@ -568,7 +613,8 @@ window.addEventListener('load', ()=>{
   initUI();
   setupMobileUI();
   setupStatusToggle();
-  enableDebug();
+  setupLogSheet();
+  enableLayoutDebug();
   initLawSystem();
   mountActivityUI(S);
   mountAdventureControls(S);
