@@ -4262,6 +4262,13 @@ tr:last-child td {
   .log-sheet[data-open="true"]{transform:translateY(0);}
   .log-sheet[data-open="false"] .log{display:none;}
   .log{position:relative;left:auto;right:auto;bottom:auto;height:auto;flex:1;overflow-y:auto;}
+
+  /* Ensure cards and contents fit small screens */
+  .cards{grid-template-columns:1fr;}
+  .cards .card{width:100%;box-sizing:border-box;}
+  .cultivation-buttons{flex-direction:column;}
+  .cultivation-controls-card h4{font-size:1rem;}
+  .cultivation-buttons .btn{font-size:0.9rem;}
 }
 @media (prefers-reduced-motion:reduce){
   #sidebar{transition:none;}
