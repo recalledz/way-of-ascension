@@ -1,6 +1,7 @@
 // Inventory feature logic helpers
 
 // Recalculate derived player stats based on equipped items
+import { ACCURACY_BASE, DODGE_BASE } from '../combat/hit.js';
 export function recomputePlayerTotals(player) {
   let armor = 0;
   let accuracy = 0;
@@ -21,8 +22,8 @@ export function recomputePlayerTotals(player) {
   }
   player.stats = player.stats || {};
   player.stats.armor = armor;
-  player.stats.accuracy = accuracy;
-  player.stats.dodge = dodge;
+  player.stats.accuracy = ACCURACY_BASE + accuracy;
+  player.stats.dodge = DODGE_BASE + dodge;
   player.shield = player.shield || { current: 0, max: 0 };
   const mind = player.stats.mind || 0;
   const shieldMult = 1 + mind * 0.06;
