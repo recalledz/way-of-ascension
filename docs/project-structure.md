@@ -77,6 +77,8 @@ way-of-ascension/
 │   └── validate-structure.js
 ├── src/
 │   ├── index.js
+│   ├── data/
+│   │   └── status.ts
 │   ├── features/
 │   │   ├── adventure/
 │   │   │   ├── data/
@@ -244,7 +246,8 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       ├── mindMainTab.js
 │   │   │       ├── mindPuzzlesTab.js
-│   │   │       └── mindReadingTab.js
+│   │   │       ├── mindReadingTab.js
+│   │   │       └── mindStatsTab.js
 │   │   ├── mining/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -892,6 +895,7 @@ Paths added:
 - `src/features/mind/ui/mindMainTab.js` – Renders summary view for the Mind feature.
 - `src/features/mind/ui/mindPuzzlesTab.js` – Displays puzzle progress and multiplier info.
 - `src/features/mind/ui/mindReadingTab.js` – Lists manuals and controls reading actions.
+- `src/features/mind/ui/mindStatsTab.js` – Shows cumulative manual bonuses.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
@@ -938,6 +942,9 @@ Paths added:
 - `src/features/weaponGeneration/logic.js` – Generates weapons from base types and materials.
 - `src/features/weaponGeneration/mutators.js` – Writes generated weapons into state.
 - `src/features/weaponGeneration/selectors.js` – Helpers to roll and access generated weapons.
+
+### Core Data (`src/data/`)
+- `src/data/status.ts` – Global status effect definitions.
 
 ### Sect Feature (`src/features/sect/`)
 - `src/features/sect/index.js` – Registers sect hooks.
