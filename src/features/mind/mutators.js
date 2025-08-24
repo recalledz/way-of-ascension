@@ -2,6 +2,8 @@
 
 import { getManual } from './data/manuals.js';
 import { getTalisman } from './data/talismans.js';
+import { on } from '../../shared/events.js';
+import { S } from '../../shared/state.js';
 import {
   calcFromProficiency,
   calcFromManual,
@@ -21,10 +23,10 @@ export function startReading(S, manualId) {
   const m = getManual(manualId);
   if (!m) return false;
   if (S.mind.level < m.reqLevel) return false;
+  const rec = S.mind.manualProgress[manualId] || { xp: 0, level: 0, done: false };
+  if (rec.level >= m.maxLevel) return false;
   S.mind.activeManualId = manualId;
-  if (!S.mind.manualProgress[manualId]) {
-    S.mind.manualProgress[manualId] = { xp: 0, done: false };
-  }
+  S.mind.manualProgress[manualId] = rec;
   return true;
 }
 
@@ -55,15 +57,33 @@ export function onTick(S, dt) {
   if (!id) return;
   const manual = getManual(id);
   if (!manual) return;
+  const rec = S.mind.manualProgress[id];
+  if (!rec) return;
+  if (rec.level >= manual.maxLevel) {
+    S.mind.activeManualId = null;
+    return;
+  }
+  // Manual progress by time
+  rec.xp += dt;
+  const need = manual.baseTimeSec * (manual.levelTimeMult[rec.level] || 0);
+  if (need && rec.xp >= need) {
+    rec.xp -= need;
+    rec.level += 1;
+    if (rec.level >= manual.maxLevel) {
+      rec.level = manual.maxLevel;
+      rec.done = true;
+      S.mind.activeManualId = null;
+    }
+  }
+  // Mind XP from reading
   const add = calcFromManual(manual, dt);
   const applied = applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.fromReading += add;
   S.mind.xp += applied;
-  const rec = S.mind.manualProgress[id];
-  rec.xp += add;
-  if (rec.xp >= manual.reqLevel * 100) {
-    rec.done = true;
-  }
   S.mind.level = levelForXp(S.mind.xp);
 }
+
+on('mind/manuals/startReading', ({ id, root = S }) => {
+  startReading(root, id);
+});
 

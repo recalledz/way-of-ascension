@@ -25,7 +25,7 @@ import {
 } from '../src/features/progression/index.js';
 import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
 import { fmt } from '../src/shared/utils/number.js';
-import { emit } from '../src/shared/events.js';
+import { emit, on } from '../src/shared/events.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import { renderSidebarActivities } from '../src/ui/sidebar.js';
 import { initializeWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
@@ -235,7 +235,6 @@ function updateAll(){
   updateLawsUI();
   updateActivityCards();
   renderMindMainTab(document.getElementById('mindMainTab'), S);
-  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
 
   emit('RENDER');
@@ -625,8 +624,9 @@ window.addEventListener('load', ()=>{
   mountKarmaUI(S);
   mountSectUI(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
-  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
+  on('RENDER', () => renderMindReadingTab(document.getElementById('mindReadingTab'), S));
+  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   selectActivity('cultivation'); // Start with cultivation selected
   updateAll();
   tick();

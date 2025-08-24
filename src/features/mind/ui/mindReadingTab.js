@@ -1,7 +1,8 @@
 // src/features/mind/ui/mindReadingTab.js
 
 import { listManuals, getManual } from '../data/manuals.js';
-import { startReading, stopReading } from '../mutators.js';
+import { stopReading } from '../mutators.js';
+import { emit } from '../../../shared/events.js';
 
 // Mapping of manual effect keys to human readable labels
 const EFFECT_LABELS = {
@@ -40,17 +41,20 @@ export function renderMindReadingTab(rootEl, S) {
   if (activeId) {
     const manual = getManual(activeId);
     if (manual) {
-      const rec = S.mind.manualProgress[activeId] || { xp: 0 };
-      const max = manual.reqLevel * 100;
-      const ratio = Math.min(rec.xp / max, 1);
+      const rec = S.mind.manualProgress[activeId] || { xp: 0, level: 0 };
+      const need = manual.baseTimeSec * (manual.levelTimeMult[rec.level] || 1);
+      const ratio = rec.level >= manual.maxLevel ? 1 : Math.min(rec.xp / need, 1);
+      const remNext = rec.level >= manual.maxLevel ? 0 : need - rec.xp;
+      const remMax = rec.level >= manual.maxLevel ? 0 : remNext + manual.levelTimeMult.slice(rec.level + 1).reduce((s, mult) => s + manual.baseTimeSec * mult, 0);
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
         <h3><iconify-icon icon="iconoir:page-flip"></iconify-icon> Reading: ${manual.name}</h3>
         <div class="progress-bar">
           <div class="progress-fill" style="width:${(ratio * 100).toFixed(1)}%"></div>
-          <div class="progress-text">${rec.xp.toFixed(0)} / ${max}</div>
+          <div class="progress-text">Lv ${rec.level} / ${manual.maxLevel}</div>
         </div>
+        <div class="muted">Next in ${formatTime(remNext)} &middot; Max in ${formatTime(remMax)}</div>
         ${renderEffects(manual)}
       `;
       const stopBtn = document.createElement('button');
@@ -79,9 +83,10 @@ export function renderMindReadingTab(rootEl, S) {
     const btn = document.createElement('button');
     btn.className = 'btn small';
     btn.textContent = 'Start';
-    btn.disabled = S.mind.level < m.reqLevel;
+    const rec = S.mind.manualProgress[m.id];
+    btn.disabled = S.mind.level < m.reqLevel || (rec && rec.level >= m.maxLevel);
     btn.addEventListener('click', () => {
-      startReading(S, m.id);
+      emit('mind/manuals/startReading', { id: m.id, root: S });
       renderMindReadingTab(rootEl, S);
     });
     item.appendChild(btn);
@@ -91,3 +96,12 @@ export function renderMindReadingTab(rootEl, S) {
 }
 
 export default renderMindReadingTab;
+
+function formatTime(seconds) {
+  const s = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
