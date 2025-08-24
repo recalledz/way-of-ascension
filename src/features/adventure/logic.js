@@ -1003,10 +1003,11 @@ export function updateActivityAdventure() {
   if (!S.adventure.bestiary) {
     S.adventure.bestiary = {};
   }
-  const currentZone = ZONES[S.adventure.selectedZone || S.adventure.currentZone || 0];
+  // Base combat preview on the zone the player is currently exploring
+  const currentZone = ZONES[S.adventure.currentZone || 0];
   let currentArea = null;
   if (currentZone && currentZone.areas) {
-    currentArea = currentZone.areas[S.adventure.selectedArea || S.adventure.currentArea || 0];
+    currentArea = currentZone.areas[S.adventure.currentArea || 0];
     if (currentArea) {
       setText('currentLocationText', `${currentZone.name} - ${currentArea.name}`);
       setText('killsRequired', `${S.adventure.killsInCurrentArea}/${currentArea.killReq}`);
