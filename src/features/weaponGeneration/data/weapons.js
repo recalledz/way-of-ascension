@@ -61,8 +61,19 @@ const FIST = {
   animations: defaultAnimationsForType('fist'),
 };
 
+const PALM = {
+  ...FIST,
+  key: 'palm',
+  displayName: 'Palm',
+  stats: {
+    stunBuildMult: 0.3,
+    stunDurationMult: 0.1,
+  },
+};
+
 export const WEAPONS = {
   fist: FIST,
+  palm: PALM,
   ironSword: toLegacy('ironSword', generateWeapon({ typeKey: 'sword', materialKey: 'iron' })),
   bronzeHammer: toLegacy('bronzeHammer', generateWeapon({ typeKey: 'hammer', materialKey: 'bronze' })),
   elderWand: toLegacy('elderWand', generateWeapon({ typeKey: 'wand', materialKey: 'spiritwood' })),

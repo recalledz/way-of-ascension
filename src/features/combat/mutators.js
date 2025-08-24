@@ -1,6 +1,10 @@
 import { S } from '../../shared/state.js';
 import { initializeFight as baseInitializeFight, processAttack as baseProcessAttack } from './logic.js';
-import { applyStatus as applyStatusBase } from './statusEngine.js';
+import { applyStatus as baseApplyStatus } from './statusEngine.js';
+
+export function applyStatus(target, key, power, state = S, options) {
+  return baseApplyStatus(target, key, power, state, options);
+}
 
 export function initializeFight(enemy, state = S) {
   const { enemyHP, enemyMax, atk, def } = baseInitializeFight(enemy);
@@ -47,6 +51,3 @@ export function processAttack(damage, options = {}, state = S) {
   return dealt;
 }
 
-export function applyStatus(target, key, power, state = S) {
-  return applyStatusBase(target, key, power, state);
-}
