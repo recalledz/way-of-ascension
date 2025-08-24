@@ -647,8 +647,8 @@ export function startBossCombat() {
   }
   
   const { bossData, originalType } = bossInfo;
-  const { enemyHP, enemyMax, atk, def } = initializeFight(bossData);
-  const h = { enemyHP, enemyMax, eAtk: atk, eDef: def, regen: 0, affixes: [] };
+  const { enemyHP, enemyMax, atk, armor } = initializeFight(bossData);
+  const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
   
   // Bosses get more affixes
   applyRandomAffixes(h);
@@ -660,8 +660,7 @@ export function startBossCombat() {
     ...bossData,
     type: originalType,
     attack: Math.round(h.eAtk),
-    defense: Math.round(h.eDef),
-    armor: Math.round(h.eDef),
+    armor: Math.round(h.eArmor),
     regen: h.regen,
     affixes: h.affixes
   };
@@ -692,8 +691,8 @@ export function startAdventureCombat() {
     log(`Enemy data not found for ${enemyType}`, 'bad');
     return;
   }
-  const { enemyHP, enemyMax, atk, def } = initializeFight(enemyData);
-  const h = { enemyHP, enemyMax, eAtk: atk, eDef: def, regen: 0, affixes: [] };
+  const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
+  const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
   applyRandomAffixes(h);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = false;
@@ -701,8 +700,7 @@ export function startAdventureCombat() {
     ...enemyData,
     type: enemyType,
     attack: Math.round(h.eAtk),
-    defense: Math.round(h.eDef),
-    armor: Math.round(h.eDef),
+    armor: Math.round(h.eArmor),
     regen: h.regen,
     affixes: h.affixes
   };

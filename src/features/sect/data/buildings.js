@@ -119,11 +119,11 @@ export const SECT_BUILDINGS = {
     baseCost: {stones: 200, ore: 80, wood: 60},
     costScaling: 2.2,
     effects: {
-      1: {atkBase: 3, defBase: 2, desc: '+3 ATK, +2 DEF'},
-      2: {atkBase: 6, defBase: 4, desc: '+6 ATK, +4 DEF'},
-      3: {atkBase: 10, defBase: 7, desc: '+10 ATK, +7 DEF'},
-      4: {atkBase: 15, defBase: 11, desc: '+15 ATK, +11 DEF'},
-      5: {atkBase: 22, defBase: 16, desc: '+22 ATK, +16 DEF'}
+      1: {atkBase: 3, armorBase: 2, desc: '+3 ATK, +2 Armor'},
+      2: {atkBase: 6, armorBase: 4, desc: '+6 ATK, +4 Armor'},
+      3: {atkBase: 10, armorBase: 7, desc: '+10 ATK, +7 Armor'},
+      4: {atkBase: 15, armorBase: 11, desc: '+15 ATK, +11 Armor'},
+      5: {atkBase: 22, armorBase: 16, desc: '+22 ATK, +16 Armor'}
     }
   },
 

@@ -14,7 +14,7 @@ export function getKarmaBonuses(state = karmaState){
   return {
     qiRegen: k.qiRegen || 0,
     atk: k.atk || 0,
-    def: k.def || 0,
+    armor: k.armor || 0,
   };
 }
 
@@ -26,8 +26,8 @@ export function getAtkBonus(state = karmaState){
   return getKarmaBonuses(state).atk;
 }
 
-export function getDefBonus(state = karmaState){
-  return getKarmaBonuses(state).def;
+export function getArmorBonus(state = karmaState){
+  return getKarmaBonuses(state).armor;
 }
 
 export function calcKarmaGain(state = S) {

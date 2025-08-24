@@ -51,7 +51,7 @@ export function renderLawSelection(){
         ${Object.entries(law.bonuses).map(([key, value]) => {
           let bonus = '';
           if(key === 'atk') bonus = `+${Math.round((value-1)*100)}% ATK`;
-          else if(key === 'def') bonus = `+${Math.round((value-1)*100)}% DEF`;
+          else if(key === 'armor') bonus = `+${Math.round((value-1)*100)}% Armor`;
           else if(key === 'qiRegen') bonus = `+${Math.round((value-1)*100)}% Qi Regen`;
           else if(key === 'resourceYield') bonus = `+${Math.round((value-1)*100)}% Resources`;
           else if(key === 'alchemySuccess') bonus = `+${Math.round((value-1)*100)}% Alchemy`;

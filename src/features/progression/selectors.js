@@ -8,7 +8,7 @@ import {
   foundationGainPerMeditate as calcFoundationGainMeditate,
   powerMult as calcPowerMult,
   calcAtk as calcCalcAtk,
-  calcDef as calcCalcDef,
+  calcArmor as calcCalcArmor,
   getStatEffects as calcStatEffects,
   calculatePlayerCombatAttack as calcPlayerCombatAttack,
   calculatePlayerAttackRate as calcPlayerAttackRate,
@@ -49,8 +49,8 @@ export function calcAtk(state = progressionState) {
   return calcCalcAtk(state);
 }
 
-export function calcDef(state = progressionState) {
-  return calcCalcDef(state);
+export function calcArmor(state = progressionState) {
+  return calcCalcArmor(state);
 }
 
 export function getStatEffects(state = progressionState) {

@@ -2,6 +2,7 @@
 
 // Recalculate derived player stats based on equipped items
 import { ACCURACY_BASE, DODGE_BASE } from '../combat/hit.js';
+import { calcArmor as calcBaseArmor } from '../progression/selectors.js';
 export function recomputePlayerTotals(player) {
   let armor = 0;
   let accuracy = 0;
@@ -10,10 +11,10 @@ export function recomputePlayerTotals(player) {
   const equipped = Object.values(player.equipment || {});
   for (const item of equipped) {
     if (!item) continue;
-    if (item.defense) {
-      armor += item.defense.armor || 0;
-      dodge += item.defense.dodge || 0;
-      shieldMax += item.defense.qiShield || 0;
+    if (item.protection) {
+      armor += item.protection.armor || 0;
+      dodge += item.protection.dodge || 0;
+      shieldMax += item.protection.qiShield || 0;
     }
     if (item.offense) accuracy += item.offense.accuracy || 0;
     if (item.shield?.max) shieldMax += item.shield.max; // legacy support
@@ -21,7 +22,8 @@ export function recomputePlayerTotals(player) {
     if (item.stats?.dodge) dodge += item.stats.dodge; // legacy support
   }
   player.stats = player.stats || {};
-  player.stats.armor = armor;
+  const baseArmor = calcBaseArmor(player);
+  player.stats.armor = armor + baseArmor;
   player.stats.accuracy = ACCURACY_BASE + accuracy;
   player.stats.dodge = DODGE_BASE + dodge;
   player.shield = player.shield || { current: 0, max: 0 };

@@ -3,14 +3,14 @@ import { LAWS } from './data/laws.js';
 import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
-import { karmaQiRegenBonus, karmaAtkBonus, karmaDefBonus } from '../karma/logic.js';
+import { karmaQiRegenBonus, karmaAtkBonus, karmaArmorBonus } from '../karma/logic.js';
 import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 import { getCookingSuccessBonus } from '../cooking/selectors.js';
 import { getTunable } from '../../shared/tunables.js';
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 export function getLawBonuses(state = progressionState){
   let bonuses = {
-    atk: 1, def: 1, qiRegen: 1, qiCap: 1, resourceYield: 1,
+    atk: 1, armor: 1, qiRegen: 1, qiCap: 1, resourceYield: 1,
     alchemySuccess: 1, pillEffect: 1, critChance: 0, dmgReduction: 0,
     beastDmg: 1, herbYield: 1, pillQiBonus: 1, qiCost: 1
   };
@@ -21,7 +21,7 @@ export function getLawBonuses(state = progressionState){
   const tree = state.laws.trees[state.laws.selected];
 
   if(law.bonuses.atk) bonuses.atk *= law.bonuses.atk;
-  if(law.bonuses.def) bonuses.def *= law.bonuses.def;
+  if(law.bonuses.armor) bonuses.armor *= law.bonuses.armor;
   if(law.bonuses.qiRegen) bonuses.qiRegen *= law.bonuses.qiRegen;
   if(law.bonuses.resourceYield) bonuses.resourceYield *= law.bonuses.resourceYield;
   if(law.bonuses.alchemySuccess) bonuses.alchemySuccess *= law.bonuses.alchemySuccess;
@@ -33,7 +33,7 @@ export function getLawBonuses(state = progressionState){
       const skill = law.tree[skillKey];
       const bonus = skill.bonus;
       if(bonus.atk) bonuses.atk *= (1 + bonus.atk);
-      if(bonus.def) bonuses.def *= (1 + bonus.def);
+      if(bonus.armor) bonuses.armor *= (1 + bonus.armor);
       if(bonus.qiRegen) bonuses.qiRegen *= (1 + bonus.qiRegen);
       if(bonus.qiCap) bonuses.qiCap *= (1 + bonus.qiCap);
       if(bonus.resourceYield) bonuses.resourceYield *= (1 + bonus.resourceYield);
@@ -114,13 +114,13 @@ export function calcAtk(state = progressionState){
   return Math.floor((state.atkBase + building + profBonus + state.tempAtk + baseAtk + stageBonus + karmaAtkBonus(state)) * lawBonuses.atk);
 }
 
-export function calcDef(state = progressionState){
+export function calcArmor(state = progressionState){
   const realm = REALMS[state.realm.tier];
-  const baseDef = realm.def;
-  const stageBonus = Math.floor(baseDef * (state.realm.stage - 1) * 0.08);
+  const baseArmor = realm.armor;
+  const stageBonus = Math.floor(baseArmor * (state.realm.stage - 1) * 0.08);
   const lawBonuses = getLawBonuses(state);
-  const building = getBuildingBonuses(state).defBase || 0;
-  return Math.floor((state.defBase + building + state.tempDef + baseDef + stageBonus + karmaDefBonus(state)) * lawBonuses.def);
+  const building = getBuildingBonuses(state).armorBase || 0;
+  return Math.floor((state.armorBase + building + state.tempArmor + baseArmor + stageBonus + karmaArmorBonus(state)) * lawBonuses.armor);
 }
 
 export function getStatEffects(state = progressionState) {

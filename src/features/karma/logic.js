@@ -14,7 +14,7 @@ export function karmaAtkBonus(state = karmaState){
   return (k.atk || 0) * 100;
 }
 
-export function karmaDefBonus(state = karmaState){
+export function karmaArmorBonus(state = karmaState){
   const k = slice(state);
-  return (k.def || 0) * 100;
+  return (k.armor || 0) * 100;
 }

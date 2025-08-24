@@ -14,10 +14,10 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'normal' }/** 
   if (!base) throw new Error(`Unknown base gear: ${baseKey}`);
   const material = materialKey ? MATERIALS_STUB[materialKey] : null;
   const qualityMult = { normal: 1, magic: 1.1, rare: 1.25 }[qualityKey] || 1;
-  const defense = {
-    armor: Math.round((base.baseDefense.armor || 0) * qualityMult),
-    dodge: Math.round((base.baseDefense.dodge || 0) * qualityMult),
-    qiShield: Math.round((base.baseDefense.qiShield || 0) * qualityMult),
+  const protection = {
+    armor: Math.round((base.baseProtection.armor || 0) * qualityMult),
+    dodge: Math.round((base.baseProtection.dodge || 0) * qualityMult),
+    qiShield: Math.round((base.baseProtection.qiShield || 0) * qualityMult),
   };
   const offense = {
     accuracy: Math.round((base.baseOffense?.accuracy || 0) * qualityMult),
@@ -28,8 +28,8 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'normal' }/** 
     type: 'armor',
     slot: 'body',
     name,
-    defenseType: base.defenseType,
-    defense,
+    guardType: base.guardType,
+    protection,
     offense,
     quality: qualityKey,
     material: material?.key,

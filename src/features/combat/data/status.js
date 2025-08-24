@@ -27,7 +27,7 @@ export const STATUSES = {
   ionize: { // STATUS-REFORM
     element: 'metal',
     duration: 5,
-    effect: { defense: -0.1 },
+    effect: { armor: -0.1 },
   },
   enfeeble: { // STATUS-REFORM
     element: null,

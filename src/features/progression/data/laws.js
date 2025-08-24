@@ -21,13 +21,13 @@ export const LAWS = {
     desc: 'The art of arrays and defensive abilities - focused on protection and resource efficiency',
     icon: '🛡️',
     unlockReq: {realm: 2, stage: 1}, // Foundation 1
-    bonuses: {def: 1.3, qiRegen: 1.1, resourceYield: 1.05},
+    bonuses: {armor: 1.3, qiRegen: 1.1, resourceYield: 1.05},
     tree: {
-      'basic_formation': {name: 'Basic Formation Theory', desc: '+20% DEF, +10% resource yield', cost: 10, prereq: null, bonus:{def: 0.20, resourceYield: 0.10}},
+      'basic_formation': {name: 'Basic Formation Theory', desc: '+20% Armor, +10% resource yield', cost: 10, prereq: null, bonus:{armor: 0.20, resourceYield: 0.10}},
       'qi_gathering': {name: 'Qi Gathering Array', desc: '+25% Qi regen, +15% Qi cap', cost: 25, prereq: 'basic_formation', bonus: {qiRegen: 0.25, qiCap: 0.15}},
-      'protective_ward': {name: 'Protective Ward', desc: '+30% DEF, reduces damage by 5%', cost: 40, prereq: 'basic_formation',bonus: {def: 0.30, dmgReduction: 0.05}},
+      'protective_ward': {name: 'Protective Ward', desc: '+30% Armor, reduces damage by 5%', cost: 40, prereq: 'basic_formation',bonus: {armor: 0.30, dmgReduction: 0.05}},
       'meditation_array': {name: 'Meditation Array', desc: '+30% foundation gain, +15% comprehension', cost: 50, prereq: 'qi_gathering', bonus: {foundationMult: 0.30, comprehension: 0.15}},
-      'grand_array': {name: 'Grand Defensive Array', desc: '+40% DEF, +20% all yields, +25% foundation gain', cost: 100, prereq: ['meditation_array'], bonus: {def: 0.40, resourceYield: 0.20, foundationMult: 0.25}}
+      'grand_array': {name: 'Grand Defensive Array', desc: '+40% Armor, +20% all yields, +25% foundation gain', cost: 100, prereq: ['meditation_array'], bonus: {armor: 0.40, resourceYield: 0.20, foundationMult: 0.25}}
     }
   },
   alchemy: {
