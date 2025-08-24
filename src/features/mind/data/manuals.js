@@ -3,15 +3,19 @@ export const MANUALS = {
     id: 'ironBodyPrimer',
     name: 'Iron Body Primer',
     category: 'Defense',
-    // reading speed baseline; tune later
     xpRate: 0.28,
     reqLevel: 1,
-    maxLevel: 3,
-    // Passive defense scaling you can apply in your combat calc
+    maxLevel: 5,
+    baseTimeSec: 15 * 60,
+    statWeights: { mind: 0.6, agility: 0.3, physique: 1.0 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { hpMaxPct: 3, physDRPct: 2 },   // L1: +3% Max HP, +2% physical damage reduction
-      { hpMaxPct: 3, physDRPct: 2 },   // L2: cumulative +6% HP, +4% phys DR
-      { hpMaxPct: 4, physDRPct: 3 }    // L3: cumulative +10% HP, +7% phys DR
+      { hpMaxPct: 5, armorPct: 4 },
+      { hpMaxPct: 5, armorPct: 4 },
+      { hpMaxPct: 6, armorPct: 6 },
+      { hpMaxPct: 8, armorPct: 8 },
+      { hpMaxPct: 10, armorPct: 12 }
     ]
   },
 
@@ -21,12 +25,17 @@ export const MANUALS = {
     category: 'Movement',
     xpRate: 0.32,
     reqLevel: 1,
-    maxLevel: 3,
-    // Accuracy & dodge are already part of your combat math
+    maxLevel: 5,
+    baseTimeSec: 12 * 60,
+    statWeights: { mind: 0.7, agility: 0.9, physique: 0.4 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { accuracyPct: 3, dodgePct: 1 },  // L1
-      { accuracyPct: 3, dodgePct: 1 },  // L2 → total +6% acc, +2% dodge
-      { accuracyPct: 4, dodgePct: 2 }   // L3 → total +10% acc, +4% dodge
+      { accuracyPct: 5, dodgePct: 2 },
+      { accuracyPct: 5, dodgePct: 2 },
+      { accuracyPct: 7, dodgePct: 3 },
+      { accuracyPct: 9, dodgePct: 4 },
+      { accuracyPct: 12, dodgePct: 5 }
     ]
   },
 
@@ -36,12 +45,17 @@ export const MANUALS = {
     category: 'Casting',
     xpRate: 0.30,
     reqLevel: 1,
-    maxLevel: 3,
-    // Works with your existing attackRate / qi cost notions
+    maxLevel: 5,
+    baseTimeSec: 14 * 60,
+    statWeights: { mind: 0.8, agility: 0.5, physique: 0.4 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { attackRatePct: 3, qiCostPct: -3 },  // L1: +3% attack/cast rate, -3% Qi costs
-      { attackRatePct: 3, qiCostPct: -3 },  // L2 → total +6% rate, -6% cost
-      { attackRatePct: 4, qiCostPct: -4 }   // L3 → total +10% rate, -10% cost
+      { attackRatePct: 5, qiCostPct: -5 },
+      { attackRatePct: 5, qiCostPct: -5 },
+      { attackRatePct: 7, qiCostPct: -7 },
+      { attackRatePct: 9, qiCostPct: -8 },
+      { attackRatePct: 12, qiCostPct: -10 }
     ]
   },
 
@@ -51,12 +65,17 @@ export const MANUALS = {
     category: 'Qi',
     xpRate: 0.31,
     reqLevel: 1,
-    maxLevel: 3,
-    // Multiplies Max Qi and Qi regen
+    maxLevel: 5,
+    baseTimeSec: 16 * 60,
+    statWeights: { mind: 0.9, agility: 0.3, physique: 0.3 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { qiMaxPct: 5, qiRegenPct: 5 },  // L1
-      { qiMaxPct: 5, qiRegenPct: 5 },  // L2 → total +10% Max Qi, +10% regen
-      { qiMaxPct: 7, qiRegenPct: 8 }   // L3 → total +17% Max Qi, +18% regen
+      { qiMaxPct: 7, qiRegenPct: 7 },
+      { qiMaxPct: 7, qiRegenPct: 7 },
+      { qiMaxPct: 9, qiRegenPct: 10 },
+      { qiMaxPct: 12, qiRegenPct: 12 },
+      { qiMaxPct: 15, qiRegenPct: 15 }
     ]
   },
 
@@ -66,12 +85,17 @@ export const MANUALS = {
     category: 'Cultivation',
     xpRate: 0.30,
     reqLevel: 1,
-    maxLevel: 3,
-    // Boosts Foundation gain rate
+    maxLevel: 5,
+    baseTimeSec: 20 * 60,
+    statWeights: { mind: 0.9, physique: 0.4 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { foundationGainPct: 6 },        // L1
-      { foundationGainPct: 6 },        // L2 → total +12%
-      { foundationGainPct: 8 }         // L3 → total +20%
+      { foundationGainPct: 6 },
+      { foundationGainPct: 6 },
+      { foundationGainPct: 8 },
+      { foundationGainPct: 10 },
+      { foundationGainPct: 12 }
     ]
   },
 
@@ -81,12 +105,17 @@ export const MANUALS = {
     category: 'Mind',
     xpRate: 0.33,
     reqLevel: 1,
-    maxLevel: 3,
-    // Global Mind XP boost (reading, proficiency, crafting)
+    maxLevel: 5,
+    baseTimeSec: 18 * 60,
+    statWeights: { mind: 1.0, agility: 0.2 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { mindXpGainPct: 5 },            // L1
-      { mindXpGainPct: 5 },            // L2 → total +10%
-      { mindXpGainPct: 7 }             // L3 → total +17%
+      { mindXpGainPct: 5 },
+      { mindXpGainPct: 5 },
+      { mindXpGainPct: 7 },
+      { mindXpGainPct: 8 },
+      { mindXpGainPct: 10 }
     ]
   },
 
@@ -96,12 +125,17 @@ export const MANUALS = {
     category: 'Physique',
     xpRate: 0.29,
     reqLevel: 1,
-    maxLevel: 3,
-    // Boosts Physique XP gains
+    maxLevel: 5,
+    baseTimeSec: 12 * 60,
+    statWeights: { mind: 0.6, physique: 1.0 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { physiqueXpGainPct: 5 },        // L1
-      { physiqueXpGainPct: 5 },        // L2 → total +10%
-      { physiqueXpGainPct: 10 }        // L3 → total +20%
+      { physiqueXpGainPct: 7 },
+      { physiqueXpGainPct: 7 },
+      { physiqueXpGainPct: 12 },
+      { physiqueXpGainPct: 12 },
+      { physiqueXpGainPct: 18 }
     ]
   },
 
@@ -111,12 +145,17 @@ export const MANUALS = {
     category: 'Combat',
     xpRate: 0.32,
     reqLevel: 1,
-    maxLevel: 3,
-    // Big fist damage per level and fist proficiency gain
+    maxLevel: 5,
+    baseTimeSec: 24 * 60,
+    statWeights: { mind: 0.5, agility: 0.6, physique: 1.0 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { fistDamagePct: 15, fistProficiencyXpPct: 10 },  // L1
-      { fistDamagePct: 15, fistProficiencyXpPct: 10 },  // L2 → total +30% dmg, +20% prof XP
-      { fistDamagePct: 15, fistProficiencyXpPct: 10 }   // L3 → total +45% dmg, +30% prof XP
+      { fistDamagePct: 15, fistProficiencyXpPct: 12 },
+      { fistDamagePct: 15, fistProficiencyXpPct: 12 },
+      { fistDamagePct: 20, fistProficiencyXpPct: 15 },
+      { fistDamagePct: 25, fistProficiencyXpPct: 18 },
+      { fistDamagePct: 30, fistProficiencyXpPct: 22 }
     ]
   },
 
@@ -126,15 +165,26 @@ export const MANUALS = {
     category: 'Defense',
     xpRate: 0.30,
     reqLevel: 1,
-    maxLevel: 3,
-    // Increases Qi Shield capacity (pair later with your shield calc)
+    maxLevel: 5,
+    baseTimeSec: 14 * 60,
+    statWeights: { mind: 0.8, physique: 0.5 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { qiShieldCapacityPct: 10 },     // L1
-      { qiShieldCapacityPct: 10 },     // L2 → total +20%
-      { qiShieldCapacityPct: 15 }      // L3 → total +35%
+      { qiShieldCapacityPct: 12 },
+      { qiShieldCapacityPct: 12 },
+      { qiShieldCapacityPct: 18 },
+      { qiShieldCapacityPct: 24 },
+      { qiShieldCapacityPct: 30 }
     ]
   }
 };
 
-export function getManual(id){ return MANUALS[id] || null; }
-export function listManuals(){ return Object.values(MANUALS); }
+export function getManual(id) {
+  return MANUALS[id] || null;
+}
+
+export function listManuals() {
+  return Object.values(MANUALS);
+}
+
