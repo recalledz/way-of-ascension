@@ -20,6 +20,9 @@
   --pad: 16px;
   --header-h: 76px;
   --bottom-log-h: 0px;
+  --tabs-h: 48px;
+  --safe-bottom: env(safe-area-inset-bottom,0px);
+  --float-pad: 0px;
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
@@ -38,6 +41,34 @@
   --bg-contrast: .98; /* 1 = none */
 }
 html,body{height:100%}
+
+.tab-bar{
+  position:sticky;
+  top:var(--header-h);
+  z-index:900;
+  background:var(--panel);
+  margin-bottom:0;
+}
+
+.tab-content{
+  padding-top:var(--gap);
+  display:flex;
+  flex-direction:column;
+  gap:var(--gap);
+  height:calc(100dvh - var(--header-h) - var(--tabs-h) - var(--bottom-log-h) - var(--safe-bottom));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:var(--float-pad);
+}
+
+.tab-content>.card{
+  width:100%;
+  max-width:100%;
+}
+
+.tab-content>.card:only-child{
+  flex:1 0 auto;
+}
 
 /* --- Parchment-style custom scrollbar --- */
 html {
@@ -4205,10 +4236,6 @@ tr:last-child td {
   body.drawer-open{overflow:hidden;}
   .content{padding:var(--pad);}
   .activity-content{padding:var(--pad);}
-  .tab-bar{position:sticky;top:var(--header-h);z-index:900;background:var(--panel);margin-bottom:0;}
-  .tab-content{padding-top:var(--gap);display:flex;flex-direction:column;gap:var(--gap);height:calc(100dvh - var(--header-h) - var(--tabs-h) - var(--bottom-log-h) - var(--safe-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--float-pad);}
-  .tab-content>.card{width:100%;max-width:100%;}
-  .tab-content>.card:only-child{flex:1 0 auto;}
   img,canvas{max-width:100%;height:auto;}
   .hp-chip .hp-bar{width:100%;max-width:100%;}
   .chip{padding:calc(var(--pad)/2) var(--pad);min-height:44px;}
