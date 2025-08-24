@@ -3,6 +3,30 @@
 import { listManuals, getManual } from '../data/manuals.js';
 import { startReading, stopReading } from '../mutators.js';
 
+// Mapping of manual effect keys to human readable labels
+const EFFECT_LABELS = {
+  hpMaxPct: 'Max HP',
+  physDRPct: 'Physical DR',
+  accuracyPct: 'Accuracy',
+  dodgePct: 'Dodge',
+  attackRatePct: 'Attack Rate',
+  qiCostPct: 'Qi Cost'
+};
+
+// Render an unordered list of manual effects per level
+function renderEffects(manual) {
+  if (!manual.effects) return '';
+  const rows = manual.effects.map((eff, idx) => {
+    const parts = Object.entries(eff).map(([key, val]) => {
+      const label = EFFECT_LABELS[key] || key;
+      const sign = val > 0 ? '+' : '';
+      return `${label} ${sign}${val}%`;
+    });
+    return `<li>Lv ${idx + 1}: ${parts.join(', ')}</li>`;
+  }).join('');
+  return `<ul class="manual-effects">${rows}</ul>`;
+}
+
 /**
  * Render the Mind Reading tab UI.
  * @param {HTMLElement} rootEl container element
@@ -22,11 +46,12 @@ export function renderMindReadingTab(rootEl, S) {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <h3>Reading: ${manual.name}</h3>
+        <h3><iconify-icon icon="iconoir:page-flip"></iconify-icon> Reading: ${manual.name}</h3>
         <div class="progress-bar">
           <div class="progress-fill" style="width:${(ratio * 100).toFixed(1)}%"></div>
           <div class="progress-text">${rec.xp.toFixed(0)} / ${max}</div>
         </div>
+        ${renderEffects(manual)}
       `;
       const stopBtn = document.createElement('button');
       stopBtn.className = 'btn small';
@@ -46,9 +71,10 @@ export function renderMindReadingTab(rootEl, S) {
     const item = document.createElement('div');
     item.className = 'card';
     item.innerHTML = `
-      <div><strong>${m.name}</strong></div>
+      <div><iconify-icon icon="iconoir:page-flip"></iconify-icon> <strong>${m.name}</strong></div>
       <div>${m.category}</div>
       <div>Req Level: ${m.reqLevel}</div>
+      ${renderEffects(m)}
     `;
     const btn = document.createElement('button');
     btn.className = 'btn small';
