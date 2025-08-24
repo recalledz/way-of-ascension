@@ -119,17 +119,25 @@ export function renderMindReadingTab(rootEl, S) {
       ${renderSpeedInfo(m, S.stats)}
       ${renderEffects(m)}
     `;
-    const btn = document.createElement('button');
-    btn.className = 'btn small';
-    btn.textContent = 'Start';
     const progress = S.mind.manualProgress[m.id];
     const maxed = progress?.level >= m.maxLevel;
-    btn.disabled = S.mind.level < m.reqLevel || maxed;
-    btn.addEventListener('click', () => {
-      emit('mind/manuals/startReading', { root: S, manualId: m.id });
-      renderMindReadingTab(rootEl, S);
-    });
-    item.appendChild(btn);
+    if (maxed) {
+      item.classList.add('maxed');
+      const status = document.createElement('div');
+      status.className = 'muted';
+      status.textContent = 'Maxed';
+      item.appendChild(status);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'btn small';
+      btn.textContent = 'Start';
+      btn.disabled = S.mind.level < m.reqLevel;
+      btn.addEventListener('click', () => {
+        emit('mind/manuals/startReading', { root: S, manualId: m.id });
+        renderMindReadingTab(rootEl, S);
+      });
+      item.appendChild(btn);
+    }
     list.appendChild(item);
   }
   rootEl.appendChild(list);

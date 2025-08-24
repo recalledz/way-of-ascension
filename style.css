@@ -2054,6 +2054,10 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: none;
 }
 
+.card.maxed {
+  opacity: 0.5;
+}
+
 .mind-tab-content.active {
   display: block;
 }
