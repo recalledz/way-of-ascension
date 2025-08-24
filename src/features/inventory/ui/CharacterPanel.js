@@ -22,6 +22,7 @@ function renderStats() {
     { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
     { id: 'atkBase', value: () => S.atkBase },
     { id: 'defBase', value: () => S.defBase },
+    { id: 'armor', stat: 'armor' },
     { id: 'physique', stat: 'physique' },
     { id: 'mind', stat: 'mind' },
     { id: 'agility', stat: 'agility' },

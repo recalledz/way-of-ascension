@@ -1,7 +1,7 @@
 import { S, save } from '../../shared/state.js';
 import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from '../progression/selectors.js';
 import { initializeFight, processAttack } from '../combat/mutators.js';
-import { refillShieldFromQi } from '../combat/logic.js';
+import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getAbilitySlots } from '../ability/selectors.js';
 import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
@@ -163,6 +163,22 @@ export function updateBattleDisplay() {
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
+
+  // Calculate physical mitigation against the strongest enemy in the current zone
+  let mitPct = 0;
+  const armor = S.stats?.armor || 0;
+  const zone = ZONES[S.adventure.currentZone];
+  if (armor > 0 && zone?.areas?.length) {
+    let maxEnemyAtk = 0;
+    zone.areas.forEach(a => {
+      const atk = ENEMY_DATA[a.enemy]?.attack || 0;
+      if (atk > maxEnemyAtk) maxEnemyAtk = atk;
+    });
+    if (maxEnemyAtk > 0) {
+      mitPct = Math.min(ARMOR_CAP, armor / (armor + ARMOR_K * maxEnemyAtk));
+    }
+  }
+  setText('playerMitigation', `${Math.round(mitPct * 100)}%`);
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
