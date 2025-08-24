@@ -9,7 +9,7 @@ export const defaultMindState = {
   fromCrafting: 0,
   activeManualId: null,
   manualProgress: {},
-  // { manualId: { xp: number, done: boolean } }
+  // { manualId: { xp: number, level: number, done: boolean } }
   solvedPuzzles: 0,
 };
 

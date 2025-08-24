@@ -2,6 +2,8 @@
 
 import { listManuals, getManual } from '../data/manuals.js';
 import { startReading, stopReading } from '../mutators.js';
+import { on } from '../../../shared/events.js';
+import { S } from '../../../shared/state.js';
 
 // Mapping of manual effect keys to human readable labels
 const EFFECT_LABELS = {
@@ -12,6 +14,18 @@ const EFFECT_LABELS = {
   attackRatePct: 'Attack Rate',
   qiCostPct: 'Qi Cost'
 };
+
+function formatTime(secs) {
+  if (secs <= 0) return '0s';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.ceil(secs % 60);
+  return [
+    h ? `${h}h` : '',
+    m ? `${m}m` : '',
+    s ? `${s}s` : ''
+  ].filter(Boolean).join(' ');
+}
 
 // Render an unordered list of manual effects per level
 function renderEffects(manual) {
@@ -40,17 +54,23 @@ export function renderMindReadingTab(rootEl, S) {
   if (activeId) {
     const manual = getManual(activeId);
     if (manual) {
-      const rec = S.mind.manualProgress[activeId] || { xp: 0 };
-      const max = manual.reqLevel * 100;
-      const ratio = Math.min(rec.xp / max, 1);
+      const rec = S.mind.manualProgress[activeId] || { xp: 0, level: 0 };
+      const xpPerLevel = manual.reqLevel * 100;
+      const ratio = Math.min(rec.xp / xpPerLevel, 1);
+      const timeToNext = (xpPerLevel - rec.xp) / manual.xpRate;
+      const remainingLevels = manual.maxLevel - rec.level;
+      const totalXp = remainingLevels * xpPerLevel - rec.xp;
+      const timeToMax = totalXp / manual.xpRate;
+      const displayLevel = Math.min(rec.level + 1, manual.maxLevel);
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <h3><iconify-icon icon="iconoir:page-flip"></iconify-icon> Reading: ${manual.name}</h3>
+        <h3><iconify-icon icon="iconoir:page-flip"></iconify-icon> Reading: ${manual.name} (Lv ${displayLevel}/${manual.maxLevel})</h3>
         <div class="progress-bar">
           <div class="progress-fill" style="width:${(ratio * 100).toFixed(1)}%"></div>
-          <div class="progress-text">${rec.xp.toFixed(0)} / ${max}</div>
+          <div class="progress-text">${rec.xp.toFixed(0)} / ${xpPerLevel}</div>
         </div>
+        <div class="manual-times">Next level in ${formatTime(timeToNext)} – Max level in ${formatTime(timeToMax)}</div>
         ${renderEffects(manual)}
       `;
       const stopBtn = document.createElement('button');
@@ -78,8 +98,10 @@ export function renderMindReadingTab(rootEl, S) {
     `;
     const btn = document.createElement('button');
     btn.className = 'btn small';
-    btn.textContent = 'Start';
-    btn.disabled = S.mind.level < m.reqLevel;
+    const prog = S.mind.manualProgress[m.id];
+    const maxed = prog && prog.level >= m.maxLevel;
+    btn.textContent = maxed ? 'Maxed' : 'Start';
+    btn.disabled = S.mind.level < m.reqLevel || maxed;
     btn.addEventListener('click', () => {
       startReading(S, m.id);
       renderMindReadingTab(rootEl, S);
@@ -89,5 +111,10 @@ export function renderMindReadingTab(rootEl, S) {
   }
   rootEl.appendChild(list);
 }
+
+on('RENDER', () => {
+  const el = document.getElementById('mindReadingTab');
+  if (el) renderMindReadingTab(el, S);
+});
 
 export default renderMindReadingTab;

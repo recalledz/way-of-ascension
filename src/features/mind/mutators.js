@@ -23,7 +23,12 @@ export function startReading(S, manualId) {
   if (S.mind.level < m.reqLevel) return false;
   S.mind.activeManualId = manualId;
   if (!S.mind.manualProgress[manualId]) {
-    S.mind.manualProgress[manualId] = { xp: 0, done: false };
+    S.mind.manualProgress[manualId] = { xp: 0, level: 0, done: false };
+  } else {
+    // allow rereading if previously stopped
+    const rec = S.mind.manualProgress[manualId];
+    rec.level = rec.level || 0;
+    rec.done = false;
   }
   return true;
 }
@@ -55,14 +60,26 @@ export function onTick(S, dt) {
   if (!id) return;
   const manual = getManual(id);
   if (!manual) return;
+  const rec = S.mind.manualProgress[id];
+  // prevent further progress if manual is maxed
+  if (rec.level >= manual.maxLevel) {
+    rec.done = true;
+    return;
+  }
   const add = calcFromManual(manual, dt);
   const applied = applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.fromReading += add;
   S.mind.xp += applied;
-  const rec = S.mind.manualProgress[id];
   rec.xp += add;
-  if (rec.xp >= manual.reqLevel * 100) {
-    rec.done = true;
+  const xpPerLevel = manual.reqLevel * 100;
+  while (rec.xp >= xpPerLevel && rec.level < manual.maxLevel) {
+    rec.xp -= xpPerLevel;
+    rec.level += 1;
+    if (rec.level >= manual.maxLevel) {
+      rec.xp = xpPerLevel;
+      rec.done = true;
+      break;
+    }
   }
   S.mind.level = levelForXp(S.mind.xp);
 }
