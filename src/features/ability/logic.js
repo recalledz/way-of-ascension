@@ -42,6 +42,10 @@ function resolveFireball(state) {
   const damage = 40 + level * 20;
   return {
     attack: { amount: damage, type: 'fire', target: state.adventure.currentEnemy },
+
+   };
+}
+
 function resolvePalmStrike(state) {
   const weapon = getEquippedWeapon(state);
   const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
