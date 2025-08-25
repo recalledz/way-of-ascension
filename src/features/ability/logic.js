@@ -4,6 +4,8 @@ export function resolveAbilityHit(abilityKey, state) {
   switch (abilityKey) {
     case 'powerSlash':
       return resolvePowerSlash(state);
+    case 'palmStrike':
+      return resolvePalmStrike(state);
     case 'flowingPalm':
       return resolveFlowingPalm(state);
     case 'seventyFive':
@@ -29,6 +31,15 @@ function resolvePowerSlash(state) {
   return {
     attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
     healOnHit: 5,
+  };
+}
+
+function resolvePalmStrike(state) {
+  const weapon = getEquippedWeapon(state);
+  const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
+  const raw = Math.round(roll);
+  return {
+    attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
   };
 }
 
