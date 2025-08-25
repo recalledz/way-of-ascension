@@ -4272,7 +4272,11 @@ tr:last-child td {
   .cards .card{width:100%;box-sizing:border-box;}
   .cards .card h4{font-size:1rem;}
   .cards .btn{font-size:0.9rem;}
-  .cultivation-layout{gap:12px;}
+  .cultivation-layout{
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+  }
   .cultivation-visualization-container{height:300px;min-height:200px;}
   .cultivation-controls-card{font-size:0.85rem;}
   .cultivation-buttons{gap:6px;}
