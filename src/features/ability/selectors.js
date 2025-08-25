@@ -9,9 +9,15 @@ export function getAbilityCooldowns(state = S) {
 export function getAbilitySlots(state = S) {
   const slots = [];
   const weapon = getEquippedWeapon(state);
-  const abilityKey = weapon.abilityKeys?.[0];
+
+  // Build ordered list of ability keys: weapon ability first, then manual abilities
+  const abilityKeys = [];
+  if (weapon.abilityKeys?.[0]) abilityKeys.push(weapon.abilityKeys[0]);
+  if (state.manualAbilityKeys) abilityKeys.push(...state.manualAbilityKeys);
+
   for (let i = 0; i < 6; i++) {
-    if (i === 0 && abilityKey) {
+    const abilityKey = abilityKeys[i];
+    if (abilityKey) {
       const def = ABILITIES[abilityKey];
       const meetsReq = def && (!def.requiresWeaponType || def.requiresWeaponType === weapon.typeKey);
       if (meetsReq) {

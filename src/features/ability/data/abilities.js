@@ -35,5 +35,14 @@ export const ABILITIES = {
     castTimeMs: 0,
     tags: ['special']
   },
+  fireball: {
+    key: 'fireball',
+    displayName: 'Fireball',
+    icon: 'game-icons:fireball',
+    costQi: 50,
+    cooldownMs: 0,
+    castTimeMs: 3_000,
+    tags: ['spell', 'fire']
+  },
   // Leave other abilities out until you define them.
 };
