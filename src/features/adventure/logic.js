@@ -10,7 +10,7 @@ import { rollGearDropForZone } from '../gearGeneration/selectors.js';
 import { addToInventory } from '../inventory/mutators.js';
 import { ABILITIES } from '../ability/data/abilities.js';
 import { performAttack } from '../combat/attack.js'; // STATUS-REFORM
-import { tickStunDecay, initStun } from '../../engine/combat/stun.js';
+import { tickStunDecay, initStun, STUN_THRESHOLD, DECAY_PER_SECOND } from '../../engine/combat/stun.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
@@ -218,6 +218,29 @@ export function updateBattleDisplay() {
       const enemyHealthPct = (enemyHP / enemyMaxHP) * 100;
       enemyHealthFill.style.width = `${enemyHealthPct}%`;
     }
+    const stunFill = document.getElementById('enemyStunFill');
+    const stunBarEl = document.getElementById('enemyStunBar');
+    const stunGauge = S.adventure.enemyStunBar || 0;
+    if (stunFill) {
+      const pct = stunGauge / STUN_THRESHOLD;
+      stunFill.style.width = `${pct * 100}%`;
+      const hue = 39 * (1 - pct);
+      stunFill.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+    }
+    if (stunBarEl) {
+      stunBarEl.classList.toggle('stun-flash', stunGauge >= STUN_THRESHOLD * 0.9 && stunGauge < STUN_THRESHOLD);
+      stunBarEl.classList.toggle('stun-shake', stunGauge >= STUN_THRESHOLD);
+      const statuses = enemy.statuses || {};
+      const info = [
+        `Gauge: ${Math.round(stunGauge)}`,
+        `Threshold: ${STUN_THRESHOLD}`,
+        `Decay: ${DECAY_PER_SECOND}/s`
+      ];
+      if (statuses.stunWeakened) info.push('stunWeakened active');
+      if (statuses.stunImmune) info.push('stunImmune active');
+      stunBarEl.title = info.join('\n');
+    }
+    setText('enemyStunText', `${Math.round(stunGauge)}/${STUN_THRESHOLD}`);
   } else {
     setText('enemyName', 'Select an area to begin');
     setText('enemyHealthText', '--/--');
@@ -230,6 +253,17 @@ export function updateBattleDisplay() {
     if (enemyQiFill) enemyQiFill.style.width = '0%';
     const affixEl = document.getElementById('enemyAffixes');
     if (affixEl) affixEl.innerHTML = '';
+    const enemyStunFill = document.getElementById('enemyStunFill');
+    if (enemyStunFill) {
+      enemyStunFill.style.width = '0%';
+      enemyStunFill.style.backgroundColor = 'hsl(39, 100%, 50%)';
+    }
+    setText('enemyStunText', `0/${STUN_THRESHOLD}`);
+    const enemyStunBar = document.getElementById('enemyStunBar');
+    if (enemyStunBar) {
+      enemyStunBar.classList.remove('stun-flash', 'stun-shake');
+      enemyStunBar.title = `Gauge: 0\nThreshold: ${STUN_THRESHOLD}\nDecay: ${DECAY_PER_SECOND}/s`;
+    }
   }
   const combatLog = document.getElementById('combatLog');
   if (combatLog && S.adventure.combatLog) {
