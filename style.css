@@ -3206,6 +3206,52 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
+.stun-bar {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  background: rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  margin: 4px 0;
+  overflow: hidden;
+}
+
+.stun-fill {
+  height: 100%;
+  width: 0%;
+  background: hsl(39, 100%, 50%);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.stun-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-weight: bold;
+  font-size: 0.75em;
+}
+
+@keyframes stunFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes stunShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+.stun-bar.stun-flash .stun-fill {
+  animation: stunFlash 0.5s infinite;
+}
+
+.stun-bar.stun-shake {
+  animation: stunShake 0.3s infinite;
+}
+
 .qi-bar {
   position: relative;
   width: 100%;

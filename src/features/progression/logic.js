@@ -142,9 +142,11 @@ export function getStatEffects(state = progressionState) {
 
 export function calculatePlayerCombatAttack(state = progressionState) {
   const baseAttack = 5;
-  const realmBonus = REALMS[state.realm.tier].atk * state.realm.stage;
-  const profBonus = getWeaponProficiencyBonuses(state).damage;
-  return baseAttack + profBonus + realmBonus;
+  const tier = state?.realm?.tier ?? 0;
+  const stage = state?.realm?.stage ?? 0;
+  const realmAtk = REALMS[tier]?.atk ?? 0;
+  const profBonus = getWeaponProficiencyBonuses(state).damage || 0;
+  return baseAttack + profBonus + realmAtk * stage;
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
