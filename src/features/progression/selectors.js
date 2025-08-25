@@ -1,4 +1,5 @@
 import { progressionState } from './state.js';
+import { getTunable } from '../../shared/tunables.js';
 import {
   getLawBonuses as calcLawBonuses,
   qCap as calcQCap,
@@ -26,7 +27,7 @@ export function qCap(state = progressionState) {
 }
 
 export function qiRegenPerSec(state = progressionState) {
-  return calcQiRegen(state);
+  return calcQiRegen(state) * getTunable('progression.qiRegenMult', 1);
 }
 
 export function fCap(state = progressionState) {
@@ -34,11 +35,11 @@ export function fCap(state = progressionState) {
 }
 
 export function foundationGainPerSec(state = progressionState) {
-  return calcFoundationGain(state);
+  return calcFoundationGain(state) * getTunable('progression.foundationGainMult', 1);
 }
 
 export function foundationGainPerMeditate(state = progressionState) {
-  return calcFoundationGainMeditate(state);
+  return calcFoundationGainMeditate(state) * getTunable('progression.foundationGainMult', 1);
 }
 
 export function powerMult(state = progressionState) {
@@ -58,11 +59,11 @@ export function getStatEffects(state = progressionState) {
 }
 
 export function calculatePlayerCombatAttack(state = progressionState) {
-  return calcPlayerCombatAttack(state);
+  return calcPlayerCombatAttack(state) * getTunable('combat.damageMult', 1);
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
-  return calcPlayerAttackRate(state);
+  return calcPlayerAttackRate(state) * getTunable('combat.attackRateMult', 1);
 }
 
 export function breakthroughChance(state = progressionState) {

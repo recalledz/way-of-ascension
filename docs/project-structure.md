@@ -289,10 +289,12 @@ way-of-ascension/
 │   │   └── migrations.js
 │   ├── shared/
 │   │   ├── events.js
-│   │   ├── saveLoad.js
-│   │   ├── state.js
 │   │   ├── mutators.js
+│   │   ├── saveLoad.js
 │   │   ├── selectors.js
+│   │   ├── state.js
+│   │   ├── telemetry.js
+│   │   ├── tunables.js
 │   │   └── utils/
 │   │       ├── dom.js
 │   │       ├── hp.js
@@ -301,6 +303,7 @@ way-of-ascension/
 │   └── ui/
 │       ├── app.js
 │       ├── dev/
+│       │   ├── balanceTuner.js
 │       │   └── devQuickMenu.js
 │       └── sidebar.js
 ├── ui/
@@ -674,6 +677,12 @@ function updateAll() {
 #### `src/ui/dev/devQuickMenu.js`
 **Purpose:** Tiny top-right Dev button and menu. Uses existing `window.__*` hooks when available, emits `DEV:SET_SEED` for RNG, and exposes a Mind helper to level up the active manual for debugging.
 
+#### `src/ui/dev/balanceTuner.js`
+**Purpose:** Optional slider panel for adjusting tunable multipliers at runtime.
+**Key Functions:**
+- `mountBalanceTuner()` mounts the panel when enabled.
+- `ENABLE_BALANCE_TUNER` feature flag toggle.
+
 #### `src/features/inventory/ui/weaponChip.js` - Weapon Chip HUD
 **Purpose**: Initializes and updates the weapon display chip in the top HUD.
 **When to modify**: Change weapon HUD logic or appearance.
@@ -792,6 +801,9 @@ Paths added:
 - `src/features/activity/selectors.js` – activity selectors
 - `src/features/activity/mutators.js` – activity mutators
 - `src/features/activity/ui/activityUI.js` – activity UI helpers
+- `src/shared/telemetry.js` - runtime counters for debugging
+- `src/shared/tunables.js` - non-persistent balance multipliers
+- `src/ui/dev/balanceTuner.js` - optional dev panel for tuning
 - `src/features/adventure/ui/mapUI.js` – adventure map UI
 - `src/features/automation/logic.js` – automation logic helpers
 - `src/features/automation/migrations.js` – automation save migrations
@@ -808,6 +820,23 @@ Paths added:
 
 #### `src/shared/saveLoad.js` - Persistence Helpers
 **Purpose**: Load and save game state, including debounced autosave.
+
+#### `src/shared/telemetry.js` - Telemetry Utilities
+**Purpose**: Tracks lightweight counters and timers for debugging.
+**Key Functions**:
+- `incCounter(key, by)`
+- `getCounter(key)`
+- `resetCounters(prefix)`
+- `withTimer(name, fn)`
+- `snapshotTelemetry()`
+
+#### `src/shared/tunables.js` - Runtime Balance Overrides
+**Purpose**: Provides adjustable multipliers for combat and progression without touching saves.
+**Key Functions**:
+- `getTunable(key, fallback)`
+- `setTunable(key, value)`
+- `resetTunables()`
+- `getAllTunables()`
 
 #### `src/features/index.js` - Feature UI Bootstrap
 **Purpose**: Central place to mount all feature user interfaces.
