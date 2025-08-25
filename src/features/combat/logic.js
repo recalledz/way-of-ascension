@@ -32,21 +32,24 @@ export function refillShieldFromQi(entity) {
 }
 
 export function routeDamageThroughQiShield(incoming, target) {
-  if (incoming <= 0) return 0;
+  const dmg = Number(incoming) || 0;
+  if (dmg <= 0) return 0;
   const shield = target?.shield;
-  if (!shield || shield.current <= 0) return incoming;
-  const absorbed = Math.min(shield.current, incoming);
+  if (!shield || shield.current <= 0) return dmg;
+  const absorbed = Math.min(shield.current, dmg);
   shield.current -= absorbed;
-  return incoming - absorbed;
+  return dmg - absorbed;
 }
 
 /** Returns the mitigated physical damage AFTER armor (integer). */
 export function applyArmor(rawPhysDamage, armor) {
-  if (rawPhysDamage <= 0 || armor <= 0) return Math.max(0, Math.round(rawPhysDamage));
+  const dmg = Number(rawPhysDamage) || 0;
+  const arm = Number(armor) || 0;
+  if (dmg <= 0 || arm <= 0) return Math.max(0, Math.round(dmg));
 
-  const denom = armor + ARMOR_K * rawPhysDamage;
-  const mit = Math.min(ARMOR_CAP, Math.max(0, armor / Math.max(1, denom)));
-  const after = rawPhysDamage * (1 - mit);
+  const denom = arm + ARMOR_K * dmg;
+  const mit = Math.min(ARMOR_CAP, Math.max(0, arm / Math.max(1, denom)));
+  const after = dmg * (1 - mit);
   const rounded = Math.round(after);
   return Math.max(MIN_POST_ARMOR, rounded);
 }
@@ -67,24 +70,30 @@ export function applyWeaponDamage(base, weapon = 'fist') {
 }
 
 export function applyResists(damage, element, target) {
-  if (!element || !target?.resists) return damage;
-  const resist = target.resists[element] ?? 0;
-  return damage * (1 - resist);
+  const dmg = Number(damage) || 0;
+  if (!element || !target?.resists) return dmg;
+  const resist = Number(target.resists[element]) || 0;
+  return dmg * (1 - resist);
 }
 
 export function processAttack(currentHP, damage, options = {}) {
+  let cur = Number(currentHP);
+  let dmg = Number(damage);
+  if (!Number.isFinite(cur)) cur = 0;
+  if (!Number.isFinite(dmg)) dmg = 0;
   const { element, target, type, onDamage, attacker, nowMs } = options;
-  let adjusted = applyResists(damage, element, target);
+  let adjusted = applyResists(dmg, element, target);
   if (type === 'physical') {
-    const armor = target?.stats?.armor ?? target?.armor ?? 0;
+    const armor = Number(target?.stats?.armor ?? target?.armor ?? 0) || 0;
     adjusted = applyArmor(adjusted, armor);
   }
   adjusted = routeDamageThroughQiShield(adjusted, target);
-  const final = Math.max(0, Math.round(adjusted));
-  if (type === 'physical') {
+  let final = Math.max(0, Math.round(adjusted));
+  if (!Number.isFinite(final)) final = 0;
+  if (type === 'physical' && final > 0) {
     onPhysicalHit(attacker, target, final, nowMs || Date.now());
   }
   if (typeof onDamage === 'function') onDamage(final);
-  return Math.max(0, Math.round(currentHP - final));
+  return Math.max(0, Math.round(cur - final));
 }
 

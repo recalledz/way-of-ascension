@@ -19,6 +19,8 @@ function defaultAnimationsForType(typeKey) {
     case 'focus':
       // Focus has special defensive FX handled in adventure.js
       return { fx: [], tint: '#9ed2ff' };
+    case 'palm':
+      return { fx: ['palmStrike'], tint: 'auto' };
     case 'fist':
       // Placeholder: use palm-like thrust for jabs
       return { fx: ['palmStrike'], tint: 'auto' };
@@ -61,19 +63,23 @@ const FIST = {
   animations: defaultAnimationsForType('fist'),
 };
 
-const PALM = {
+const PALM_WRAPS = {
   ...FIST,
-  key: 'palm',
-  displayName: 'Palm',
+  key: 'palmWraps',
+  displayName: 'Palm Wraps',
+  typeKey: 'palm',
+  proficiencyKey: 'palm',
+  abilityKeys: ['palmStrike'],
   stats: {
     stunBuildMult: 0.3,
     stunDurationMult: 0.1,
   },
+  animations: defaultAnimationsForType('palm'),
 };
 
 export const WEAPONS = {
   fist: FIST,
-  palm: PALM,
+  palmWraps: PALM_WRAPS,
   ironSword: toLegacy('ironSword', generateWeapon({ typeKey: 'sword', materialKey: 'iron' })),
   bronzeHammer: toLegacy('bronzeHammer', generateWeapon({ typeKey: 'hammer', materialKey: 'bronze' })),
   elderWand: toLegacy('elderWand', generateWeapon({ typeKey: 'wand', materialKey: 'spiritwood' })),
