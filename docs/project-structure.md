@@ -79,6 +79,9 @@ way-of-ascension/
 │   ├── index.js
 │   ├── data/
 │   │   └── status.ts
+│   ├── engine/
+│   │   └── combat/
+│   │       └── stun.js
 │   ├── features/
 │   │   ├── adventure/
 │   │   │   ├── data/
@@ -866,6 +869,9 @@ Paths added:
 #### `src/features/automation/selectors.js` - Automation Selectors
 **Purpose**: Reads automation settings from state.
 **Key Functions**: `isAutoMeditate(state)`, `isAutoAdventure(state)`.
+
+### Engine (`src/engine/`)
+- `src/engine/combat/stun.js` – Handles stun accumulation, decay, and status application.
 
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.

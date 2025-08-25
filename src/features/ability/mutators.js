@@ -52,7 +52,7 @@ function applyAbilityResult(abilityKey, res, state) {
   const logs = state.adventure?.combatLog;
   if (res.attack) {
     const { amount, type, target } = res.attack;
-    const dealt = processAttack(amount, { target, type }, state);
+    const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
     logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
     if (res.healOnHit && dealt > 0) {
       const healed = Math.min(res.healOnHit, state.hpMax - state.hp);
