@@ -1,5 +1,6 @@
 import { initHp } from '../../shared/utils/hp.js';
 import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
+import { onPhysicalHit } from '../../engine/combat/stun.ts';
 
 /** Tunables */
 export const ARMOR_K = 10;           // how "strong" armor is vs damage size
@@ -72,7 +73,7 @@ export function applyResists(damage, element, target) {
 }
 
 export function processAttack(currentHP, damage, options = {}) {
-  const { element, target, type, onDamage } = options;
+  const { element, target, type, onDamage, attacker, nowMs } = options;
   let adjusted = applyResists(damage, element, target);
   if (type === 'physical') {
     const armor = target?.stats?.armor ?? target?.armor ?? 0;
@@ -80,6 +81,9 @@ export function processAttack(currentHP, damage, options = {}) {
   }
   adjusted = routeDamageThroughQiShield(adjusted, target);
   const final = Math.max(0, Math.round(adjusted));
+  if (type === 'physical') {
+    onPhysicalHit(attacker, target, final, nowMs || Date.now());
+  }
   if (typeof onDamage === 'function') onDamage(final);
   return Math.max(0, Math.round(currentHP - final));
 }

@@ -24,37 +24,43 @@ interface StunOptions {
   hasStatus?: (key: string) => boolean;
 }
 
-export function initStun(): StunState {
-  return { value: 0 };
+export function initStun(target: { stun?: StunState } | null): StunState {
+  const stun: StunState = { value: 0 };
+  if (target) (target as any).stun = stun;
+  return stun;
 }
 
 /**
  * Call when a physical hit deals damage.
- * @param damage Amount of damage dealt
- * @param targetMaxHP Target's maximum HP for scaling
+ * @param attacker Source of the hit
+ * @param target Recipient of the hit
+ * @param damage Final damage dealt
+ * @param nowMs  Timestamp of the hit
  */
 export function onPhysicalHit(
-  stun: StunState,
+  attacker: any,
+  target: any,
   damage: number,
-  targetMaxHP: number,
-  opts: StunOptions = {}
+  nowMs: number,
 ): void {
-  if (targetMaxHP <= 0) return;
-  if (opts.hasStatus?.('stunImmune')) return;
-  let percent = (damage / targetMaxHP) * 100;
-  const { attackerStats = {}, targetStats = {} } = opts;
-  if (attackerStats.stunBuildMult) {
-    percent *= 1 + attackerStats.stunBuildMult;
-  }
-  if (targetStats.stunBuildTakenReduction) {
-    percent *= 1 - targetStats.stunBuildTakenReduction;
-  }
-  addStunPercent(stun, percent, opts);
+  const stun: StunState | undefined = target?.stun;
+  const targetMaxHP = target?.hpMax ?? 0;
+  if (!stun || targetMaxHP <= 0) return;
+  const attackerStats = attacker?.stats || {};
+  const targetStats = target?.stats || {};
+  addStunPercent(stun, (damage / targetMaxHP) * 100, {
+    attackerStats,
+    targetStats,
+    applyStatus: target?.applyStatus?.bind(target),
+    hasStatus: target?.hasStatus?.bind(target),
+  });
 }
 
 /** Reduce stun progress over elapsed time. */
-export function tickStunDecay(stun: StunState, deltaMs: number): void {
-  const decay = (DECAY_PER_SECOND * deltaMs) / 1000;
+export function tickStunDecay(target: any, dtSec: number, nowMs: number): void {
+  const stun: StunState | undefined = target?.stun;
+  if (!stun) return;
+  const decay = DECAY_PER_SECOND * dtSec;
   stun.value = Math.max(0, stun.value - decay);
 }
 
@@ -62,7 +68,7 @@ export function tickStunDecay(stun: StunState, deltaMs: number): void {
 export function addStunPercent(
   stun: StunState,
   rawPercent: number,
-  opts: StunOptions = {}
+  opts: StunOptions = {},
 ): void {
   const gain = Math.min(rawPercent, MAX_STUN_PER_HIT);
   stun.value += gain;
@@ -88,3 +94,4 @@ function triggerStun(overshoot: number, opts: StunOptions): void {
   }
   applyStatus?.('stunned', duration);
 }
+
