@@ -25,7 +25,8 @@ export const ABILITIES = {
     cooldownMs: 0,
     castTimeMs: 0,
     tags: ['weapon-skill', 'physical'],
-      
+  },
+    
   flowingPalm: {
     key: 'flowingPalm',
     displayName: 'Flowing Palm',
