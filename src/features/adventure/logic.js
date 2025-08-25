@@ -9,7 +9,8 @@ import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGR
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
 import { addToInventory } from '../inventory/mutators.js';
 import { ABILITIES } from '../ability/data/abilities.js';
-import { performAttack, decayStunBar } from '../combat/attack.js'; // STATUS-REFORM
+import { performAttack } from '../combat/attack.js'; // STATUS-REFORM
+import { tickStunDecay, initStun } from '../../engine/combat/stun.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
@@ -317,8 +318,11 @@ export function updateAdventureCombat() {
     const now = Date.now();
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
-    S.adventure.playerStunBar = decayStunBar(S.adventure.playerStunBar, deltaTime); // STATUS-REFORM
-    S.adventure.enemyStunBar = decayStunBar(S.adventure.enemyStunBar, deltaTime); // STATUS-REFORM
+    tickStunDecay(S, deltaTime, now); // STATUS-REFORM
+    if (S.adventure.currentEnemy) {
+      tickStunDecay(S.adventure.currentEnemy, deltaTime, now); // STATUS-REFORM
+      S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
+    }
     if (!S.adventure.lastPlayerAttack) S.adventure.lastPlayerAttack = now;
     if (!S.adventure.lastEnemyAttack) S.adventure.lastEnemyAttack = now;
     const regen = S.adventure.currentEnemy.regen || 0;
@@ -336,7 +340,7 @@ export function updateAdventureCombat() {
         const dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
         const dealt = processAttack(
           dmg,
-          { target: S.adventure.currentEnemy, type: 'physical' },
+          { attacker: S, target: S.adventure.currentEnemy, type: 'physical', nowMs: now },
           S
         );
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
@@ -346,9 +350,8 @@ export function updateAdventureCombat() {
         if (enemyBar) {
           showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
-          const enemyState = { stunBar: S.adventure.enemyStunBar, hpMax: S.adventure.enemyMaxHP }; // STATUS-REFORM
-          performAttack(S, enemyState, { attackIsPhysical: true, physDamageDealt: dealt, weapon }, S); // STATUS-REFORM
-          S.adventure.enemyStunBar = enemyState.stunBar; // STATUS-REFORM
+          S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
+          performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -409,7 +412,7 @@ export function updateAdventureCombat() {
           const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
           const taken = processAttack(
             enemyDamage,
-            { target: S, type: 'physical' },
+            { attacker: S.adventure.currentEnemy, target: S, type: 'physical', nowMs: now },
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
@@ -417,9 +420,7 @@ export function updateAdventureCombat() {
           if (playerBar) {
             showFloatingText({ targetEl: playerBar, result: isCrit ? 'crit' : 'hit', amount: taken });
           }
-          const playerState = { stunBar: S.adventure.playerStunBar, hpMax: S.hpMax }; // STATUS-REFORM
-          performAttack(S.adventure.currentEnemy, playerState, { attackIsPhysical: true, physDamageDealt: taken }, S); // STATUS-REFORM
-          S.adventure.playerStunBar = playerState.stunBar; // STATUS-REFORM
+          performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
           if (weapon.typeKey === 'focus') {
             const pos = getCombatPositions();
             if (pos) {
@@ -663,6 +664,8 @@ export function startBossCombat() {
     regen: h.regen,
     affixes: h.affixes
   };
+  initStun(S.adventure.currentEnemy);
+  S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
@@ -703,6 +706,8 @@ export function startAdventureCombat() {
     regen: h.regen,
     affixes: h.affixes
   };
+  initStun(S.adventure.currentEnemy);
+  S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
