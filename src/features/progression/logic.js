@@ -104,55 +104,76 @@ export function powerMult(state = progressionState){
 }
 
 export function calcAtk(state = progressionState){
-  const realm = REALMS[state.realm.tier];
-  const baseAtk = realm.atk;
-  const stageBonus = Math.floor(baseAtk * (state.realm.stage - 1) * 0.08);
+  const tier = state?.realm?.tier ?? 0;
+  const stage = state?.realm?.stage ?? 1;
+  const realm = REALMS[tier] || {};
+  const baseAtk = Number(realm.atk) || 0;
+  const stageBonus = Math.floor(baseAtk * (stage - 1) * 0.08);
   const lawBonuses = getLawBonuses(state);
-  const profBonus = getWeaponProficiencyBonuses(state).damage;
-  const building = getBuildingBonuses(state).atkBase || 0;
-  return Math.floor((state.atkBase + building + profBonus + state.tempAtk + baseAtk + stageBonus + karmaAtkBonus(state)) * lawBonuses.atk);
+  const profBonus = Number(getWeaponProficiencyBonuses(state).damage) || 0;
+  const building = Number(getBuildingBonuses(state).atkBase) || 0;
+  const base = Number(state.atkBase) || 0;
+  const temp = Number(state.tempAtk) || 0;
+  const karma = Number(karmaAtkBonus(state)) || 0;
+  return Math.floor((base + building + profBonus + temp + baseAtk + stageBonus + karma) * (lawBonuses.atk || 1));
 }
 
 export function calcArmor(state = progressionState){
-  const realm = REALMS[state.realm.tier];
-  const baseArmor = realm.armor;
-  const stageBonus = Math.floor(baseArmor * (state.realm.stage - 1) * 0.08);
+  const tier = state?.realm?.tier ?? 0;
+  const stage = state?.realm?.stage ?? 1;
+  const realm = REALMS[tier] || {};
+  const baseArmor = Number(realm.armor) || 0;
+  const stageBonus = Math.floor(baseArmor * (stage - 1) * 0.08);
   const lawBonuses = getLawBonuses(state);
-  const building = getBuildingBonuses(state).armorBase || 0;
-  return Math.floor((state.armorBase + building + state.tempArmor + baseArmor + stageBonus + karmaArmorBonus(state)) * lawBonuses.armor);
+  const building = Number(getBuildingBonuses(state).armorBase) || 0;
+  const base = Number(state.armorBase) || 0;
+  const temp = Number(state.tempArmor) || 0;
+  const karma = Number(karmaArmorBonus(state)) || 0;
+  return Math.floor((base + building + temp + baseArmor + stageBonus + karma) * (lawBonuses.armor || 1));
 }
 
 export function getStatEffects(state = progressionState) {
+  const stats = state.stats || {};
+  const mind = Number(stats.mind) || 10;
+  const dex = Number(stats.dexterity) || 10;
+  const comp = Number(stats.comprehension) || 10;
+  const crit = Number(stats.criticalChance) || 0;
+  const atkSpd = Number(stats.attackSpeed) || 0;
+  const cdRed = Number(stats.cooldownReduction) || 0;
+  const advSpd = Number(stats.adventureSpeed) || 0;
   return {
-    spellPowerMult: 1 + (state.stats.mind - 10) * 0.06,
-    alchemySuccessMult: 1 + (state.stats.mind - 10) * 0.04,
-    learningSpeedMult: 1 + (state.stats.mind - 10) * 0.05,
-    attackSpeedMult: 1 + (state.stats.dexterity - 10) * 0.04,
-    cooldownReductionBonus: (state.stats.dexterity - 10) * 0.02,
-    craftingSpeedMult: 1 + (state.stats.dexterity - 10) * 0.03,
-    adventureSpeedMult: 1 + (state.stats.dexterity - 10) * 0.03,
-    foundationGainMult: 1 + (state.stats.comprehension - 10) * 0.05,
-    learningSpeedMult2: 1 + (state.stats.comprehension - 10) * 0.04,
-    totalCritChance: state.stats.criticalChance + (state.stats.dexterity - 10) * 0.005,
-    totalAttackSpeed: state.stats.attackSpeed * (1 + (state.stats.dexterity - 10) * 0.04),
-    totalCooldownReduction: state.stats.cooldownReduction + (state.stats.dexterity - 10) * 0.02,
-    totalAdventureSpeed: state.stats.adventureSpeed * (1 + (state.stats.dexterity - 10) * 0.03)
+    spellPowerMult: 1 + (mind - 10) * 0.06,
+    alchemySuccessMult: 1 + (mind - 10) * 0.04,
+    learningSpeedMult: 1 + (mind - 10) * 0.05,
+    attackSpeedMult: 1 + (dex - 10) * 0.04,
+    cooldownReductionBonus: (dex - 10) * 0.02,
+    craftingSpeedMult: 1 + (dex - 10) * 0.03,
+    adventureSpeedMult: 1 + (dex - 10) * 0.03,
+    foundationGainMult: 1 + (comp - 10) * 0.05,
+    learningSpeedMult2: 1 + (comp - 10) * 0.04,
+    totalCritChance: crit + (dex - 10) * 0.005,
+    totalAttackSpeed: atkSpd * (1 + (dex - 10) * 0.04),
+    totalCooldownReduction: cdRed + (dex - 10) * 0.02,
+    totalAdventureSpeed: advSpd * (1 + (dex - 10) * 0.03)
   };
 }
 
 export function calculatePlayerCombatAttack(state = progressionState) {
   const baseAttack = 5;
-  const realmBonus = REALMS[state.realm.tier].atk * state.realm.stage;
-  const profBonus = getWeaponProficiencyBonuses(state).damage;
-  return baseAttack + profBonus + realmBonus;
+  const tier = state?.realm?.tier ?? 0;
+  const stage = Number(state?.realm?.stage) || 0;
+  const realmAtk = Number(REALMS[tier]?.atk) || 0;
+  const profBonus = Number(getWeaponProficiencyBonuses(state).damage) || 0;
+  return baseAttack + profBonus + realmAtk * stage;
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
   const baseRate = 1.0;
-  const dexterityBonus = (state.stats.dexterity - 10) * 0.05;
-  const attackSpeedBonus = state.stats.attackSpeed || 0;
-  const profBonus = getWeaponProficiencyBonuses(state).speed;
-  return baseRate + dexterityBonus + (attackSpeedBonus / 100) + profBonus;
+  const dex = Number(state.stats?.dexterity) || 10;
+  const attackSpeedBonus = Number(state.stats?.attackSpeed) || 0;
+  const profBonus = Number(getWeaponProficiencyBonuses(state).speed) || 0;
+  const dexterityBonus = (dex - 10) * 0.05;
+  return baseRate + dexterityBonus + attackSpeedBonus / 100 + profBonus;
 }
 
 export function breakthroughChance(state = progressionState){
