@@ -177,6 +177,27 @@ export const MANUALS = {
       { qiShieldCapacityPct: 24 },
       { qiShieldCapacityPct: 30 }
     ]
+  },
+
+  flowingPalmManual: {
+    id: 'flowingPalmManual',
+    name: 'Flowing Palm Manual',
+    category: 'Combat',
+    xpRate: 0.31,
+    reqLevel: 1,
+    maxLevel: 5,
+    baseTimeSec: 15 * 60,
+    statWeights: { mind: 0.7, agility: 0.6, physique: 0.4 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
+    grantsAbility: 'flowingPalm',
+    effects: [
+      { abilityMods: { flowingPalm: { damagePct: 8, stunPct: 20 } } },
+      { abilityMods: { flowingPalm: { damagePct: 8, stunPct: 20 } } },
+      { abilityMods: { flowingPalm: { damagePct: 10, stunPct: 25 } } },
+      { abilityMods: { flowingPalm: { damagePct: 12, stunPct: 30 } } },
+      { abilityMods: { flowingPalm: { damagePct: 15, stunPct: 40 } } },
+    ]
   }
 };
 

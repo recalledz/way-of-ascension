@@ -2,7 +2,7 @@ import { S } from '../../shared/state.js';
 import { ABILITIES } from './data/abilities.js';
 import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
-import { processAttack } from '../combat/mutators.js';
+import { processAttack, applyStatus } from '../combat/mutators.js';
 import { emit } from '../../shared/events.js';
 import { qCap } from '../progression/selectors.js';
 
@@ -62,6 +62,12 @@ function applyAbilityResult(abilityKey, res, state) {
     const { amount, type, target } = res.attack;
     const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
     logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
+    if (res.stun) {
+      const mult = (res.stun.mult || 0) * (1 + (mods?.stunPct || 0) / 100);
+      const attackerStats = { ...(state.stats || {}), stunDurationMult: (state.stats?.stunDurationMult || 0) + (mult - 1) };
+      const targetStats = target?.stats || {};
+      applyStatus(target, 'stun', 1, state, { attackerStats, targetStats });
+    }
     if (res.healOnHit && dealt > 0) {
       const healed = Math.min(res.healOnHit, state.hpMax - state.hp);
       state.hp += healed;
