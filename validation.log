@@ -5,18 +5,6 @@
 ❌ VERIFICATION FAILED - MUST fix before proceeding
 
 🚨 VIOLATIONS DETECTED:
-   • UNDOCUMENTED FILE: src/features/mind/data/_balance.contract.js
-   • UNDOCUMENTED FILE: src/features/mind/data/manuals.js
-   • UNDOCUMENTED FILE: src/features/mind/data/talismans.js
-   • UNDOCUMENTED FILE: src/features/mind/index.js
-   • UNDOCUMENTED FILE: src/features/mind/logic.js
-   • UNDOCUMENTED FILE: src/features/mind/mutators.js
-   • UNDOCUMENTED FILE: src/features/mind/selectors.js
-   • UNDOCUMENTED FILE: src/features/mind/state.js
-   • UNDOCUMENTED FILE: src/features/mind/ui/mindMainTab.js
-   • UNDOCUMENTED FILE: src/features/mind/ui/mindPuzzlesTab.js
-   • UNDOCUMENTED FILE: src/features/mind/ui/mindReadingTab.js
-   • UNDOCUMENTED FILE: src/features/mind/ui/mindStatsTab.js
    • UI state violation: src/features/adventure/ui/adventureDisplay.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/mapUI.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/progressBar.js imports S from shared/state.js
@@ -41,23 +29,6 @@
    • UI timer: src/features/physique/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
    • UI rule: src/features/progression/ui/realm.js uses Math.random() — move randomness to logic.js
    • UI timer: src/features/progression/ui/realm.js uses timers/RAF — prefer feature.tick and RENDER
-
-📝 REQUIRED ACTION:
-   Update docs/project-structure.md with these files:
-   • src/features/mind/data/_balance.contract.js
-   • src/features/mind/data/manuals.js
-   • src/features/mind/data/talismans.js
-   • src/features/mind/index.js
-   • src/features/mind/logic.js
-   • src/features/mind/mutators.js
-   • src/features/mind/selectors.js
-   • src/features/mind/state.js
-   • src/features/mind/ui/mindMainTab.js
-   • src/features/mind/ui/mindPuzzlesTab.js
-   • src/features/mind/ui/mindReadingTab.js
-   • src/features/mind/ui/mindStatsTab.js
-
-   Then document their purpose and functions.
 
 =====================================
 
