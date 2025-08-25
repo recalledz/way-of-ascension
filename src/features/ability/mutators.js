@@ -12,15 +12,19 @@ export function tryCastAbility(abilityKey, state = S) {
   if (!state.adventure?.inCombat) return false;
   const weapon = getEquippedWeapon(state);
   if (ability.requiresWeaponType && ability.requiresWeaponType !== weapon.typeKey) return false;
-  if (!weapon.abilityKeys?.includes(abilityKey)) return false;
+  const unlocked = weapon.abilityKeys?.includes(abilityKey) || state.manualAbilityKeys?.includes(abilityKey);
+  if (!unlocked) return false;
+  const mods = state.abilityMods?.[abilityKey] || {};
   const cd = state.abilityCooldowns?.[abilityKey] || 0;
   if (cd > 0) return false;
   if (state.qi < ability.costQi) return false;
   if (!state.abilityCooldowns) state.abilityCooldowns = {};
-  state.abilityCooldowns[abilityKey] = ability.cooldownMs;
+  const cooldownMs = Math.round(ability.cooldownMs * (1 + (mods.cooldownPct || 0) / 100));
+  state.abilityCooldowns[abilityKey] = cooldownMs;
   if (!state.actionQueue) state.actionQueue = [];
   const enqueue = () => state.actionQueue.push({ type: 'ABILITY_HIT', abilityKey });
-  if (ability.castTimeMs > 0) setTimeout(enqueue, ability.castTimeMs);
+  let castTimeMs = Math.round(ability.castTimeMs * (1 + (mods.castTimePct || 0) / 100));
+  if (castTimeMs > 0) setTimeout(enqueue, castTimeMs);
   else {
     enqueue();
     processAbilityQueue(state);
@@ -50,7 +54,11 @@ function applyAbilityResult(abilityKey, res, state) {
   if (!res) return;
   const ability = ABILITIES[abilityKey];
   const logs = state.adventure?.combatLog;
+  const mods = state.abilityMods?.[abilityKey];
   if (res.attack) {
+    if (mods?.damagePct) {
+      res.attack.amount = Math.round(res.attack.amount * (1 + mods.damagePct / 100));
+    }
     const { amount, type, target } = res.attack;
     const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
     logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);

@@ -92,7 +92,25 @@ export function applyManualEffects(player, manual, level) {
   if (!effects) return;
 
   player.stats = player.stats || {};
+  player.manualAbilityKeys = player.manualAbilityKeys || [];
+  player.abilityMods = player.abilityMods || {};
+
+  if (effects.unlockAbility && !player.manualAbilityKeys.includes(effects.unlockAbility)) {
+    player.manualAbilityKeys.push(effects.unlockAbility);
+  }
+
+  if (effects.abilityMods) {
+    for (const [abilityKey, mods] of Object.entries(effects.abilityMods)) {
+      const tgt = player.abilityMods[abilityKey] || {};
+      for (const [modKey, val] of Object.entries(mods)) {
+        tgt[modKey] = (tgt[modKey] || 0) + val;
+      }
+      player.abilityMods[abilityKey] = tgt;
+    }
+  }
+
   for (const [key, val] of Object.entries(effects)) {
+    if (key === 'unlockAbility' || key === 'abilityMods') continue;
     if (key.endsWith('Pct')) {
       const stat = key.slice(0, -3);
       if (stat in player.stats) {

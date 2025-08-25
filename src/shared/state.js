@@ -60,6 +60,8 @@ export const defaultState = () => {
   alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
   abilityCooldowns:{},
   actionQueue:[],
+  manualAbilityKeys:[],
+  abilityMods:{},
   bought:{},
     ascensions:0,
     karma: structuredClone(karmaState),
