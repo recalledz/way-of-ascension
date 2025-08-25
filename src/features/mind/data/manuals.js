@@ -198,6 +198,27 @@ export const MANUALS = {
       { abilityMods: { flowingPalm: { damagePct: 12, stunPct: 30 } } },
       { abilityMods: { flowingPalm: { damagePct: 15, stunPct: 40 } } },
     ]
+  },
+
+  lightningStepManual: {
+    id: 'lightningStepManual',
+    name: 'Lightning Step Manual',
+    category: 'Movement',
+    xpRate: 0.32,
+    reqLevel: 1,
+    maxLevel: 5,
+    baseTimeSec: 15 * 60,
+    statWeights: { mind: 0.7, agility: 0.9, physique: 0.5 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
+    grantsAbility: 'lightningStep',
+    effects: [
+      { unlockAbility: 'lightningStep', abilityMods: { lightningStep: { damagePct: 10, cooldownPct: -5, dodgePct: -2 } } },
+      { abilityMods: { lightningStep: { damagePct: 10, cooldownPct: -5, dodgePct: -2 } } },
+      { abilityMods: { lightningStep: { damagePct: 12, cooldownPct: -6, dodgePct: -3 } } },
+      { abilityMods: { lightningStep: { damagePct: 15, cooldownPct: -7, dodgePct: -4 } } },
+      { abilityMods: { lightningStep: { damagePct: 18, cooldownPct: -8, dodgePct: -5 } } },
+    ]
   }
 };
 

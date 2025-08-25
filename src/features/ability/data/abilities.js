@@ -37,6 +37,15 @@ export const ABILITIES = {
     tags: ['martial', 'physical'],
     requiresWeaponType: 'palm',
   },
+  lightningStep: {
+    key: 'lightningStep',
+    displayName: 'Lightning Step',
+    icon: 'game-icons:lightning-dissipation',
+    costQi: 30,
+    cooldownMs: 10_000,
+    castTimeMs: 500,
+    tags: ['lightning', 'buff'],
+  },
   seventyFive: {
     key: 'seventyFive',
     displayName: '75%',

@@ -76,6 +76,24 @@ function applyAbilityResult(abilityKey, res, state) {
       emit('ABILITY:HEAL', { amount: healed });
     }
   }
+  if (res.buff) {
+    const { damagePct = 0, dodgePct = 0, durationMs = 0 } = res.buff;
+    if (damagePct) {
+      const deltaAtk = Math.round((state.atkBase || 0) * damagePct / 100);
+      state.tempAtk = (state.tempAtk || 0) + deltaAtk;
+      setTimeout(() => {
+        state.tempAtk = (state.tempAtk || 0) - deltaAtk;
+      }, durationMs);
+    }
+    if (dodgePct) {
+      const deltaDodge = dodgePct / 100;
+      state.stats.dodge = (state.stats.dodge || 0) + deltaDodge;
+      setTimeout(() => {
+        state.stats.dodge = (state.stats.dodge || 0) - deltaDodge;
+      }, durationMs);
+    }
+    logs?.push(`You are shrouded in lightning, boosting dodge and attack.`);
+  }
   if (res.defeatEnemy) {
     const before = state.adventure.enemyHP || 0;
     state.adventure.enemyHP = 0;

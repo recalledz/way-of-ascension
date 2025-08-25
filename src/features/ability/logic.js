@@ -8,6 +8,8 @@ export function resolveAbilityHit(abilityKey, state) {
       return resolvePalmStrike(state);
     case 'flowingPalm':
       return resolveFlowingPalm(state);
+    case 'lightningStep':
+      return resolveLightningStep(state);
     case 'seventyFive':
       return resolveSeventyFive();
     default:
@@ -40,6 +42,15 @@ function resolvePalmStrike(state) {
   const raw = Math.round(roll);
   return {
     attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
+  };
+}
+
+function resolveLightningStep(state) {
+  const mods = state.abilityMods?.lightningStep || {};
+  const damagePct = 10 + (mods.damagePct || 0);
+  const dodgePct = 20 + (mods.dodgePct || 0);
+  return {
+    buff: { damagePct, dodgePct, durationMs: 10_000 },
   };
 }
 
