@@ -16,6 +16,16 @@ export const ABILITIES = {
     tags: ['weapon-skill', 'physical'],
     requiresWeaponType: 'sword',
   },
+  palmStrike: {
+    key: 'palmStrike',
+    displayName: 'Palm Strike',
+    icon: 'ph:hand-palm-thin',
+    costQi: 0,
+    cooldownMs: 0,
+    castTimeMs: 0,
+    tags: ['weapon-skill', 'physical'],
+    requiresWeaponType: 'palm',
+  },
   seventyFive: {
     key: 'seventyFive',
     displayName: '75%',
