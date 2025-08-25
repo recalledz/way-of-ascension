@@ -696,7 +696,9 @@ export function startBossCombat() {
     attack: Math.round(h.eAtk),
     armor: Math.round(h.eArmor),
     regen: h.regen,
-    affixes: h.affixes
+    affixes: h.affixes,
+    hpMax: h.enemyMax,
+    hp: h.enemyHP
   };
   initStun(S.adventure.currentEnemy);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
@@ -738,7 +740,9 @@ export function startAdventureCombat() {
     attack: Math.round(h.eAtk),
     armor: Math.round(h.eArmor),
     regen: h.regen,
-    affixes: h.affixes
+    affixes: h.affixes,
+    hpMax: h.enemyMax,
+    hp: h.enemyHP
   };
   initStun(S.adventure.currentEnemy);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
