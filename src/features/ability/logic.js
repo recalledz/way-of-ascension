@@ -1,4 +1,5 @@
 import { getEquippedWeapon } from '../inventory/selectors.js';
+import { S } from '../../shared/state.js';
 
 export function resolveAbilityHit(abilityKey, state) {
   switch (abilityKey) {
@@ -8,6 +9,8 @@ export function resolveAbilityHit(abilityKey, state) {
       return resolvePalmStrike(state);
     case 'flowingPalm':
       return resolveFlowingPalm(state);
+    case 'fireball':
+      return resolveFireball(state);
     case 'seventyFive':
       return resolveSeventyFive();
     default:
@@ -34,6 +37,11 @@ function resolvePowerSlash(state) {
   };
 }
 
+function resolveFireball(state) {
+  const level = S.mind?.manualProgress?.fireballManual?.level || 0;
+  const damage = 40 + level * 20;
+  return {
+    attack: { amount: damage, type: 'fire', target: state.adventure.currentEnemy },
 function resolvePalmStrike(state) {
   const weapon = getEquippedWeapon(state);
   const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;

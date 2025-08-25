@@ -277,7 +277,11 @@ export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
   const slots = getAbilitySlots(S);
-  const iconMap = { 'pointy-sword': '🗡️', 'game-icons:mighty-force': '💥' };
+  const iconMap = {
+    'pointy-sword': '🗡️',
+    'game-icons:mighty-force': '💥',
+    'game-icons:fireball': '🔥',
+  };
   bar.innerHTML = '';
   slots.forEach((slot, i) => {
     const card = document.createElement('div');

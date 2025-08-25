@@ -198,6 +198,27 @@ export const MANUALS = {
       { abilityMods: { flowingPalm: { damagePct: 12, stunPct: 30 } } },
       { abilityMods: { flowingPalm: { damagePct: 15, stunPct: 40 } } },
     ]
+  },
+
+  fireballManual: {
+    id: 'fireballManual',
+    name: 'Fireball Manual',
+    category: 'Casting',
+    xpRate: 0.32,
+    reqLevel: 1,
+    maxLevel: 5,
+    baseTimeSec: 15 * 60,
+    statWeights: { mind: 0.9, agility: 0.6, physique: 0.3 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
+    grantsAbility: 'fireball',
+    effects: [
+      { unlockAbility: 'fireball', abilityMods: { fireball: { damagePct: 10, castTimePct: -5 } } },
+      { abilityMods: { fireball: { damagePct: 10, castTimePct: -5 } } },
+      { abilityMods: { fireball: { damagePct: 13, castTimePct: -7 } } },
+      { abilityMods: { fireball: { damagePct: 16, castTimePct: -9 } } },
+      { abilityMods: { fireball: { damagePct: 20, castTimePct: -12 } } },
+    ]
   }
 };
 
