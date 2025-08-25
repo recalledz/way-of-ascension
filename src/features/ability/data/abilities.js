@@ -16,6 +16,16 @@ export const ABILITIES = {
     tags: ['weapon-skill', 'physical'],
     requiresWeaponType: 'sword',
   },
+  flowingPalm: {
+    key: 'flowingPalm',
+    displayName: 'Flowing Palm',
+    icon: 'game-icons:open-palm',
+    costQi: 0,
+    cooldownMs: 5_000,
+    castTimeMs: 0,
+    tags: ['martial', 'physical'],
+    requiresWeaponType: 'palm',
+  },
   seventyFive: {
     key: 'seventyFive',
     displayName: '75%',

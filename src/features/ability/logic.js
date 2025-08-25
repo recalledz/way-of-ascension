@@ -4,11 +4,22 @@ export function resolveAbilityHit(abilityKey, state) {
   switch (abilityKey) {
     case 'powerSlash':
       return resolvePowerSlash(state);
+    case 'flowingPalm':
+      return resolveFlowingPalm(state);
     case 'seventyFive':
       return resolveSeventyFive();
     default:
       return null;
   }
+}
+
+function resolveFlowingPalm(state) {
+  const weapon = getEquippedWeapon(state);
+  const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
+  return {
+    attack: { amount: roll, type: 'physical', target: state.adventure.currentEnemy },
+    stun: { mult: 2 },
+  };
 }
 
 function resolvePowerSlash(state) {
