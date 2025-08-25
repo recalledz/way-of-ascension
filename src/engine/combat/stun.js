@@ -7,9 +7,9 @@
  * @property {(key: string) => boolean} [hasStatus]
  */
 
-const STUN_THRESHOLD = 100;
+export const STUN_THRESHOLD = 100;
 const MAX_STUN_PER_HIT = 40; // per-hit cap in percent
-const DECAY_PER_SECOND = 6; // stun bar decays this % each second
+export const DECAY_PER_SECOND = 6; // stun bar decays this % each second
 const BASE_STUN_DURATION_MS = 2000;
 
 /** Initialize and attach a stun state to a target. */

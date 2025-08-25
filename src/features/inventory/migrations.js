@@ -54,5 +54,13 @@ export const migrations = [
     if (!save.shield) save.shield = { current: 0, max: 0 };
     if (typeof save.autoFillShieldFromQi === 'undefined') save.autoFillShieldFromQi = true;
     if (save.shield.current > save.shield.max) save.shield.current = save.shield.max;
+  },
+  save => {
+    if (!Array.isArray(save.inventory)) save.inventory = [];
+    const hasPalmWraps = save.inventory.some(it => (typeof it === 'string' ? it === 'palmWraps' : it.key === 'palmWraps'));
+    const equippedPalm = typeof save.equipment?.mainhand === 'object' && save.equipment.mainhand?.key === 'palmWraps';
+    if (!hasPalmWraps && !equippedPalm) {
+      save.inventory.push({ id: Date.now() + Math.random(), key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' });
+    }
   }
 ];
