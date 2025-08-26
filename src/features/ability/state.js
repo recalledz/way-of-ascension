@@ -3,4 +3,5 @@ export const abilityState = {
   actionQueue: [],
   manualAbilityKeys: [],
   abilityMods: {},
+  abilityBuffs: {},
 };

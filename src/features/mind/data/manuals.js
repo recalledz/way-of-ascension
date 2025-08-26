@@ -198,6 +198,26 @@ export const MANUALS = {
       { abilityMods: { flowingPalm: { damagePct: 12, stunPct: 30 } } },
       { abilityMods: { flowingPalm: { damagePct: 15, stunPct: 40 } } },
     ]
+  },
+  stoneFistManual: {
+    id: 'stoneFistManual',
+    name: 'Stone Fist Manual',
+    category: 'Combat',
+    xpRate: 0.30,
+    reqLevel: 1,
+    maxLevel: 5,
+    baseTimeSec: 15 * 60,
+    statWeights: { mind: 0.5, agility: 0.6, physique: 0.8 },
+    maxSpeedBoostPct: 400,
+    levelTimeMult: [1, 6, 30, 180, 1800],
+    grantsAbility: 'stoneFist',
+    effects: [
+      { unlockAbility: 'stoneFist', abilityMods: { stoneFist: { damagePct: 0, stunPct: 0 } } },
+      { abilityMods: { stoneFist: { damagePct: 5, stunPct: 10 } } },
+      { abilityMods: { stoneFist: { damagePct: 10, stunPct: 15 } } },
+      { abilityMods: { stoneFist: { damagePct: 15, stunPct: 20 } } },
+      { abilityMods: { stoneFist: { damagePct: 20, stunPct: 25 } } },
+    ]
   }
 };
 

@@ -8,6 +8,8 @@ export function resolveAbilityHit(abilityKey, state) {
       return resolvePalmStrike(state);
     case 'flowingPalm':
       return resolveFlowingPalm(state);
+    case 'stoneFist':
+      return resolveStoneFist(state);
     case 'seventyFive':
       return resolveSeventyFive();
     default:
@@ -40,6 +42,23 @@ function resolvePalmStrike(state) {
   const raw = Math.round(roll);
   return {
     attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
+  };
+}
+
+function resolveStoneFist(state) {
+  const mods = state.abilityMods?.stoneFist || {};
+  const damageMult = 1.5 * (1 + (mods.damagePct || 0) / 100);
+  const stunBuildMult = (mods.stunPct || 0) / 100;
+  return {
+    selfBuff: {
+      key: 'stoneFist',
+      durationMs: 20_000,
+      damageMult,
+      attackSpeedMult: 0.7,
+      element: 'earth',
+      countsAsPhysical: true,
+      stunBuildMult,
+    },
   };
 }
 

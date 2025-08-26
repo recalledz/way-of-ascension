@@ -173,7 +173,13 @@ export function calculatePlayerAttackRate(state = progressionState) {
   const attackSpeedBonus = Number(state.stats?.attackSpeed) || 0;
   const profBonus = Number(getWeaponProficiencyBonuses(state).speed) || 0;
   const dexterityBonus = (dex - 10) * 0.05;
-  return baseRate + dexterityBonus + attackSpeedBonus / 100 + profBonus;
+  let rate = baseRate + dexterityBonus + attackSpeedBonus / 100 + profBonus;
+  if (state.abilityBuffs) {
+    for (const buff of Object.values(state.abilityBuffs)) {
+      if (buff.attackSpeedMult) rate *= buff.attackSpeedMult;
+    }
+  }
+  return rate;
 }
 
 export function breakthroughChance(state = progressionState){

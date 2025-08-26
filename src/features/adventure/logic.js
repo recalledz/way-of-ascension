@@ -370,13 +370,22 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
+        let playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
+        const buff = S.abilityBuffs?.stoneFist;
+        const attackOpts = { attacker: S, target: S.adventure.currentEnemy, type: 'physical', nowMs: now };
+        const performOpts = { weapon };
+        if (buff) {
+          playerAttack = Math.round(playerAttack * buff.damageMult);
+          attackOpts.element = buff.element;
+          if (buff.stunBuildMult) {
+            attackOpts.attacker = { ...S, stats: { ...S.stats, stunBuildMult: (S.stats?.stunBuildMult || 0) + buff.stunBuildMult } };
+          }
+          performOpts.attackElement = buff.element;
+          performOpts.attackIsPhysical = buff.countsAsPhysical;
+        }
         const dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
-        const dealt = processAttack(
-          dmg,
-          { attacker: S, target: S.adventure.currentEnemy, type: 'physical', nowMs: now },
-          S
-        );
+        const dealt = processAttack(dmg, attackOpts, S);
+        performOpts.physDamageDealt = dealt;
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
@@ -385,7 +394,7 @@ export function updateAdventureCombat() {
           showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
           S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
-          performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
+          performAttack(S, S.adventure.currentEnemy, performOpts, S); // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');

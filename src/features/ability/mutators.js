@@ -39,6 +39,15 @@ export function tickAbilityCooldowns(dtMs, state = S) {
   }
 }
 
+export function tickAbilityBuffs(dtMs, state = S) {
+  if (!state.abilityBuffs) return;
+  for (const key of Object.keys(state.abilityBuffs)) {
+    const buff = state.abilityBuffs[key];
+    buff.remainingMs -= dtMs;
+    if (buff.remainingMs <= 0) delete state.abilityBuffs[key];
+  }
+}
+
 export function processAbilityQueue(state = S) {
   if (!state.actionQueue || !state.actionQueue.length) return;
   while (state.actionQueue.length) {
@@ -96,5 +105,11 @@ function applyAbilityResult(abilityKey, res, state) {
     } catch {
       state.qi = state.qiMax || state.qi || 0;
     }
+  }
+  if (res.selfBuff) {
+    const { key, durationMs, ...buff } = res.selfBuff;
+    if (!state.abilityBuffs) state.abilityBuffs = {};
+    state.abilityBuffs[key] = { ...buff, remainingMs: durationMs };
+    logs?.push(`You used ${ability.displayName}.`);
   }
 }

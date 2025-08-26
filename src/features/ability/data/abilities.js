@@ -37,6 +37,16 @@ export const ABILITIES = {
     tags: ['martial', 'physical'],
     requiresWeaponType: 'palm',
   },
+  stoneFist: {
+    key: 'stoneFist',
+    displayName: 'Stone Fist',
+    icon: 'game-icons:stone-punch',
+    costQi: 20,
+    cooldownMs: 4_000,
+    castTimeMs: 0,
+    tags: ['martial', 'earth'],
+    requiresWeaponType: 'fist',
+  },
   seventyFive: {
     key: 'seventyFive',
     displayName: '75%',
