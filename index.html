@@ -657,15 +657,25 @@
           </div>
           <div class="card">
             <h4>Equipment</h4>
-            <div class="equip-slots">
-              <div class="equip-slot" id="slot-mainhand"><span class="slot-label">Weapon</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-              <div class="equip-slot" id="slot-head"><span class="slot-label">Head</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-              <div class="equip-slot" id="slot-body"><span class="slot-label">Body</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-              <div class="equip-slot" id="slot-food"><span class="slot-label">Food</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+            <div class="gear-tabs">
+              <button class="gear-tab-btn active" data-tab="gearEquip">Gear</button>
+              <button class="gear-tab-btn" data-tab="gearAbilities">Abilities</button>
             </div>
-            <div class="stat" title="Reduces Physical damage. Mitigation = armor / (armor + K × hit), capped at 90%">🛡 <span id="armorVal">0</span></div>
-            <div class="stat" title="Chance to hit enemies">⚔ <span id="accuracyVal">0</span></div>
-            <div class="stat" title="Chance to avoid attacks">👣 <span id="dodgeVal">0</span></div>
+            <div id="gearEquipSubTab" class="gear-tab-content active">
+              <div class="equip-slots">
+                <div class="equip-slot" id="slot-mainhand"><span class="slot-label">Weapon</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+                <div class="equip-slot" id="slot-head"><span class="slot-label">Head</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+                <div class="equip-slot" id="slot-body"><span class="slot-label">Body</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+                <div class="equip-slot" id="slot-food"><span class="slot-label">Food</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+              </div>
+              <div class="stat" title="Reduces Physical damage. Mitigation = armor / (armor + K × hit), capped at 90%">🛡 <span id="armorVal">0</span></div>
+              <div class="stat" title="Chance to hit enemies">⚔ <span id="accuracyVal">0</span></div>
+              <div class="stat" title="Chance to avoid attacks">👣 <span id="dodgeVal">0</span></div>
+            </div>
+            <div id="gearAbilitiesSubTab" class="gear-tab-content" style="display:none;">
+              <div id="abilitySlots"></div>
+              <div id="availableAbilities"></div>
+            </div>
           </div>
           <div class="card">
             <h4>Inventory</h4>

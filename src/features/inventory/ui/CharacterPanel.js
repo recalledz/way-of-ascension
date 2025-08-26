@@ -3,6 +3,7 @@ import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
 import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
 import { equipItem, unequip, removeFromInventory } from '../mutators.js';
 import { recomputePlayerTotals } from '../logic.js';
+import { ABILITIES } from '../../ability/data/abilities.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -13,6 +14,7 @@ export function renderEquipmentPanel() {
   renderEquipment();
   renderInventory();
   renderStats();
+  renderAbilitySlots();
 }
 
 function renderStats() {
@@ -170,4 +172,77 @@ function renderInventory() {
 
 export function setupEquipmentTab() {
   renderEquipmentPanel();
+  setupGearTabs();
+}
+
+function setupGearTabs() {
+  const tabButtons = document.querySelectorAll('.gear-tab-btn');
+  tabButtons.forEach(button => {
+    button.onclick = () => {
+      const tabName = button.dataset.tab;
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.gear-tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+      });
+      button.classList.add('active');
+      const content = document.getElementById(tabName + 'SubTab');
+      if (content) {
+        content.classList.add('active');
+        content.style.display = 'block';
+        if (tabName === 'gearAbilities') renderAbilitySlots();
+      }
+    };
+  });
+}
+
+function renderAbilitySlots() {
+  const slotsEl = document.getElementById('abilitySlots');
+  const availEl = document.getElementById('availableAbilities');
+  if (!slotsEl || !availEl) return;
+
+  const limit = S.abilitySlotLimit || 0;
+  const slotted = S.manualAbilityKeys || [];
+
+  slotsEl.innerHTML = '';
+  for (let i = 0; i < limit; i++) {
+    const key = slotted[i];
+    const row = document.createElement('div');
+    row.className = 'ability-slot';
+    if (key) {
+      const def = ABILITIES[key];
+      row.innerHTML = `<span class="slot-label">${def?.displayName || key}</span> <button class="btn small remove-btn" data-index="${i}">Remove</button>`;
+    } else {
+      row.innerHTML = `<span class="slot-label">Empty</span>`;
+    }
+    slotsEl.appendChild(row);
+  }
+
+  slotsEl.querySelectorAll('.remove-btn').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.index, 10);
+      S.manualAbilityKeys.splice(idx, 1);
+      save?.();
+      renderAbilitySlots();
+    };
+  });
+
+  availEl.innerHTML = '';
+  const available = (S.availableAbilityKeys || []).filter(k => !slotted.includes(k));
+  available.forEach(key => {
+    const def = ABILITIES[key];
+    const row = document.createElement('div');
+    row.className = 'available-ability';
+    row.innerHTML = `<span class="ability-name">${def?.displayName || key}</span> <button class="btn small slot-btn" data-key="${key}">Slot</button>`;
+    availEl.appendChild(row);
+  });
+
+  availEl.querySelectorAll('.slot-btn').forEach(btn => {
+    btn.onclick = () => {
+      if (S.manualAbilityKeys.length >= limit) return;
+      S.manualAbilityKeys.push(btn.dataset.key);
+      save?.();
+      renderAbilitySlots();
+    };
+  });
 }
