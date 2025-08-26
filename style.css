@@ -4262,6 +4262,8 @@ tr:last-child td {
 .ability-bar { display:flex; gap:4px; }
 .ability-card { width:60px; height:90px; background:var(--panel); border:1px solid var(--ink-light); border-radius:4px; position:relative; padding:2px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
 .ability-card .ability-name { font-size:10px; text-align:center; }
+.ability-card .ability-title { display:flex; flex-direction:column; align-items:center; }
+.ability-card .ability-damage { font-size:10px; }
 .ability-card .ability-icon { font-size:24px; }
 .ability-card .qi-badge { position:absolute; bottom:12px; right:2px; font-size:10px; background:var(--panel); padding:1px 3px; border-radius:3px; }
 .ability-card .keybind { font-size:10px; }

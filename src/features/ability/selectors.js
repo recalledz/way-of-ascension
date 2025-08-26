@@ -1,6 +1,8 @@
 import { S } from '../../shared/state.js';
 import { ABILITIES } from './data/abilities.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
+import { resolveAbilityHit } from './logic.js';
+import { getStatEffects } from '../progression/selectors.js';
 
 export function getAbilityCooldowns(state = S) {
   return state.abilityCooldowns || {};
@@ -35,4 +37,21 @@ export function getAbilitySlots(state = S) {
     slots.push({ keybind: i + 1, abilityKey: undefined, isReady: false, cooldownRemainingMs: 0, insufficientQi: false });
   }
   return slots;
+}
+
+export function getAbilityDamage(abilityKey, state = S) {
+  const ability = ABILITIES[abilityKey];
+  if (!ability) return null;
+  const res = resolveAbilityHit(abilityKey, state);
+  const attack = res?.attack;
+  if (!attack) return null;
+  let amount = attack.amount;
+  const mods = state.abilityMods?.[abilityKey] || {};
+  if (mods.damagePct) amount = Math.round(amount * (1 + mods.damagePct / 100));
+  if (ability.tags?.includes('spell')) {
+    const { spellPowerMult } = getStatEffects(state);
+    const spellDamage = state.stats?.spellDamage || 0;
+    amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100));
+  }
+  return amount;
 }

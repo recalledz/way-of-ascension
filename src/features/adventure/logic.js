@@ -3,7 +3,7 @@ import { calculatePlayerCombatAttack, calculatePlayerAttackRate, qCap } from '..
 import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
-import { getAbilitySlots } from '../ability/selectors.js';
+import { getAbilitySlots, getAbilityDamage } from '../ability/selectors.js';
 import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
@@ -303,8 +303,13 @@ export function updateAbilityBar() {
     card.dataset.slot = i + 1;
     if (slot.abilityKey) {
       const def = ABILITIES[slot.abilityKey];
+      const dmg = getAbilityDamage(slot.abilityKey, S);
+      const dmgLine = dmg !== null ? `<div class="ability-damage">${dmg}</div>` : '';
       card.innerHTML = `
-        <div class="ability-name">${def.displayName}</div>
+        <div class="ability-title">
+          <div class="ability-name">${def.displayName}</div>
+          ${dmgLine}
+        </div>
         <div class="ability-icon">${iconMap[def.icon] || def.icon}</div>
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
