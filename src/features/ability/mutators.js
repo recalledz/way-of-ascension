@@ -118,4 +118,7 @@ function applyAbilityResult(abilityKey, res, state) {
       state.qi = state.qiMax || state.qi || 0;
     }
   }
+  if (abilityKey === 'lightningStep') {
+    emit('ABILITY:FX', { abilityKey });
+  }
 }

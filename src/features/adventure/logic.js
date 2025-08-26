@@ -15,6 +15,7 @@ import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
+import { on } from '../../shared/events.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
@@ -71,6 +72,16 @@ function getCombatPositions() {
   }
   return { svg, from, to };
 }
+
+on('ABILITY:FX', ({ abilityKey }) => {
+  if (abilityKey === 'lightningStep') {
+    const pos = getCombatPositions();
+    if (pos) {
+      setFxTint(pos.svg, 'yellow');
+      playSparkBurst(pos.svg, pos.from);
+    }
+  }
+});
 
 // Subtle red-and-break visual on death
 function triggerDeathBreak(target) {
@@ -159,7 +170,10 @@ export function updateBattleDisplay() {
     playerQiFill.style.width = `${playerQiPct}%`;
   }
   const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
-  const playerAttackRate = calculatePlayerAttackRate(S);
+  let playerAttackRate = calculatePlayerAttackRate(S);
+  if (S.lightningStep) {
+    playerAttackRate *= S.lightningStep.attackSpeedMult;
+  }
   setText('playerAttack', Math.round(playerAttack));
   setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
@@ -350,10 +364,16 @@ export function updateAdventureCombat() {
     return;
   }
   if (S.adventure.currentEnemy && S.adventure.enemyHP > 0) {
-    const playerAttackRate = calculatePlayerAttackRate(S);
+    let playerAttackRate = calculatePlayerAttackRate(S);
+    if (S.lightningStep) {
+      playerAttackRate *= S.lightningStep.attackSpeedMult;
+    }
     const weapon = getEquippedWeapon(S);
     console.log('[weapon]', weapon.key); // WEAPONS-INTEGRATION
     const now = Date.now();
+    if (S.lightningStep && S.lightningStep.expiresAt <= now) {
+      delete S.lightningStep;
+    }
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
     tickStunDecay(S, deltaTime, now); // STATUS-REFORM
@@ -375,10 +395,19 @@ export function updateAdventureCombat() {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
         const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
-        const dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
+        let dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
+        let attackType = 'physical';
+        if (S.lightningStep) {
+          dmg = Math.round(dmg * S.lightningStep.damageMult);
+          attackType = 'metal';
+          const cd = S.abilityCooldowns?.lightningStep || 0;
+          if (cd > 0) {
+            S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
+          }
+        }
         const dealt = processAttack(
           dmg,
-          { attacker: S, target: S.adventure.currentEnemy, type: 'physical', nowMs: now },
+          { attacker: S, target: S.adventure.currentEnemy, type: attackType, nowMs: now },
           S
         );
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION

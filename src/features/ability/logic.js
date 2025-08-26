@@ -11,6 +11,8 @@ export function resolveAbilityHit(abilityKey, state) {
       return resolveFlowingPalm(state);
     case 'fireball':
       return resolveFireball(state);
+    case 'lightningStep':
+      return resolveLightningStep(state);
     case 'seventyFive':
       return resolveSeventyFive();
     default:
@@ -53,6 +55,18 @@ function resolvePalmStrike(state) {
   return {
     attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
   };
+}
+
+function resolveLightningStep(state) {
+  const level = S.mind?.manualProgress?.lightningStepManual?.level || 0;
+  const durationMs = 10_000 + level * 1_000;
+  const damageMult = 1.3 + level * 0.05;
+  state.lightningStep = {
+    attackSpeedMult: 1.2,
+    damageMult,
+    expiresAt: Date.now() + durationMs,
+  };
+  return {};
 }
 
 function resolveSeventyFive() {

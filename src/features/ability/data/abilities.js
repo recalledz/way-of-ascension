@@ -55,5 +55,14 @@ export const ABILITIES = {
     castTimeMs: 3_000,
     tags: ['spell', 'fire']
   },
+  lightningStep: {
+    key: 'lightningStep',
+    displayName: 'Lightning Step',
+    icon: 'game-icons:lightning',
+    costQi: 30,
+    cooldownMs: 30_000,
+    castTimeMs: 500,
+    tags: ['buff', 'metal']
+  },
   // Leave other abilities out until you define them.
 };
