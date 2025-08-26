@@ -62,6 +62,7 @@ function applyAbilityResult(abilityKey, res, state) {
     const { amount, type, target } = res.attack;
     const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
     logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
+    emit('ABILITY:CAST', { abilityKey });
     if (res.stun) {
       const mult = (res.stun.mult || 0) * (1 + (mods?.stunPct || 0) / 100);
       const attackerStats = { ...(state.stats || {}), stunDurationMult: (state.stats?.stunDurationMult || 0) + (mult - 1) };

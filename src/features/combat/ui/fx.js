@@ -64,13 +64,16 @@ export function playThrustLine(svg, from, to) {
   spawn(svg, line, 300);
 }
 
-export function playRingShockwave(svg, center, radius = 20) {
+export function playRingShockwave(svg, center, radius = 20, gradientId) {
   const circle = document.createElementNS(NS, 'circle');
   circle.setAttribute('cx', center.x);
   circle.setAttribute('cy', center.y);
   circle.setAttribute('r', 0);
   circle.style.setProperty('--fx-radius', radius);
   circle.classList.add('fx-ring');
+  if (gradientId) {
+    circle.style.stroke = `url(#${gradientId})`;
+  }
   spawn(svg, circle, 600);
 }
 
@@ -126,6 +129,11 @@ export function playChakram(svg, from, to) {
   } else if (svg.contains(g)) {
     svg.removeChild(g);
   }
+}
+
+export function playFireball(svg, from, to) {
+  playBeam(svg, from, to);
+  setTimeout(() => playRingShockwave(svg, to, 8, 'elem-fire'), 350);
 }
 
 export function playShieldDome(svg, center, radius = 25) {
