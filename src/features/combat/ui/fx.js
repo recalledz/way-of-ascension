@@ -128,6 +128,11 @@ export function playChakram(svg, from, to) {
   }
 }
 
+export function playFireball(svg, from, to) {
+  playBeam(svg, from, to);
+  setTimeout(() => playRingShockwave(svg, to, 8), 350);
+}
+
 export function playShieldDome(svg, center, radius = 25) {
   const circle = document.createElementNS(NS, 'circle');
   circle.setAttribute('cx', center.x);
