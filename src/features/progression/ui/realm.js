@@ -11,7 +11,7 @@ import {
   powerMult,
   breakthroughChance
 } from '../selectors.js';
-import { advanceRealm, checkLawUnlocks, awardLawPoints } from '../mutators.js';
+import { advanceRealm } from '../mutators.js';
 import { qs, setText, log } from '../../../shared/utils/dom.js';
 
 export function getRealmName(tier) {
@@ -428,7 +428,7 @@ export function updateBreakthrough() {
     if(Math.random() < ch) {
       S.qi = 0;
       S.foundation = 0;
-      const info = advanceRealm();
+      const info = advanceRealm(S);
       log('Breakthrough succeeded! Realm advanced.', 'good');
       showBreakthroughResult(true, info);
     } else {
