@@ -3,6 +3,8 @@ import { ABILITIES } from './data/abilities.js';
 import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { processAttack, applyStatus } from '../combat/mutators.js';
+import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
+import { getStatEffects } from '../progression/selectors.js';
 import { emit } from '../../shared/events.js';
 import { qCap } from '../progression/selectors.js';
 
@@ -56,10 +58,29 @@ function applyAbilityResult(abilityKey, res, state) {
   const logs = state.adventure?.combatLog;
   const mods = state.abilityMods?.[abilityKey];
   if (res.attack) {
-    if (mods?.damagePct) {
-      res.attack.amount = Math.round(res.attack.amount * (1 + mods.damagePct / 100));
+    const { type, target } = res.attack;
+    let amount = res.attack.amount;
+    const isSpell = ability.tags?.includes('spell');
+
+    if (!isSpell) {
+      const enemyDodge = (target?.stats?.dodge ?? target?.dodge ?? 0) + DODGE_BASE;
+      const hitP = chanceToHit(state.stats?.accuracy || 0, enemyDodge);
+      if (Math.random() >= hitP) {
+        logs?.push(`Your ${ability.displayName} missed!`);
+        return;
+      }
     }
-    const { amount, type, target } = res.attack;
+
+    if (mods?.damagePct) {
+      amount = Math.round(amount * (1 + mods.damagePct / 100));
+    }
+
+    if (isSpell) {
+      const { spellPowerMult } = getStatEffects(state);
+      const spellDamage = state.stats?.spellDamage || 0;
+      amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100));
+    }
+
     const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
     logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
     if (res.stun) {
