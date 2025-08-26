@@ -4420,8 +4420,8 @@ tr:last-child td {
   cursor:pointer;
 }
 .queue-chip iconify-icon{font-size:1rem;}
-.manuals-list{display:flex;flex-direction:column;gap:var(--card-gap);}
-.manual-card{background:var(--panel);border:1px solid rgba(45,37,32,0.35);border-radius:12px;overflow:hidden;}
+.manuals-list{display:flex;flex-wrap:wrap;gap:var(--card-gap);}
+.manual-card{background:var(--panel);border:1px solid rgba(45,37,32,0.35);border-radius:12px;overflow:hidden;flex:1 1 calc(25% - var(--card-gap));max-width:calc(25% - var(--card-gap));}
 .manual-card-header{
   display:flex;align-items:center;width:100%;
   padding:var(--card-pad);gap:var(--card-gap);

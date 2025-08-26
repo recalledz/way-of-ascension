@@ -59,27 +59,33 @@ function levelDots(current, max) {
   return html;
 }
 
-function isMobile() {
-  return window.matchMedia('(max-width: 767px)').matches;
-}
+function showManualPopup(manual, S) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-backdrop"></div>
+    <div class="modal-content card">
+      <div class="card-header">
+        <h4>${manual.name}</h4>
+        <button class="btn small ghost close-btn">×</button>
+      </div>
+      <div class="manual-meta">${manual.category} • Req Level ${manual.reqLevel}</div>
+      ${renderSpeedInfo(manual, S.stats)}
+      ${renderEffects(manual)}
+      <div class="manual-actions">
+        <button class="btn small add-btn">Add to Queue</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
 
-let expandedCard = null;
-
-function expandCard(card) {
-  const header = card.querySelector('.manual-card-header');
-  const body = card.querySelector('.manual-card-body');
-  const expanded = header.getAttribute('aria-expanded') === 'true';
-  if (isMobile() && !expanded) {
-    if (expandedCard && expandedCard !== card) {
-      const h = expandedCard.querySelector('.manual-card-header');
-      const b = expandedCard.querySelector('.manual-card-body');
-      h.setAttribute('aria-expanded', 'false');
-      b.hidden = true;
-    }
-    expandedCard = card;
-  }
-  header.setAttribute('aria-expanded', String(!expanded));
-  body.hidden = expanded;
+  const close = () => overlay.remove();
+  overlay.querySelector('.close-btn').addEventListener('click', close);
+  overlay.querySelector('.modal-backdrop').addEventListener('click', close);
+  overlay.querySelector('.add-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    emit('mind/manuals/startReading', { root: S, manualId: manual.id });
+    close();
+  });
 }
 
 function createManualCard(manual, S) {
@@ -95,8 +101,6 @@ function createManualCard(manual, S) {
 
   const header = document.createElement('button');
   header.className = 'manual-card-header';
-  header.setAttribute('aria-expanded', 'false');
-  header.setAttribute('aria-controls', `body-${manual.id}`);
   header.innerHTML = `
     <iconify-icon icon="iconoir:book" aria-hidden="true"></iconify-icon>
     <span class="name">${manual.name}</span>
@@ -106,26 +110,7 @@ function createManualCard(manual, S) {
     </span>`;
   card.appendChild(header);
 
-  const body = document.createElement('div');
-  body.className = 'manual-card-body';
-  body.id = `body-${manual.id}`;
-  body.hidden = true;
-  body.innerHTML = `
-    <div class="manual-meta">${manual.category} • Req Level ${manual.reqLevel}</div>
-    ${renderSpeedInfo(manual, S.stats)}
-    ${renderEffects(manual)}
-    <div class="manual-actions">
-      <button class="btn small add-btn">Add to Queue</button>
-    </div>`;
-  card.appendChild(body);
-
-  header.addEventListener('click', () => expandCard(card));
-
-  const addBtn = body.querySelector('.add-btn');
-  addBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    emit('mind/manuals/startReading', { root: S, manualId: manual.id });
-  });
+  header.addEventListener('click', () => showManualPopup(manual, S));
 
   return card;
 }
@@ -190,13 +175,12 @@ export function renderMindReadingTab(rootEl, S) {
   if (!rootEl) return;
   rootEl.innerHTML = '';
 
-  const cardMap = new Map();
+  const manualMap = new Map();
 
   function focusManual(id) {
-    const card = cardMap.get(id);
-    if (card) {
-      expandCard(card);
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const manual = manualMap.get(id);
+    if (manual) {
+      showManualPopup(manual, S);
     }
   }
 
@@ -209,7 +193,7 @@ export function renderMindReadingTab(rootEl, S) {
   for (const m of listManuals()) {
     const card = createManualCard(m, S);
     list.appendChild(card);
-    cardMap.set(m.id, card);
+    manualMap.set(m.id, m);
   }
 
   rootEl.appendChild(list);
