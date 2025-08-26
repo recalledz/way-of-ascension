@@ -2071,6 +2071,57 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: block;
 }
 
+/* Gear Sub Tabs */
+.gear-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--accent);
+}
+
+.gear-tab-btn {
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  font-family: 'Trajan Pro', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.gear-tab-btn:hover {
+  background: rgba(139, 69, 19, 0.05);
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.gear-tab-btn.active {
+  background: transparent;
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.gear-tab-content {
+  display: none;
+}
+
+.gear-tab-content.active {
+  display: block;
+}
+
+.ability-slot,
+.available-ability {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+}
+
 /* Bestiary Styles */
 .bestiary-list {
   max-height: 300px;

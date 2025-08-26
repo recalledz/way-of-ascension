@@ -93,10 +93,15 @@ export function applyManualEffects(player, manual, level) {
 
   player.stats = player.stats || {};
   player.manualAbilityKeys = player.manualAbilityKeys || [];
+  player.availableAbilityKeys = player.availableAbilityKeys || [];
   player.abilityMods = player.abilityMods || {};
+  player.abilitySlotLimit = player.abilitySlotLimit || 0;
 
-  if (effects.unlockAbility && !player.manualAbilityKeys.includes(effects.unlockAbility)) {
-    player.manualAbilityKeys.push(effects.unlockAbility);
+  if (effects.unlockAbility && !player.availableAbilityKeys.includes(effects.unlockAbility)) {
+    player.availableAbilityKeys.push(effects.unlockAbility);
+    if (player.manualAbilityKeys.length < player.abilitySlotLimit) {
+      player.manualAbilityKeys.push(effects.unlockAbility);
+    }
   }
 
   if (effects.abilityMods) {

@@ -62,6 +62,8 @@ export const defaultState = () => {
   actionQueue:[],
   manualAbilityKeys:[],
   abilityMods:{},
+  availableAbilityKeys:[],
+  abilitySlotLimit:2,
   bought:{},
     ascensions:0,
     karma: structuredClone(karmaState),
