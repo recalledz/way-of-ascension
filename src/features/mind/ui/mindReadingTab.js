@@ -1,18 +1,16 @@
-// src/features/mind/ui/mindReadingTab.js
+// Redesigned Manuals tab with queue bar and collapsible manual cards
 
 import { listManuals, getManual } from '../data/manuals.js';
-import { stopReading } from '../mutators.js';
 import { calcManualSpeedDetails } from '../logic.js';
 import { emit, on } from '../../../shared/events.js';
 
-// Mapping of manual effect keys to human readable labels
 const EFFECT_LABELS = {
   hpMaxPct: 'Max HP',
   physDRPct: 'Physical DR',
   accuracyPct: 'Accuracy',
   dodgePct: 'Dodge',
   attackRatePct: 'Attack Rate',
-  qiCostPct: 'Qi Cost'
+  qiCostPct: 'Qi Cost',
 };
 
 function cap(str) {
@@ -30,7 +28,6 @@ function renderSpeedInfo(manual, stats) {
   return `<div>Reading Speed: ${total >= 0 ? '+' : ''}${total}% (${parts})</div>`;
 }
 
-// Render an unordered list of manual effects per level
 function renderEffects(manual) {
   if (!manual.effects) return '';
   const rows = manual.effects.map((eff, idx) => {
@@ -50,96 +47,171 @@ function formatTime(sec) {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const r = s % 60;
-  if (h > 0) {
-    return `${h}:${m.toString().padStart(2, '0')}:${r.toString().padStart(2, '0')}`;
-  }
-  return `${m}:${r.toString().padStart(2, '0')}`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${r}s`;
 }
 
-/**
- * Render the Mind Reading tab UI.
- * @param {HTMLElement} rootEl container element
- * @param {object} S game state
- */
+function levelDots(current, max) {
+  let html = '';
+  for (let i = 0; i < max; i++) {
+    html += `<span class="dot ${i < current ? 'filled' : ''}"></span>`;
+  }
+  return html;
+}
+
+function isMobile() {
+  return window.matchMedia('(max-width: 767px)').matches;
+}
+
+let expandedCard = null;
+
+function expandCard(card) {
+  const header = card.querySelector('.manual-card-header');
+  const body = card.querySelector('.manual-card-body');
+  const expanded = header.getAttribute('aria-expanded') === 'true';
+  if (isMobile() && !expanded) {
+    if (expandedCard && expandedCard !== card) {
+      const h = expandedCard.querySelector('.manual-card-header');
+      const b = expandedCard.querySelector('.manual-card-body');
+      h.setAttribute('aria-expanded', 'false');
+      b.hidden = true;
+    }
+    expandedCard = card;
+  }
+  header.setAttribute('aria-expanded', String(!expanded));
+  body.hidden = expanded;
+}
+
+function createManualCard(manual, S) {
+  const rec = S.mind.manualProgress[manual.id] || { xp: 0, level: 0 };
+  const level = rec.level;
+  const maxed = level >= manual.maxLevel;
+  const needed = manual.baseTimeSec * manual.levelTimeMult[level] * manual.xpRate;
+  const ratio = maxed ? 1 : Math.min(rec.xp / needed, 1);
+
+  const card = document.createElement('div');
+  card.className = 'manual-card';
+  card.id = `manual-${manual.id}`;
+
+  const header = document.createElement('button');
+  header.className = 'manual-card-header';
+  header.setAttribute('aria-expanded', 'false');
+  header.setAttribute('aria-controls', `body-${manual.id}`);
+  header.innerHTML = `
+    <iconify-icon icon="iconoir:book" aria-hidden="true"></iconify-icon>
+    <span class="name">${manual.name}</span>
+    <span class="level-info">
+      <span class="level-dots">${levelDots(level, manual.maxLevel)}</span>
+      <span class="progress-pill"><div style="width:${(ratio * 100).toFixed(1)}%"></div></span>
+    </span>`;
+  card.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'manual-card-body';
+  body.id = `body-${manual.id}`;
+  body.hidden = true;
+  body.innerHTML = `
+    <div class="manual-meta">${manual.category} • Req Level ${manual.reqLevel}</div>
+    ${renderSpeedInfo(manual, S.stats)}
+    ${renderEffects(manual)}
+    <div class="manual-actions">
+      <button class="btn small add-btn">Add to Queue</button>
+    </div>`;
+  card.appendChild(body);
+
+  header.addEventListener('click', () => expandCard(card));
+
+  const addBtn = body.querySelector('.add-btn');
+  addBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    emit('mind/manuals/startReading', { root: S, manualId: manual.id });
+  });
+
+  return card;
+}
+
+function buildQueueItems(S) {
+  const items = [];
+  const id = S.mind.activeManualId;
+  if (id) {
+    const m = getManual(id);
+    if (m) {
+      const rec = S.mind.manualProgress[id] || { xp: 0, level: 0 };
+      const speed = calcManualSpeedDetails(m, S.stats).mult;
+      const needed = m.baseTimeSec * m.levelTimeMult[rec.level] * m.xpRate;
+      const xpRate = m.xpRate * speed;
+      const eta = (needed - rec.xp) / xpRate;
+      items.push({
+        manualKey: id,
+        fromLevel: rec.level,
+        toLevel: rec.level + 1,
+        etaText: formatTime(eta),
+        name: m.name,
+      });
+    }
+  }
+  return items;
+}
+
+function renderQueueBar(items, focusFn) {
+  const bar = document.createElement('div');
+  bar.className = 'queue-bar';
+
+  const chipWrap = document.createElement('div');
+  chipWrap.className = 'queue-chips';
+  if (items.length === 0) {
+    const empty = document.createElement('div');
+    empty.textContent = 'No manuals in queue';
+    chipWrap.appendChild(empty);
+  } else {
+    for (const it of items) {
+      const chip = document.createElement('button');
+      chip.className = 'queue-chip';
+      chip.innerHTML = `<iconify-icon icon="iconoir:book" aria-hidden="true"></iconify-icon> ${it.name} — Lv ${it.fromLevel}→${it.toLevel} • ${it.etaText}`;
+      chip.setAttribute('aria-label', `${it.name}, level ${it.fromLevel} to ${it.toLevel}, ${it.etaText}`);
+      chip.addEventListener('click', () => focusFn(it.manualKey));
+      chipWrap.appendChild(chip);
+    }
+  }
+
+  const manageBtn = document.createElement('button');
+  manageBtn.className = 'btn small manage-queue';
+  manageBtn.textContent = 'Manage Queue';
+  manageBtn.addEventListener('click', () => {
+    alert('Queue manager coming soon');
+  });
+
+  bar.appendChild(chipWrap);
+  bar.appendChild(manageBtn);
+  return bar;
+}
+
 export function renderMindReadingTab(rootEl, S) {
   if (!rootEl) return;
   rootEl.innerHTML = '';
 
-  const activeId = S.mind.activeManualId;
-  if (activeId) {
-    const manual = getManual(activeId);
-    if (manual) {
-      const rec = S.mind.manualProgress[activeId] || { xp: 0, level: 0 };
-      const speedInfo = calcManualSpeedDetails(manual, S.stats);
-      const speed = speedInfo.mult;
-      const xpRate = manual.xpRate * speed;
-      const needed = manual.baseTimeSec * manual.levelTimeMult[rec.level] * manual.xpRate;
-      const ratio = Math.min(rec.xp / needed, 1);
-      const timeToNext = (needed - rec.xp) / xpRate;
-      let timeToMax = timeToNext;
-      for (let lvl = rec.level + 1; lvl < manual.maxLevel; lvl++) {
-        timeToMax += manual.baseTimeSec * manual.levelTimeMult[lvl] / speed;
-      }
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <h3><iconify-icon icon="iconoir:page-flip"></iconify-icon> Reading: ${manual.name} (Lv ${rec.level}/${manual.maxLevel})</h3>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${(ratio * 100).toFixed(1)}%"></div>
-          <div class="progress-text">${rec.xp.toFixed(1)} / ${needed.toFixed(1)}</div>
-        </div>
-        <div class="timers">
-          <div>Next Level: ${formatTime(timeToNext)}</div>
-          <div>Max Level: ${formatTime(timeToMax)}</div>
-        </div>
-        ${renderSpeedInfo(manual, S.stats)}
-        ${renderEffects(manual)}
-      `;
-      const stopBtn = document.createElement('button');
-      stopBtn.className = 'btn small';
-      stopBtn.textContent = 'Stop';
-      stopBtn.addEventListener('click', () => {
-        stopReading(S);
-        renderMindReadingTab(rootEl, S);
-      });
-      card.appendChild(stopBtn);
-      rootEl.appendChild(card);
+  const cardMap = new Map();
+
+  function focusManual(id) {
+    const card = cardMap.get(id);
+    if (card) {
+      expandCard(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
+  const queueItems = buildQueueItems(S);
+  rootEl.appendChild(renderQueueBar(queueItems, focusManual));
+
   const list = document.createElement('div');
-  list.className = 'cards';
+  list.className = 'manuals-list';
+
   for (const m of listManuals()) {
-    const item = document.createElement('div');
-    item.className = 'card';
-    item.innerHTML = `
-      <div><iconify-icon icon="iconoir:page-flip"></iconify-icon> <strong>${m.name}</strong></div>
-      <div>${m.category}</div>
-      <div>Req Level: ${m.reqLevel}</div>
-      ${renderSpeedInfo(m, S.stats)}
-      ${renderEffects(m)}
-    `;
-    const progress = S.mind.manualProgress[m.id];
-    const maxed = progress?.level >= m.maxLevel;
-    if (maxed) {
-      item.classList.add('maxed');
-      const status = document.createElement('div');
-      status.className = 'muted';
-      status.textContent = 'Maxed';
-      item.appendChild(status);
-    } else {
-      const btn = document.createElement('button');
-      btn.className = 'btn small';
-      btn.textContent = 'Start';
-      btn.disabled = S.mind.level < m.reqLevel;
-      btn.addEventListener('click', () => {
-        emit('mind/manuals/startReading', { root: S, manualId: m.id });
-        renderMindReadingTab(rootEl, S);
-      });
-      item.appendChild(btn);
-    }
-    list.appendChild(item);
+    const card = createManualCard(m, S);
+    list.appendChild(card);
+    cardMap.set(m.id, card);
   }
+
   rootEl.appendChild(list);
 }
 
@@ -153,3 +225,4 @@ export function mountMindReadingUI(state) {
 }
 
 export default renderMindReadingTab;
+
