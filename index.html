@@ -458,39 +458,9 @@
             
             <div class="battle-area" id="battleArea">
               <div class="area-background" id="areaBackground"></div>
-
-              <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
-                <defs>
-                  <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                  <linearGradient id="fx-gradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="var(--fx-a, #fff)" />
-                    <stop offset="100%" stop-color="var(--fx-b, #fff)" />
-                  </linearGradient>
-                  <linearGradient id="elem-fire" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#ff9a00" />
-                    <stop offset="100%" stop-color="#ff0000" />
-                  </linearGradient>
-                  <linearGradient id="elem-ice" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#00c6ff" />
-                    <stop offset="100%" stop-color="#0072ff" />
-                  </linearGradient>
-                  <symbol id="rune-circle" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="6" />
-                  </symbol>
-                  <symbol id="shockwave-ring" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="10" />
-                  </symbol>
-                </defs>
-              </svg>
-
-              <div class="combat-display">
-                <div class="combatant player">
+              <!-- Compact HUD Bars -->
+              <div class="compact-hud">
+                <div class="hud player">
                   <div class="combatant-name">You</div>
                   <div class="health-bar">
                     <div class="health-fill" id="playerHealthFill"></div>
@@ -514,16 +484,8 @@
                     <div class="qi-fill" id="playerQiFill"></div>
                     <span class="qi-text" id="playerQiText">0/0</span>
                   </div>
-                  <div class="combat-stats">
-                    <span>ATK: <span id="playerAttack">10</span></span>
-                    <span>Rate: <span id="playerAttackRate">1.0/s</span></span>
-                    <span title="Physical mitigation versus the strongest enemy in this zone">Mit: <span id="playerMitigation">0%</span></span>
-                  </div>
                 </div>
-                
-                <div class="combat-vs">VS</div>
-                
-                <div class="combatant enemy">
+                <div class="hud enemy">
                   <div class="enemy-affixes" id="enemyAffixes"></div>
                   <div class="combatant-name" id="enemyName">Select an area to begin</div>
                   <div class="stun-bar" id="enemyStunBar" title="Gauge: 0\nThreshold: 100\nDecay: 6/s">
@@ -538,11 +500,42 @@
                     <div class="qi-fill" id="enemyQiFill"></div>
                     <span class="qi-text" id="enemyQiText">--</span>
                   </div>
-                  <div class="combat-stats">
-                    <span>ATK: <span id="enemyAttack">--</span></span>
-                    <span>Rate: <span id="enemyAttackRate">--/s</span></span>
-                  </div>
                 </div>
+              </div>
+
+              <!-- Sprite Stage -->
+              <div class="sprite-stage" id="spriteStage">
+                <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
+                  <defs>
+                    <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="2" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <linearGradient id="fx-gradient" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="var(--fx-a, #fff)" />
+                      <stop offset="100%" stop-color="var(--fx-b, #fff)" />
+                    </linearGradient>
+                    <linearGradient id="elem-fire" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#ff9a00" />
+                      <stop offset="100%" stop-color="#ff0000" />
+                    </linearGradient>
+                    <linearGradient id="elem-ice" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#00c6ff" />
+                      <stop offset="100%" stop-color="#0072ff" />
+                    </linearGradient>
+                    <symbol id="rune-circle" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="6" />
+                    </symbol>
+                    <symbol id="shockwave-ring" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="10" />
+                    </symbol>
+                  </defs>
+                </svg>
+                <div class="player-sprite" id="playerSprite" aria-label="Player"></div>
+                <div class="enemy-sprite" id="enemySprite" aria-label="Enemy"></div>
               </div>
 
               <!-- Combat Actions -->

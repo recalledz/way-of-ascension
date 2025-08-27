@@ -3182,6 +3182,74 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 }
 
 /* Adventure Combat System */
+.compact-hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
+}
+.compact-hud .hud {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.compact-hud .combatant-name {
+  font-size: 0.9em;
+  margin-bottom: 2px;
+}
+.compact-hud .hud.enemy .combatant-name {
+  text-align: right;
+}
+.compact-hud .health-bar,
+.compact-hud .qi-bar,
+.compact-hud .stun-bar {
+  height: 12px;
+}
+
+.sprite-stage {
+  position: relative;
+  height: 160px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 16px;
+}
+.sprite-stage svg.fx-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.player-sprite,
+.enemy-sprite {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+.enemy-sprite {
+  background: rgba(0, 0, 0, 0.25);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .player-sprite,
+  .enemy-sprite {
+    animation: sprite-bob 3s ease-in-out infinite;
+  }
+}
+@keyframes sprite-bob {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@media (max-width: 600px) {
+  .sprite-stage {
+    height: 40vh;
+  }
+}
+
 .combat-display {
   display: flex;
   align-items: center;

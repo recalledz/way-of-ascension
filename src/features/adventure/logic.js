@@ -52,8 +52,8 @@ function logEnemyResists(enemy) {
 
 function getCombatPositions() {
   const svg = document.getElementById('combatFx');
-  const playerEl = document.querySelector('.combatant.player');
-  const enemyEl = document.querySelector('.combatant.enemy');
+  const playerEl = document.querySelector('.player-sprite');
+  const enemyEl = document.querySelector('.enemy-sprite');
   if (!svg || !playerEl || !enemyEl) return null;
   const rect = svg.getBoundingClientRect();
   // If SVG hasn't been laid out yet, its rect can be 0x0 which would cause NaN (0/0)
@@ -86,9 +86,9 @@ on('ABILITY:FX', ({ abilityKey }) => {
     const pos = getCombatPositions();
     if (pos) {
       const svgRect = pos.svg.getBoundingClientRect();
-      const hpBar = document.querySelector('.combatant.enemy .health-bar');
-      if (hpBar) {
-        const hpRect = hpBar.getBoundingClientRect();
+      const enemySprite = document.querySelector('.enemy-sprite');
+      if (enemySprite) {
+        const hpRect = enemySprite.getBoundingClientRect();
         const to = {
           x: ((hpRect.left + hpRect.width / 2 - svgRect.left) / svgRect.width) * 100,
           y: ((hpRect.top + hpRect.height / 2 - svgRect.top) / svgRect.height) * 50,
@@ -102,7 +102,7 @@ on('ABILITY:FX', ({ abilityKey }) => {
 
 // Subtle red-and-break visual on death
 function triggerDeathBreak(target) {
-  const sel = target === 'enemy' ? '.combatant.enemy' : '.combatant.player';
+  const sel = target === 'enemy' ? '.enemy-sprite' : '.player-sprite';
   const el = document.querySelector(sel);
   if (!el) return;
   el.classList.add('death-break');
@@ -435,9 +435,9 @@ export function updateAdventureCombat() {
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
-        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
-        if (enemyBar) {
-          showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
+        const enemySprite = document.querySelector('.enemy-sprite');
+        if (enemySprite) {
+          showFloatingText({ targetEl: enemySprite, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
           S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
           performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
@@ -483,9 +483,9 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
-        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
-        if (enemyBar) {
-          showFloatingText({ targetEl: enemyBar, result: 'miss' });
+        const enemySprite = document.querySelector('.enemy-sprite');
+        if (enemySprite) {
+          showFloatingText({ targetEl: enemySprite, result: 'miss' });
         }
       }
     }
@@ -507,9 +507,9 @@ export function updateAdventureCombat() {
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
-          const playerBar = document.querySelector('.combatant.player .health-bar');
-          if (playerBar) {
-            showFloatingText({ targetEl: playerBar, result: isCrit ? 'crit' : 'hit', amount: taken });
+          const playerSprite = document.querySelector('.player-sprite');
+          if (playerSprite) {
+            showFloatingText({ targetEl: playerSprite, result: isCrit ? 'crit' : 'hit', amount: taken });
           }
           performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
           if (weapon.typeKey === 'focus') {
@@ -546,9 +546,9 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
-          const playerBar = document.querySelector('.combatant.player .health-bar');
-          if (playerBar) {
-            showFloatingText({ targetEl: playerBar, result: 'miss' });
+          const playerSprite = document.querySelector('.player-sprite');
+          if (playerSprite) {
+            showFloatingText({ targetEl: playerSprite, result: 'miss' });
           }
         }
       }
