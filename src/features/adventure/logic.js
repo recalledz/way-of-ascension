@@ -86,12 +86,12 @@ on('ABILITY:FX', ({ abilityKey }) => {
     const pos = getCombatPositions();
     if (pos) {
       const svgRect = pos.svg.getBoundingClientRect();
-      const hpBar = document.querySelector('.combatant.enemy .health-bar');
-      if (hpBar) {
-        const hpRect = hpBar.getBoundingClientRect();
+      const enemyEl = document.querySelector('.combatant.enemy');
+      if (enemyEl) {
+        const eRect = enemyEl.getBoundingClientRect();
         const to = {
-          x: ((hpRect.left + hpRect.width / 2 - svgRect.left) / svgRect.width) * 100,
-          y: ((hpRect.top + hpRect.height / 2 - svgRect.top) / svgRect.height) * 50,
+          x: ((eRect.left + eRect.width / 2 - svgRect.left) / svgRect.width) * 100,
+          y: ((eRect.top + eRect.height / 2 - svgRect.top) / svgRect.height) * 50,
         };
         setFxTint(pos.svg, 'red');
         playFireball(pos.svg, pos.from, to);
@@ -191,8 +191,10 @@ export function updateBattleDisplay() {
   if (S.lightningStep) {
     playerAttackRate *= S.lightningStep.attackSpeedMult;
   }
-  setText('playerAttack', Math.round(playerAttack));
-  setText('playerAttackRate', `${playerAttackRate.toFixed(1)}/s`);
+  const atkEl = document.getElementById('playerAttack');
+  if (atkEl) atkEl.title = `ATK: ${Math.round(playerAttack)}`;
+  const rateEl = document.getElementById('playerAttackRate');
+  if (rateEl) rateEl.title = `Rate: ${playerAttackRate.toFixed(1)}/s`;
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
 
@@ -210,15 +212,27 @@ export function updateBattleDisplay() {
       mitPct = Math.min(ARMOR_CAP, armor / (armor + ARMOR_K * maxEnemyAtk));
     }
   }
-  setText('playerMitigation', `${Math.round(mitPct * 100)}%`);
+  const mitEl = document.getElementById('playerMitigation');
+  if (mitEl) mitEl.title = `Mit: ${Math.round(mitPct * 100)}%`;
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
     const enemyMaxHP = S.adventure.enemyMaxHP || 0;
     setText('enemyName', enemy.name || 'Unknown Enemy');
     setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
-    setText('enemyAttack', Math.round(enemy.attack || 0));
-    setText('enemyAttackRate', `${(enemy.attackRate || 1.0).toFixed(1)}/s`);
+    const enemyAtkEl = document.getElementById('enemyAttack');
+    if (enemyAtkEl) enemyAtkEl.title = `ATK: ${Math.round(enemy.attack || 0)}`;
+    const enemyRateEl = document.getElementById('enemyAttackRate');
+    if (enemyRateEl) enemyRateEl.title = `Rate: ${(enemy.attackRate || 1.0).toFixed(1)}/s`;
+    const enemyMitEl = document.getElementById('enemyMitigation');
+    if (enemyMitEl) {
+      const enemyArmor = enemy.armor || 0;
+      let eMitPct = 0;
+      if (enemyArmor > 0 && playerAttack > 0) {
+        eMitPct = Math.min(ARMOR_CAP, enemyArmor / (enemyArmor + ARMOR_K * playerAttack));
+      }
+      enemyMitEl.title = `Mit: ${Math.round(eMitPct * 100)}%`;
+    }
     const enemyQiFill = document.getElementById('enemyQiFill');
     if (enemy.qiMax) {
       const enemyQi = S.adventure.enemyQi || 0;
@@ -275,8 +289,12 @@ export function updateBattleDisplay() {
   } else {
     setText('enemyName', 'Select an area to begin');
     setText('enemyHealthText', '--/--');
-    setText('enemyAttack', '--');
-    setText('enemyAttackRate', '--/s');
+    const enemyAtkEl = document.getElementById('enemyAttack');
+    if (enemyAtkEl) enemyAtkEl.title = 'ATK: --';
+    const enemyRateEl = document.getElementById('enemyAttackRate');
+    if (enemyRateEl) enemyRateEl.title = 'Rate: --/s';
+    const enemyMitEl = document.getElementById('enemyMitigation');
+    if (enemyMitEl) enemyMitEl.title = 'Mit: --';
     const enemyHealthFill = document.getElementById('enemyHealthFill');
     if (enemyHealthFill) enemyHealthFill.style.width = '0%';
     const enemyQiFill = document.getElementById('enemyQiFill');
@@ -435,9 +453,9 @@ export function updateAdventureCombat() {
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
-        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
-        if (enemyBar) {
-          showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
+        const enemyEl = document.querySelector('.combatant.enemy');
+        if (enemyEl) {
+          showFloatingText({ targetEl: enemyEl, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
           S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
           performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
@@ -483,9 +501,9 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
-        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
-        if (enemyBar) {
-          showFloatingText({ targetEl: enemyBar, result: 'miss' });
+        const enemyEl = document.querySelector('.combatant.enemy');
+        if (enemyEl) {
+          showFloatingText({ targetEl: enemyEl, result: 'miss' });
         }
       }
     }
@@ -507,9 +525,9 @@ export function updateAdventureCombat() {
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
-          const playerBar = document.querySelector('.combatant.player .health-bar');
-          if (playerBar) {
-            showFloatingText({ targetEl: playerBar, result: isCrit ? 'crit' : 'hit', amount: taken });
+          const playerEl = document.querySelector('.combatant.player');
+          if (playerEl) {
+            showFloatingText({ targetEl: playerEl, result: isCrit ? 'crit' : 'hit', amount: taken });
           }
           performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
           if (weapon.typeKey === 'focus') {
@@ -546,9 +564,9 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
-          const playerBar = document.querySelector('.combatant.player .health-bar');
-          if (playerBar) {
-            showFloatingText({ targetEl: playerBar, result: 'miss' });
+          const playerEl = document.querySelector('.combatant.player');
+          if (playerEl) {
+            showFloatingText({ targetEl: playerEl, result: 'miss' });
           }
         }
       }
