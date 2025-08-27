@@ -26,6 +26,7 @@ import { updateLootTab } from '../loot/ui/lootTab.js';
 import {
   playSlashArc,
   playThrustLine,
+  playPalmHit,
   playRingShockwave,
   playBeam,
   playChakram,
@@ -449,8 +450,10 @@ export function updateAdventureCombat() {
                 playSlashArc(pos.svg, pos.from, pos.to);
                 break;
               case 'pierceThrust':
-              case 'palmStrike':
                 playThrustLine(pos.svg, pos.from, pos.to);
+                break;
+              case 'palmStrike':
+                playPalmHit(pos.svg, pos.to);
                 break;
               case 'smash':
                 playRingShockwave(pos.svg, pos.to, 20);
