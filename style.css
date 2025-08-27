@@ -4182,8 +4182,8 @@ tr:last-child td {
 
 /* Combat FX Layer */
 .battle-area{position:relative;overflow:visible;display:flex;flex-direction:column;gap:8px}
-.combat-hud{display:flex;justify-content:center;align-items:flex-start;padding:4px 8px;gap:24px}
-.combat-hud .hud{display:flex;flex-direction:column;gap:4px;width:160px;align-items:center;text-align:center}
+.combat-hud{display:flex;justify-content:center;align-items:flex-start;padding:4px 8px;gap:24px;width:100%}
+.combat-hud .hud{display:flex;flex-direction:column;gap:4px;width:140px;align-items:center;text-align:center}
 .combat-hud .bar-group{display:flex;flex-direction:column;gap:2px;width:100%}
 .combat-hud .health-bar{height:12px;margin:0}
 .combat-hud .qi-bar{height:8px;margin:0}
@@ -4191,7 +4191,7 @@ tr:last-child td {
 .combat-hud .stat-icons{display:flex;gap:4px;font-size:12px}
 .combat-hud .stat-icons .icon{cursor:help}
 .combat-hud .enemy-name{font-size:.75rem;font-weight:600}
-.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:center;gap:24px;padding:8px}
+.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:center;gap:24px;padding:8px;width:100%}
 .sprite-stage .combatant{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center;position:relative}
 .sprite-stage .sprite{position:relative;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9)0%,rgba(255,255,255,.6)60%,rgba(255,255,255,0)70%),hsl(0,0%,80%);box-shadow:0 0 8px rgba(255,255,255,.6);animation:sprite-bob 2s ease-in-out infinite alternate}
 .sprite-stage .sprite::after{content:"";position:absolute;top:100%;left:50%;transform:translate(-50%,-40%);width:60%;height:8px;background:rgba(0,0,0,.25);border-radius:50%;filter:blur(2px)}
@@ -4201,6 +4201,14 @@ tr:last-child td {
 @media (prefers-reduced-motion:reduce){.sprite-stage .sprite{animation:none}}
 html.reduce-motion .sprite-stage .sprite{animation:none}
 .fx-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;--fx-a:#fff;--fx-b:#fff}
+
+@media (max-width:600px){
+  .combat-hud{justify-content:space-between;gap:8px;padding:4px}
+  .combat-hud .hud{width:120px;flex:0 0 120px;align-items:flex-start;text-align:left}
+  .sprite-stage{justify-content:space-between;gap:8px;min-height:40vmin}
+  .sprite-stage .combatant{flex:0 0 120px;justify-content:center}
+  .sprite-stage .sprite{width:60px;height:60px}
+}
 .fx-stroke,.fx-thrust,.fx-beam{fill:none;stroke:url(#fx-gradient);filter:url(#soft-glow);stroke-linecap:round}
 .fx-stroke{stroke-width:2;stroke-dasharray:100;stroke-dashoffset:100;animation:fx-draw .35s linear forwards}
 .fx-thrust{stroke-width:2;stroke-dasharray:60;stroke-dashoffset:60;animation:fx-draw .25s linear forwards}
