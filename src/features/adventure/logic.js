@@ -31,6 +31,7 @@ import {
   playChakram,
   playShieldDome,
   playSparkBurst,
+  playPalmHit,
   setFxTint,
   showFloatingText
 } from '../combat/ui/index.js';
@@ -433,8 +434,10 @@ export function updateAdventureCombat() {
                 playSlashArc(pos.svg, pos.from, pos.to);
                 break;
               case 'pierceThrust':
-              case 'palmStrike':
                 playThrustLine(pos.svg, pos.from, pos.to);
+                break;
+              case 'palmStrike':
+                playPalmHit(pos.svg, pos.to);
                 break;
               case 'smash':
                 playRingShockwave(pos.svg, pos.to, 20);

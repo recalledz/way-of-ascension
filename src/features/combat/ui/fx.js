@@ -64,6 +64,23 @@ export function playThrustLine(svg, from, to) {
   spawn(svg, line, 300);
 }
 
+export function playPalmHit(svg, at) {
+  // Display a palm emoji at the target location
+  const valid = (
+    svg && at &&
+    Number.isFinite(at.x) && Number.isFinite(at.y)
+  );
+  if (!valid) return;
+  const text = document.createElementNS(NS, 'text');
+  text.setAttribute('x', String(at.x));
+  text.setAttribute('y', String(at.y));
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('dominant-baseline', 'middle');
+  text.textContent = '🖐️';
+  text.classList.add('fx-palm');
+  spawn(svg, text, 300);
+}
+
 export function playRingShockwave(svg, center, radius = 20) {
   const circle = document.createElementNS(NS, 'circle');
   circle.setAttribute('cx', center.x);
