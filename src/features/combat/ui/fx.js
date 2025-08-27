@@ -128,6 +128,37 @@ export function playChakram(svg, from, to) {
   }
 }
 
+export function playFireball(svg, from, to, duration = 600) {
+  const circle = document.createElementNS(NS, 'circle');
+  circle.setAttribute('r', 2);
+  circle.classList.add('fx-fireball');
+  svg.appendChild(circle);
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  let start;
+  function animate(ts) {
+    if (!start) start = ts;
+    const p = (ts - start) / duration;
+    const x = from.x + dx * p;
+    const y = from.y + dy * p;
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    if (p < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      svg.removeChild(circle);
+      playRingShockwave(svg, to, 6);
+    }
+  }
+  if (!reduceMotion && active < MAX_FX) {
+    active++;
+    requestAnimationFrame(animate);
+    setTimeout(() => { active--; }, duration);
+  } else if (svg.contains(circle)) {
+    svg.removeChild(circle);
+  }
+}
+
 export function playShieldDome(svg, center, radius = 25) {
   const circle = document.createElementNS(NS, 'circle');
   circle.setAttribute('cx', center.x);
