@@ -13,6 +13,17 @@ const EFFECT_LABELS = {
   qiCostPct: 'Qi Cost',
 };
 
+const CATEGORY_INFO = {
+  Cultivation: { color: '#399e34', icon: 'solar:meditation-round-linear' },
+  Qi: { color: '#0ea5e9', icon: 'arcticons:meditation-timer-and-log' },
+  Spells: { color: '#7c3aed', icon: 'game-icons:fire-spell-cast' },
+  Defense: { color: '#6b7280', icon: 'stash:shield-duotone' },
+  Mind: { color: '#3b82f6', icon: 'mdi:brain' },
+  Agility: { color: '#16a34a', icon: 'icon-park-outline:foot' },
+  Physique: { color: '#dc2626', icon: 'hugeicons:body-part-muscle' },
+  'Life Skills': { color: '#8b7f75', icon: 'mdi:heart-outline' },
+};
+
 function cap(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -96,11 +107,13 @@ function createManualCard(manual, S) {
   const ratio = maxed ? 1 : Math.min(rec.xp / needed, 1);
 
   const card = document.createElement('button');
+  const info = CATEGORY_INFO[manual.category] || {};
   card.className = 'manual-card';
   card.id = `manual-${manual.id}`;
+  card.style.setProperty('--cat-color', info.color || '#8b7f75');
   card.innerHTML = `
     <div class="manual-card-header">
-      <iconify-icon icon="iconoir:book" aria-hidden="true"></iconify-icon>
+      <iconify-icon icon="${info.icon || 'iconoir:book'}" aria-hidden="true"></iconify-icon>
       <span class="name">${manual.name}</span>
     </div>
     <div class="manual-card-level">

@@ -22,7 +22,7 @@ export const MANUALS = {
   footworkFundamentals: {
     id: 'footworkFundamentals',
     name: 'Footwork Fundamentals',
-    category: 'Movement',
+    category: 'Agility',
     xpRate: 0.32,
     reqLevel: 1,
     maxLevel: 5,
@@ -42,7 +42,7 @@ export const MANUALS = {
   focusedChannelingI: {
     id: 'focusedChannelingI',
     name: 'Focused Channeling I',
-    category: 'Casting',
+    category: 'Spells',
     xpRate: 0.30,
     reqLevel: 1,
     maxLevel: 5,
@@ -142,7 +142,7 @@ export const MANUALS = {
   ironFistTreatiseI: {
     id: 'ironFistTreatiseI',
     name: 'Iron Fist Treatise I',
-    category: 'Combat',
+    category: 'Physique',
     xpRate: 0.32,
     reqLevel: 1,
     maxLevel: 5,
@@ -182,7 +182,7 @@ export const MANUALS = {
   flowingPalmManual: {
     id: 'flowingPalmManual',
     name: 'Flowing Palm Manual',
-    category: 'Combat',
+    category: 'Agility',
     xpRate: 0.31,
     reqLevel: 1,
     maxLevel: 5,
@@ -203,7 +203,7 @@ export const MANUALS = {
   fireballManual: {
     id: 'fireballManual',
     name: 'Fireball Manual',
-    category: 'Casting',
+    category: 'Spells',
     xpRate: 0.32,
     reqLevel: 1,
     maxLevel: 5,
@@ -224,7 +224,7 @@ export const MANUALS = {
   lightningStepManual: {
     id: 'lightningStepManual',
     name: 'Lightning Step Manual',
-    category: 'Combat',
+    category: 'Agility',
     xpRate: 0.33,
     reqLevel: 1,
     maxLevel: 5,
