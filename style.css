@@ -3348,13 +3348,13 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .ability-bar-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 4px;
+  margin-top: 8px;
 }
 
 .ability-bar {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
 .ability-slot {
@@ -3411,9 +3411,14 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 
 .combat-controls {
   display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 16px;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+.combat-controls .btn{
+  padding:6px 8px;
+  font-size:.9rem;
+  min-width:0;
 }
 
 .adventure-zones {
@@ -4182,8 +4187,9 @@ tr:last-child td {
 
 /* Combat FX Layer */
 .battle-area{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:8px}
-.combat-hud{display:flex;justify-content:center;align-items:flex-start;padding:4px 8px;gap:24px}
-.combat-hud .hud{display:flex;flex-direction:column;gap:4px;width:160px;align-items:center;text-align:center}
+.combatant-container{background:rgba(0,0,0,.05);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:8px}
+.combat-hud{display:flex;justify-content:flex-start;align-items:flex-start;padding:4px 8px;gap:16px}
+.combat-hud .hud{display:flex;flex-direction:column;gap:4px;width:140px;align-items:center;text-align:center}
 .combat-hud .bar-group{display:flex;flex-direction:column;gap:2px;width:100%}
 .combat-hud .health-bar{height:12px;margin:0}
 .combat-hud .qi-bar{height:8px;margin:0}
@@ -4191,7 +4197,7 @@ tr:last-child td {
 .combat-hud .stat-icons{display:flex;gap:4px;font-size:12px}
 .combat-hud .stat-icons .icon{cursor:help}
 .combat-hud .enemy-name{font-size:.75rem;font-weight:600}
-.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:center;gap:24px;padding:8px}
+.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:flex-start;gap:16px;padding:8px}
 .sprite-stage .combatant{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center;position:relative}
 .sprite-stage .sprite{position:relative;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9)0%,rgba(255,255,255,.6)60%,rgba(255,255,255,0)70%),hsl(0,0%,80%);box-shadow:0 0 8px rgba(255,255,255,.6);animation:sprite-bob 2s ease-in-out infinite alternate}
 .sprite-stage .sprite::after{content:"";position:absolute;top:100%;left:50%;transform:translate(-50%,-40%);width:60%;height:8px;background:rgba(0,0,0,.25);border-radius:50%;filter:blur(2px)}
@@ -4413,8 +4419,8 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
   .cultivation-btn{font-size:0.85rem;padding:6px 8px;}
   .adventure-cards{grid-template-columns:1fr;}
   .combat-display{gap:10px;}
-  .combat-controls{gap:8px;}
-  .combat-controls .btn{flex:1;font-size:0.85rem;padding:6px 8px;min-width:0;}
+  .combat-controls{gap:6px;}
+  .combat-controls .btn{flex:1;font-size:0.8rem;padding:4px 6px;min-width:0;}
 }
 
 /* Queue bar and manual cards */

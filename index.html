@@ -458,13 +458,13 @@
             
             <div class="battle-area" id="battleArea">
               <div class="area-background" id="areaBackground"></div>
-
-              <div class="combat-hud">
-                <div class="hud player">
-                  <div class="bar-group">
-                    <div class="health-bar">
-                      <div class="health-fill" id="playerHealthFill"></div>
-                      <svg class="shield-overlay" id="advShieldOverlay" viewBox="0 0 100 24" preserveAspectRatio="none">
+              <div class="combatant-container">
+                <div class="combat-hud">
+                  <div class="hud player">
+                    <div class="bar-group">
+                      <div class="health-bar">
+                        <div class="health-fill" id="playerHealthFill"></div>
+                        <svg class="shield-overlay" id="advShieldOverlay" viewBox="0 0 100 24" preserveAspectRatio="none">
                         <defs>
                           <linearGradient id="advShieldGradient">
                             <stop offset="0%" stop-color="rgba(255,255,255,0)" />
@@ -490,38 +490,38 @@
                     <span class="icon" id="playerAttackRate" title="Rate">⏱️</span>
                     <span class="icon" id="playerMitigation" title="Mit">🛡️</span>
                   </div>
+                  </div>
+
+                  <div class="hud enemy">
+                    <div class="bar-group">
+                      <div class="enemy-name" id="enemyName">Select an area to begin</div>
+                      <div class="stun-bar" id="enemyStunBar" title="Gauge: 0&#10;Threshold: 100&#10;Decay: 6/s">
+                        <div class="stun-fill" id="enemyStunFill"></div>
+                        <span class="stun-text" id="enemyStunText">0/100</span>
+                      </div>
+                      <div class="health-bar">
+                        <div class="health-fill" id="enemyHealthFill"></div>
+                        <span class="health-text" id="enemyHealthText">--/--</span>
+                      </div>
+                      <div class="qi-bar">
+                        <div class="qi-fill" id="enemyQiFill"></div>
+                        <span class="qi-text" id="enemyQiText">--</span>
+                      </div>
+                      <div class="enemy-affixes" id="enemyAffixes"></div>
+                    </div>
+                    <div class="stat-icons">
+                      <span class="icon" id="enemyAttack" title="ATK">⚔️</span>
+                      <span class="icon" id="enemyAttackRate" title="Rate">⏱️</span>
+                      <span class="icon" id="enemyMitigation" title="Mit">🛡️</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="hud enemy">
-                  <div class="bar-group">
-                    <div class="enemy-name" id="enemyName">Select an area to begin</div>
-                    <div class="stun-bar" id="enemyStunBar" title="Gauge: 0&#10;Threshold: 100&#10;Decay: 6/s">
-                      <div class="stun-fill" id="enemyStunFill"></div>
-                      <span class="stun-text" id="enemyStunText">0/100</span>
-                    </div>
-                    <div class="health-bar">
-                      <div class="health-fill" id="enemyHealthFill"></div>
-                      <span class="health-text" id="enemyHealthText">--/--</span>
-                    </div>
-                    <div class="qi-bar">
-                      <div class="qi-fill" id="enemyQiFill"></div>
-                      <span class="qi-text" id="enemyQiText">--</span>
-                    </div>
-                    <div class="enemy-affixes" id="enemyAffixes"></div>
-                  </div>
-                  <div class="stat-icons">
-                    <span class="icon" id="enemyAttack" title="ATK">⚔️</span>
-                    <span class="icon" id="enemyAttackRate" title="Rate">⏱️</span>
-                    <span class="icon" id="enemyMitigation" title="Mit">🛡️</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="sprite-stage">
-                <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
-                  <defs>
-                    <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur stdDeviation="2" result="blur" />
+                <div class="sprite-stage">
+                  <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
+                    <defs>
+                      <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="2" result="blur" />
                       <feMerge>
                         <feMergeNode in="blur" />
                         <feMergeNode in="SourceGraphic" />
@@ -553,6 +553,12 @@
                 <div class="combatant enemy">
                   <div class="sprite enemy-sprite"></div>
                 </div>
+
+                <!-- Ability Bar -->
+                <div class="ability-bar-container">
+                  <span class="ability-label">Ability Bar:</span>
+                  <div class="ability-bar" id="abilityBar"></div>
+                </div>
               </div>
 
               <!-- Combat Actions -->
@@ -560,12 +566,6 @@
                 <button class="btn primary" id="startBattleButton">Start Battle</button>
                 <button class="btn success" id="progressButton" disabled>Clear Area</button>
                 <button class="btn danger" id="challengeBossButton" disabled style="display: none;">👹 Challenge Boss</button>
-              </div>
-
-              <!-- Ability Bar -->
-              <div class="ability-bar-container">
-                <span class="ability-label">Ability Bar:</span>
-                <div class="ability-bar" id="abilityBar"></div>
               </div>
             </div>
 
