@@ -51,6 +51,7 @@ export function showFloatingText({ targetEl, result, amount = 0 }) {
   // Prepare text
   let text = '';
   if (result === 'miss') text = 'Miss';
+  else if (result === 'heal') text = `+${amount}`;
   else text = result === 'crit' ? `${amount}!` : String(amount);
   node.textContent = text;
   node.className = `fct fct-${result}`;
