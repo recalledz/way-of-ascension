@@ -459,9 +459,10 @@
             <div class="battle-area" id="battleArea">
               <div class="area-background" id="areaBackground"></div>
 
-              <div class="combat-hud">
-                <div class="hud player">
-                  <div class="bar-group">
+              <div class="combat-container">
+                <div class="combat-hud">
+                  <div class="hud player">
+                    <div class="bar-group">
                     <div class="health-bar">
                       <div class="health-fill" id="playerHealthFill"></div>
                       <svg class="shield-overlay" id="advShieldOverlay" viewBox="0 0 100 24" preserveAspectRatio="none">
@@ -515,10 +516,9 @@
                     <span class="icon" id="enemyMitigation" title="Mit">🛡️</span>
                   </div>
                 </div>
-              </div>
 
-              <div class="sprite-stage">
-                <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <div class="sprite-stage">
+                  <svg class="fx-layer" id="combatFx" viewBox="0 0 100 50" preserveAspectRatio="none">
                   <defs>
                     <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
                       <feGaussianBlur stdDeviation="2" result="blur" />
@@ -555,17 +555,18 @@
                 </div>
               </div>
 
-              <!-- Combat Actions -->
-              <div class="combat-controls">
-                <button class="btn primary" id="startBattleButton">Start Battle</button>
-                <button class="btn success" id="progressButton" disabled>Clear Area</button>
-                <button class="btn danger" id="challengeBossButton" disabled style="display: none;">👹 Challenge Boss</button>
-              </div>
-
               <!-- Ability Bar -->
               <div class="ability-bar-container">
                 <span class="ability-label">Ability Bar:</span>
                 <div class="ability-bar" id="abilityBar"></div>
+              </div>
+              </div>
+
+              <!-- Combat Actions -->
+              <div class="combat-controls">
+                <button class="btn small primary" id="startBattleButton">Start Battle</button>
+                <button class="btn small success" id="progressButton" disabled>Clear Area</button>
+                <button class="btn small danger" id="challengeBossButton" disabled style="display: none;">👹 Challenge Boss</button>
               </div>
             </div>
 
