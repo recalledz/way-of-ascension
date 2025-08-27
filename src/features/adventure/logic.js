@@ -52,8 +52,8 @@ function logEnemyResists(enemy) {
 
 function getCombatPositions() {
   const svg = document.getElementById('combatFx');
-  const playerEl = document.querySelector('.combatant.player');
-  const enemyEl = document.querySelector('.combatant.enemy');
+  const playerEl = document.getElementById('playerSprite');
+  const enemyEl = document.getElementById('enemySprite');
   if (!svg || !playerEl || !enemyEl) return null;
   const rect = svg.getBoundingClientRect();
   // If SVG hasn't been laid out yet, its rect can be 0x0 which would cause NaN (0/0)
@@ -86,12 +86,12 @@ on('ABILITY:FX', ({ abilityKey }) => {
     const pos = getCombatPositions();
     if (pos) {
       const svgRect = pos.svg.getBoundingClientRect();
-      const hpBar = document.querySelector('.combatant.enemy .health-bar');
-      if (hpBar) {
-        const hpRect = hpBar.getBoundingClientRect();
+      const sprite = document.getElementById('enemySprite');
+      if (sprite) {
+        const sRect = sprite.getBoundingClientRect();
         const to = {
-          x: ((hpRect.left + hpRect.width / 2 - svgRect.left) / svgRect.width) * 100,
-          y: ((hpRect.top + hpRect.height / 2 - svgRect.top) / svgRect.height) * 50,
+          x: ((sRect.left + sRect.width / 2 - svgRect.left) / svgRect.width) * 100,
+          y: ((sRect.top + sRect.height / 2 - svgRect.top) / svgRect.height) * 50,
         };
         setFxTint(pos.svg, 'red');
         playFireball(pos.svg, pos.from, to);
@@ -102,11 +102,19 @@ on('ABILITY:FX', ({ abilityKey }) => {
 
 // Subtle red-and-break visual on death
 function triggerDeathBreak(target) {
-  const sel = target === 'enemy' ? '.combatant.enemy' : '.combatant.player';
+  const sel = target === 'enemy' ? '#enemySprite' : '#playerSprite';
   const el = document.querySelector(sel);
   if (!el) return;
   el.classList.add('death-break');
   setTimeout(() => el.classList.remove('death-break'), 600);
+}
+
+function flashSprite(el) {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = document.documentElement.classList.contains('reduce-motion') || prefersReduced;
+  if (!el || reduced) return;
+  el.classList.add('hit');
+  setTimeout(() => el.classList.remove('hit'), 200);
 }
 
 // Adventure zone and area UI helpers
@@ -435,9 +443,10 @@ export function updateAdventureCombat() {
         gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
-        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
-        if (enemyBar) {
-          showFloatingText({ targetEl: enemyBar, result: isCrit ? 'crit' : 'hit', amount: dealt });
+        const enemySprite = document.getElementById('enemySprite');
+        if (enemySprite) {
+          showFloatingText({ targetEl: enemySprite, result: isCrit ? 'crit' : 'hit', amount: dealt });
+          flashSprite(enemySprite);
         }
           S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
           performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
@@ -483,9 +492,9 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
-        const enemyBar = document.querySelector('.combatant.enemy .health-bar');
-        if (enemyBar) {
-          showFloatingText({ targetEl: enemyBar, result: 'miss' });
+        const enemySprite = document.getElementById('enemySprite');
+        if (enemySprite) {
+          showFloatingText({ targetEl: enemySprite, result: 'miss' });
         }
       }
     }
@@ -507,9 +516,10 @@ export function updateAdventureCombat() {
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
-          const playerBar = document.querySelector('.combatant.player .health-bar');
-          if (playerBar) {
-            showFloatingText({ targetEl: playerBar, result: isCrit ? 'crit' : 'hit', amount: taken });
+          const playerSprite = document.getElementById('playerSprite');
+          if (playerSprite) {
+            showFloatingText({ targetEl: playerSprite, result: isCrit ? 'crit' : 'hit', amount: taken });
+            flashSprite(playerSprite);
           }
           performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
           if (weapon.typeKey === 'focus') {
@@ -546,9 +556,9 @@ export function updateAdventureCombat() {
           }
         } else {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
-          const playerBar = document.querySelector('.combatant.player .health-bar');
-          if (playerBar) {
-            showFloatingText({ targetEl: playerBar, result: 'miss' });
+          const playerSprite = document.getElementById('playerSprite');
+          if (playerSprite) {
+            showFloatingText({ targetEl: playerSprite, result: 'miss' });
           }
         }
       }

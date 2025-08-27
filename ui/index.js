@@ -45,7 +45,7 @@ import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/w
 import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/inventory/ui/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
-import { setReduceMotion } from '../src/features/combat/ui/index.js';
+import { setReduceMotion, setFloatingTextEnabled } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { setupAbilityUI } from '../src/features/ability/ui.js';
 import { advanceMining } from '../src/features/mining/logic.js';
@@ -146,12 +146,18 @@ function initUI(){
   const reduceMotionToggle = qs('#reduceMotionToggle');
   if (reduceMotionToggle) {
     const stored = localStorage.getItem('reduce-motion') === '1';
-    reduceMotionToggle.checked = stored;
-    setReduceMotion(stored);
+    const prefers = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = stored || prefers;
+    reduceMotionToggle.checked = reduced;
+    setReduceMotion(reduced);
+    setFloatingTextEnabled(!reduced);
+    document.documentElement.classList.toggle('reduce-motion', reduced);
     reduceMotionToggle.addEventListener('change', e => {
       const v = e.target.checked;
       localStorage.setItem('reduce-motion', v ? '1' : '0');
       setReduceMotion(v);
+      setFloatingTextEnabled(!v);
+      document.documentElement.classList.toggle('reduce-motion', v);
     });
   }
 

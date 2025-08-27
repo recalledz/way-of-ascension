@@ -3182,6 +3182,90 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 }
 
 /* Adventure Combat System */
+.combat-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.hud {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.hud.player { align-items: flex-start; text-align: left; }
+.hud.enemy { align-items: flex-end; text-align: right; }
+
+.hud-bars .health-bar.micro,
+.hud-bars .qi-bar.micro,
+.hud-bars .stun-bar {
+  height: 6px;
+  margin: 2px 0;
+}
+
+.hud-bars .health-text,
+.hud-bars .qi-text,
+.hud-bars .stun-text {
+  font-size: 0.7rem;
+}
+
+.micro-stats {
+  display: flex;
+  gap: 6px;
+}
+
+.hud.enemy .micro-stats { justify-content: flex-end; }
+
+.sprite-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 48px;
+  height: 140px;
+  margin-top: 8px;
+  z-index: 1;
+}
+
+.sprite {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  box-shadow: 0 0 8px rgba(255,255,255,0.4);
+  animation: sprite-bob 3s ease-in-out infinite;
+}
+
+.sprite.player { background: rgba(59,130,246,0.4); }
+.sprite.enemy { background: rgba(220,38,38,0.4); }
+
+@keyframes sprite-bob {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.sprite.hit { animation: sprite-hit 0.2s ease-out; }
+
+@keyframes sprite-hit {
+  0% { transform: translate(0,0); filter: brightness(1); }
+  50% { transform: translate(-3px,0); filter: brightness(1.8); }
+  100% { transform: translate(0,0); filter: brightness(1); }
+}
+
+html.reduce-motion .sprite { animation: none; }
+html.reduce-motion .sprite.hit { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sprite { animation: none; }
+  .sprite.hit { animation: none; }
+}
+
+
 .combat-display {
   display: flex;
   align-items: center;
@@ -3349,7 +3433,7 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .ability-bar {
@@ -3413,7 +3497,7 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .adventure-zones {
@@ -4182,7 +4266,7 @@ tr:last-child td {
 
 /* Combat FX Layer */
 .battle-area{position:relative;overflow:hidden}
-.fx-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;--fx-a:#fff;--fx-b:#fff}
+.fx-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;--fx-a:#fff;--fx-b:#fff;z-index:2}
 .fx-stroke,.fx-thrust,.fx-beam{fill:none;stroke:url(#fx-gradient);filter:url(#soft-glow);stroke-linecap:round}
 .fx-stroke{stroke-width:2;stroke-dasharray:100;stroke-dashoffset:100;animation:fx-draw .35s linear forwards}
 .fx-thrust{stroke-width:2;stroke-dasharray:60;stroke-dashoffset:60;animation:fx-draw .25s linear forwards}
@@ -4280,7 +4364,8 @@ tr:last-child td {
 @keyframes heal-float { from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(-20px);} }
 
 /* --- Subtle death red-tint + break effect for combatants --- */
-.combatant.death-break {
+.combatant.death-break,
+.sprite.death-break {
   animation: deathBreak 600ms ease-out both;
   will-change: transform, filter, opacity;
   backface-visibility: hidden;
@@ -4323,7 +4408,8 @@ tr:last-child td {
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .combatant.death-break {
+  .combatant.death-break,
+  .sprite.death-break {
     animation: none;
     filter: sepia(0.25) saturate(1.2) hue-rotate(-6deg) contrast(1.03)
             drop-shadow(0 0 0.25rem rgba(179, 36, 36, 0.35));
@@ -4469,4 +4555,7 @@ html.reduce-motion .log-sheet{transition:none;}
 .fct-miss{
   color:#9ab;
   font-style:italic;
+}
+.fct-heal{
+  color:#4ade80;
 }
