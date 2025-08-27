@@ -31,6 +31,7 @@ import {
   playChakram,
   playShieldDome,
   playSparkBurst,
+  playFireball,
   setFxTint,
   showFloatingText
 } from '../combat/ui/index.js';
@@ -79,6 +80,21 @@ on('ABILITY:FX', ({ abilityKey }) => {
     if (pos) {
       setFxTint(pos.svg, 'yellow');
       playSparkBurst(pos.svg, pos.from);
+    }
+  } else if (abilityKey === 'fireball') {
+    const pos = getCombatPositions();
+    if (pos) {
+      const svgRect = pos.svg.getBoundingClientRect();
+      const hpBar = document.querySelector('.combatant.enemy .health-bar');
+      if (hpBar) {
+        const hpRect = hpBar.getBoundingClientRect();
+        const to = {
+          x: ((hpRect.left + hpRect.width / 2 - svgRect.left) / svgRect.width) * 100,
+          y: ((hpRect.top + hpRect.height / 2 - svgRect.top) / svgRect.height) * 50,
+        };
+        setFxTint(pos.svg, 'red');
+        playFireball(pos.svg, pos.from, to);
+      }
     }
   }
 });
