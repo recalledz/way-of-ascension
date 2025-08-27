@@ -64,6 +64,23 @@ export function playThrustLine(svg, from, to) {
   spawn(svg, line, 300);
 }
 
+export function playPalmHit(svg, at) {
+  const valid = svg && at && Number.isFinite(at.x) && Number.isFinite(at.y);
+  if (!valid) return;
+  const parent = svg.parentNode;
+  if (!parent || reduceMotion || active >= MAX_FX) return;
+  const icon = document.createElement('iconify-icon');
+  icon.setAttribute('icon', 'ph:hand-palm-fill');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.classList.add('fx-palm-hit');
+  icon.style.left = `calc(${at.x}% - 12px)`;
+  icon.style.top = `calc(${at.y}% - 12px)`;
+  icon.style.fontSize = '24px';
+  const color = getComputedStyle(svg).getPropertyValue('--fx-b');
+  if (color) icon.style.color = color;
+  spawn(parent, icon, 400);
+}
+
 export function playRingShockwave(svg, center, radius = 20) {
   const circle = document.createElementNS(NS, 'circle');
   circle.setAttribute('cx', center.x);
