@@ -27,6 +27,7 @@
   --card-gap: 8px;
   --dot-size: 8px;
   --row-h: 48px;
+  --hud-gap: 8px;
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
@@ -3348,13 +3349,13 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .ability-bar-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
+  gap: var(--hud-gap);
+  margin-top: var(--hud-gap);
 }
 
 .ability-bar {
   display: flex;
-  gap: 8px;
+  gap: var(--hud-gap);
 }
 
 .ability-slot {
@@ -4181,18 +4182,19 @@ tr:last-child td {
 .hint{border-bottom:1px dotted #475569; cursor:help}
 
 /* Combat FX Layer */
-.battle-area{position:relative;overflow:visible;display:flex;flex-direction:column;gap:8px}
-.combat-hud{display:flex;justify-content:center;align-items:flex-start;padding:4px 8px;gap:24px}
-.combat-hud .hud{display:flex;flex-direction:column;gap:4px;width:160px;align-items:center;text-align:center}
-.combat-hud .bar-group{display:flex;flex-direction:column;gap:2px;width:100%}
-.combat-hud .health-bar{height:12px;margin:0}
-.combat-hud .qi-bar{height:8px;margin:0}
-.combat-hud .health-text,.combat-hud .qi-text{font-size:.65rem}
-.combat-hud .stat-icons{display:flex;gap:4px;font-size:12px}
+.battle-area{position:relative;overflow:visible;display:flex;flex-direction:column;gap:var(--hud-gap);padding-bottom:var(--bottom-log-h)}
+.combat-hud{display:grid;grid-template-columns:1fr 1fr;gap:var(--hud-gap);padding:4px;width:fit-content;max-width:100%;margin:0 auto;justify-items:start;align-items:start}
+.combat-hud .hud{display:flex;flex-direction:column;gap:var(--hud-gap);align-items:flex-start;text-align:left}
+.combat-hud .bar-group{display:flex;align-items:center;gap:var(--hud-gap);width:clamp(140px,40vw,170px)}
+.combat-hud .health-bar,.combat-hud .qi-bar{flex:1 1 0;height:8px;margin:0}
+.combat-hud .health-bar{height:12px}
+.combat-hud .health-text,.combat-hud .qi-text{font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combat-hud .stat-icons{display:flex;gap:var(--hud-gap);font-size:12px}
 .combat-hud .stat-icons .icon{cursor:help}
 .combat-hud .enemy-name{font-size:.75rem;font-weight:600}
-.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:center;gap:24px;padding:8px}
-.sprite-stage .combatant{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.combat-hud .enemy-name,.combat-hud .stun-bar,.combat-hud .enemy-affixes{width:clamp(140px,40vw,170px)}
+.sprite-stage{position:relative;min-height:clamp(120px,40vh,300px);display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;gap:var(--hud-gap);padding:var(--hud-gap);width:fit-content;max-width:100%;margin:0 auto}
+.sprite-stage .combatant{display:flex;align-items:center;justify-content:center;position:relative}
 .sprite-stage .sprite{position:relative;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9)0%,rgba(255,255,255,.6)60%,rgba(255,255,255,0)70%),hsl(0,0%,80%);box-shadow:0 0 8px rgba(255,255,255,.6);animation:sprite-bob 2s ease-in-out infinite alternate}
 .sprite-stage .sprite::after{content:"";position:absolute;top:100%;left:50%;transform:translate(-50%,-40%);width:60%;height:8px;background:rgba(0,0,0,.25);border-radius:50%;filter:blur(2px)}
 .sprite-stage .player-sprite{background-color:hsl(200,50%,60%)}
@@ -4280,7 +4282,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
 }
 
 /* Ability bar */
-.ability-bar { display:flex; gap:4px; }
+.ability-bar { display:flex; gap:var(--hud-gap); }
 .ability-card { width:60px; height:90px; background:var(--panel); border:1px solid var(--ink-light); border-radius:4px; position:relative; padding:2px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
 .ability-card .ability-name { font-size:10px; text-align:center; }
 .ability-card .ability-title { display:flex; flex-direction:column; align-items:center; }
@@ -4355,7 +4357,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
 .log-toggle{display:none;}
 
 @media (max-width:768px){
-  :root{--gap:12px;--pad:12px;--header-h:64px;--tabs-h:48px;--safe-bottom:env(safe-area-inset-bottom,0px);--float-pad:0px;--bottom-log-h:0px;}
+  :root{--gap:12px;--pad:12px;--header-h:64px;--tabs-h:48px;--safe-bottom:env(safe-area-inset-bottom,0px);--float-pad:0px;--bottom-log-h:0px;--hud-gap:8px;}
   html,body{overflow-x:hidden;}
   .mist-layer{inset:-10vh 0;}
   header{position:sticky;top:0;z-index:1000;flex-direction:column;align-items:stretch;gap:var(--gap);padding:var(--pad);min-height:var(--header-h);}
