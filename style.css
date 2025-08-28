@@ -27,6 +27,8 @@
   --card-gap: 8px;
   --dot-size: 8px;
   --row-h: 48px;
+  --battle-gap: 6px;
+  --hud-bar-w: clamp(140px, 45vw, 170px);
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
@@ -3348,13 +3350,13 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .ability-bar-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
+  gap: var(--battle-gap);
+  margin-top: var(--battle-gap);
 }
 
 .ability-bar {
   display: flex;
-  gap: 8px;
+  gap: var(--battle-gap);
 }
 
 .ability-slot {
@@ -3411,9 +3413,9 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 
 .combat-controls {
   display: flex;
-  gap: 12px;
+  gap: var(--battle-gap);
   justify-content: center;
-  margin-top: 16px;
+  margin-top: var(--battle-gap);
 }
 
 .adventure-zones {
@@ -4181,18 +4183,18 @@ tr:last-child td {
 .hint{border-bottom:1px dotted #475569; cursor:help}
 
 /* Combat FX Layer */
-.battle-area{position:relative;overflow:visible;display:flex;flex-direction:column;gap:8px}
-.combat-hud{display:flex;justify-content:center;align-items:flex-start;padding:4px 8px;gap:24px}
-.combat-hud .hud{display:flex;flex-direction:column;gap:4px;width:160px;align-items:center;text-align:center}
-.combat-hud .bar-group{display:flex;flex-direction:column;gap:2px;width:100%}
-.combat-hud .health-bar{height:12px;margin:0}
-.combat-hud .qi-bar{height:8px;margin:0}
-.combat-hud .health-text,.combat-hud .qi-text{font-size:.65rem}
-.combat-hud .stat-icons{display:flex;gap:4px;font-size:12px}
+.battle-area{position:relative;overflow:visible;display:flex;flex-direction:column;gap:var(--battle-gap);padding-bottom:var(--bottom-log-h)}
+.combat-hud{display:grid;grid-template-columns:1fr 1fr;align-items:flex-start;justify-items:start;padding:4px 8px;gap:var(--battle-gap)}
+.combat-hud .hud{display:flex;flex-direction:column;gap:var(--battle-gap);align-items:flex-start;text-align:left;justify-self:start}
+.combat-hud .bar-group{display:flex;gap:var(--battle-gap);width:var(--hud-bar-w);max-width:100%}
+.combat-hud .health-bar{height:12px;margin:0;flex:1}
+.combat-hud .qi-bar{height:8px;margin:0;flex:1}
+.combat-hud .health-text,.combat-hud .qi-text{font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.combat-hud .stat-icons{display:flex;gap:var(--battle-gap);font-size:12px}
 .combat-hud .stat-icons .icon{cursor:help}
 .combat-hud .enemy-name{font-size:.75rem;font-weight:600}
-.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:center;gap:24px;padding:8px}
-.sprite-stage .combatant{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;gap:var(--battle-gap);padding:var(--battle-gap)}
+.sprite-stage .combatant{display:flex;align-items:flex-end;justify-content:center;position:relative}
 .sprite-stage .sprite{position:relative;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9)0%,rgba(255,255,255,.6)60%,rgba(255,255,255,0)70%),hsl(0,0%,80%);box-shadow:0 0 8px rgba(255,255,255,.6);animation:sprite-bob 2s ease-in-out infinite alternate}
 .sprite-stage .sprite::after{content:"";position:absolute;top:100%;left:50%;transform:translate(-50%,-40%);width:60%;height:8px;background:rgba(0,0,0,.25);border-radius:50%;filter:blur(2px)}
 .sprite-stage .player-sprite{background-color:hsl(200,50%,60%)}
@@ -4200,6 +4202,7 @@ tr:last-child td {
 @keyframes sprite-bob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
 @media (prefers-reduced-motion:reduce){.sprite-stage .sprite{animation:none}}
 html.reduce-motion .sprite-stage .sprite{animation:none}
+@media (max-width:768px){.sprite-stage{min-height:40dvh}}
 .fx-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;--fx-a:#fff;--fx-b:#fff}
 .fx-stroke,.fx-thrust,.fx-beam{fill:none;stroke:url(#fx-gradient);filter:url(#soft-glow);stroke-linecap:round}
 .fx-stroke{stroke-width:2;stroke-dasharray:100;stroke-dashoffset:100;animation:fx-draw .35s linear forwards}
@@ -4413,7 +4416,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
   .cultivation-btn{font-size:0.85rem;padding:6px 8px;}
   .adventure-cards{grid-template-columns:1fr;}
   .combat-display{gap:10px;}
-  .combat-controls{gap:8px;}
+  .combat-controls{gap:var(--battle-gap);}
   .combat-controls .btn{flex:1;font-size:0.85rem;padding:6px 8px;min-width:0;}
 }
 
