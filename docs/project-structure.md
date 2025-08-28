@@ -66,6 +66,7 @@ way-of-ascension/
 │   ├── ai-verification-protocol.md
 │   ├── balance-protocol.md
 │   ├── cultivation-ui-style.md
+│   ├── game-state-and-mechanics.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
 │   ├── project-structure.md
@@ -349,6 +350,7 @@ way-of-ascension/
 - `docs/To-dos/ui-improvements.md` – Planned UI improvements and enhancements.
 - `docs/To-dos/Balance.md` – Balance system notes and parameter guidelines.
 - `docs/To-dos/Palms-and-fists.md` – Concept notes for palm and fist weapon styles.
+- `docs/game-state-and-mechanics.md` – Overview of core game state and combat/resource mechanics.
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
 - `To-dos/Balance.md` – Notes on planned balance adjustments.
 
@@ -855,6 +857,9 @@ Paths added:
 
 #### `docs/ARCHITECTURE.md` - Architecture Overview
 **Purpose**: Documents the controller, events bus and bootstrap pattern.
+
+#### `docs/game-state-and-mechanics.md` - Game State and Mechanics
+**Purpose**: Describes the overall game state layout and the core combat and resource mechanics.
 
 #### `docs/To-dos/stats-to-implement.md` - Stats Roadmap
 **Purpose**: Lists game stats that still need implementation.
