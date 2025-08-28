@@ -68,6 +68,7 @@ way-of-ascension/
 │   ├── cultivation-ui-style.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
+│   ├── game-state-and-mechanics.md
 │   ├── project-structure.md
 │   └── ARCHITECTURE.md
 ├── node_modules/
@@ -198,6 +199,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── astralTree.js
 │   │   │       ├── lawDisplay.js
 │   │   │       ├── lawsHUD.js
 │   │   │       ├── qiDisplay.js
@@ -749,6 +751,10 @@ function updateAll() {
 
 #### `src/features/progression/ui/lawsHUD.js` - Active Laws HUD
 **Purpose**: Displays learned laws and bonuses in the HUD.
+
+#### `src/features/progression/ui/astralTree.js` - Astral Skill Tree Overlay
+**Purpose**: Renders the astral skill tree with elemental regions and nodes.
+**When to modify**: Update tree layout or interactions.
 
 ### UI Effects (`src/features/combat/ui/`)
 

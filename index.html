@@ -148,6 +148,7 @@
           <div class="cultivation-layout">
             <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
+                <div class="astral-tree-button"><button id="openAstralTree" class="btn astral-btn">Astral Skill Tree</button></div>
                 
                 <!-- Misty fog layers behind silhouette -->
                 <div class="misty-fog">
@@ -966,6 +967,10 @@
   </div>
 
 
+  <div id="astralSkillTreeOverlay" class="astral-skill-tree" style="display:none;">
+    <button id="closeAstralTree" class="btn astral-btn astral-close">Close</button>
+    <svg id="astralSkillTreeSvg"></svg>
+  </div>
   <script type="module" src="ui/index.js"></script>
   <script type="module">
     import { mountDevQuickMenu } from "./src/ui/dev/devQuickMenu.js";
