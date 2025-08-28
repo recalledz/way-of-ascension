@@ -146,8 +146,9 @@
 
         <div id="cultivationSubTab" class="cultivation-tab-content tab-content active">
           <div class="cultivation-layout">
-            <div class="cultivation-visualization-container">
+          <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
+                <button id="openAstralTree" class="astral-tree-btn">Astral Tree</button>
                 
                 <!-- Misty fog layers behind silhouette -->
                 <div class="misty-fog">
@@ -231,10 +232,10 @@
                     <div class="qi-stream stream-1"></div>
                     <div class="qi-stream stream-2"></div>
                     <div class="qi-stream stream-3"></div>
-                    <div class="qi-mist"></div>
-                  </div>
+                  <div class="qi-mist"></div>
+                </div>
                   
-                  <!-- Yin-Yang in chest area -->
+                <!-- Yin-Yang in chest area -->
                   <div class="chest-area">
                     <div class="yin-yang-container" id="yinYangContainer">
                       <svg class="yin-yang-svg" id="cultivationYinYang" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
@@ -965,6 +966,11 @@
     </div>
   </div>
 
+  <div id="astralSkillTreeOverlay" class="astral-skill-tree">
+    <div class="starfield"></div>
+    <button id="closeAstralTree" class="astral-tree-close">Close</button>
+    <svg id="astralTreeSvg"></svg>
+  </div>
 
   <script type="module" src="ui/index.js"></script>
   <script type="module">

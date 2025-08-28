@@ -10,6 +10,7 @@ import { mountLawDisplay } from "./progression/ui/lawDisplay.js";
 import { mountMiningUI } from "./mining/ui/miningDisplay.js";
 import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
+import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 
 
 // Example placeholder for later:
@@ -25,6 +26,7 @@ export function mountAllFeatureUIs(state) {
   mountPhysiqueUI(state);
   mountLawDisplay(state);
   mountMindReadingUI(state);
+  mountAstralTreeUI(state);
 
   // mountWeaponGenUI?.(state);
 }

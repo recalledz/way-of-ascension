@@ -53,6 +53,7 @@ import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
+import { mountAstralTreeUI } from '../src/features/progression/ui/astralTree.js';
 import { ensureMindState, xpProgress as mindXpProgress, onTick as mindOnTick } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
 import { renderMindReadingTab, mountMindReadingUI } from '../src/features/mind/ui/mindReadingTab.js';
@@ -641,6 +642,7 @@ window.addEventListener('load', ()=>{
   mountKarmaUI(S);
   mountSectUI(S);
   mountMindReadingUI(S);
+  mountAstralTreeUI(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
