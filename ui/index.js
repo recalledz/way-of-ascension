@@ -56,6 +56,7 @@ import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
 import { ensureMindState, xpProgress as mindXpProgress, onTick as mindOnTick } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
 import { renderMindReadingTab, mountMindReadingUI } from '../src/features/mind/ui/mindReadingTab.js';
+import { mountAstralTreeUI } from '../src/features/progression/ui/astralTree.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
 import { renderMindStatsTab } from '../src/features/mind/ui/mindStatsTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
@@ -641,6 +642,7 @@ window.addEventListener('load', ()=>{
   mountKarmaUI(S);
   mountSectUI(S);
   mountMindReadingUI(S);
+  mountAstralTreeUI(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
