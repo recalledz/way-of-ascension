@@ -1,3 +1,90 @@
+import treeData from '../data/astral_tree.json' assert { type: 'json' };
+import { S, save } from '../../../shared/state.js';
+
+const STORAGE_KEY = 'astralTreeAllocated';
+
+const BASIC_ROTATION = [
+  { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
+  { desc: '+2% Cultivation Speed', bonus: { cultivationSpeedPct: 2 } },
+  { desc: '+2% Manual Comprehension', bonus: { manualComprehensionPct: 2 } },
+  { desc: '+1% Breakthrough Chance', bonus: { breakthroughChancePct: 1 } },
+  { desc: '+2% Qi Regeneration', bonus: { qiRegenPct: 2 } },
+  { desc: '2% max qi', bonus: { maxQiPct: 2 } },
+];
+
+const NOTABLES = {
+  50: {
+    effects: ['+12% Manual Comprehension', '+10% Cultivation Speed'],
+    bonus: { manualComprehensionPct: 12, cultivationSpeedPct: 10 },
+  },
+  75: {
+    effects: ['+20% Manual Comprehension', '+10% Cast Speed', '+10% Spell Damage'],
+    bonus: { manualComprehensionPct: 20, castSpeedPct: 10, spellDamagePct: 10 },
+  },
+  76: {
+    effects: ['+18% Summon Damage', 'Your summons taunt on their first hit (10s cd)', '+10% Gathering Speed'],
+    bonus: { summonDamagePct: 18, summonTaunt: true, gatheringSpeedPct: 10 },
+  },
+  82: {
+    effects: ['+22% Armor', '−12% Cooldowns', 'Cannot be Stunned while Qi Shield > 0'],
+    bonus: { armorPct: 22, cooldownPct: -12, stunImmuneShield: true },
+  },
+  90: {
+    effects: ['+20% Accuracy', '+10% Physical Penetration', 'Auras reserve −10% Qi'],
+    bonus: { accuracyPct: 20, physicalPenPct: 10, auraReservePct: -10 },
+  },
+  91: {
+    effects: ['Gain additional Physical Bonus Damage equal to (100% − your current Breakthrough Chance) on hit'],
+    bonus: { thresholdFury: true },
+  },
+  100: {
+    effects: ['+18% Fire Damage', 'After using an ability: +30% Attack Speed for 4s (8s cd)'],
+    bonus: { fireDamagePct: 18, tempoAttackSpeedPct: 30 },
+  },
+  101: {
+    effects: ['+12% Physical Damage', 'Hits vs Ignited enemies: +25% Stun', '+10% Fire Resistance'],
+    bonus: { physicalDamagePct: 12, igniteStunPct: 25, fireResistPct: 10 },
+  },
+  109: {
+    effects: ['+18% Crit Damage', '+4% Crit Chance', 'After a Critical Strike: +20% Dodge for 2s (8s cd)'],
+    bonus: { critDamagePct: 18, critChancePct: 4, critDodgeBuffPct: 20 },
+  },
+  110: {
+    effects: ['+15% Attack Speed', '+10% Cast Speed'],
+    bonus: { attackSpeedPct: 15, castSpeedPct: 10 },
+  },
+};
+
+function buildManifest(nodes) {
+  const manifest = {};
+  const basicIds = nodes
+    .filter(n => n.type === 'basic')
+    .map(n => n.id)
+    .sort((a, b) => a - b);
+  basicIds.forEach((id, idx) => {
+    const rot = BASIC_ROTATION[idx % BASIC_ROTATION.length];
+    manifest[id] = { cost: 10, effects: [rot.desc], bonus: rot.bonus };
+  });
+  Object.entries(NOTABLES).forEach(([id, data]) => {
+    manifest[Number(id)] = { cost: 30, ...data };
+  });
+  return manifest;
+}
+
+function loadAllocations() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return new Set(arr);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveAllocations(set) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+  save();
+}
+
 export function mountAstralTreeUI() {
   const openBtn = document.getElementById('openAstralTree');
   const overlay = document.getElementById('astralSkillTreeOverlay');
@@ -18,92 +105,101 @@ export function mountAstralTreeUI() {
 function buildTree() {
   const svg = document.getElementById('astralTreeSvg');
   if (!svg) return;
+  svg.innerHTML = '';
 
-  const width = 1000;
-  const height = 1000;
-  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  const nodes = treeData.nodes;
+  const edges = treeData.edges;
+  const manifest = buildManifest(nodes);
 
-  const nodes = [];
-  const edges = [];
+  const nodeById = {};
+  nodes.forEach(n => (nodeById[n.id] = n));
 
-  const center = { id: 'hub', x: width / 2, y: height / 2, type: 'hub' };
-  nodes.push(center);
-
-  const elements = [
-    { name: 'Wood', cls: 'wood', angle: -90 },
-    { name: 'Fire', cls: 'fire', angle: -18 },
-    { name: 'Earth', cls: 'earth', angle: 54 },
-    { name: 'Metal', cls: 'metal', angle: 126 },
-    { name: 'Water', cls: 'water', angle: 198 }
-  ];
-
-  const startNodes = [];
-
-  elements.forEach(el => {
-    const rad = (el.angle * Math.PI) / 180;
-    const sx = center.x + Math.cos(rad) * 100;
-    const sy = center.y + Math.sin(rad) * 100;
-    const startId = `${el.name.toLowerCase()}-start`;
-    nodes.push({ id: startId, x: sx, y: sy, type: 'start', element: el.cls });
-    edges.push({ from: center.id, to: startId, element: el.cls });
-    startNodes.push(startId);
-
-    const regionX = center.x + Math.cos(rad) * 260;
-    const regionY = center.y + Math.sin(rad) * 260;
-
-    for (let c = 0; c < 2; c++) {
-      const offsetAngle = rad + ((c === 0 ? -30 : 30) * Math.PI) / 180;
-      const nx = regionX + Math.cos(offsetAngle) * 60;
-      const ny = regionY + Math.sin(offsetAngle) * 60;
-      const notableId = `${el.name.toLowerCase()}-notable-${c}`;
-      nodes.push({ id: notableId, x: nx, y: ny, type: 'notable', element: el.cls });
-      edges.push({ from: startId, to: notableId, element: el.cls });
-
-      const clusterSize = 4;
-      let prev = notableId;
-      let first = null;
-      for (let i = 0; i < clusterSize; i++) {
-        const ang = (Math.PI * 2 * i) / clusterSize;
-        const cx = nx + Math.cos(ang) * 30;
-        const cy = ny + Math.sin(ang) * 30;
-        const nodeId = `${el.name.toLowerCase()}-${c}-node-${i}`;
-        nodes.push({ id: nodeId, x: cx, y: cy, type: 'stat', element: el.cls });
-        edges.push({ from: prev, to: nodeId, element: el.cls });
-        prev = nodeId;
-        if (i === 0) first = nodeId;
-      }
-      edges.push({ from: prev, to: first, element: el.cls });
-      edges.push({ from: first, to: `${el.name.toLowerCase()}-${c}-node-2`, element: el.cls });
-    }
+  const adj = {};
+  edges.forEach(e => {
+    adj[e.from] = adj[e.from] || [];
+    adj[e.from].push(e.to);
+    adj[e.to] = adj[e.to] || [];
+    adj[e.to].push(e.from);
   });
 
-  for (let i = 0; i < startNodes.length; i++) {
-    const from = startNodes[i];
-    const to = startNodes[(i + 1) % startNodes.length];
-    edges.push({ from, to, element: 'link' });
-  }
+  const xs = nodes.map(n => n.x);
+  const ys = nodes.map(n => n.y);
+  const minX = Math.min(...xs) - 50;
+  const maxX = Math.max(...xs) + 50;
+  const minY = Math.min(...ys) - 50;
+  const maxY = Math.max(...ys) + 50;
+  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
 
-  edges.forEach(edge => {
-    const from = nodes.find(n => n.id === edge.from);
-    const to = nodes.find(n => n.id === edge.to);
-    if (!from || !to) return;
+  const allocated = loadAllocations();
+  S.astralTreeBonuses = {};
+  allocated.forEach(id => applyEffects(id, manifest));
+
+  const nodeEls = {};
+
+  edges.forEach(e => {
+    const a = nodeById[e.from];
+    const b = nodeById[e.to];
+    if (!a || !b) return;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', from.x);
-    line.setAttribute('y1', from.y);
-    line.setAttribute('x2', to.x);
-    line.setAttribute('y2', to.y);
-    line.setAttribute('class', `connector ${edge.element}`);
+    line.setAttribute('x1', a.x);
+    line.setAttribute('y1', a.y);
+    line.setAttribute('x2', b.x);
+    line.setAttribute('y2', b.y);
+    line.setAttribute('class', `connector ${a.group.toLowerCase()}`);
     svg.appendChild(line);
   });
 
-  nodes.forEach(node => {
+  nodes.forEach(n => {
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', node.x);
-    circle.setAttribute('cy', node.y);
-    const r = node.type === 'notable' ? 8 : node.type === 'start' ? 6 : 4;
+    circle.setAttribute('cx', n.x);
+    circle.setAttribute('cy', n.y);
+    const r = n.type === 'notable' ? 8 : 4;
     circle.setAttribute('r', r);
-    circle.setAttribute('class', `node ${node.element || ''} ${node.type}`);
+    circle.setAttribute('class', `node ${n.group.toLowerCase()} ${n.type}`);
+
+    const eff = manifest[n.id];
+    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+    const lines = [n.label];
+    if (eff) lines.push(...eff.effects);
+    title.textContent = lines.join('\n');
+    circle.appendChild(title);
+
+    circle.addEventListener('click', () => {
+      if (!isAllocatable(n.id, allocated, adj)) return;
+      allocated.add(n.id);
+      applyEffects(n.id, manifest);
+      saveAllocations(allocated);
+      refreshClasses();
+    });
+
+    nodeEls[n.id] = circle;
     svg.appendChild(circle);
   });
+
+  function refreshClasses() {
+    nodes.forEach(n => {
+      const el = nodeEls[n.id];
+      el.classList.toggle('taken', allocated.has(n.id));
+      el.classList.toggle('allocatable', !allocated.has(n.id) && isAllocatable(n.id, allocated, adj));
+    });
+  }
+
+  refreshClasses();
+}
+
+function isAllocatable(id, allocated, adj) {
+  if (allocated.has(id)) return false;
+  if (allocated.size === 0) return true;
+  const neighbors = adj[id] || [];
+  return neighbors.some(n => allocated.has(n));
+}
+
+function applyEffects(id, manifest) {
+  const info = manifest[id];
+  if (!info || !info.bonus) return;
+  const bonuses = S.astralTreeBonuses || (S.astralTreeBonuses = {});
+  for (const [k, v] of Object.entries(info.bonus)) {
+    bonuses[k] = (bonuses[k] || 0) + v;
+  }
 }
 

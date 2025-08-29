@@ -20,6 +20,9 @@ way-of-ascension/
 │   ├── pre-commit-hook.js
 │   └── rules/
 │       └── way-of-ascension.md
+├── astral-tree-prototype/
+│   ├── astral_tree.json
+│   └── astral_tree_bulder.html
 ├── browser-tools-mcp/
 │   ├── browser-tools-mcp/
 │   │   ├── README.md
@@ -190,6 +193,7 @@ way-of-ascension/
 │   │   ├── progression/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
+│   │   │   │   ├── astral_tree.json
 │   │   │   │   ├── laws.js
 │   │   │   │   └── realms.js
 │   │   │   ├── logic.js
@@ -753,7 +757,19 @@ function updateAll() {
 **Purpose**: Displays learned laws and bonuses in the HUD.
 
 #### `src/features/progression/ui/astralTree.js` - Astral Skill Tree UI
-**Purpose**: Renders the astral skill tree overlay and handles open/close interactions.
+**Purpose**: Renders the astral skill tree overlay, loads `astral_tree.json`, manages node allocation, and applies bonuses.
+
+#### `src/features/progression/data/astral_tree.json` - Astral Tree Layout
+**Purpose**: Stores node coordinates and edge connections for the astral skill tree. Used by the UI to render the graph and compute adjacency.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/astral_tree.json` - Prototype Tree Data
+**Purpose**: Original exported node/edge layout used for building the astral tree.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/astral_tree_bulder.html` - Prototype Tree Builder
+**Purpose**: Standalone editor (using vis-network) for tweaking and exporting astral tree layouts.
+**Key Functions**: n/a
 
 ### UI Effects (`src/features/combat/ui/`)
 
