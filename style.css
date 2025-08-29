@@ -4540,6 +4540,27 @@ html.reduce-motion .log-sheet{transition:none;}
 .connector.metal,.node.metal{stroke:#c0c0c0;color:#c0c0c0;}
 .connector.water,.node.water{stroke:#2196f3;color:#2196f3;}
 .node.taken{fill:currentColor;}
-.node.allocatable{cursor:pointer;}
+.node.allocatable{
+  cursor:pointer;
+  animation:nodeGlow 1.5s ease-in-out infinite alternate;
+}
 .connector.link{stroke:#888;}
+
+@keyframes nodeGlow{
+  from{filter:drop-shadow(0 0 4px currentColor);}
+  to{filter:drop-shadow(0 0 10px currentColor);}
+}
+
+.astral-tooltip{
+  position:absolute;
+  background:#111;
+  color:#fff;
+  border:1px solid #fff;
+  padding:4px 8px;
+  border-radius:4px;
+  pointer-events:none;
+  white-space:nowrap;
+  z-index:20;
+  font-size:12px;
+}
 
