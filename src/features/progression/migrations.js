@@ -27,5 +27,11 @@ export const migrations = [
     if(typeof save.qiRegenMult === 'undefined'){
       save.qiRegenMult = 0;
     }
+    if(typeof save.insight === 'undefined'){
+      save.insight = 0;
+    }
+    if(!save.astral){
+      save.astral = { allocated: [50] };
+    }
   }
 ];

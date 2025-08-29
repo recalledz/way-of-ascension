@@ -1,0 +1,1242 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "label": "Qi +10",
+      "group": "Hub",
+      "type": "basic",
+      "x": 160,
+      "y": 0,
+      "fixed": true
+    },
+    {
+      "id": 2,
+      "label": "HP +20",
+      "group": "Hub",
+      "type": "basic",
+      "x": 49,
+      "y": 152,
+      "fixed": true
+    },
+    {
+      "id": 3,
+      "label": "AtkSpd +2%",
+      "group": "Hub",
+      "type": "basic",
+      "x": -129,
+      "y": 94,
+      "fixed": true
+    },
+    {
+      "id": 4,
+      "label": "SpellDmg +2%",
+      "group": "Hub",
+      "type": "basic",
+      "x": -129,
+      "y": -94,
+      "fixed": true
+    },
+    {
+      "id": 5,
+      "label": "Dodge +2%",
+      "group": "Hub",
+      "type": "basic",
+      "x": 49,
+      "y": -152,
+      "fixed": true
+    },
+    {
+      "id": 13,
+      "label": "Hub Node 3",
+      "group": "Hub",
+      "type": "basic",
+      "x": -201,
+      "y": -165,
+      "fixed": false
+    },
+    {
+      "id": 22,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -67,
+      "y": -201,
+      "fixed": false
+    },
+    {
+      "id": 23,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 82,
+      "y": -234,
+      "fixed": false
+    },
+    {
+      "id": 24,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 238,
+      "y": 3,
+      "fixed": false
+    },
+    {
+      "id": 25,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 172,
+      "y": -105,
+      "fixed": false
+    },
+    {
+      "id": 26,
+      "label": "Hub Node 3",
+      "group": "Hub",
+      "type": "basic",
+      "x": 164,
+      "y": 135,
+      "fixed": false
+    },
+    {
+      "id": 29,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 87,
+      "y": 261,
+      "fixed": false
+    },
+    {
+      "id": 30,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -203,
+      "y": 176,
+      "fixed": false
+    },
+    {
+      "id": 31,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -204,
+      "y": 26,
+      "fixed": false
+    },
+    {
+      "id": 33,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -72,
+      "y": 214,
+      "fixed": false
+    },
+    {
+      "id": 34,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 369,
+      "y": 5,
+      "fixed": false
+    },
+    {
+      "id": 35,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -289,
+      "y": -234,
+      "fixed": false
+    },
+    {
+      "id": 36,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -285,
+      "y": 258,
+      "fixed": false
+    },
+    {
+      "id": 37,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 133,
+      "y": -338,
+      "fixed": false
+    },
+    {
+      "id": 38,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 130,
+      "y": 380,
+      "fixed": false
+    },
+    {
+      "id": 39,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 534,
+      "y": 7,
+      "fixed": false
+    },
+    {
+      "id": 41,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 184,
+      "y": 508,
+      "fixed": false
+    },
+    {
+      "id": 42,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": 225,
+      "y": 622,
+      "fixed": false
+    },
+    {
+      "id": 44,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -398,
+      "y": 368,
+      "fixed": false
+    },
+    {
+      "id": 45,
+      "label": "Hub basic",
+      "group": "Hub",
+      "type": "basic",
+      "x": -507,
+      "y": 480,
+      "fixed": false
+    },
+    {
+      "id": 46,
+      "label": "+5% Foundation Gain",
+      "group": "Hub",
+      "type": "basic",
+      "x": 417,
+      "y": -156,
+      "fixed": false
+    },
+    {
+      "id": 47,
+      "label": "+5% Foundation Gain",
+      "group": "Hub",
+      "type": "basic",
+      "x": 499,
+      "y": -118,
+      "fixed": false
+    },
+    {
+      "id": 48,
+      "label": "+5% Foundation Gain",
+      "group": "Hub",
+      "type": "basic",
+      "x": 566,
+      "y": -368,
+      "fixed": false
+    },
+    {
+      "id": 49,
+      "label": "+5% Foundation Gain",
+      "group": "Hub",
+      "type": "basic",
+      "x": 579,
+      "y": -231,
+      "fixed": false
+    },
+    {
+      "id": 50,
+      "label": "+5% Foundation Gain",
+      "group": "Hub",
+      "type": "notable",
+      "x": 488,
+      "y": -227,
+      "fixed": false
+    },
+    {
+      "id": 61,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": -16,
+      "y": -810,
+      "fixed": false
+    },
+    {
+      "id": 62,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 182,
+      "y": -745,
+      "fixed": false
+    },
+    {
+      "id": 63,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 76,
+      "y": -441,
+      "fixed": false
+    },
+    {
+      "id": 64,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": -181,
+      "y": -674,
+      "fixed": false
+    },
+    {
+      "id": 65,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 16,
+      "y": -561,
+      "fixed": false
+    },
+    {
+      "id": 66,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 45,
+      "y": -689,
+      "fixed": false
+    },
+    {
+      "id": 67,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 208,
+      "y": -334,
+      "fixed": false
+    },
+    {
+      "id": 68,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 308,
+      "y": -317,
+      "fixed": false
+    },
+    {
+      "id": 69,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 385,
+      "y": -389,
+      "fixed": false
+    },
+    {
+      "id": 70,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 377,
+      "y": -548,
+      "fixed": false
+    },
+    {
+      "id": 71,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 290,
+      "y": -478,
+      "fixed": false
+    },
+    {
+      "id": 72,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 493,
+      "y": -505,
+      "fixed": false
+    },
+    {
+      "id": 73,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 489,
+      "y": -738,
+      "fixed": false
+    },
+    {
+      "id": 74,
+      "label": "Wood basic",
+      "group": "Wood",
+      "type": "basic",
+      "x": 388,
+      "y": -676,
+      "fixed": false
+    },
+    {
+      "id": 75,
+      "label": "Wood notable",
+      "group": "Wood",
+      "type": "notable",
+      "x": 489,
+      "y": -625,
+      "fixed": false
+    },
+    {
+      "id": 76,
+      "label": "Wood notable",
+      "group": "Wood",
+      "type": "notable",
+      "x": 33,
+      "y": -945,
+      "fixed": false
+    },
+    {
+      "id": 77,
+      "label": "Earth basic",
+      "group": "Earth",
+      "type": "basic",
+      "x": -224,
+      "y": -561,
+      "fixed": false
+    },
+    {
+      "id": 78,
+      "label": "Earth basic",
+      "group": "Earth",
+      "type": "basic",
+      "x": -294,
+      "y": -498,
+      "fixed": false
+    },
+    {
+      "id": 79,
+      "label": "Earth basic",
+      "group": "Earth",
+      "type": "basic",
+      "x": -404,
+      "y": -572,
+      "fixed": false
+    },
+    {
+      "id": 80,
+      "label": "Earth basic",
+      "group": "Earth",
+      "type": "basic",
+      "x": -440,
+      "y": -488,
+      "fixed": false
+    },
+    {
+      "id": 81,
+      "label": "Earth basic",
+      "group": "Earth",
+      "type": "basic",
+      "x": -293,
+      "y": -358,
+      "fixed": false
+    },
+    {
+      "id": 82,
+      "label": "Earth notable",
+      "group": "Earth",
+      "type": "notable",
+      "x": -364,
+      "y": -452,
+      "fixed": false
+    },
+    {
+      "id": 83,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 556,
+      "y": 114,
+      "fixed": false
+    },
+    {
+      "id": 84,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 633,
+      "y": 156,
+      "fixed": false
+    },
+    {
+      "id": 85,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 402,
+      "y": 107,
+      "fixed": false
+    },
+    {
+      "id": 86,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 721,
+      "y": 296,
+      "fixed": false
+    },
+    {
+      "id": 87,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 592,
+      "y": 244,
+      "fixed": false
+    },
+    {
+      "id": 88,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 454,
+      "y": 250,
+      "fixed": false
+    },
+    {
+      "id": 89,
+      "label": "Metal basic",
+      "group": "Metal",
+      "type": "basic",
+      "x": 455,
+      "y": 167,
+      "fixed": false
+    },
+    {
+      "id": 90,
+      "label": "Metal notable",
+      "group": "Metal",
+      "type": "notable",
+      "x": 487,
+      "y": 323,
+      "fixed": false
+    },
+    {
+      "id": 91,
+      "label": "Metal notable",
+      "group": "Metal",
+      "type": "notable",
+      "x": 753,
+      "y": 200,
+      "fixed": false
+    },
+    {
+      "id": 92,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -325,
+      "y": 482,
+      "fixed": false
+    },
+    {
+      "id": 93,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -634,
+      "y": 434,
+      "fixed": false
+    },
+    {
+      "id": 94,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -532,
+      "y": 295,
+      "fixed": false
+    },
+    {
+      "id": 95,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -803,
+      "y": 414,
+      "fixed": false
+    },
+    {
+      "id": 96,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -403,
+      "y": 793,
+      "fixed": false
+    },
+    {
+      "id": 97,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -405,
+      "y": 621,
+      "fixed": false
+    },
+    {
+      "id": 98,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -266,
+      "y": 689,
+      "fixed": false
+    },
+    {
+      "id": 99,
+      "label": "Fire basic",
+      "group": "Fire",
+      "type": "basic",
+      "x": -735,
+      "y": 277,
+      "fixed": false
+    },
+    {
+      "id": 100,
+      "label": "Fire notable",
+      "group": "Fire",
+      "type": "notable",
+      "x": -915,
+      "y": 287,
+      "fixed": false
+    },
+    {
+      "id": 101,
+      "label": "Fire notable",
+      "group": "Fire",
+      "type": "notable",
+      "x": -403,
+      "y": 891,
+      "fixed": false
+    },
+    {
+      "id": 103,
+      "label": "Water basic",
+      "group": "Water",
+      "type": "basic",
+      "x": 104,
+      "y": 666,
+      "fixed": false
+    },
+    {
+      "id": 104,
+      "label": "Water basic",
+      "group": "Water",
+      "type": "basic",
+      "x": 387,
+      "y": 535,
+      "fixed": false
+    },
+    {
+      "id": 105,
+      "label": "Water basic",
+      "group": "Water",
+      "type": "basic",
+      "x": 282,
+      "y": 493,
+      "fixed": false
+    },
+    {
+      "id": 106,
+      "label": "Water basic",
+      "group": "Water",
+      "type": "basic",
+      "x": 108,
+      "y": 563,
+      "fixed": false
+    },
+    {
+      "id": 107,
+      "label": "Water basic",
+      "group": "Water",
+      "type": "basic",
+      "x": 5,
+      "y": 516,
+      "fixed": false
+    },
+    {
+      "id": 108,
+      "label": "Water basic",
+      "group": "Water",
+      "type": "basic",
+      "x": 289,
+      "y": 400,
+      "fixed": false
+    },
+    {
+      "id": 109,
+      "label": "Water notable",
+      "group": "Water",
+      "type": "notable",
+      "x": 400,
+      "y": 628,
+      "fixed": false
+    },
+    {
+      "id": 110,
+      "label": "Water notable",
+      "group": "Water",
+      "type": "notable",
+      "x": 97,
+      "y": 483,
+      "fixed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "fc9c871d-0a35-4fa3-b171-9b9ae929cdf8",
+      "from": 1,
+      "to": 5,
+      "width": 1.5
+    },
+    {
+      "id": "960e5eb5-e15f-4b0c-a78a-d5c7a1cbcbee",
+      "from": 1,
+      "to": 24,
+      "width": 1.5
+    },
+    {
+      "id": "b67f086d-ad4f-4bc8-98ff-197c200ad250",
+      "from": 2,
+      "to": 1,
+      "width": 1.5
+    },
+    {
+      "id": "ea112018-a69a-445b-9a71-33f2cac04719",
+      "from": 2,
+      "to": 3,
+      "width": 1.5
+    },
+    {
+      "id": "f566281f-9dbc-4d3e-a653-830e62a7a71e",
+      "from": 2,
+      "to": 29,
+      "width": 1.5
+    },
+    {
+      "id": "12cb59f0-a1f5-4ff1-8e43-5cfb3b94f17a",
+      "from": 4,
+      "to": 3,
+      "width": 1.5
+    },
+    {
+      "id": "fbfa95de-e1c2-4e1c-a4e8-4bc77f8c8c91",
+      "from": 4,
+      "to": 5,
+      "width": 1.5
+    },
+    {
+      "id": "54c63e75-6f26-4182-b5fc-1161869f81ad",
+      "from": 4,
+      "to": 13,
+      "width": 1.5
+    },
+    {
+      "id": "e9e62f0c-a160-4db9-b2a7-31a139a64fe4",
+      "from": 5,
+      "to": 23,
+      "width": 1.5
+    },
+    {
+      "id": "52c599c7-627f-4ea2-bc9d-bbfae9ad6924",
+      "from": 13,
+      "to": 22,
+      "width": 1.5
+    },
+    {
+      "id": "604bfacd-1a31-46e7-9b48-59335071c495",
+      "from": 18,
+      "to": 21,
+      "width": 1.5
+    },
+    {
+      "id": "c58bb5c6-949a-43f7-b2d9-946a52da232e",
+      "from": 19,
+      "to": 17,
+      "width": 1.5
+    },
+    {
+      "id": "ba22bfb4-b37c-4c94-b928-499475bbc60d",
+      "from": 23,
+      "to": 22,
+      "width": 1.5
+    },
+    {
+      "id": "bda374af-1cbd-4475-9dab-6d806e57b9d4",
+      "from": 23,
+      "to": 25,
+      "width": 1.5
+    },
+    {
+      "id": "c7fd29b5-521d-4084-a383-94abe9b04a9f",
+      "from": 23,
+      "to": 37,
+      "width": 1.5
+    },
+    {
+      "id": "ceede85a-5df2-4164-83d3-13c2882e568a",
+      "from": 25,
+      "to": 24,
+      "width": 1.5
+    },
+    {
+      "id": "874246f6-b91c-4568-8f8b-655f5562a82c",
+      "from": 26,
+      "to": 24,
+      "width": 1.5
+    },
+    {
+      "id": "71dba586-4312-4e5c-a135-73d74920b027",
+      "from": 26,
+      "to": 29,
+      "width": 1.5
+    },
+    {
+      "id": "cc0e2afe-426c-4262-b79a-2717d9c3926e",
+      "from": 29,
+      "to": 38,
+      "width": 1.5
+    },
+    {
+      "id": "a892b76f-1757-40e3-bd12-14732b6b4455",
+      "from": 30,
+      "to": 3,
+      "width": 1.5
+    },
+    {
+      "id": "9ba52845-87bd-4f01-8b7c-f3493b46a94d",
+      "from": 31,
+      "to": 13,
+      "width": 1.5
+    },
+    {
+      "id": "b9c65159-710e-4ca7-9299-2234d2bedc1b",
+      "from": 31,
+      "to": 30,
+      "width": 1.5
+    },
+    {
+      "id": "6f8d02c6-d337-43dd-ab1d-0329569bbb68",
+      "from": 33,
+      "to": 29,
+      "width": 1.5
+    },
+    {
+      "id": "768a8baa-3abe-4c70-8276-a8c236531d4b",
+      "from": 33,
+      "to": 30,
+      "width": 1.5
+    },
+    {
+      "id": "e37504c1-59cc-4931-ac73-428a55eecfbe",
+      "from": 34,
+      "to": 24,
+      "width": 1.5
+    },
+    {
+      "id": "f8eb5580-5087-4cbe-9610-5788be399c89",
+      "from": 34,
+      "to": 39,
+      "width": 1.5
+    },
+    {
+      "id": "8e3cd825-0553-43a1-a57e-480e5227afc3",
+      "from": 34,
+      "to": 85,
+      "width": 1.5
+    },
+    {
+      "id": "990812f6-b2cc-4eed-89c7-8bb37411f69b",
+      "from": 35,
+      "to": 13,
+      "width": 1.5
+    },
+    {
+      "id": "73fe4bb0-661a-4b64-8749-029e41fbd06c",
+      "from": 35,
+      "to": 81,
+      "width": 1.5
+    },
+    {
+      "id": "e63dd524-9347-416b-92b6-b5755d610d42",
+      "from": 36,
+      "to": 30,
+      "width": 1.5
+    },
+    {
+      "id": "d3d3fda1-c808-4c29-a4b8-5f340f7fad0b",
+      "from": 37,
+      "to": 67,
+      "width": 1.5
+    },
+    {
+      "id": "e728f6d5-4843-427e-9aa2-b490e41bffb0",
+      "from": 39,
+      "to": 83,
+      "width": 1.5
+    },
+    {
+      "id": "5d0a33de-b340-45c5-8920-ae4904f944de",
+      "from": 41,
+      "to": 38,
+      "width": 1.5
+    },
+    {
+      "id": "b3f0f4d0-21fb-459f-856c-448c01704ae0",
+      "from": 41,
+      "to": 42,
+      "width": 1.5
+    },
+    {
+      "id": "2e8fb71f-d1f3-406e-9f32-a371d4287e1a",
+      "from": 41,
+      "to": 106,
+      "width": 1.5
+    },
+    {
+      "id": "611a249b-8393-4e2e-abf2-9e9c1590e81f",
+      "from": 41,
+      "to": 108,
+      "width": 1.5
+    },
+    {
+      "id": "140b86e2-b73f-4f59-9661-63bb8d2c6730",
+      "from": 44,
+      "to": 36,
+      "width": 1.5
+    },
+    {
+      "id": "3590cf67-8826-48ff-bfe6-477521682503",
+      "from": 44,
+      "to": 45,
+      "width": 1.5
+    },
+    {
+      "id": "e98ecb2d-f8ad-43bd-98b2-025a5350293a",
+      "from": 44,
+      "to": 92,
+      "width": 1.5
+    },
+    {
+      "id": "8ef22eba-ee79-4765-85fc-2cfa56812baa",
+      "from": 44,
+      "to": 94,
+      "width": 1.5
+    },
+    {
+      "id": "59333c45-e2ca-4e24-afec-9272556adc99",
+      "from": 45,
+      "to": 93,
+      "width": 1.5
+    },
+    {
+      "id": "557b8991-1001-40f4-9259-b627b8cb5267",
+      "from": 45,
+      "to": 97,
+      "width": 1.5
+    },
+    {
+      "id": "df9b9da4-975a-4c9a-864b-11bd12370f09",
+      "from": 46,
+      "to": 50,
+      "width": 1.5
+    },
+    {
+      "id": "69043fa6-5c6d-49b1-8869-3efa68ef421d",
+      "from": 47,
+      "to": 46,
+      "width": 1.5
+    },
+    {
+      "id": "ad008cc8-69ff-4055-8f13-a4922e0d10d7",
+      "from": 48,
+      "to": 25,
+      "width": 1.5
+    },
+    {
+      "id": "63b694fc-b9a6-4503-881e-fcc115b8d1ed",
+      "from": 48,
+      "to": 49,
+      "width": 1.5
+    },
+    {
+      "id": "f3134246-9973-4f89-90ff-3937ca42a616",
+      "from": 49,
+      "to": 47,
+      "width": 1.5
+    },
+    {
+      "id": "166740d3-18ef-4f3d-a0d8-a11add4abbb8",
+      "from": 63,
+      "to": 37,
+      "width": 1.5
+    },
+    {
+      "id": "332e37f9-a584-487d-bb20-ccd119baf50e",
+      "from": 63,
+      "to": 65,
+      "width": 1.5
+    },
+    {
+      "id": "d4d4887e-5bec-4c00-8600-5c1536e0eee7",
+      "from": 65,
+      "to": 66,
+      "width": 1.5
+    },
+    {
+      "id": "fc420e26-5018-463f-97b3-d869342ce9b2",
+      "from": 66,
+      "to": 61,
+      "width": 1.5
+    },
+    {
+      "id": "a0adc8df-15c4-4763-9510-daa36ee5472e",
+      "from": 66,
+      "to": 62,
+      "width": 1.5
+    },
+    {
+      "id": "dc764951-3437-448a-a737-11aa66a483e3",
+      "from": 66,
+      "to": 64,
+      "width": 1.5
+    },
+    {
+      "id": "5f5fcf25-469a-4af5-9e19-d76195793cb2",
+      "from": 67,
+      "to": 68,
+      "width": 1.5
+    },
+    {
+      "id": "d548d7fe-89e3-4837-aa39-7cd1e2171c74",
+      "from": 68,
+      "to": 69,
+      "width": 1.5
+    },
+    {
+      "id": "52b246b8-ab00-477d-b6bc-2a9d6f81c844",
+      "from": 69,
+      "to": 70,
+      "width": 1.5
+    },
+    {
+      "id": "9dd9c3be-7d68-4c1d-86e3-d004d664bdae",
+      "from": 69,
+      "to": 71,
+      "width": 1.5
+    },
+    {
+      "id": "194992bc-3400-4ddc-8816-bbf8f0de97cf",
+      "from": 69,
+      "to": 72,
+      "width": 1.5
+    },
+    {
+      "id": "469e14e0-ec82-4116-8c71-1becf1ca037a",
+      "from": 73,
+      "to": 74,
+      "width": 1.5
+    },
+    {
+      "id": "7458fd6d-618c-43d3-90b4-6810b5184d8b",
+      "from": 74,
+      "to": 70,
+      "width": 1.5
+    },
+    {
+      "id": "805d1307-8bf2-4e4a-9830-8809bdde1c02",
+      "from": 75,
+      "to": 73,
+      "width": 1.5
+    },
+    {
+      "id": "cbf84287-5e50-446c-b663-b60b9de80e9a",
+      "from": 76,
+      "to": 61,
+      "width": 1.5
+    },
+    {
+      "id": "ab3017cc-4534-40ee-a7ac-d0f8bedcad5c",
+      "from": 77,
+      "to": 78,
+      "width": 1.5
+    },
+    {
+      "id": "0a0c1ae0-b1d9-4f0d-9d2f-e997ac6c1eda",
+      "from": 78,
+      "to": 79,
+      "width": 1.5
+    },
+    {
+      "id": "c71f49ec-93b3-416b-83c3-5d32be0c131a",
+      "from": 79,
+      "to": 80,
+      "width": 1.5
+    },
+    {
+      "id": "e2b10ab9-9abd-4846-a14f-5f3a86397351",
+      "from": 80,
+      "to": 82,
+      "width": 1.5
+    },
+    {
+      "id": "a35739b8-d720-42e5-84a3-558f79924862",
+      "from": 81,
+      "to": 78,
+      "width": 1.5
+    },
+    {
+      "id": "e0e7846d-e5fb-4746-8835-b4eec0b3393a",
+      "from": 83,
+      "to": 84,
+      "width": 1.5
+    },
+    {
+      "id": "b5902689-8bfb-4177-9425-6a1c954f56db",
+      "from": 84,
+      "to": 87,
+      "width": 1.5
+    },
+    {
+      "id": "52573c33-3de8-43a6-bc5e-f03db5c71757",
+      "from": 85,
+      "to": 89,
+      "width": 1.5
+    },
+    {
+      "id": "2724efa4-2d91-4034-b51a-47464909f4fa",
+      "from": 87,
+      "to": 86,
+      "width": 1.5
+    },
+    {
+      "id": "4a5f7932-6f62-4b2e-82da-bdb3f30c1b32",
+      "from": 88,
+      "to": 89,
+      "width": 1.5
+    },
+    {
+      "id": "f200a971-6ad9-4693-9225-d181d74a381a",
+      "from": 88,
+      "to": 90,
+      "width": 1.5
+    },
+    {
+      "id": "246888b5-edb8-4796-8533-cb89f6b24051",
+      "from": 91,
+      "to": 84,
+      "width": 1.5
+    },
+    {
+      "id": "e088c512-0104-4ec6-b3bc-d38c131f9d3c",
+      "from": 92,
+      "to": 98,
+      "width": 1.5
+    },
+    {
+      "id": "bc4c92b1-6796-4826-aca8-62af9f6648c9",
+      "from": 93,
+      "to": 95,
+      "width": 1.5
+    },
+    {
+      "id": "f299202d-7c87-41d3-b518-9de9fca1a4cc",
+      "from": 94,
+      "to": 99,
+      "width": 1.5
+    },
+    {
+      "id": "f5bf775b-fe56-4945-81a1-339ea4d7f5a2",
+      "from": 96,
+      "to": 101,
+      "width": 1.5
+    },
+    {
+      "id": "8bda9e12-bb78-4f7c-a0f7-a410130c3754",
+      "from": 97,
+      "to": 96,
+      "width": 1.5
+    },
+    {
+      "id": "bbbf2ba1-24bf-429e-9568-08ca8e5caaf9",
+      "from": 99,
+      "to": 100,
+      "width": 1.5
+    },
+    {
+      "id": "a771d6dd-dde9-4619-a784-355f9fed9f42",
+      "from": 103,
+      "to": 107,
+      "width": 1.5
+    },
+    {
+      "id": "6bad47b1-04e5-46fc-a8be-548f7d653299",
+      "from": 104,
+      "to": 109,
+      "width": 1.5
+    },
+    {
+      "id": "53f2e4e9-eb1b-43a2-af31-8fddcc8229ba",
+      "from": 105,
+      "to": 104,
+      "width": 1.5
+    },
+    {
+      "id": "63621d93-24f7-4156-853b-ecb1838ac00b",
+      "from": 106,
+      "to": 103,
+      "width": 1.5
+    },
+    {
+      "id": "091eac0a-bd75-496a-8597-5a862e3db085",
+      "from": 107,
+      "to": 110,
+      "width": 1.5
+    },
+    {
+      "id": "f011aab0-66e8-4e40-ab01-723ae5ebe0be",
+      "from": 108,
+      "to": 105,
+      "width": 1.5
+    }
+  ],
+  "settings": {
+    "physics": false,
+    "edgeStyle": "straight",
+    "edgeWidth": 1.5,
+    "snap": false,
+    "grid": true,
+    "gridSize": 29,
+    "labelsOn": false
+  }
+}

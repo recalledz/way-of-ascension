@@ -4529,8 +4529,10 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 
 .astral-skill-tree svg{width:100%;height:100%;}
-.connector{stroke-width:1.5;fill:none;opacity:0.7;filter:drop-shadow(0 0 2px currentColor);}
-.node{fill:#000;stroke-width:2;filter:drop-shadow(0 0 4px currentColor);}
+.connector{stroke-width:1.5;fill:none;opacity:0.7;filter:drop-shadow(0 0 2px currentColor);} 
+.node{fill:#000;stroke-width:2;filter:drop-shadow(0 0 4px currentColor);} 
+.node.taken{fill:currentColor;} 
+.node.allocatable{cursor:pointer;}
 .node.start{stroke-width:2;}
 
 .connector.wood,.node.wood{stroke:#4caf50;}

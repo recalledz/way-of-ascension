@@ -3,6 +3,7 @@ export const progressionState = {
   qi: 100,
   qiCapMult: 0,
   qiRegenMult: 0,
+  insight: 0,
   foundation: 0,
   realm: { tier: 0, stage: 1 },
   cultivation: {
@@ -28,6 +29,7 @@ export const progressionState = {
     alchemy: { successBonus: 0 },
   karma: { qiRegen: 0, atk: 0, armor: 0 },
   pills: { ward: 0 },
+  astral: { allocated: [50] },
   stats: {
     physique: 10,
     mind: 10,
