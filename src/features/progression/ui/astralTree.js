@@ -1,6 +1,8 @@
 import { S, save } from '../../../shared/state.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
+const LINK_STORAGE_KEY = 'astralTreeLinks';
+const START_NODES = new Set([1, 2, 3, 4, 5]);
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
@@ -84,6 +86,20 @@ function saveAllocations(set) {
   save();
 }
 
+function loadLinks() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LINK_STORAGE_KEY) || '[]');
+    return new Set(arr);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveLinks(set) {
+  localStorage.setItem(LINK_STORAGE_KEY, JSON.stringify([...set]));
+  save();
+}
+
 export function mountAstralTreeUI() {
   const openBtn = document.getElementById('openAstralTree');
   const overlay = document.getElementById('astralSkillTreeOverlay');
@@ -105,6 +121,25 @@ async function buildTree() {
   const svg = document.getElementById('astralTreeSvg');
   if (!svg) return;
   svg.innerHTML = '';
+  const tooltip = document.getElementById('astralTooltip');
+
+  function showTooltip(evt, text) {
+    if (!tooltip) return;
+    tooltip.textContent = text;
+    tooltip.style.left = `${evt.pageX + 10}px`;
+    tooltip.style.top = `${evt.pageY + 10}px`;
+    tooltip.style.display = 'block';
+  }
+
+  function moveTooltip(evt) {
+    if (!tooltip) return;
+    tooltip.style.left = `${evt.pageX + 10}px`;
+    tooltip.style.top = `${evt.pageY + 10}px`;
+  }
+
+  function hideTooltip() {
+    if (tooltip) tooltip.style.display = 'none';
+  }
 
   const res = await fetch(new URL('../data/astral_tree.json', import.meta.url));
   const treeData = await res.json();
@@ -133,10 +168,12 @@ async function buildTree() {
   svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
 
   const allocated = loadAllocations();
+  const links = loadLinks();
   S.astralTreeBonuses = {};
   allocated.forEach(id => applyEffects(id, manifest));
 
   const nodeEls = {};
+  const edgeEls = {};
 
   edges.forEach(e => {
     const a = nodeById[e.from];
@@ -148,6 +185,14 @@ async function buildTree() {
     line.setAttribute('x2', b.x);
     line.setAttribute('y2', b.y);
     line.setAttribute('class', `connector ${a.group.toLowerCase()}`);
+    const key = edgeKey(e.from, e.to);
+    line.addEventListener('click', () => {
+      if (!isEdgeAllocatable(e.from, e.to, allocated, links)) return;
+      links.add(key);
+      saveLinks(links);
+      refreshClasses();
+    });
+    edgeEls[key] = line;
     svg.appendChild(line);
   });
 
@@ -160,18 +205,23 @@ async function buildTree() {
     circle.setAttribute('class', `node ${n.group.toLowerCase()} ${n.type}`);
 
     const eff = manifest[n.id];
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    const lines = [n.label];
-    if (eff) lines.push(...eff.effects);
-    title.textContent = lines.join('\n');
-    circle.appendChild(title);
+    const tooltipLines = [n.label];
+    if (eff) {
+      tooltipLines.push(`Cost: ${eff.cost}`);
+      tooltipLines.push(...eff.effects);
+    }
+    const ttText = tooltipLines.join('\n');
 
+    circle.addEventListener('mouseenter', e => showTooltip(e, ttText));
+    circle.addEventListener('mousemove', moveTooltip);
+    circle.addEventListener('mouseleave', hideTooltip);
     circle.addEventListener('click', () => {
-      if (!isAllocatable(n.id, allocated, adj)) return;
+      if (!isNodeAllocatable(n.id, allocated, links, adj)) return;
       allocated.add(n.id);
       applyEffects(n.id, manifest);
       saveAllocations(allocated);
       refreshClasses();
+      hideTooltip();
     });
 
     nodeEls[n.id] = circle;
@@ -182,18 +232,36 @@ async function buildTree() {
     nodes.forEach(n => {
       const el = nodeEls[n.id];
       el.classList.toggle('taken', allocated.has(n.id));
-      el.classList.toggle('allocatable', !allocated.has(n.id) && isAllocatable(n.id, allocated, adj));
+      el.classList.toggle('allocatable', isNodeAllocatable(n.id, allocated, links, adj));
+    });
+    edges.forEach(e => {
+      const key = edgeKey(e.from, e.to);
+      const el = edgeEls[key];
+      el.classList.toggle('taken', links.has(key));
+      el.classList.toggle('allocatable', isEdgeAllocatable(e.from, e.to, allocated, links));
     });
   }
 
   refreshClasses();
 }
 
-function isAllocatable(id, allocated, adj) {
+function isNodeAllocatable(id, allocated, links, adj) {
   if (allocated.has(id)) return false;
-  if (allocated.size === 0) return true;
+  if (START_NODES.has(id)) return true;
   const neighbors = adj[id] || [];
-  return neighbors.some(n => allocated.has(n));
+  return neighbors.some(n => allocated.has(n) && links.has(edgeKey(n, id)));
+}
+
+function isEdgeAllocatable(a, b, allocated, links) {
+  const key = edgeKey(a, b);
+  if (links.has(key)) return false;
+  const hasA = allocated.has(a);
+  const hasB = allocated.has(b);
+  return (hasA && !hasB) || (hasB && !hasA);
+}
+
+function edgeKey(a, b) {
+  return a < b ? `${a}-${b}` : `${b}-${a}`;
 }
 
 function applyEffects(id, manifest) {
