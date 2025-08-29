@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Astral Tree Editor — Working</title>
+<link rel="preconnect" href="https://unpkg.com">
+<style>
+  :root{
+    --bg:#0a0f18; --panel:#0d1117; --panel-2:#111827; --text:#e5e7eb; --muted:#94a3b8;
+    --edge:#cbd5e1; --grid:25px; --accent:#0ea5e9;
+    --wood:#22c55e; --fire:#ef4444; --earth:#b45309; --metal:#cbd5e1; --water:#38bdf8; --hub:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  /* Make header take natural height and the canvas fill the rest */
+  body{display:grid; grid-template-rows:auto 1fr; min-height:100vh;}
+  body{margin:0;background:radial-gradient(1000px 700px at 80% 10%, rgba(56,189,248,.08), transparent 60%),radial-gradient(1000px 700px at 10% 80%, rgba(34,197,94,.06), transparent 60%),var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial}
+  header{position:relative; z-index:2; display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px; background:linear-gradient(180deg,var(--panel),transparent);}
+  .g{display:flex;gap:8px;align-items:center;background:var(--panel-2);padding:8px;border-radius:10px}
+  label{font-size:12px;color:var(--muted)}
+  select,input[type="text"],input[type="number"],button,textarea{background:#0b1220;color:var(--text);border:1px solid #1f2937;border-radius:8px;padding:6px 8px}
+  button{cursor:pointer}
+  button.primary{background:#0ea5e9;border-color:#0284c7}
+  button.warn{background:#ef4444;border-color:#b91c1c}
+  #grid{position:absolute;inset:0;pointer-events:none;display:none;background-image:linear-gradient(to right, rgba(203,213,225,.15) 1px, transparent 1px),linear-gradient(to bottom, rgba(203,213,225,.15) 1px, transparent 1px);background-size:var(--grid) var(--grid),var(--grid) var(--grid);z-index:0}
+  #wrap{position:relative; height:100%; min-height:0;}
+  #net{position:absolute;inset:0;z-index:1}
+  #side{position:fixed;right:10px;top:64px;width:420px;background:rgba(17,24,39,.85);backdrop-filter:blur(6px);border:1px solid #1f2937;border-radius:12px;max-height:80vh;overflow:auto;padding:10px}
+  #log{font:12px ui-monospace,monospace;height:180px}
+  #status{font:12px ui-monospace,monospace;color:#93c5fd}
+</style>
+</head>
+<body>
+<header>
+  <div class="g">
+    <label>Element</label>
+    <select id="el"><option>Hub</option><option>Wood</option><option>Fire</option><option>Earth</option><option>Metal</option><option>Water</option></select>
+    <label>Type</label>
+    <select id="type"><option>basic</option><option>notable</option></select>
+    <label>Preset</label>
+    <select id="preset"><option value="">— choose —</option><option>+20 Max HP</option><option>+5% Physical Damage</option><option>+5% Armor</option><option>+3% Stun Chance</option><option>+3% Attack Speed</option><option>+3% Crit Chance</option><option>+5% Dodge</option><option>+5% Crit Damage</option><option>+5% Spell Damage</option><option>+3% Cast Speed</option><option>+5% Manual Comprehension</option><option>+5% Fire Damage</option><option>+5% Water Damage</option><option>+5% Metal Damage</option><option>+5% Earth Damage</option><option>+5% Wood Damage</option><option>+5% Elemental Resistance</option><option>+5% Breakthrough Chance</option><option>+5% Foundation Gain</option></select>
+    <input id="labelInput" placeholder="Node label"/>
+    <button id="addNode" class="primary">Add Node</button>
+  </div>
+  <div class="g">
+    <label>Edges</label>
+    <select id="edgeStyle"><option value="straight">Straight</option><option value="continuous">Curved (Continuous)</option><option value="cubicBezier">Curved (Bezier)</option></select>
+    <label>Width</label><input id="edgeWidth" type="number" value="1.5" step="0.5" min="0.5" style="width:70px"/>
+    <button id="edgeMode">Edge Mode: Off</button>
+    <button id="connect">Connect Selected</button>
+    <button id="del" class="warn">Delete Selected</button>
+  </div>
+  <div class="g">
+    <label>Physics</label><button id="physics">Off</button>
+    <label>Snap</label><button id="snap">Off</button>
+    <label>Grid</label><button id="gridBtn">Off</button>
+    <label>Grid Size</label><input id="gridSize" type="number" value="25" min="5" max="200" style="width:70px"/>
+    <button id="fit">Fit</button>
+    <button id="labels">Labels: On</button>
+    <span id="status">Loading vis‑network…</span>
+  </div>
+  <div class="g">
+    <button id="cluster">Add 9+2 Cluster</button>
+    <button id="export">Export JSON</button>
+    <input id="file" type="file" accept="application/json"/>
+    <button id="import">Import JSON</button>
+    <button id="download">Download JSON</button>
+    <button id="clear">Clear</button>
+  </div>
+  <div class="g">
+    <label>Patterns</label>
+    <input id="pname" placeholder="Pattern name"/>
+    <button id="psave">Save Selected</button>
+    <select id="plist"><option value="">— none —</option></select>
+    <button id="pplace">Place</button>
+    <button id="pdel">Delete</button>
+  </div>
+  <div class="g">
+    <label>Selection Tools</label>
+    <button id="lock">Lock Sel</button><button id="unlock">Unlock Sel</button>
+    <button id="ssnap">Snap Sel</button>
+    <button id="alignH">Align H</button><button id="alignV">Align V</button>
+    <button id="distH">Distribute H</button><button id="distV">Distribute V</button>
+    <button id="copy">Copy</button><button id="paste">Paste</button>
+  </div>
+</header>
+<div id="wrap"><div id="grid"></div><div id="net"></div></div>
+<aside id="side">
+  <textarea id="log" placeholder="Exported JSON will appear here. Paste here then click Import JSON to load."></textarea>
+</aside>
+<script>
+// ——————————————————————————————————————————————————————————————
+// Resilient loader: try multiple CDNs for vis-network, then init
+// ——————————————————————————————————————————————————————————————
+(function(){
+  const status = document.getElementById('status');
+  const SOURCES = [
+    'https://unpkg.com/vis-network/standalone/umd/vis-network.min.js',
+    'https://cdn.jsdelivr.net/npm/vis-network@latest/standalone/umd/vis-network.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/standalone/umd/vis-network.min.js'
+  ];
+  function loadScript(src){
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src=src; s.async=true; s.onload=()=>resolve(src); s.onerror=()=>reject(new Error('Failed '+src));
+      document.head.appendChild(s);
+    });
+  }
+  (async function ensureVis(){
+    for(let i=0;i<SOURCES.length;i++){
+      try{ await loadScript(SOURCES[i]); if(window.vis&&vis.Network){ status.textContent='vis-network loaded'; return init(); } }
+      catch(e){ status.textContent = 'Retrying…'; }
+    }
+    status.textContent='Unable to load vis-network (CDN blocked).';
+  })();
+
+  // ——————————————————————————————
+  // Real app init after vis is ready
+  // ——————————————————————————————
+  function init(){
+    const CSS = k=>getComputedStyle(document.documentElement).getPropertyValue(k);
+    const COLORS = {Hub:'#ffffff',Wood:'#22c55e',Fire:'#ef4444',Earth:'#b45309',Metal:'#cbd5e1',Water:'#38bdf8'};
+    const NODE_SIZES = {basic:14, notable:26};
+    const CENTERS = {Hub:{x:0,y:0}, Wood:{x:-700,y:-420}, Earth:{x:720,y:-320}, Metal:{x:720,y:480}, Fire:{x:-260,y:560}, Water:{x:-820,y:120}};
+
+    let GRID = 25, edgeWidth=1.5, labelsOn=true, physicsOn=false, snap=false, edgeMode=false, pendingFrom=null, gridOn=false;
+    let nextId=1, lastClick={x:0,y:0}, copyBuf=null;
+
+    const nodes=new vis.DataSet([]), edges=new vis.DataSet([]);
+    const network=new vis.Network(document.getElementById('net'),{nodes,edges},{
+      physics:{enabled:false},
+      interaction:{hover:true,multiselect:true,navigationButtons:true,keyboard:true},
+      edges:{smooth:false,width:edgeWidth,color:{color:CSS('--edge'),opacity:0.85},selectionWidth:3,hoverWidth:0},
+      nodes:{shadow:true,borderWidthSelected:3},layout:{improvedLayout:true}
+    });
+
+    // anchors + hub
+    (function seed(){
+      const hub=['Qi +10','HP +20','AtkSpd +2%','SpellDmg +2%','Dodge +2%'];
+      const R=160;hub.forEach((label,i)=>{const a=2*Math.PI*i/hub.length;addNode({label,group:'Hub',type:'basic',x:R*Math.cos(a),y:R*Math.sin(a),fixed:true});});
+      const CENTR=CENTERS; Object.entries(CENTR).forEach(([g,pt])=>{if(g==='Hub')return;addNode({label:`${g} Anchor`,group:g,type:'basic',x:pt.x,y:pt.y,isAnchor:true});});
+      document.documentElement.style.setProperty('--grid',GRID+'px');
+      network.fit({animation:true,padding:60});
+    })();
+
+    function addNode({label,group,type,x,y,fixed=false,isAnchor=false}){
+      const id=nextId++;
+      nodes.add({id,label:labelsOn?label:'',dataLabel:label,group,type,isAnchor,x,y,fixed,
+        color:{background:COLORS[group]||'#9ca3af',border:'#0b1220',highlight:{background:COLORS[group]||'#9ca3af',border:'#0ea5e9'}},
+        shape:'dot',size:NODE_SIZES[type||'basic'],font:{color:'#e5e7eb',strokeWidth:2,strokeColor:'#0b1220',size:12,vadjust:2}});
+      return id;
+    }
+    function connect(a,b){ if(a&&b&&a!==b) edges.add({from:a,to:b,width:edgeWidth}); }
+    function applyEdgeStyle(style){
+      network.setOptions({edges: style==='straight' ?
+        {smooth:false,width:edgeWidth,color:{color:CSS('--edge'),opacity:0.85},selectionWidth:3,hoverWidth:0} :
+        {smooth:{enabled:true,type:style},width:edgeWidth,color:{color:CSS('--edge'),opacity:0.85},selectionWidth:3,hoverWidth:0}
+      });
+    }
+    function setLabels(show){ labelsOn=show; nodes.get().forEach(n=>nodes.update({id:n.id,label:show?(n.dataLabel||n.label):''})); document.getElementById('labels').textContent='Labels: '+(show?'On':'Off'); }
+    function snapNodes(ids){ ids.forEach(id=>{const p=network.getPosition(id); nodes.update({id,x:Math.round(p.x/GRID)*GRID,y:Math.round(p.y/GRID)*GRID});}); }
+    function alignH(ids){ if(ids.length<2)return; const ys=ids.map(id=>network.getPosition(id).y); const y=Math.round(ys.reduce((a,b)=>a+b,0)/ys.length/GRID)*GRID; ids.forEach(id=>{const p=network.getPosition(id); nodes.update({id,x:Math.round(p.x/GRID)*GRID,y});}); }
+    function alignV(ids){ if(ids.length<2)return; const xs=ids.map(id=>network.getPosition(id).x); const x=Math.round(xs.reduce((a,b)=>a+b,0)/xs.length/GRID)*GRID; ids.forEach(id=>{const p=network.getPosition(id); nodes.update({id,x,y:Math.round(p.y/GRID)*GRID});}); }
+    function distribute(ids,axis){ if(ids.length<3)return; const pts=ids.map(id=>({id,p:network.getPosition(id)})); pts.sort((a,b)=>axis==='x'?a.p.x-b.p.x:a.p.y-b.p.y); const min=axis==='x'?pts[0].p.x:pts[0].p.y; const max=axis==='x'?pts[pts.length-1].p.x:pts[pts.length-1].p.y; const step=(max-min)/(pts.length-1||1); pts.forEach((o,i)=>{ const x=axis==='x'?Math.round((min+i*step)/GRID)*GRID:Math.round(o.p.x/GRID)*GRID; const y=axis==='x'?Math.round(o.p.y/GRID)*GRID:Math.round((min+i*step)/GRID)*GRID; nodes.update({id:o.id,x,y});}); }
+
+    // events
+    network.on('dragEnd',p=>{ if(!snap||!p.nodes||!p.nodes.length) return; snapNodes(p.nodes); });
+    network.on('click',p=>{ if(p&&p.pointer&&p.pointer.canvas) lastClick=p.pointer.canvas; if(!edgeMode) return; if(p.nodes&&p.nodes.length===1){ const id=p.nodes[0]; if(!pendingFrom) pendingFrom=id; else { connect(pendingFrom,id); pendingFrom=null; } } });
+
+    // ui refs
+    const $=id=>document.getElementById(id);
+    const el=$('el'), type=$('type'), preset=$('preset'), label=$('labelInput');
+
+    $('addNode').onclick=()=>{ const g=el.value,t=type.value,l=(label.value||preset.value||`${g} ${t}`).trim(); const c=CENTERS[g]||{x:0,y:0}; const j=()=>Math.random()*180-90; const id=addNode({label:l,group:g,type:t,x:c.x+j(),y:c.y+j()}); network.selectNodes([id]); };
+    $('connect').onclick=()=>{ const s=network.getSelectedNodes(); for(let i=0;i<s.length-1;i++) connect(s[i],s[i+1]); };
+    $('del').onclick=()=>{ const s=network.getSelection(); nodes.remove(s.nodes); edges.remove(s.edges); };
+    $('edgeMode').onclick=()=>{ edgeMode=!edgeMode; pendingFrom=null; $('edgeMode').textContent='Edge Mode: '+(edgeMode?'On':'Off'); };
+    $('edgeStyle').onchange=()=> applyEdgeStyle($('edgeStyle').value);
+    $('edgeWidth').onchange=()=>{ edgeWidth=Math.max(0.5,Number($('edgeWidth').value)||1.5); edges.get().forEach(e=>edges.update({id:e.id,width:edgeWidth})); applyEdgeStyle($('edgeStyle').value); };
+    $('physics').onclick=()=>{ physicsOn=!physicsOn; nodes.get().forEach(n=>{ if(!n.fixed) nodes.update({id:n.id,physics:physicsOn}); }); network.setOptions({physics:{enabled:physicsOn,stabilization:physicsOn}}); $('physics').textContent=physicsOn?'On':'Off'; };
+    $('snap').onclick=()=>{ snap=!snap; $('snap').textContent=snap?'On':'Off'; };
+    $('gridBtn').onclick=()=>{ gridOn=!gridOn; $('grid').style.display=gridOn?'block':'none'; $('gridBtn').textContent=gridOn?'On':'Off'; };
+    $('gridSize').onchange=()=>{ GRID=Math.max(5,Math.min(200,Number($('gridSize').value)||25)); document.documentElement.style.setProperty('--grid',GRID+'px'); };
+    $('fit').onclick=()=> network.fit({animation:true,padding:60});
+    $('labels').onclick=()=> setLabels(!labelsOn);
+    $('cluster').onclick=()=>{ const g=el.value,c=CENTERS[g]||{x:0,y:0},R=150,N=9,ids=[]; for(let i=0;i<N;i++){ const a=2*Math.PI*i/N; ids.push(addNode({label:`${g} Node ${i+1}`,group:g,type:'basic',x:c.x+R*Math.cos(a),y:c.y+R*Math.sin(a)})); } const n1=addNode({label:`${g} Notable A`,group:g,type:'notable',x:c.x,y:c.y-R*0.65}); const n2=addNode({label:`${g} Notable B`,group:g,type:'notable',x:c.x,y:c.y+R*0.65}); for(let i=0;i<N;i++) connect(ids[i],ids[(i+1)%N]); connect(ids[2],n1); connect(ids[7],n2); };
+
+    $('export').onclick=()=>{ network.storePositions(); const ns=nodes.get().filter(n=>!n.isAnchor).map(n=>({id:n.id,label:n.dataLabel||n.label,group:n.group,type:n.type,x:n.x,y:n.y,fixed:!!n.fixed})); const es=edges.get().map(e=>({id:e.id,from:e.from,to:e.to,width:e.width||edgeWidth})); $('log').value=JSON.stringify({nodes:ns,edges:es,settings:{physics:physicsOn,edgeStyle:$('edgeStyle').value,edgeWidth,snap,grid:gridOn,gridSize:GRID,labelsOn}},null,2); };
+    $('import').onclick=()=>{ try{ const obj=JSON.parse($('log').value.trim()); load(obj); }catch(err){ alert('Import failed: '+err.message) } };
+    $('download').onclick=()=>{ $('export').onclick(); const blob=new Blob([$('log').value],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='astral_tree.json'; a.click(); URL.revokeObjectURL(a.href); };
+    $('file').onchange=(e)=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ try{ load(JSON.parse(r.result)); }catch(err){ alert('Import failed: '+err.message) } }; r.readAsText(f) };
+    $('clear').onclick=()=>{ nodes.clear(); edges.clear(); nextId=1; (function(){ const hub=['Qi +10','HP +20','AtkSpd +2%','SpellDmg +2%','Dodge +2%']; const R=160; hub.forEach((label,i)=>{ const a=2*Math.PI*i/hub.length; addNode({label,group:'Hub',type:'basic',x:R*Math.cos(a),y:R*Math.sin(a),fixed:true}); }); Object.entries(CENTERS).forEach(([g,pt])=>{ if(g==='Hub')return; addNode({label:`${g} Anchor`,group:g,type:'basic',x:pt.x,y:pt.y,isAnchor:true}); }); network.fit({animation:true,padding:60}); })(); };
+
+    function load(o){ if(!o||!Array.isArray(o.nodes)||!Array.isArray(o.edges)) return alert('Invalid JSON'); nodes.clear(); edges.clear(); nextId=1; o.nodes.forEach(n=>{ nextId=Math.max(nextId,(n.id||0)+1); nodes.add({id:n.id,label:labelsOn?n.label:'',dataLabel:n.label,group:n.group,type:n.type,x:n.x,y:n.y,fixed:n.fixed||false,color:{background:COLORS[n.group]||'#9ca3af',border:'#0b1220',highlight:{background:COLORS[n.group]||'#9ca3af',border:'#0ea5e9'}},shape:'dot',size:NODE_SIZES[n.type||'basic'],font:{color:'#e5e7eb',strokeWidth:2,strokeColor:'#0b1220',size:12,vadjust:2}}); }); o.edges.forEach(e=>edges.add({id:e.id,from:e.from,to:e.to,width:e.width||edgeWidth})); if(o.settings){ physicsOn=!!o.settings.physics; network.setOptions({physics:{enabled:physicsOn,stabilization:physicsOn}}); $('physics').textContent=physicsOn?'On':'Off'; if(o.settings.edgeStyle){ $('edgeStyle').value=o.settings.edgeStyle; applyEdgeStyle(o.settings.edgeStyle); } if(o.settings.edgeWidth){ edgeWidth=o.settings.edgeWidth; $('edgeWidth').value=edgeWidth; edges.get().forEach(e=>edges.update({id:e.id,width:edgeWidth})); } snap=!!o.settings.snap; $('snap').textContent=snap?'On':'Off'; gridOn=!!o.settings.grid; document.getElementById('grid').style.display=gridOn?'block':'none'; $('gridBtn').textContent=gridOn?'On':'Off'; if(o.settings.gridSize){ GRID=o.settings.gridSize; document.documentElement.style.setProperty('--grid',GRID+'px'); $('gridSize').value=GRID; } if('labelsOn' in o.settings){ setLabels(!!o.settings.labelsOn); } }
+      network.fit({animation:true,padding:60});
+    }
+
+    // patterns
+    const LKEY='astralPatternsV1';
+    function refreshPatterns(){ const store=JSON.parse(localStorage.getItem(LKEY)||'{}'); const sel=document.getElementById('plist'); sel.innerHTML='<option value="">— none —</option>'+Object.keys(store).map(k=>`<option>${k}</option>`).join(''); }
+    document.getElementById('psave').onclick=()=>{ const name=(document.getElementById('pname').value||'pattern').trim(); if(!name)return alert('Name required'); const sel=network.getSelectedNodes(); if(!sel.length)return alert('Select some nodes first'); const nds=nodes.get(sel).filter(n=>!n.isAnchor); const idset=new Set(nds.map(n=>n.id)); const es=edges.get().filter(e=>idset.has(e.from)&&idset.has(e.to)); const cx=nds.reduce((a,n)=>a+n.x,0)/nds.length; const cy=nds.reduce((a,n)=>a+n.y,0)/nds.length; const pattern={nodes:nds.map(n=>({label:n.dataLabel||n.label,group:n.group,type:n.type,dx:n.x-cx,dy:n.y-cy})),edges:es.map(e=>({from:nds.findIndex(n=>n.id===e.from),to:nds.findIndex(n=>n.id===e.to)}))}; const store=JSON.parse(localStorage.getItem(LKEY)||'{}'); store[name]=pattern; localStorage.setItem(LKEY,JSON.stringify(store)); refreshPatterns(); document.getElementById('plist').value=name; document.getElementById('pname').value=''; };
+    document.getElementById('pplace').onclick=()=>{ const name=document.getElementById('plist').value; if(!name)return alert('Choose a pattern'); const store=JSON.parse(localStorage.getItem(LKEY)||'{}'); const p=store[name]; if(!p)return; const g=el.value; const center=CENTERS[g]||lastClick||{x:0,y:0}; const map=[]; p.nodes.forEach((pn,i)=>{ map[i]=addNode({label:pn.label,group:pn.group||g,type:pn.type||'basic',x:center.x+pn.dx,y:center.y+pn.dy});}); p.edges.forEach(e=>connect(map[e.from],map[e.to])); network.fit({animation:true,padding:60}); };
+    document.getElementById('pdel').onclick=()=>{ const name=document.getElementById('plist').value; if(!name)return; const store=JSON.parse(localStorage.getItem(LKEY)||'{}'); delete store[name]; localStorage.setItem(LKEY,JSON.stringify(store)); refreshPatterns(); };
+
+    // selection tools
+    document.getElementById('lock').onclick=()=>{ const ids=network.getSelectedNodes(); ids.forEach(id=>nodes.update({id,fixed:{x:true,y:true},physics:false})); };
+    document.getElementById('unlock').onclick=()=>{ const ids=network.getSelectedNodes(); ids.forEach(id=>nodes.update({id,fixed:false,physics:physicsOn})); };
+    document.getElementById('ssnap').onclick=()=>{ const ids=network.getSelectedNodes(); if(ids.length)snapNodes(ids) };
+    document.getElementById('alignH').onclick=()=>{ const ids=network.getSelectedNodes(); if(ids.length>1)alignH(ids) };
+    document.getElementById('alignV').onclick=()=>{ const ids=network.getSelectedNodes(); if(ids.length>1)alignV(ids) };
+    document.getElementById('distH').onclick=()=>{ const ids=network.getSelectedNodes(); if(ids.length>2)distribute(ids,'x') };
+    document.getElementById('distV').onclick=()=>{ const ids=network.getSelectedNodes(); if(ids.length>2)distribute(ids,'y') };
+    document.getElementById('copy').onclick=()=>{ const ids=network.getSelectedNodes(); if(!ids.length)return alert('Select some nodes first'); const ns=nodes.get(ids).filter(n=>!n.isAnchor); const idx=new Map(ns.map((n,i)=>[n.id,i])); const es=edges.get().filter(e=>idx.has(e.from)&&idx.has(e.to)); const cx=ns.reduce((a,n)=>a+n.x,0)/ns.length; const cy=ns.reduce((a,n)=>a+n.y,0)/ns.length; copyBuf={nodes:ns.map(n=>({label:n.dataLabel||n.label,group:n.group,type:n.type,dx:n.x-cx,dy:n.y-cy})),edges:es.map(e=>({from:idx.get(e.from),to:idx.get(e.to)}))}; };
+    document.getElementById('paste').onclick=()=>{ if(!copyBuf)return alert('Copy something first'); const c=lastClick||{x:0,y:0}; const map=[]; copyBuf.nodes.forEach((pn,i)=>{ map[i]=addNode({label:pn.label,group:pn.group,type:pn.type,x:c.x+pn.dx+40,y:c.y+pn.dy+40});}); copyBuf.edges.forEach(e=>connect(map[e.from],map[e.to])); network.fit({animation:true,padding:60}); };
+
+    // ready
+    refreshPatterns();
+    status.textContent='Ready ✓ (vis '+(vis.VERSION||'')+')';
+  }
+})();
+</script>
+</body>
+</html>
