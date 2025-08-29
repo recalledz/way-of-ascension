@@ -26,6 +26,7 @@ export const defaultState = () => {
   qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
+  astralPoints: 50,
   ...initHp(100),
   shield: { current: 0, max: 0 },
   autoFillShieldFromQi: true,

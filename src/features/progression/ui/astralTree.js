@@ -1,6 +1,7 @@
 import { S, save } from '../../../shared/state.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
+const START_NODES = new Set([1, 2, 3, 4, 5]);
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
@@ -92,6 +93,8 @@ export function mountAstralTreeUI() {
 
   openBtn.addEventListener('click', () => {
     overlay.style.display = 'block';
+    const el = document.getElementById('astralInsight');
+    if (el) el.textContent = `Insight: ${S.astralPoints || 0}`;
   });
 
   closeBtn.addEventListener('click', () => {
@@ -103,8 +106,35 @@ export function mountAstralTreeUI() {
 
 async function buildTree() {
   const svg = document.getElementById('astralTreeSvg');
-  if (!svg) return;
+  const overlay = document.getElementById('astralSkillTreeOverlay');
+  if (!svg || !overlay) return;
   svg.innerHTML = '';
+
+  const existing = document.getElementById('astralTreeTooltip');
+  if (existing) existing.remove();
+  const tooltip = document.createElement('div');
+  tooltip.id = 'astralTreeTooltip';
+  tooltip.className = 'astral-tooltip';
+  tooltip.style.display = 'none';
+  overlay.appendChild(tooltip);
+
+  function positionTooltip(evt) {
+    tooltip.style.left = `${evt.clientX + 10}px`;
+    tooltip.style.top = `${evt.clientY + 10}px`;
+  }
+
+  function showTooltip(evt, n) {
+    const info = manifest[n.id] || {};
+    const lines = [n.label, `Cost: ${info.cost ?? '-'}`];
+    if (info.effects) lines.push(...info.effects);
+    tooltip.innerHTML = lines.join('<br>');
+    tooltip.style.display = 'block';
+    positionTooltip(evt);
+  }
+
+  function hideTooltip() {
+    tooltip.style.display = 'none';
+  }
 
   const res = await fetch(new URL('../data/astral_tree.json', import.meta.url));
   const treeData = await res.json();
@@ -112,6 +142,12 @@ async function buildTree() {
   const nodes = treeData.nodes;
   const edges = treeData.edges;
   const manifest = buildManifest(nodes);
+
+  const insightEl = document.getElementById('astralInsight');
+  function updateInsight() {
+    if (insightEl) insightEl.textContent = `Insight: ${S.astralPoints || 0}`;
+  }
+  updateInsight();
 
   const nodeById = {};
   nodes.forEach(n => (nodeById[n.id] = n));
@@ -159,18 +195,20 @@ async function buildTree() {
     circle.setAttribute('r', r);
     circle.setAttribute('class', `node ${n.group.toLowerCase()} ${n.type}`);
 
-    const eff = manifest[n.id];
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    const lines = [n.label];
-    if (eff) lines.push(...eff.effects);
-    title.textContent = lines.join('\n');
-    circle.appendChild(title);
+    circle.addEventListener('mouseenter', e => showTooltip(e, n));
+    circle.addEventListener('mousemove', positionTooltip);
+    circle.addEventListener('mouseleave', hideTooltip);
 
-    circle.addEventListener('click', () => {
-      if (!isAllocatable(n.id, allocated, adj)) return;
+    circle.addEventListener('click', e => {
+      showTooltip(e, n);
+      if (!isAllocatable(n.id, allocated, adj, manifest)) return;
+      const info = manifest[n.id];
+      if ((S.astralPoints || 0) < (info?.cost || 0)) return;
+      S.astralPoints -= info.cost;
       allocated.add(n.id);
       applyEffects(n.id, manifest);
       saveAllocations(allocated);
+      updateInsight();
       refreshClasses();
     });
 
@@ -182,16 +220,22 @@ async function buildTree() {
     nodes.forEach(n => {
       const el = nodeEls[n.id];
       el.classList.toggle('taken', allocated.has(n.id));
-      el.classList.toggle('allocatable', !allocated.has(n.id) && isAllocatable(n.id, allocated, adj));
+      el.classList.toggle(
+        'allocatable',
+        !allocated.has(n.id) && isAllocatable(n.id, allocated, adj, manifest)
+      );
     });
   }
 
   refreshClasses();
 }
 
-function isAllocatable(id, allocated, adj) {
+function isAllocatable(id, allocated, adj, manifest) {
   if (allocated.has(id)) return false;
-  if (allocated.size === 0) return true;
+  const info = manifest[id];
+  if (!info) return false;
+  if ((S.astralPoints || 0) < info.cost) return false;
+  if (allocated.size === 0) return START_NODES.has(id);
   const neighbors = adj[id] || [];
   return neighbors.some(n => allocated.has(n));
 }

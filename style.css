@@ -4514,6 +4514,16 @@ html.reduce-motion .log-sheet{transition:none;}
   pointer-events:none;
 }
 
+.astral-insight{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#fff;
+  font-size:20px;
+  z-index:10;
+}
+
 .astral-tree-close{
   position:absolute;
   top:20px;
@@ -4539,7 +4549,31 @@ html.reduce-motion .log-sheet{transition:none;}
 .connector.earth,.node.earth{stroke:#795548;color:#795548;}
 .connector.metal,.node.metal{stroke:#c0c0c0;color:#c0c0c0;}
 .connector.water,.node.water{stroke:#2196f3;color:#2196f3;}
-.node.taken{fill:currentColor;}
-.node.allocatable{cursor:pointer;}
+.node.taken{
+  fill:currentColor;
+  filter:drop-shadow(0 0 6px currentColor);
+}
+.node.allocatable{
+  cursor:pointer;
+  animation:nodeGlow 1.5s ease-in-out infinite alternate;
+}
 .connector.link{stroke:#888;}
+
+@keyframes nodeGlow{
+  from{filter:drop-shadow(0 0 4px currentColor);}
+  to{filter:drop-shadow(0 0 10px currentColor);}
+}
+
+.astral-tooltip{
+  position:absolute;
+  background:#111;
+  color:#fff;
+  border:1px solid #fff;
+  padding:4px 8px;
+  border-radius:4px;
+  pointer-events:none;
+  white-space:nowrap;
+  z-index:20;
+  font-size:12px;
+}
 
