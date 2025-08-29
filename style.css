@@ -4538,5 +4538,7 @@ html.reduce-motion .log-sheet{transition:none;}
 .connector.earth,.node.earth{stroke:#795548;}
 .connector.metal,.node.metal{stroke:#c0c0c0;}
 .connector.water,.node.water{stroke:#2196f3;}
+.node.taken{fill:currentColor;}
+.node.allocatable{cursor:pointer;}
 .connector.link{stroke:#888;}
 
