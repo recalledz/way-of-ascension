@@ -4533,10 +4533,13 @@ html.reduce-motion .log-sheet{transition:none;}
 .node{fill:#000;stroke-width:2;filter:drop-shadow(0 0 4px currentColor);}
 .node.start{stroke-width:2;}
 
-.connector.wood,.node.wood{stroke:#4caf50;}
-.connector.fire,.node.fire{stroke:#f44336;}
-.connector.earth,.node.earth{stroke:#795548;}
-.connector.metal,.node.metal{stroke:#c0c0c0;}
-.connector.water,.node.water{stroke:#2196f3;}
+.connector.hub,.node.hub{stroke:#fcd34d;color:#fcd34d;}
+.connector.wood,.node.wood{stroke:#4caf50;color:#4caf50;}
+.connector.fire,.node.fire{stroke:#f44336;color:#f44336;}
+.connector.earth,.node.earth{stroke:#795548;color:#795548;}
+.connector.metal,.node.metal{stroke:#c0c0c0;color:#c0c0c0;}
+.connector.water,.node.water{stroke:#2196f3;color:#2196f3;}
+.node.taken{fill:currentColor;}
+.node.allocatable{cursor:pointer;}
 .connector.link{stroke:#888;}
 
