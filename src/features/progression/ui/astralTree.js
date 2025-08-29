@@ -107,6 +107,8 @@ export function mountAstralTreeUI() {
 async function buildTree() {
   const svg = document.getElementById('astralTreeSvg');
   const overlay = document.getElementById('astralSkillTreeOverlay');
+  const zoomInBtn = document.getElementById('astralZoomIn');
+  const zoomOutBtn = document.getElementById('astralZoomOut');
   if (!svg || !overlay) return;
   svg.innerHTML = '';
 
@@ -166,7 +168,38 @@ async function buildTree() {
   const maxX = Math.max(...xs) + 50;
   const minY = Math.min(...ys) - 50;
   const maxY = Math.max(...ys) + 50;
-  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
+  const width = maxX - minX;
+  const height = maxY - minY;
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+
+  const viewBox = {
+    x: centerX - width / 4,
+    y: centerY - height / 4,
+    width: width / 2,
+    height: height / 2,
+  };
+
+  function applyViewBox() {
+    svg.setAttribute(
+      'viewBox',
+      `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
+    );
+  }
+
+  applyViewBox();
+
+  function zoom(factor) {
+    viewBox.width *= factor;
+    viewBox.height *= factor;
+    viewBox.x = centerX - viewBox.width / 2;
+    viewBox.y = centerY - viewBox.height / 2;
+    applyViewBox();
+  }
+
+  const ZOOM_STEP = 0.8;
+  if (zoomInBtn) zoomInBtn.addEventListener('click', () => zoom(ZOOM_STEP));
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => zoom(1 / ZOOM_STEP));
 
   const allocated = loadAllocations();
   S.astralTreeBonuses = {};
