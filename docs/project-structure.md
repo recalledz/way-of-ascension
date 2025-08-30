@@ -196,6 +196,7 @@ way-of-ascension/
 │   │   │   │   ├── astral_tree.json
 │   │   │   │   ├── laws.js
 │   │   │   │   └── realms.js
+│   │   │   ├── insight.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
@@ -740,6 +741,10 @@ function updateAll() {
 #### `src/features/progression/logic.js` - Progression Calculations
 **Purpose**: Core formulas for cultivation and combat stats.
 **Key Functions**: `fCap(state)`, `calcAtk(state)`, `breakthroughChance(state)`.
+
+#### `src/features/progression/insight.js` - Insight Gain Tick
+**Purpose**: Computes Insight accumulation each tick based on Foundation gain and current activity.
+**Key Functions**: `tickInsight(state, dtSec)`.
 
 #### `src/features/progression/data/realms.js` - Cultivation Realms
 **Purpose**: Define realm tiers and their properties.

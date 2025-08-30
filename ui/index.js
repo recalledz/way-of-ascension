@@ -74,6 +74,7 @@ import { selectActivity as selectActivityMut, startActivity as startActivityMut,
 import { getSelectedActivity } from '../src/features/activity/selectors.js';
 import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } from '../src/features/activity/ui/activityUI.js';
 import { meditate } from '../src/features/progression/mutators.js';
+import { tickInsight } from '../src/features/progression/insight.js';
 import { usePill } from '../src/features/inventory/mutators.js';
 
 // Global variables
@@ -460,6 +461,9 @@ function tick(){
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
   if(isAutoAdventure() && !S.activities.adventure){ startActivity('adventure'); }
+
+  // Insight gain
+  tickInsight(S, 1);
 
   // Breakthrough progress
   updateBreakthrough();
