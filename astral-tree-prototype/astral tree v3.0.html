@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Astral Tree Editor — v2 (Rotate fix, Undo, Per-edge, Copy/Paste, Clone+Rotate, Polar Snap, Structure Presets)</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#0f172a; --ink:#e5e7eb; --muted:#94a3b8; --brand:#22d3ee; --accent:#7dd3fc;
+    --grid: #23304a; --grid-strong:#2f3e63;
+  }
+  html,body{height:100%;}
+  body{margin:0; color:var(--ink); font:14px/1.2 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+       display:grid; grid-template-rows:auto 1fr; background:var(--bg);}  
+  header{position:relative; z-index:2; display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px;
+         background:linear-gradient(180deg,var(--panel),transparent);}  
+  #wrap{position:relative; height:100%; min-height:0;}
+  #network{position:absolute; inset:0;}
+  .group{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,0.04); padding:6px 8px; border-radius:10px;}
+  label{color:var(--muted);} small{color:var(--muted)}
+  input,select,button{background:#0b1220; color:var(--ink); border:1px solid #2a385a; border-radius:8px; padding:6px 8px;}
+  button{cursor:pointer}
+  button.primary{background:linear-gradient(180deg,#1d283a,#13203a); border-color:#2a4b73}
+  button.danger{background:linear-gradient(180deg,#3a1d1d,#2a1313); border-color:#733a3a}
+  #sidebar{position:absolute; top:12px; right:12px; width:360px; max-width:48vw; z-index:3; background:rgba(15,23,42,0.9); border:1px solid #26314d; border-radius:12px; backdrop-filter: blur(6px);}
+  #sidebar header{background:none; padding:10px; gap:6px}
+  #sidebar section{padding:10px; border-top:1px solid #1f2a44}
+  .row{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+  .row > *{flex:1}
+  .row .shrink{flex:0 0 auto}
+  .hint{color:#a5b4fc}
+</style>
+</head>
+<body>
+  <header>
+    <div class="group">
+      <!-- Add Node button uses the current style preset for visual attributes and the current effect preset for the label -->
+      <button id="btnAddNode">Add Node</button>
+      <button id="btnAddEdge">Edge Mode</button>
+      <button id="btnCopy">Copy</button>
+      <button id="btnPaste">Paste</button>
+      <button id="btnCloneRotate">Clone+Rotate</button>
+      <label>°<input id="angle" type="number" value="20" style="width:70px"></label>
+      <button id="btnRotate">Rotate Sel</button>
+      <button id="btnUndo">Undo ⌘/Ctrl+Z</button>
+      <button id="btnRedo">Redo ⇧+⌘/Ctrl+Z</button>
+      <!-- Put this next to your other toolbar buttons; if you omit it, keyboard/right-click still work -->
+      <button id="btnDelete" title="Delete (Del)">🗑 Delete</button>
+    </div>
+
+    <div class="group">
+      <label class="shrink">Edge Style</label>
+      <select id="edgeStyle">
+        <option value="straight">Straight</option>
+        <option value="curvedCW">Curved CW</option>
+        <option value="curvedCCW">Curved CCW</option>
+        <option value="dynamic">Dynamic</option>
+      </select>
+      <label class="shrink"><input type="checkbox" id="edgeApplySel" checked> apply to selection</label>
+      <label class="shrink"><input type="checkbox" id="chkRecurve" checked> recurve after rotate</label>
+      <button id="btnApplyEdgeStyle">Apply</button>
+    </div>
+
+    <div class="group">
+      <button id="btnImport">Import JSON</button>
+      <button id="btnExport">Export JSON</button>
+      <button id="btnFit">Fit</button>
+      <label class="shrink"><input type="checkbox" id="gridToggle"> Grid</label>
+      <label class="shrink"><input type="checkbox" id="snapToggle" checked> Snap</label>
+    </div>
+
+    <div class="group">
+      <label class="shrink"><input type="checkbox" id="polarToggle"> Polar Snap</label>
+      <label>r step <input id="polarR" type="number" value="100" style="width:70px"></label>
+      <label>θ° step <input id="polarTheta" type="number" value="6" style="width:70px"></label>
+      <button id="btnPolarSnap">Snap Sel</button>
+    </div>
+
+    <div class="group"><span id="status" class="hint">Loading vis-network…</span></div>
+  </header>
+
+  <div id="wrap">
+    <div id="network"></div>
+
+    <aside id="sidebar">
+      <header>
+        <strong>Inspector</strong>
+        <small id="selCount">0 selected</small>
+      </header>
+
+      <section>
+        <div class="row">
+          <label class="shrink">Group</label>
+          <select id="nodeGroup">
+            <option>Hub</option><option>Wood</option><option>Fire</option><option>Earth</option><option>Metal</option><option>Water</option>
+          </select>
+        </div>
+        <div class="row">
+          <label class="shrink">Type</label>
+          <select id="nodeType"><option>basic</option><option>notable</option></select>
+          <label class="shrink">Shape</label>
+          <select id="nodeShape"><option value="dot">dot</option><option value="diamond">diamond</option><option value="triangle">triangle</option></select>
+        </div>
+        <div class="row">
+          <label class="shrink">Color</label>
+          <input id="nodeColor" type="color" value="#7dd3fc" />
+          <label class="shrink">Size</label>
+          <input id="nodeSize" type="number" value="14" min="6" max="50" />
+        </div>
+        <div class="row">
+          <button id="btnApplyToSel" class="primary">Apply to selection</button>
+        </div>
+      </section>
+
+      <section>
+        <header style="padding:0 0 8px 0"><strong>Node Style Presets</strong></header>
+        <small>Save color/type/shape/size to reuse. “Use for Add” sets the style for new nodes.</small>
+        <div class="row">
+          <input id="presetName" placeholder="Preset name" />
+          <button id="btnSavePreset">Save</button>
+        </div>
+        <div class="row">
+          <select id="presetList" style="width:100%"></select>
+        </div>
+        <div class="row">
+          <button id="btnApplyPreset" class="primary">Apply to selection</button>
+          <button id="btnUseForAdd">Use for Add</button>
+        </div>
+      </section>
+
+      <!-- Effect presets: store textual effects such as '+20 HP' or '+2% Foundation Gain' to reuse across nodes. -->
+      <section>
+        <header style="padding:0 0 8px 0"><strong>Effect Presets</strong></header>
+        <small>Save text to use as node labels. “Use for Add” sets the default label for new nodes.</small>
+        <div class="row">
+          <input id="effName" placeholder="Effect name" />
+          <input id="effText" placeholder="Effect text" />
+          <button id="btnSaveEff">Save</button>
+        </div>
+        <div class="row">
+          <select id="selEffs" style="width:100%"></select>
+        </div>
+        <div class="row">
+          <button id="btnApplyEff" class="primary">Apply to selection</button>
+          <button id="btnUseEff">Use for Add</button>
+        </div>
+      </section>
+
+      <section>
+        <header style="padding:0 0 8px 0"><strong>Structure Presets (clusters)</strong></header>
+        <small>Save/load a whole selected subgraph (nodes + edges).</small>
+        <div class="row">
+          <input id="structName" placeholder="Structure name" />
+          <button id="btnSaveStruct">Save</button>
+        </div>
+        <div class="row">
+          <select id="structList" style="width:100%"></select>
+        </div>
+        <div class="row">
+          <button id="btnPlaceStruct" class="primary">Place at origin</button>
+          <button id="btnDeleteStruct" class="danger">Delete</button>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+<script>
+// ------- Dynamic lib loader -------
+(function(){
+  const status = document.getElementById('status');
+  const tries = [
+    'https://cdn.jsdelivr.net/npm/vis-network@9.1.6/dist/vis-network.min.js',
+    'https://unpkg.com/vis-network@9.1.6/dist/vis-network.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.6/vis-network.min.js'
+  ];
+  let i=0; function loadNext(){ if(i>=tries.length){ status.textContent='Unable to load vis-network'; return; }
+    const s=document.createElement('script'); s.src=tries[i++]; s.onload=init; s.onerror=loadNext; document.head.appendChild(s); }
+  loadNext();
+})();
+
+function init(){
+  const status = document.getElementById('status');
+  status.textContent = 'Ready ✓ vis-network';
+
+  const nodes = new vis.DataSet([]);
+  const edges = new vis.DataSet([]);
+
+  // -------- Undo/Redo --------
+  const history=[]; let redoStack=[];
+  function snapshot(){ return JSON.stringify({nodes:nodes.get(), edges:edges.get()}); }
+  function pushHistory(){ history.push(snapshot()); if(history.length>200) history.shift(); redoStack=[]; }
+  function undo(){ if(history.length<2) return; const cur=history.pop(); redoStack.push(cur); const prev=JSON.parse(history[history.length-1]); nodes.clear(); edges.clear(); nodes.add(prev.nodes); edges.add(prev.edges); }
+  function redo(){ if(!redoStack.length) return; const next=JSON.parse(redoStack.pop()); history.push(JSON.stringify(next)); nodes.clear(); edges.clear(); nodes.add(next.nodes); edges.add(next.edges); }
+
+  // -------- Grid & Snap --------
+  const grid = { on:false, size:30 };
+  const gridToggle = document.getElementById('gridToggle');
+  const snapToggle = document.getElementById('snapToggle');
+  gridToggle.addEventListener('change', ()=>{ grid.on = gridToggle.checked; drawGrid(); });
+  snapToggle.addEventListener('change', ()=>{});
+
+  const container = document.getElementById('network');
+  const data = { nodes, edges };
+  const options = {
+    autoResize: true,
+    physics: false,
+    interaction:{ hover:true, multiselect:true, navigationButtons:false, keyboard:true },
+    nodes:{ shape:'dot', size:14, borderWidth:2, color:{background:'#111827', border:'#334155', highlight:{background:'#0b1220', border:'#ecfeff'}}, font:{color:'#e5e7eb'} },
+    edges:{ color:{color:'#475569', highlight:'#7dd3fc'}, width:1.5, smooth:false, selectionWidth:2 },
+    layout:{ improvedLayout:false }
+  };
+  const network = new vis.Network(container, data, options);
+
+  // grid canvas
+  let gridCanvas, gridCtx; 
+  function drawGrid(){
+    if(!gridCanvas){ gridCanvas=document.createElement('canvas'); gridCanvas.style.position='absolute'; gridCanvas.style.inset=0; gridCanvas.style.zIndex=0; gridCtx=gridCanvas.getContext('2d'); container.appendChild(gridCanvas); }
+    const rect = container.getBoundingClientRect(); gridCanvas.width=rect.width; gridCanvas.height=rect.height; gridCanvas.style.display = grid.on?'block':'none'; if(!grid.on) return;
+    gridCtx.clearRect(0,0,rect.width,rect.height); gridCtx.strokeStyle = '#23304a'; gridCtx.lineWidth=1; const step=grid.size;
+    for(let x=0;x<rect.width;x+=step){ gridCtx.beginPath(); gridCtx.moveTo(x,0); gridCtx.lineTo(x,rect.height); gridCtx.stroke(); }
+    for(let y=0;y<rect.height;y+=step){ gridCtx.beginPath(); gridCtx.moveTo(0,y); gridCtx.lineTo(rect.width,y); gridCtx.stroke(); }
+  }
+  window.addEventListener('resize', drawGrid); drawGrid();
+
+  // Helpers
+  function nextId(){ const all=nodes.getIds(); return all.length? Math.max(...all)+1 : 1; }
+  function getSelection(){ return { n: network.getSelectedNodes(), e: network.getSelectedEdges() }; }
+  function updateSelCount(){ document.getElementById('selCount').textContent = `${network.getSelectedNodes().length} nodes, ${network.getSelectedEdges().length} edges selected`; }
+
+  // -------- Delete selection (nodes/edges) --------
+  // Remove selected nodes and edges. Connected edges to deleted nodes are auto-removed by vis-network.
+  function deleteSelection(){
+    const sel = getSelection();
+    if(sel.e && sel.e.length){ edges.remove(sel.e); }
+    if(sel.n && sel.n.length){ nodes.remove(sel.n); }
+    pushHistory();
+    network.unselectAll();
+    updateSelCount();
+  }
+  // Toolbar Delete button
+  const btnDelete = document.getElementById('btnDelete');
+  if(btnDelete){ btnDelete.addEventListener('click', () => { deleteSelection(); }); }
+  // Keyboard Delete/Backspace (ignore when typing in inputs)
+  document.addEventListener('keydown', (e) => {
+    const tag = e.target.tagName;
+    const typing = (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable);
+    if(!typing && (e.key === 'Delete' || e.key === 'Backspace')){
+      e.preventDefault();
+      deleteSelection();
+    }
+  });
+  // Right-click context menu deletion
+  network.on('oncontext', (params) => {
+    if(!params || !params.pointer) return;
+    params.event?.preventDefault?.();
+    const pos = params.pointer.DOM || params.pointer;
+    const edgeId = network.getEdgeAt(pos);
+    const nodeId = network.getNodeAt(pos);
+    if(edgeId != null){ edges.remove(edgeId); pushHistory(); return; }
+    if(nodeId != null){ nodes.remove(nodeId); pushHistory(); return; }
+  });
+
+  // Unified snap on drag end (grid or polar). Snap only once on release.
+  network.on('dragEnd', (params) => {
+    const ids = params.nodes;
+    if (!ids || !ids.length) return;
+    // First priority: cartesian grid snap
+    if (snapToggle.checked) {
+      const size = grid.size;
+      const upd = ids.map(id => {
+        const n = nodes.get(id);
+        return {
+          id,
+          x: Math.round(n.x / size) * size,
+          y: Math.round(n.y / size) * size,
+          fixed: true
+        };
+      });
+      nodes.update(upd);
+      // record state for undo
+      pushHistory();
+    } else if (polarToggle.checked) {
+      // Polar snap selection. Use current polar settings.
+      const rStep = parseFloat(document.getElementById('polarR').value || '100');
+      const thStep = parseFloat(document.getElementById('polarTheta').value || '6');
+      const upd = ids.map(id => {
+        const n = nodes.get(id);
+        const r = Math.hypot(n.x, n.y);
+        let th = Math.atan2(n.y, n.x);
+        const r2 = Math.round(r / rStep) * rStep;
+        const th2 = (Math.round((th * 180 / Math.PI) / thStep) * thStep) * Math.PI / 180;
+        return { id, x: r2 * Math.cos(th2), y: r2 * Math.sin(th2), fixed: true };
+      });
+      nodes.update(upd);
+      pushHistory();
+    }
+  });
+  network.on('selectNode', updateSelCount); network.on('deselectNode', updateSelCount);
+  network.on('selectEdge', updateSelCount); network.on('deselectEdge', updateSelCount);
+
+  // -------- Add Node (style preset) --------
+  const defaultPreset = { group:'Hub', type:'basic', shape:'dot', color:'#7dd3fc', size:14 };
+  let currentPreset = JSON.parse(localStorage.getItem('astral_preset_current')||JSON.stringify(defaultPreset));
+  // When adding a node, use the currentEffect (textual effect preset) as the label if set, otherwise default to 'B' or 'Notable'.
+  document.getElementById('btnAddNode').onclick = ()=>{
+    const id = nextId();
+    const label = currentEffect || (currentPreset.type==='notable' ? 'Notable' : 'B');
+    nodes.add({ id, label, group: currentPreset.group, type: currentPreset.type, shape: currentPreset.shape, color:{border: currentPreset.color}, size: currentPreset.size, x:0, y:0, fixed:false });
+    pushHistory();
+  };
+
+  // -------- Edge mode --------
+  let edgeMode=false, edgeFrom=null;
+  document.getElementById('btnAddEdge').onclick = ()=>{ edgeMode=!edgeMode; edgeFrom=null; document.getElementById('btnAddEdge').textContent = edgeMode? 'Edge Mode (ON)':'Edge Mode'; };
+  network.on('click', (p)=>{ if(!edgeMode) return; const nodeId=p.nodes[0]; if(!nodeId) return; if(edgeFrom==null){ edgeFrom=nodeId; } else { edges.add({from:edgeFrom,to:nodeId}); edgeFrom=null; pushHistory(); }});
+
+  // -------- Rotate selection (with recurve) --------
+  function rotateSelection(deg){
+    const sel = network.getSelectedNodes(); if(!sel.length) return; const pts = sel.map(id=>nodes.get(id));
+    const cx = pts.reduce((s,n)=>s+n.x,0)/pts.length; const cy = pts.reduce((s,n)=>s+n.y,0)/pts.length;
+    const a = deg*Math.PI/180, cos=Math.cos(a), sin=Math.sin(a);
+    const upd = pts.map(n=>({ id:n.id, x: cx + (n.x-cx)*cos - (n.y-cy)*sin, y: cy + (n.x-cx)*sin + (n.y-cy)*cos })); nodes.update(upd);
+    if(document.getElementById('chkRecurve').checked){ recurveEdgesWithinSelection(sel, cx, cy); }
+  }
+  function recurveEdgesWithinSelection(selIds, cx, cy){
+    // For edges whose both endpoints are in selIds, choose CW/CCW so curves bulge away from the selection center.
+    const selSet=new Set(selIds); const upd=[]; edges.forEach(e=>{ const a=e.from, b=e.to; if(!selSet.has(a) || !selSet.has(b)) return; const A=nodes.get(a), B=nodes.get(b); if(!A||!B) return; const mx=(A.x+B.x)/2, my=(A.y+B.y)/2; const tx=B.x-A.x, ty=B.y-A.y; const zx = tx*(my-cy) - ty*(mx-cx); // signed area (2D cross)
+      if(e.smooth && typeof e.smooth==='object' && e.smooth.enabled){ const round=(e.smooth.roundness!=null? e.smooth.roundness:0.2); upd.push({id:e.id, smooth:{enabled:true, type: (zx>0?'curvedCCW':'curvedCW'), roundness:round}}); }
+    }); if(upd.length) edges.update(upd);
+  }
+  document.getElementById('btnRotate').onclick = ()=>{ const deg=parseFloat(document.getElementById('angle').value||'0'); rotateSelection(deg); pushHistory(); };
+
+  // -------- Copy / Paste / Clone+Rotate --------
+  let clip=null;
+  function copySelection(){ const selN=network.getSelectedNodes(); if(!selN.length){ clip=null; return; } const selE=edges.get().filter(e=>selN.includes(e.from)&&selN.includes(e.to)); const ns=nodes.get(selN); const cx=ns.reduce((s,n)=>s+n.x,0)/ns.length, cy=ns.reduce((s,n)=>s+n.y,0)/ns.length; clip={ nodes: ns.map(n=>({ ...n, dx:n.x-cx, dy:n.y-cy })), edges: selE.map(e=>({from:e.from,to:e.to,smooth:e.smooth||false,width:e.width||1.5})) }; }
+  function pasteClipboard(offsetX=40, offsetY=20){ if(!clip) return; const idMap=new Map(); const baseId=nextId(); let curId=baseId; clip.nodes.forEach(n=>{ idMap.set(n.id, curId); nodes.add({ id:curId, label:n.label, group:n.group, type:n.type, shape:n.shape||'dot', color:n.color||{border:'#7dd3fc'}, size:n.size||14, x:n.dx+offsetX, y:n.dy+offsetY, fixed:false }); curId++; });
+    clip.edges.forEach(e=>{ const f=idMap.get(e.from), t=idMap.get(e.to); if(f&&t){ edges.add({ from:f, to:t, smooth:e.smooth||false, width:e.width||1.5 }); }});
+    pushHistory(); const newIds=[...idMap.values()]; network.unselectAll(); network.setSelection({nodes:newIds}); return newIds; }
+  function cloneRotate(){ copySelection(); if(!clip) return; const deg=parseFloat(document.getElementById('angle').value||'0'); const newIds=pasteClipboard(0,0); if(newIds&&newIds.length){ // rotate about their own centroid
+        rotateSelection(deg); pushHistory(); }
+  }
+  document.getElementById('btnCopy').onclick = ()=>copySelection();
+  document.getElementById('btnPaste').onclick = ()=>pasteClipboard();
+  document.getElementById('btnCloneRotate').onclick = ()=>cloneRotate();
+  document.addEventListener('keydown', (e)=>{
+    const mod = e.metaKey||e.ctrlKey; const key=e.key.toLowerCase();
+    if(mod && key==='z'){ e.preventDefault(); if(e.shiftKey) redo(); else undo(); }
+    if(mod && key==='c'){ e.preventDefault(); copySelection(); }
+    if(mod && key==='v'){ e.preventDefault(); pasteClipboard(); }
+  });
+
+  // Undo/Redo toolbar buttons
+  const btnUndo = document.getElementById('btnUndo');
+  const btnRedo = document.getElementById('btnRedo');
+  if(btnUndo) btnUndo.addEventListener('click', () => { undo(); });
+  if(btnRedo) btnRedo.addEventListener('click', () => { redo(); });
+
+  // -------- Per-edge style --------
+  function applyEdgeStyle(style, onlySel){
+    const ids = onlySel? network.getSelectedEdges() : edges.getIds(); if(!ids.length) return; const updates = ids.map(id=>{ const e={id, smooth:false}; if(style==='straight'){ e.smooth=false; } else if(style==='dynamic'){ e.smooth={enabled:true, type:'dynamic'}; } else if(style==='curvedCW'){ e.smooth={enabled:true, type:'curvedCW', roundness:0.2}; } else if(style==='curvedCCW'){ e.smooth={enabled:true, type:'curvedCCW', roundness:0.2}; } return e; }); edges.update(updates);
+  }
+  document.getElementById('btnApplyEdgeStyle').onclick = ()=>{ applyEdgeStyle(document.getElementById('edgeStyle').value, document.getElementById('edgeApplySel').checked); pushHistory(); };
+
+  // -------- Inspector: edit existing nodes --------
+  function applyToSelection(){ const sel=network.getSelectedNodes(); if(!sel.length) return; const group=document.getElementById('nodeGroup').value; const type=document.getElementById('nodeType').value; const shape=document.getElementById('nodeShape').value; const color=document.getElementById('nodeColor').value; const size=parseInt(document.getElementById('nodeSize').value,10)||14; const upd=sel.map(id=>({ id, group, type, shape, color:{border:color}, size })); nodes.update(upd); pushHistory(); }
+  document.getElementById('btnApplyToSel').onclick = applyToSelection;
+
+  // -------- Node style presets --------
+  const PRESET_KEY='astral_node_presets_v1';
+  function loadPresets(){ return JSON.parse(localStorage.getItem(PRESET_KEY) || '{}'); }
+  function savePresets(p){ localStorage.setItem(PRESET_KEY, JSON.stringify(p)); }
+  function refreshPresetList(){ const list=document.getElementById('presetList'); list.innerHTML=''; const p=loadPresets(); const names=Object.keys(p); if(!names.length){ const opt=document.createElement('option'); opt.textContent='(no presets yet)'; list.appendChild(opt); return; } names.forEach(n=>{ const opt=document.createElement('option'); opt.value=n; opt.textContent=n; list.appendChild(opt); }); }
+  refreshPresetList();
+  document.getElementById('btnSavePreset').onclick = ()=>{ const name=document.getElementById('presetName').value.trim(); if(!name) return; const preset={ group:nodeGroup.value, type:nodeType.value, shape:nodeShape.value, color:nodeColor.value, size:parseInt(nodeSize.value,10)||14 }; const p=loadPresets(); p[name]=preset; savePresets(p); refreshPresetList(); };
+  document.getElementById('btnApplyPreset').onclick = ()=>{ const name=presetList.value; const p=loadPresets(); if(!p[name]) return; nodeGroup.value=p[name].group; nodeType.value=p[name].type; nodeShape.value=p[name].shape; nodeColor.value=p[name].color; nodeSize.value=p[name].size; applyToSelection(); };
+  document.getElementById('btnUseForAdd').onclick = ()=>{ const name=presetList.value; const p=loadPresets(); if(!p[name]) return; currentPreset=p[name]; localStorage.setItem('astral_preset_current', JSON.stringify(currentPreset)); };
+
+  // -------- Effect presets --------
+  // Store textual effects to reuse as node labels. currentEffect is used when creating new nodes.
+  const EFFECT_KEY='astral_effect_presets_v1';
+  let currentEffect = localStorage.getItem('astral_effect_current') || '';
+
+  function loadEffects(){ try { return JSON.parse(localStorage.getItem(EFFECT_KEY) || '{}'); } catch(e){ return {}; } }
+  function saveEffects(obj){ localStorage.setItem(EFFECT_KEY, JSON.stringify(obj)); }
+  function refreshEffectList(){ const list=document.getElementById('selEffs'); if(!list) return; list.innerHTML=''; const effs=loadEffects(); const names=Object.keys(effs); if(!names.length){ const opt=document.createElement('option'); opt.textContent='(no effects yet)'; list.appendChild(opt); return; } names.forEach(n=>{ const opt=document.createElement('option'); opt.value=n; opt.textContent=n; list.appendChild(opt); }); }
+  refreshEffectList();
+  const effNameEl = document.getElementById('effName');
+  const effTextEl = document.getElementById('effText');
+  const selEffsEl = document.getElementById('selEffs');
+  const btnSaveEff = document.getElementById('btnSaveEff');
+  const btnApplyEff = document.getElementById('btnApplyEff');
+  const btnUseEff = document.getElementById('btnUseEff');
+  if(btnSaveEff) btnSaveEff.onclick = ()=>{
+    const name=(effNameEl?.value||'').trim(); const text=(effTextEl?.value||'').trim(); if(!name || !text) return;
+    const effs=loadEffects(); effs[name]=text; saveEffects(effs); refreshEffectList(); if(effNameEl) effNameEl.value=''; if(effTextEl) effTextEl.value='';
+  };
+  if(btnApplyEff) btnApplyEff.onclick = ()=>{
+    const name = selEffsEl?.value; const effs = loadEffects(); if(!effs[name]) return; const effect=effs[name]; const sel=network.getSelectedNodes(); if(!sel || !sel.length) return; const upd=sel.map(id=>({ id, label: effect })); nodes.update(upd); pushHistory(); };
+  if(btnUseEff) btnUseEff.onclick = ()=>{
+    const name = selEffsEl?.value; const effs=loadEffects(); if(!effs[name]) return; currentEffect = effs[name]; localStorage.setItem('astral_effect_current', currentEffect);
+  };
+
+  // -------- Structure presets (clusters) --------
+  const STRUCT_KEY='astral_structure_presets_v1';
+  function loadStructs(){ return JSON.parse(localStorage.getItem(STRUCT_KEY) || '{}'); }
+  function saveStructs(obj){ localStorage.setItem(STRUCT_KEY, JSON.stringify(obj)); }
+  function refreshStructList(){ const list=document.getElementById('structList'); list.innerHTML=''; const S=loadStructs(); const names=Object.keys(S); if(!names.length){ const opt=document.createElement('option'); opt.textContent='(no structures yet)'; list.appendChild(opt); return; } names.forEach(n=>{ const opt=document.createElement('option'); opt.value=n; opt.textContent=n; list.appendChild(opt); }); }
+  refreshStructList();
+
+  document.getElementById('btnSaveStruct').onclick = ()=>{
+    const name=document.getElementById('structName').value.trim(); if(!name) return;
+    const sel=network.getSelectedNodes(); if(!sel.length) return;
+    const ns=nodes.get(sel); const cx=ns.reduce((s,n)=>s+n.x,0)/ns.length, cy=ns.reduce((s,n)=>s+n.y,0)/ns.length;
+    const selSet=new Set(sel); const es=edges.get().filter(e=>selSet.has(e.from)&&selSet.has(e.to));
+    const pack={ nodes: ns.map(n=>({label:n.label, group:n.group, type:n.type, shape:n.shape||'dot', color:n.color?.border||'#7dd3fc', size:n.size||14, dx:n.x-cx, dy:n.y-cy })), edges: es.map(e=>({ ai: sel.indexOf(e.from), bi: sel.indexOf(e.to), smooth:e.smooth||false, width:e.width||1.5 })) };
+    const S=loadStructs(); S[name]=pack; saveStructs(S); refreshStructList();
+  };
+  document.getElementById('btnPlaceStruct').onclick = ()=>{
+    const name=structList.value; const S=loadStructs(); const pack=S[name]; if(!pack) return;
+    const baseId=nextId(); let cur=baseId; const ids=[]; pack.nodes.forEach(n=>{ nodes.add({ id:cur, label:n.type==='notable'?'Notable':'B', group:n.group, type:n.type, shape:n.shape, color:{border:n.color}, size:n.size, x:n.dx, y:n.dy, fixed:false }); ids.push(cur); cur++; });
+    pack.edges.forEach(e=>{ const from=ids[e.ai], to=ids[e.bi]; edges.add({ from, to, smooth:e.smooth||false, width:e.width||1.5 }); });
+    pushHistory(); network.setSelection({nodes:ids});
+  };
+  document.getElementById('btnDeleteStruct').onclick = ()=>{ const name=structList.value; const S=loadStructs(); if(!S[name]) return; delete S[name]; saveStructs(S); refreshStructList(); };
+
+  // -------- Polar snap --------
+  const polarToggle=document.getElementById('polarToggle');
+  function polarSnapSelection(){
+    const sel=network.getSelectedNodes();
+    if(!sel.length) return;
+    const rStep=parseFloat(document.getElementById('polarR').value||'100');
+    const thStep=parseFloat(document.getElementById('polarTheta').value||'6');
+    const upd=sel.map(id=>{
+      const n=nodes.get(id);
+      const r=Math.hypot(n.x, n.y);
+      let th=Math.atan2(n.y, n.x);
+      const r2=Math.round(r/rStep)*rStep;
+      const th2=(Math.round((th*180/Math.PI)/thStep)*thStep)*Math.PI/180;
+      return { id, x: r2*Math.cos(th2), y: r2*Math.sin(th2), fixed:true };
+    });
+    nodes.update(upd);
+  }
+  document.getElementById('btnPolarSnap').onclick = ()=>{
+    polarSnapSelection();
+    pushHistory();
+  };
+  // Note: automatic polar snap on drag is now handled by the unified dragEnd snap above.
+
+  // -------- Import/Export --------
+  function exportJSON(){ const out = { nodes: nodes.get().map(n=>({id:n.id,label:n.label,group:n.group,type:n.type,x:n.x,y:n.y,fixed:!!n.fixed, shape:n.shape, color:n.color?.border, size:n.size})), edges: edges.get().map(e=>({id:e.id,from:e.from,to:e.to,width:e.width||1.5, smooth:e.smooth||false})), settings:{ grid:grid.on, gridSize:grid.size } }; const blob=new Blob([JSON.stringify(out)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='astral_tree.json'; a.click(); URL.revokeObjectURL(url); }
+  function importJSON(obj){ nodes.clear(); edges.clear(); const ns=(obj.nodes||[]).map(n=>({id:n.id,label:n.label||(n.type==='notable'?'Notable':'B'),group:n.group||'Hub',type:n.type||'basic',x:n.x||0,y:n.y||0,fixed:!!n.fixed, shape:n.shape||'dot', color:{border:n.color||'#7dd3fc'}, size:n.size||14 })); const es=(obj.edges||[]).map(e=>({id:e.id,from:e.from,to:e.to,width:e.width||1.5,smooth: e.smooth===undefined? false : e.smooth })); nodes.add(ns); edges.add(es); grid.on=!!(obj.settings&&obj.settings.grid); grid.size=(obj.settings&&obj.settings.gridSize)||30; document.getElementById('gridToggle').checked=grid.on; drawGrid(); pushHistory(); }
+  document.getElementById('btnExport').onclick = exportJSON;
+  document.getElementById('btnImport').onclick = ()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json'; inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ const obj=JSON.parse(rd.result); importJSON(obj); }catch(e){ alert('Invalid JSON'); } }; rd.readAsText(f); }; inp.click(); };
+
+  document.getElementById('btnFit').onclick = ()=> network.fit({animation:{duration:300}});
+
+  // -------- Seed minimal --------
+  nodes.add([{id:1,label:'B',group:'Hub',type:'basic',x:0,y:0,fixed:false},{id:2,label:'B',group:'Hub',type:'basic',x:120,y:60,fixed:false}]); edges.add([{from:1,to:2}]); pushHistory();
+}
+
+
+</script>
+</body>
+</html>
