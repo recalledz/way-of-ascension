@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Astral Tree — Elements/Types/Effects Editor (Cytoscape + preset)</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#0f172a; --ink:#e5e7eb; --muted:#94a3b8; --brand:#22d3ee; --accent:#7dd3fc; --edge:#8ab4f8;
+    --wood:#22c55e; --fire:#ef4444; --earth:#eab308; --metal:#a3a3a3; --water:#3b82f6; --hub:#7dd3fc;
+    --grid:#1c2a45; --grid-strong:#2a3a63;
+  }
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--ink); font:14px/1.25 system-ui,Segoe UI,Roboto,Arial,sans-serif;
+       display:grid; grid-template-rows:auto 1fr}
+  header{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px;
+         background:linear-gradient(180deg,var(--panel),transparent); border-bottom:1px solid #18223b}
+  button,input,select,textarea{background:#0b1220; color:var(--ink); border:1px solid #2a385a; border-radius:8px; padding:6px 10px}
+  button{cursor:pointer}
+  .primary{background:linear-gradient(180deg,#1d283a,#13203a); border-color:#2a4b73}
+  .danger{background:linear-gradient(180deg,#3a1d1d,#2a1313); border-color:#733a3a}
+  .group{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,0.04); padding:6px 8px; border-radius:10px}
+  label{color:var(--muted)}
+  #wrap{position:relative}
+  #cy{position:absolute; inset:0}
+  #grid{position:absolute; inset:0; pointer-events:none}
+  #status{margin-left:auto; color:#9ca3af; font-size:12px}
+  aside{
+    position:absolute; right:12px; top:12px; z-index:5; width:380px; max-width:calc(100% - 24px);
+    background:rgba(10,17,31,0.9); border:1px solid #26314d; border-radius:12px; backdrop-filter: blur(6px);
+  }
+  aside header{background:none; border:0; padding:10px; display:flex; justify-content:space-between}
+  aside section{padding:10px; border-top:1px solid #1f2a44}
+  .row{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+  .row>*{flex:1}
+  .row .shrink{flex:0 0 auto}
+  textarea{resize:vertical; min-height:60px; max-height:180px}
+  .legend{display:flex; gap:6px; flex-wrap:wrap}
+  .pill{display:inline-flex; align-items:center; gap:6px; border:1px solid #23314f; padding:3px 8px; border-radius:999px; font-size:12px}
+  .dot{width:10px; height:10px; border-radius:50%}
+</style>
+</head>
+<body>
+<header>
+  <div class="group">
+    <button id="addNode">Add Node</button>
+    <button id="edgeMode">Edge Mode</button>
+    <button id="deleteSel" class="danger">Delete</button>
+    <button id="fit">Fit</button>
+  </div>
+  <div class="group">
+    <label><input type="checkbox" id="snap"> snap</label>
+    <label>grid <input type="number" id="gridSize" value="30" min="6" max="200" style="width:72px"></label>
+    <label><input type="checkbox" id="gridToggle"> show grid</label>
+  </div>
+  <div class="group">
+    <button id="export" class="primary">Export JSON</button>
+    <button id="import">Import JSON</button>
+    <button id="restore">Restore Autosave</button>
+    <span id="status">Ready</span>
+  </div>
+</header>
+
+<div id="wrap">
+  <canvas id="grid"></canvas>
+  <div id="cy"></div>
+
+  <aside>
+    <header>
+      <strong>Inspector</strong>
+      <small id="selInfo">0 selected</small>
+    </header>
+
+    <section>
+      <div class="row">
+        <label class="shrink">Type</label>
+        <select id="nodeType">
+          <option value="basic">basic</option>
+          <option value="notable">notable</option>
+        </select>
+        <label class="shrink">Size</label>
+        <input id="nodeSize" type="number" value="14" min="6" max="60"/>
+      </div>
+
+      <div class="row">
+        <label class="shrink">Element</label>
+        <select id="nodeElement">
+          <option>Hub</option><option>Wood</option><option>Fire</option><option>Earth</option><option>Metal</option><option>Water</option>
+        </select>
+        <label class="shrink"><input type="checkbox" id="autoColor" checked> auto color</label>
+        <input id="colorOverride" type="color" value="#7dd3fc" title="custom color (used when auto is off)"/>
+      </div>
+
+      <div class="row">
+        <label class="shrink">Label / Effect</label>
+      </div>
+      <div class="row">
+        <textarea id="nodeLabel" placeholder="Text shown on node (wraps)"></textarea>
+      </div>
+
+      <div class="row">
+        <button id="applySel" class="primary">Apply to selection</button>
+        <button id="useAsDefault">Use for Add</button>
+        <button id="clearLabel">Clear label</button>
+      </div>
+    </section>
+
+    <section>
+      <header style="padding:0 0 8px 0"><strong>Effect Presets</strong></header>
+      <small>Pick a preset, then “Set Label” or “Append”.</small>
+      <div class="row">
+        <select id="effectList"></select>
+      </div>
+      <div class="row">
+        <button id="setLabel">Set Label</button>
+        <button id="appendLabel">Append</button>
+      </div>
+
+      <header style="padding:10px 0 8px 0"><strong>Notables</strong></header>
+      <div class="row">
+        <select id="notableList"></select>
+      </div>
+      <div class="row">
+        <button id="setNotable">Set Label</button>
+        <button id="appendNotable">Append</button>
+      </div>
+    </section>
+
+    <section>
+      <header style="padding:0 0 8px 0"><strong>Legend</strong></header>
+      <div class="legend">
+        <span class="pill"><span class="dot" style="background:var(--hub)"></span>Hub</span>
+        <span class="pill"><span class="dot" style="background:var(--wood)"></span>Wood</span>
+        <span class="pill"><span class="dot" style="background:var(--fire)"></span>Fire</span>
+        <span class="pill"><span class="dot" style="background:var(--earth)"></span>Earth</span>
+        <span class="pill"><span class="dot" style="background:var(--metal)"></span>Metal</span>
+        <span class="pill"><span class="dot" style="background:var(--water)"></span>Water</span>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script>
+(function(){
+  // --------- Element color map ----------
+  const ELEM_COLOR = {
+    'Hub': getCSS('--hub'),
+    'Wood': getCSS('--wood'),
+    'Fire': getCSS('--fire'),
+    'Earth': getCSS('--earth'),
+    'Metal': getCSS('--metal'),
+    'Water': getCSS('--water')
+  };
+  function getCSS(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#7dd3fc';
+  }
+
+  // --------- Effect presets ----------
+  const STAT_EFFECTS = [
+    'Qi +10','HP +20','Armor +40','Dodge +2%','Accuracy +50','Crit Chance +2%','Crit Damage +10%','Attack Speed +2%','Spell Damage +2%','Physical Damage +2%','All Elemental Res +6%','Fire Res +12%','Water Res +12%','Metal Res +12%','Wood Res +12%','Earth Res +12%','Qi per sec +0.5','Max Qi +10','Qi Cost −3% (spells)','Cooldown Reduction −2%','Cast Speed +3%','Foundation Gain +5%','Comprehension +5%','Gathering Speed +5%'
+  ];
+  const NOTABLES = [
+    'After Ability: +30% Attack Speed for 4s',
+    'Deal (100% − Breakthrough%) as bonus Physical Damage',
+    'Auras reserve −10% Qi',
+    'On Hit: +15% Stun Chance (internal CD 0.5s)',
+    'On Crit: Spells cost −20% Qi for 4s (CD 6s)',
+    'First Hit after moving: +100% Accuracy, +20% Crit Chance',
+    'While Qi Shield is full: +12% Damage (spells & attacks)',
+    'Dark Qi bypasses 100% Qi Shield',
+    'On Kill: +10% Foundation Gain for 8s',
+    'Using a Spell grants +15% Attack Speed for 3s; Using an Attack grants +15% Cast Speed for 3s'
+  ];
+
+  // --------- Cytoscape setup ----------
+  const cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements: [],
+    layout: { name: 'preset' },
+    wheelSensitivity: 0.2,
+    style: [
+      { selector: 'node',
+        style: {
+          'background-color': 'data(color)',
+          'shape': 'data(shape)',
+          'width': 'mapData(size, 6, 60, 6, 60)',
+          'height': 'mapData(size, 6, 60, 6, 60)',
+          'label': 'data(label)',
+          'color': '#cbd5e1',
+          'font-size': 10,
+          'text-wrap': 'wrap',
+          'text-max-width': 120,
+          'text-valign':'center',
+          'text-halign':'center',
+          'border-width': 0
+        }
+      },
+      { selector: 'node[group_ = "Hub"]',
+        style: { 'border-width': 2, 'border-color': '#22d3ee' }
+      },
+      { selector: 'node[type = "notable"]',
+        style: { 'border-width': 2, 'border-color': '#f59e0b' }
+      },
+      { selector: 'edge',
+        style: { 'width': 1.5, 'line-color': '#8ab4f8', 'curve-style': 'straight', 'target-arrow-shape': 'none' }
+      },
+      { selector: ':selected',
+        style: { 'border-width': 3, 'border-color': '#22d3ee', 'line-color': '#22d3ee' }
+      }
+    ]
+  });
+
+  // --------- UI refs ----------
+  const selInfo = document.getElementById('selInfo');
+  const nodeType = document.getElementById('nodeType');
+  const nodeSize = document.getElementById('nodeSize');
+  const nodeElement = document.getElementById('nodeElement');
+  const autoColor = document.getElementById('autoColor');
+  const colorOverride = document.getElementById('colorOverride');
+  const nodeLabel = document.getElementById('nodeLabel');
+
+  const effectList = document.getElementById('effectList');
+  const notableList = document.getElementById('notableList');
+
+  STAT_EFFECTS.forEach(t=>{ const o=document.createElement('option'); o.value=o.textContent=t; effectList.appendChild(o); });
+  NOTABLES.forEach(t=>{ const o=document.createElement('option'); o.value=o.textContent=t; notableList.appendChild(o); });
+
+  // --------- Grid + snap ----------
+  const grid = document.getElementById('grid'), gtx = grid.getContext('2d');
+  const gridToggle = document.getElementById('gridToggle');
+  const gridSizeInput = document.getElementById('gridSize');
+
+  function drawGrid(){
+    const rect = grid.getBoundingClientRect();
+    grid.width = Math.floor(rect.width * devicePixelRatio);
+    grid.height = Math.floor(rect.height * devicePixelRatio);
+    gtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    gtx.clearRect(0,0,rect.width,rect.height);
+    if(!gridToggle.checked) return;
+    const s = Math.max(4, Number(gridSizeInput.value)||30);
+    gtx.strokeStyle = getCSS('--grid'); gtx.lineWidth = 1;
+    for(let x=0; x<rect.width; x+=s){ gtx.beginPath(); gtx.moveTo(x+0.5,0); gtx.lineTo(x+0.5,rect.height); gtx.stroke(); }
+    for(let y=0; y<rect.height; y+=s){ gtx.beginPath(); gtx.moveTo(0,y+0.5); gtx.lineTo(rect.width,y+0.5); gtx.stroke(); }
+    gtx.strokeStyle = getCSS('--grid-strong'); gtx.lineWidth = 1.2;
+    for(let x=0; x<rect.width; x+=s*5){ gtx.beginPath(); gtx.moveTo(x+0.5,0); gtx.lineTo(x+0.5,rect.height); gtx.stroke(); }
+    for(let y=0; y<rect.height; y+=s*5){ gtx.beginPath(); gtx.moveTo(0,y+0.5); gtx.lineTo(rect.width,y+0.5); gtx.stroke(); }
+  }
+  new ResizeObserver(drawGrid).observe(document.getElementById('wrap'));
+  gridToggle.addEventListener('change', drawGrid);
+  gridSizeInput.addEventListener('change', drawGrid);
+
+  const snapToggle = document.getElementById('snap');
+  function snapNode(n){
+    const s = Math.max(4, Number(gridSizeInput.value)||30);
+    const p = n.position();
+    n.position({ x: Math.round(p.x/s)*s, y: Math.round(p.y/s)*s });
+  }
+  cy.on('dragfree','node', e=>{ if(snapToggle.checked){ snapNode(e.target); saveAutosave(); } });
+
+  // --------- Selection feedback ----------
+  function updateInspectorFromSelection(){
+    const sel = cy.$('node:selected');
+    selInfo.textContent = `${sel.length} selected`;
+    if(sel.length === 1){
+      const n = sel[0];
+      nodeType.value = n.data('type') || 'basic';
+      nodeSize.value = n.data('size') || 14;
+      nodeElement.value = n.data('group_') || 'Hub';
+      nodeLabel.value = n.data('label') || '';
+      colorOverride.value = toHex(n.data('color') || '#7dd3fc');
+    }
+  }
+  cy.on('select unselect', updateInspectorFromSelection);
+
+  function toHex(c){
+    const d = document.createElement('div'); d.style.color = c; document.body.appendChild(d);
+    const rgb = getComputedStyle(d).color; document.body.removeChild(d);
+    const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
+    if(!m) return '#7dd3fc';
+    return '#' + [m[1],m[2],m[3]].map(v=> ('0'+parseInt(v).toString(16)).slice(-2)).join('');
+  }
+
+  // --------- Add / Edge / Delete ----------
+  function nextNodeId(){
+    const ids = cy.nodes().map(n => Number(n.id())).filter(Number.isFinite);
+    const max = ids.length ? Math.max(...ids) : 0;
+    return String(max + 1);
+  }
+  document.getElementById('addNode').onclick = ()=>{
+    const id = nextNodeId();
+    const center = cy.extent(); const x = (center.x1+center.x2)/2, y=(center.y1+center.y2)/2;
+    const elem = document.getElementById('nodeElement').value;
+    const type = document.getElementById('nodeType').value;
+    const size = Number(document.getElementById('nodeSize').value)||14;
+    const useAuto = document.getElementById('autoColor').checked;
+    const col = useAuto ? (ELEM_COLOR[elem] || '#7dd3fc') : document.getElementById('colorOverride').value;
+
+    const shape = type === 'notable' ? 'diamond' : 'ellipse';
+    const finalSize = type === 'notable' ? Math.max(size, 18) : size;
+
+    const n = cy.add({ group:'nodes',
+      data:{ id, label:'B', group_:elem, type, size:finalSize, color:col, shape },
+      position:{ x, y }
+    });
+    if(snapToggle.checked) snapNode(n);
+    saveAutosave();
+  };
+
+  let edgeMode=false, edgeFrom=null;
+  document.getElementById('edgeMode').onclick = ()=>{
+    edgeMode = !edgeMode; edgeFrom = null;
+    document.getElementById('edgeMode').textContent = edgeMode ? 'Edge Mode (ON)' : 'Edge Mode';
+  };
+  cy.on('tap','node', e=>{
+    if(!edgeMode) return;
+    const n = e.target;
+    if(!edgeFrom){ edgeFrom = n; return; }
+    if(edgeFrom.id() !== n.id()){
+      cy.add({ group:'edges', data:{
+        id:'e'+Math.random().toString(36).slice(2),
+        source: edgeFrom.id(), target: n.id(), width:1.5
+      }});
+      saveAutosave();
+    }
+    edgeFrom = null;
+  });
+
+  document.getElementById('deleteSel').onclick = ()=>{
+    cy.$(':selected').remove(); saveAutosave();
+  };
+  document.getElementById('fit').onclick = ()=> cy.fit(cy.elements(), 50);
+
+  // --------- Apply to selection ----------
+  function applyToSelection({ setLabel=null, appendLabel=null } = {}){
+    const sel = cy.$('node:selected'); if(!sel.length) return;
+    const type = nodeType.value;
+    const size = Number(nodeSize.value)||14;
+    const elem = nodeElement.value;
+    const useAuto = autoColor.checked;
+    const col = useAuto ? (ELEM_COLOR[elem] || '#7dd3fc') : colorOverride.value;
+    const shape = type === 'notable' ? 'diamond' : 'ellipse';
+    const finalSize = type === 'notable' ? Math.max(size, 18) : size;
+
+    sel.forEach(n=>{
+      n.data('type', type);
+      n.data('group_', elem);
+      n.data('size', finalSize);
+      n.data('shape', shape);
+      n.data('color', col);
+      if(setLabel!==null){ n.data('label', setLabel); }
+      if(appendLabel){ const cur = (n.data('label')||'').trim(); n.data('label', cur ? cur + '\n' + appendLabel : appendLabel); }
+    });
+    saveAutosave();
+  }
+  document.getElementById('applySel').onclick = ()=> applyToSelection({ setLabel: nodeLabel.value });
+
+  document.getElementById('useAsDefault').onclick = ()=>{
+    localStorage.setItem('astral_default',
+      JSON.stringify({
+        type: nodeType.value,
+        size: Number(nodeSize.value)||14,
+        elem: nodeElement.value,
+        auto: autoColor.checked,
+        color: colorOverride.value
+      }));
+  };
+  document.getElementById('clearLabel').onclick = ()=>{
+    const sel = cy.$('node:selected'); sel.forEach(n=> n.data('label','')); saveAutosave();
+  };
+
+  // Effect buttons
+  document.getElementById('setLabel').onclick = ()=> applyToSelection({ setLabel: effectList.value });
+  document.getElementById('appendLabel').onclick = ()=> applyToSelection({ appendLabel: effectList.value });
+  document.getElementById('setNotable').onclick = ()=> applyToSelection({ setLabel: notableList.value });
+  document.getElementById('appendNotable').onclick = ()=> applyToSelection({ appendLabel: notableList.value });
+
+  // --------- Import / Export (preset layout, positions honored) ----------
+  function sanitizeToCy(obj){
+    const rawNodes = (obj && obj.nodes) ? obj.nodes : [];
+    const rawEdges = (obj && obj.edges) ? obj.edges : [];
+
+    const nodes = rawNodes.map(n=>{
+      const color = (typeof n.color === 'string') ? n.color :
+                    (n.color && n.color.border) ? n.color.border : (ELEM_COLOR[n.group] || '#7dd3fc');
+      // shape from type or fallback map
+      const shape = (n.type === 'notable') ? 'diamond' : 'ellipse';
+      return {
+        group:'nodes',
+        data:{
+          id: String(n.id),
+          label: n.label ?? (n.type === 'notable' ? 'Notable' : 'B'),
+          group_: n.group ?? 'Hub',
+          type: n.type ?? 'basic',
+          size: Number(n.size) || (n.type === 'notable' ? 20 : 14),
+          color, shape
+        },
+        position:{ x: Number(n.x), y: Number(n.y) }
+      };
+    }).filter(el => Number.isFinite(el.position.x) && Number.isFinite(el.position.y));
+
+    const idSet = new Set(nodes.map(n => n.data.id));
+    const edges = rawEdges
+      .filter(e => idSet.has(String(e.from)) && idSet.has(String(e.to)))
+      .map(e => ({ group:'edges', data:{
+        id: e.id ? String(e.id) : 'e'+Math.random().toString(36).slice(2),
+        source: String(e.from), target: String(e.to), width: Number(e.width)||1.5
+      }}));
+
+    return nodes.concat(edges);
+  }
+
+  function toExportJSON(){
+    const nodes = cy.nodes().map(n=>{
+      const d=n.data(), p=n.position();
+      // shape back to vis-style string
+      const shape = d.shape === 'ellipse' ? 'dot' : d.shape;
+      const out = {
+        id: Number.isFinite(+d.id) ? +d.id : d.id,
+        label: d.label,
+        group: d.group_ || 'Hub',
+        type: d.type || 'basic',
+        x: p.x, y: p.y, fixed: true,
+        shape, color: d.color || '#7dd3fc',
+        size: Number(d.size)||14
+      };
+      return out;
+    });
+    const edges = cy.edges().map(e=>{
+      const d=e.data();
+      return {
+        id: d.id, from: Number.isFinite(+d.source)? +d.source : d.source,
+        to: Number.isFinite(+d.target)? +d.target : d.target,
+        width: Number(d.width)||1.5, smooth: false
+      };
+    });
+    return { nodes, edges, settings: { grid: gridToggle.checked, gridSize: Number(gridSizeInput.value)||30 } };
+  }
+
+  document.getElementById('export').onclick = ()=>{
+    const out = toExportJSON();
+    const blob = new Blob([JSON.stringify(out,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'astral_tree.json'; a.click();
+    URL.revokeObjectURL(url);
+  };
+  document.getElementById('import').onclick = ()=>{
+    const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
+    inp.onchange = ()=>{
+      const f = inp.files?.[0]; if(!f) return;
+      const rd = new FileReader();
+      rd.onload = ()=>{
+        try{
+          const obj = JSON.parse(rd.result);
+          cy.elements().remove();
+          cy.add(sanitizeToCy(obj));
+          cy.layout({ name:'preset' }).run();
+          cy.fit(cy.elements(),50);
+          saveAutosave();
+        }catch(e){ console.error(e); alert('Invalid JSON'); }
+      };
+      rd.readAsText(f);
+    };
+    inp.click();
+  };
+
+  // --------- Autosave ----------
+  const AS_KEY='astral_tree_autosave_v2';
+  function saveAutosave(){ try{ localStorage.setItem(AS_KEY, JSON.stringify(toExportJSON())); setStatus('Saved ✔'); }catch(e){} }
+  function loadAutosave(){
+    try{
+      const raw = localStorage.getItem(AS_KEY); if(!raw) return false;
+      const obj = JSON.parse(raw);
+      cy.elements().remove();
+      cy.add(sanitizeToCy(obj));
+      cy.layout({ name:'preset' }).run();
+      cy.fit(cy.elements(),50);
+      setStatus('Autosave restored');
+      return true;
+    }catch(e){ setStatus('Autosave restore failed'); return false; }
+  }
+  document.getElementById('restore').onclick = loadAutosave;
+  function setStatus(t){ const el=document.getElementById('status'); el.textContent=t; setTimeout(()=>{ el.textContent='Ready'; },1200); }
+
+  // Save on edits
+  cy.on('add remove data position', saveAutosave);
+
+  // --------- Load defaults if any (for Add Node) ----------
+  const defRaw = localStorage.getItem('astral_default');
+  if(defRaw){
+    try{
+      const d = JSON.parse(defRaw);
+      nodeType.value = d.type || 'basic';
+      nodeSize.value = d.size || 14;
+      nodeElement.value = d.elem || 'Hub';
+      autoColor.checked = !!d.auto;
+      colorOverride.value = d.color || '#7dd3fc';
+    }catch{}
+  }
+
+  // ---------- First run ----------
+  loadAutosave();
+  drawGrid();
+  updateInspectorFromSelection();
+
+})();
+</script>
+</body>
+</html>
