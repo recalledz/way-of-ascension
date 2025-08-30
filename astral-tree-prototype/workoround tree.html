@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Astral Tree — Stable Editor (Cytoscape preset)</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#0f172a; --ink:#e5e7eb; --muted:#94a3b8; --brand:#22d3ee; --accent:#7dd3fc; --edge:#8ab4f8;
+    --grid:#1c2a45; --grid-strong:#2a3a63;
+  }
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--ink); font:14px/1.25 system-ui,Segoe UI,Roboto,Arial,sans-serif; display:grid; grid-template-rows:auto 1fr}
+  header{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px; background:linear-gradient(180deg,var(--panel),transparent); border-bottom:1px solid #18223b}
+  button,input,select{background:#0b1220; color:var(--ink); border:1px solid #2a385a; border-radius:8px; padding:6px 10px}
+  button{cursor:pointer}
+  .primary{background:linear-gradient(180deg,#1d283a,#13203a); border-color:#2a4b73}
+  .danger{background:linear-gradient(180deg,#3a1d1d,#2a1313); border-color:#733a3a}
+  .group{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,0.04); padding:6px 8px; border-radius:10px}
+  label{color:var(--muted)}
+  #wrap{position:relative}
+  #cy{position:absolute; inset:0}
+  #grid{position:absolute; inset:0; pointer-events:none}
+  #status{margin-left:auto; color:#9ca3af; font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="group">
+    <button id="addNode">Add Node</button>
+    <button id="edgeMode">Edge Mode</button>
+    <button id="deleteSel" class="danger">Delete</button>
+  </div>
+  <div class="group">
+    <label><input type="checkbox" id="snap"> snap</label>
+    <label>grid <input type="number" id="gridSize" value="30" min="6" max="200" style="width:72px"></label>
+    <label><input type="checkbox" id="gridToggle"> show grid</label>
+    <button id="fit">Fit</button>
+  </div>
+  <div class="group">
+    <button id="export" class="primary">Export JSON</button>
+    <button id="import">Import JSON</button>
+    <button id="restore">Restore Autosave</button>
+  </div>
+  <span id="status">Ready</span>
+</header>
+
+<div id="wrap">
+  <canvas id="grid"></canvas>
+  <div id="cy"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script>
+(function(){
+  const cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements: [],
+    layout: { name: 'preset' }, // <- always respect provided x,y
+    wheelSensitivity: 0.2,
+    style: [
+      { selector: 'node',
+        style: {
+          'background-color': '#7dd3fc',
+          'label': 'data(label)',
+          'color': '#cbd5e1',
+          'font-size': 10,
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'width': 'mapData(size, 6, 50, 6, 50)',
+          'height': 'mapData(size, 6, 50, 6, 50)',
+          'border-width': 0
+        }
+      },
+      { selector: 'edge',
+        style: {
+          'width': 1.5,
+          'line-color': '#8ab4f8',
+          'curve-style': 'straight',
+          'target-arrow-shape': 'none'
+        }
+      },
+      { selector: ':selected',
+        style: { 'border-width': 2, 'border-color': '#22d3ee', 'line-color': '#22d3ee' }
+      }
+    ]
+  });
+
+  // ---------- Grid ----------
+  const grid = document.getElementById('grid');
+  const gtx = grid.getContext('2d');
+  const gridToggle = document.getElementById('gridToggle');
+  const gridSizeInput = document.getElementById('gridSize');
+  function drawGrid(){
+    const rect = grid.getBoundingClientRect();
+    grid.width = Math.floor(rect.width * devicePixelRatio);
+    grid.height = Math.floor(rect.height * devicePixelRatio);
+    gtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    gtx.clearRect(0,0,rect.width,rect.height);
+    if(!gridToggle.checked) return;
+    const s = Math.max(4, Number(gridSizeInput.value)||30);
+    gtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid');
+    gtx.lineWidth = 1;
+    for(let x=0; x<rect.width; x+=s){ gtx.beginPath(); gtx.moveTo(x+0.5,0); gtx.lineTo(x+0.5,rect.height); gtx.stroke(); }
+    for(let y=0; y<rect.height; y+=s){ gtx.beginPath(); gtx.moveTo(0,y+0.5); gtx.lineTo(rect.width,y+0.5); gtx.stroke(); }
+    gtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-strong');
+    gtx.lineWidth = 1.2;
+    for(let x=0; x<rect.width; x+=s*5){ gtx.beginPath(); gtx.moveTo(x+0.5,0); gtx.lineTo(x+0.5,rect.height); gtx.stroke(); }
+    for(let y=0; y<rect.height; y+=s*5){ gtx.beginPath(); gtx.moveTo(0,y+0.5); gtx.lineTo(rect.width,y+0.5); gtx.stroke(); }
+  }
+  new ResizeObserver(drawGrid).observe(document.getElementById('wrap'));
+  gridToggle.addEventListener('change', drawGrid);
+  gridSizeInput.addEventListener('change', drawGrid);
+
+  // ---------- Snap ----------
+  const snapToggle = document.getElementById('snap');
+  function snapNode(n){
+    const s = Math.max(4, Number(gridSizeInput.value) || 30);
+    const p = n.position();
+    n.position({
+      x: Math.round(p.x / s) * s,
+      y: Math.round(p.y / s) * s
+    });
+  }
+  cy.on('dragfree', 'node', evt => { if(snapToggle.checked) { snapNode(evt.target); saveAutosave(); } });
+
+  // ---------- Edge mode ----------
+  let edgeMode = false, edgeFrom = null;
+  document.getElementById('edgeMode').onclick = ()=>{
+    edgeMode = !edgeMode;
+    edgeFrom = null;
+    document.getElementById('edgeMode').textContent = edgeMode ? 'Edge Mode (ON)' : 'Edge Mode';
+  };
+  cy.on('tap', 'node', evt=>{
+    if(!edgeMode) return;
+    const n = evt.target;
+    if(!edgeFrom){ edgeFrom = n; return; }
+    if(edgeFrom.id() !== n.id()){
+      cy.add({ group:'edges', data: { id: 'e'+Math.random().toString(36).slice(2), source: edgeFrom.id(), target: n.id() } });
+      saveAutosave();
+    }
+    edgeFrom = null;
+  });
+
+  // ---------- Add / Delete ----------
+  function nextNodeId(){
+    // Try to keep numeric IDs compatible with your JSON
+    const ids = cy.nodes().map(n => Number(n.id())).filter(n => Number.isFinite(n));
+    const max = ids.length ? Math.max(...ids) : 0;
+    return String(max + 1);
+  }
+  document.getElementById('addNode').onclick = ()=>{
+    const ctr = cy.extent(); // center of view
+    const x = (ctr.x1 + ctr.x2)/2, y = (ctr.y1 + ctr.y2)/2;
+    const id = nextNodeId();
+    const node = cy.add({ group:'nodes', data:{ id, label:'B', group_:'Hub', type:'basic', size:14 }, position:{ x, y } });
+    if(snapToggle.checked) snapNode(node);
+    saveAutosave();
+  };
+  document.getElementById('deleteSel').onclick = ()=>{
+    cy.$(':selected').remove();
+    saveAutosave();
+  };
+
+  // ---------- Fit ----------
+  document.getElementById('fit').onclick = ()=> cy.fit(cy.elements(), 50);
+
+  // ---------- Import / Export ----------
+  function sanitizeAndToCy(obj){
+    const rawNodes = (obj && obj.nodes) ? obj.nodes : [];
+    const rawEdges = (obj && obj.edges) ? obj.edges : [];
+
+    const nodes = rawNodes
+      .map(n => ({
+        group:'nodes',
+        data:{
+          id: String(n.id),
+          label: n.label ?? (n.type === 'notable' ? 'Notable' : 'B'),
+          group_: n.group ?? 'Hub',
+          type: n.type ?? 'basic',
+          size: Number(n.size) || 14,
+          color: (typeof n.color === 'string') ? n.color : (n.color && n.color.border) || '#7dd3fc',
+          shape: n.shape || 'ellipse'
+        },
+        position:{ x: Number(n.x), y: Number(n.y) }
+      }))
+      .filter(el => Number.isFinite(el.position.x) && Number.isFinite(el.position.y));
+
+    const idSet = new Set(nodes.map(n => n.data.id));
+    let dropped = 0;
+    const edges = rawEdges
+      .filter(e => idSet.has(String(e.from)) && idSet.has(String(e.to)) )
+      .map(e => ({
+        group:'edges',
+        data:{ id: e.id ? String(e.id) : 'e'+Math.random().toString(36).slice(2),
+               source: String(e.from), target: String(e.to),
+               width: Number(e.width) || 1.5,
+               smooth: e.smooth || false }
+      }));
+    dropped = rawEdges.length - edges.length;
+
+    return { elements: nodes.concat(edges), dropped };
+  }
+
+  function toExportJSON(){
+    // back to your schema
+    const nodes = cy.nodes().map(n=>{
+      const d = n.data();
+      const p = n.position();
+      return {
+        id: Number.isFinite(+d.id) ? +d.id : d.id, // keep numbers as numbers
+        label: d.label,
+        group: d.group_ || 'Hub',
+        type: d.type || 'basic',
+        x: p.x,
+        y: p.y,
+        fixed: true,
+        shape: d.shape === 'ellipse' ? 'dot' : d.shape,
+        color: d.color || '#7dd3fc',
+        size: Number(d.size) || 14
+      };
+    });
+    const edges = cy.edges().map(e=>{
+      const d = e.data();
+      return {
+        id: d.id,
+        from: Number.isFinite(+d.source) ? +d.source : d.source,
+        to: Number.isFinite(+d.target) ? +d.target : d.target,
+        width: Number(d.width) || 1.5,
+        smooth: d.smooth || false
+      };
+    });
+    return { nodes, edges, settings: { grid: document.getElementById('gridToggle').checked, gridSize: Number(document.getElementById('gridSize').value)||30 } };
+  }
+
+  document.getElementById('export').onclick = ()=>{
+    const out = toExportJSON();
+    const blob = new Blob([JSON.stringify(out,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'astral_tree.json'; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  document.getElementById('import').onclick = ()=>{
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'application/json,.json';
+    inp.onchange = ()=>{
+      const f = inp.files && inp.files[0]; if(!f) return;
+      const rd = new FileReader();
+      rd.onload = ()=>{
+        try{
+          const obj = JSON.parse(rd.result);
+          const { elements, dropped } = sanitizeAndToCy(obj);
+          cy.elements().remove();
+          cy.add(elements);
+          cy.layout({ name:'preset' }).run(); // keep positions
+          cy.fit(cy.elements(), 50);
+          saveAutosave();
+          if(dropped) alert(`Imported with ${dropped} edge(s) skipped (missing endpoints).`);
+        }catch(e){ console.error(e); alert('Invalid JSON'); }
+      };
+      rd.readAsText(f);
+    };
+    inp.click();
+  };
+
+  // ---------- Autosave ----------
+  const AS_KEY = 'astral_tree_autosave_v1';
+  function saveAutosave(){
+    try{
+      localStorage.setItem(AS_KEY, JSON.stringify(toExportJSON()));
+      setStatus('Saved ✔');
+    }catch(e){ setStatus('Autosave failed'); }
+  }
+  function loadAutosave(){
+    try{
+      const raw = localStorage.getItem(AS_KEY);
+      if(!raw) return false;
+      const obj = JSON.parse(raw);
+      const { elements } = sanitizeAndToCy(obj);
+      cy.elements().remove();
+      cy.add(elements);
+      cy.layout({ name:'preset' }).run();
+      cy.fit(cy.elements(), 50);
+      setStatus('Autosave restored');
+      return true;
+    }catch(e){ setStatus('Autosave restore failed'); return false; }
+  }
+  document.getElementById('restore').onclick = loadAutosave;
+
+  function setStatus(t){ document.getElementById('status').textContent = t; setTimeout(()=>{ document.getElementById('status').textContent='Ready'; }, 1500); }
+
+  // Save on edits
+  cy.on('add remove data position', saveAutosave);
+
+  // ---------- First run: try to restore autosave ----------
+  loadAutosave();
+  drawGrid();
+})();
+</script>
+</body>
+</html>
