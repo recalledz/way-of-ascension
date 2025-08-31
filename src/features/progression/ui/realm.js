@@ -40,7 +40,7 @@ export function updateRealmUI() {
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   updateCurrentRealmHeader();
-  
+
   // Update foundation text (inline above Qi bar)
   const prevFoundation = parseInt(document.getElementById('foundValSilhouette').textContent) || 0;
   const currentFoundation = Math.floor(S.foundation);
@@ -70,6 +70,7 @@ export function updateActivityCultivation() {
   setText('qiCapSilhouette', qCap(S));
   setText('qiRegenActivity', qiRegenPerSec(S).toFixed(1));
   setText('foundationRate', foundationGainPerSec(S).toFixed(1));
+  setText('astralInsightMini', `Insight: ${Math.round(S.astralPoints || 0)}`);
   setText('btChanceActivity', (breakthroughChance(S) * 100).toFixed(1) + '%');
   setText('powerMultActivity', powerMult(S).toFixed(1) + 'x');
 

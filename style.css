@@ -4520,13 +4520,22 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 
 .astral-insight{
-  position:absolute;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#fff;
-  font-size:20px;
-  z-index:10;
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#fff;
+    font-size:20px;
+    z-index:10;
+}
+
+.astral-insight-mini{
+    position:absolute;
+    top:50px;
+    right:10px;
+    color:#fff;
+    font-size:16px;
+    z-index:5;
 }
 
 .astral-tree-close{

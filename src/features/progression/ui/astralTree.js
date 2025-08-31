@@ -124,12 +124,12 @@ export function mountAstralTreeUI() {
     prevDocOverflowY = document.documentElement.style.overflowY;
     document.body.style.overflowY = 'hidden';
     document.documentElement.style.overflowY = 'hidden';
-    if (starfield && starfield.childElementCount === 0) {
-      generateStarfield(starfield);
-    }
-    const el = document.getElementById('astralInsight');
-    if (el) el.textContent = `Insight: ${S.astralPoints || 0}`;
-  });
+      if (starfield && starfield.childElementCount === 0) {
+        generateStarfield(starfield);
+      }
+      const el = document.getElementById('astralInsight');
+      if (el) el.textContent = `Insight: ${Math.round(S.astralPoints || 0)}`;
+    });
 
   closeBtn.addEventListener('click', () => {
     overlay.style.display = 'none';
@@ -203,8 +203,11 @@ async function buildTree() {
   const manifest = buildManifest(nodes);
 
   const insightEl = document.getElementById('astralInsight');
+  const miniEl = document.getElementById('astralInsightMini');
   function updateInsight() {
-    if (insightEl) insightEl.textContent = `Insight: ${S.astralPoints || 0}`;
+    const v = Math.round(S.astralPoints || 0);
+    if (insightEl) insightEl.textContent = `Insight: ${v}`;
+    if (miniEl) miniEl.textContent = `Insight: ${v}`;
   }
   updateInsight();
 
