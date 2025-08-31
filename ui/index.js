@@ -583,14 +583,18 @@ function setupLogSheet() {
   function setHeight() {
     if (mq.matches) {
       const h = sheet.getAttribute('data-open') === 'true'
-        ? sheet.getBoundingClientRect().height
-        : toggle.getBoundingClientRect().height;
-      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+        ? sheet.offsetHeight
+        : toggle.offsetHeight;
+      document.documentElement.style.setProperty('--log-h', h + 'px');
     } else {
-      const h = logEl?.getBoundingClientRect().height ?? 0;
-      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+      const h = logEl?.offsetHeight ?? 0;
+      document.documentElement.style.setProperty('--log-h', h + 'px');
     }
   }
+  const ro = new ResizeObserver(setHeight);
+  ro.observe(sheet);
+  ro.observe(toggle);
+  if (logEl) ro.observe(logEl);
   function close() {
     sheet.setAttribute('data-open', 'false');
     toggle.setAttribute('aria-expanded', 'false');

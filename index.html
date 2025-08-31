@@ -143,7 +143,7 @@
           </div>
         </div>
 
-        <div id="cultivationSubTab" class="cultivation-tab-content tab-content active">
+        <div id="cultivationSubTab" class="cultivation-tab-content tab-content active scroll-area">
           <div class="cultivation-layout">
           <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
@@ -286,7 +286,7 @@
           </div>
         </div>
 
-        <div id="statsSubTab" class="cultivation-tab-content tab-content" style="display:none;">
+        <div id="statsSubTab" class="cultivation-tab-content tab-content scroll-area" style="display:none;">
           <div class="cards">
             <div class="card">
               <h4>Breakthrough Details</h4>
@@ -322,7 +322,7 @@
         </div>
       </section>
 
-      <section id="activity-physique" class="activity-content tab-content" style="display:none;">
+      <section id="activity-physique" class="activity-content tab-content scroll-area" style="display:none;">
         <h2> Physique Training</h2>
         <div class="cards">
           <div class="card">
@@ -391,7 +391,7 @@
         </div>
       </section>
 
-      <section id="activity-mining" class="activity-content tab-content" style="display:none;">
+      <section id="activity-mining" class="activity-content tab-content scroll-area" style="display:none;">
         <h2> Mining</h2>
         <div class="cards">
           <div class="card">
@@ -582,7 +582,7 @@
             </div>
 
             <!-- Combat Log -->
-            <div class="combat-log" id="combatLog">
+            <div class="combat-log scroll-area" id="combatLog">
               <div class="log-entry">Select an area to begin your adventure...</div>
             </div>
           </div>
@@ -597,7 +597,7 @@
             </div>
             
             <!-- Progress Tab -->
-            <div id="progressTab" class="adventure-tab-content tab-content active">
+            <div id="progressTab" class="adventure-tab-content tab-content active scroll-area">
               <div class="stat"><span>Total Kills</span><span id="totalKills">0</span></div>
               <div class="stat"><span>Areas Completed</span><span id="areasCompleted">0</span></div>
               <div class="stat"><span>Zones Unlocked</span><span id="zonesUnlocked">1</span></div>
@@ -613,14 +613,14 @@
             </div>
             
             <!-- Bestiary Tab -->
-            <div id="bestiaryTab" class="adventure-tab-content tab-content" style="display: none;">
-              <div class="bestiary-list" id="bestiaryList">
+            <div id="bestiaryTab" class="adventure-tab-content tab-content scroll-area" style="display: none;">
+              <div class="bestiary-list scroll-area" id="bestiaryList">
                 <div class="muted">Defeat enemies to unlock their information...</div>
               </div>
             </div>
 
             <!-- Loot Tab -->
-            <div id="lootTab" class="adventure-tab-content tab-content" style="display: none;">
+            <div id="lootTab" class="adventure-tab-content tab-content scroll-area" style="display: none;">
               <div class="muted warn">Items here are not safe. Retreat to claim; death forfeits them.</div>
               <div class="session-loot-list" id="sessionLootList"></div>
               <div class="loot-actions" style="text-align:right; margin-top:8px;">
@@ -630,7 +630,7 @@
             </div>
             
             <!-- Proficiencies Tab -->
-            <div id="proficienciesTab" class="adventure-tab-content tab-content" style="display: none;">
+            <div id="proficienciesTab" class="adventure-tab-content tab-content scroll-area" style="display: none;">
               <div class="stat"><span id="weaponLabel">Fists Level</span><span id="weaponLevel">1</span></div>
               <div class="stat"><span>Experience</span><span id="weaponExp">0</span> / <span id="weaponExpMax">100</span></div>
               <div class="activity-progress-bar"><div class="progress-fill" id="weaponExpFill"></div></div>
@@ -648,14 +648,14 @@
               <h3>🗺️ Adventure Map</h3>
               <button class="btn small ghost close-button" id="closeMapButton" aria-label="Close map">✕</button>
             </div>
-            <div class="map-content" id="mapContent">
+            <div class="map-content scroll-area" id="mapContent">
               <!-- Zone accordions will be populated by JavaScript -->
             </div>
           </div>
         </div>
       </section>
 
-      <section id="activity-character" class="activity-content tab-content" style="display:none;">
+      <section id="activity-character" class="activity-content tab-content scroll-area" style="display:none;">
         <h2>🧙 Character</h2>
         <div class="cards character-cards">
           <div class="card">
@@ -683,7 +683,7 @@
               <button class="gear-tab-btn active" data-tab="gearEquip">Gear</button>
               <button class="gear-tab-btn" data-tab="gearAbilities">Abilities</button>
             </div>
-            <div id="gearEquipSubTab" class="gear-tab-content active">
+            <div id="gearEquipSubTab" class="gear-tab-content active scroll-area">
               <div class="equip-slots">
                 <div class="equip-slot" id="slot-mainhand"><span class="slot-label">Weapon</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
                 <div class="equip-slot" id="slot-head"><span class="slot-label">Head</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
@@ -694,7 +694,7 @@
               <div class="stat" title="Chance to hit enemies">⚔ <span id="accuracyVal">0</span></div>
               <div class="stat" title="Chance to avoid attacks">👣 <span id="dodgeVal">0</span></div>
             </div>
-            <div id="gearAbilitiesSubTab" class="gear-tab-content" style="display:none;">
+            <div id="gearAbilitiesSubTab" class="gear-tab-content scroll-area" style="display:none;">
               <div id="abilitySlots"></div>
               <div id="availableAbilities"></div>
             </div>
@@ -713,7 +713,7 @@
         </div>
       </section>
 
-      <section id="activity-sect" class="activity-content tab-content" style="display:none;">
+      <section id="activity-sect" class="activity-content tab-content scroll-area" style="display:none;">
         <h2>🏛️ Sect Management</h2>
         <div class="cards">
           <div class="card">
@@ -724,7 +724,7 @@
         </div>
       </section>
 
-      <section id="activity-cooking" class="activity-content tab-content" style="display:none;">
+      <section id="activity-cooking" class="activity-content tab-content scroll-area" style="display:none;">
         <h2>🍳 Cooking</h2>
         <div class="cards">
           <div class="card">
@@ -885,7 +885,7 @@
         </div>
       </section>
 
-      <section id="activity-alchemy" class="activity-content tab-content" style="display:none;">
+      <section id="activity-alchemy" class="activity-content tab-content scroll-area" style="display:none;">
         <h2>⚗️ Alchemy</h2>
         <div class="cards">
           <div class="card">
@@ -919,10 +919,10 @@
           <button class="mind-tab-btn" data-tab="mindStats">Stats</button>
           <button class="mind-tab-btn" data-tab="mindPuzzles">Puzzles</button>
         </div>
-        <div id="mindMainTab" class="mind-tab-content tab-content active"></div>
-        <div id="mindReadingTab" class="mind-tab-content tab-content" style="display:none;"></div>
-        <div id="mindStatsTab" class="mind-tab-content tab-content" style="display:none;"></div>
-        <div id="mindPuzzlesTab" class="mind-tab-content tab-content" style="display:none;"></div>
+        <div id="mindMainTab" class="mind-tab-content tab-content active scroll-area"></div>
+        <div id="mindReadingTab" class="mind-tab-content tab-content scroll-area" style="display:none;"></div>
+        <div id="mindStatsTab" class="mind-tab-content tab-content scroll-area" style="display:none;"></div>
+        <div id="mindPuzzlesTab" class="mind-tab-content tab-content scroll-area" style="display:none;"></div>
       </section>
 
       <section id="tab-combat">
@@ -940,12 +940,12 @@
 
       <div class="log-sheet" id="logSheet" data-open="false">
         <button class="log-toggle" id="logToggle" aria-controls="log" aria-expanded="false">Log ▾</button>
-        <div class="log" id="log"></div>
+        <div class="log scroll-area" id="log"></div>
       </div>
     </section>
     <div class="modal-overlay" id="cultivationProgressionOverlay" style="display: none;">
       <div class="modal-backdrop"></div>
-      <div class="modal-content card cultivation-progress-card" id="cultivationProgressionCard">
+      <div class="modal-content card cultivation-progress-card scroll-area" id="cultivationProgressionCard">
         <div class="card-header">
           <h4>Cultivation Progression</h4>
           <button class="btn small ghost" id="closeProgressBtn">×</button>
