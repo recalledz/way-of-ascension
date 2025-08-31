@@ -2548,7 +2548,7 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: calc(100vh - 120px);
+  min-height: calc(100vh - 120px);
 }
 
 .adventure-progress-container {
@@ -3372,8 +3372,9 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 }
 
 .ability-bar {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 4px;
 }
 
 .ability-slot {
@@ -4298,8 +4299,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
   color: #000 !important;
 }
 
-/* Ability bar */
-.ability-bar { display:flex; gap:4px; }
+.ability-bar { display:grid; grid-template-columns: repeat(3, auto); gap:4px; }
 .ability-card { width:60px; height:90px; background:var(--panel); border:1px solid var(--ink-light); border-radius:4px; position:relative; padding:2px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
 .ability-card .ability-name { font-size:10px; text-align:center; }
 .ability-card .ability-title { display:flex; flex-direction:column; align-items:center; }
