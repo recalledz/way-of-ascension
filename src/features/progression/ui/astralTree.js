@@ -96,6 +96,25 @@ export function mountAstralTreeUI() {
   const closeBtn = document.getElementById('closeAstralTree');
   if (!openBtn || !overlay || !closeBtn) return;
 
+  const starfield = overlay.querySelector('.starfield');
+
+  function rand() {
+    return crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff;
+  }
+
+  function generateStarfield(container, count = 200) {
+    const { clientWidth: w, clientHeight: h } = container;
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement('span');
+      star.style.left = `${rand() * w}px`;
+      star.style.top = `${rand() * h}px`;
+      const scale = rand() * 1.5 + 0.5;
+      star.style.transform = `scale(${scale})`;
+      star.style.opacity = (rand() * 0.5 + 0.3).toString();
+      container.appendChild(star);
+    }
+  }
+
   let prevOverflowY = '';
   let prevDocOverflowY = '';
 
@@ -105,6 +124,9 @@ export function mountAstralTreeUI() {
     prevDocOverflowY = document.documentElement.style.overflowY;
     document.body.style.overflowY = 'hidden';
     document.documentElement.style.overflowY = 'hidden';
+    if (starfield && starfield.childElementCount === 0) {
+      generateStarfield(starfield);
+    }
     const el = document.getElementById('astralInsight');
     if (el) el.textContent = `Insight: ${S.astralPoints || 0}`;
   });

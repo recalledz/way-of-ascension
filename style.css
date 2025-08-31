@@ -4507,11 +4507,16 @@ html.reduce-motion .log-sheet{transition:none;}
   position:absolute;
   width:100%;
   height:100%;
-  background-image:radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
-  background-size:50px 50px,100px 100px;
-  background-position:0 0,25px 25px;
-  opacity:0.2;
+  overflow:hidden;
   pointer-events:none;
+}
+
+.astral-skill-tree .starfield span{
+  position:absolute;
+  width:1px;
+  height:1px;
+  background:#fff;
+  border-radius:50%;
 }
 
 .astral-insight{
