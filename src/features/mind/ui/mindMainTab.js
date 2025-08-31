@@ -51,6 +51,21 @@ export function renderMindMainTab(rootEl, state) {
   card.appendChild(table);
   rootEl.appendChild(card);
 
+  // Mind attribute breakdown
+  const mindAttr = state.stats?.mind ?? 0;
+  const mindPoints = state.mind.level; // each level grants one point
+  const attrCard = document.createElement('div');
+  attrCard.className = 'card';
+  attrCard.innerHTML = `
+    <h4>Mind Attribute</h4>
+    <div class="stat"><span>Mind Points</span><span>${mindPoints}</span></div>
+    <div class="stat"><span>Total Mind</span><span>${mindAttr}</span></div>
+    <div class="stat"><span>Spell Power</span><span>+${(mindPoints * 6).toFixed(1)}% (6%/pt)</span></div>
+    <div class="stat"><span>Alchemy Success</span><span>+${(mindPoints * 4).toFixed(1)}% (4%/pt)</span></div>
+    <div class="stat"><span>Learning Speed</span><span>+${(mindPoints * 5).toFixed(1)}% (5%/pt)</span></div>
+  `;
+  rootEl.appendChild(attrCard);
+
   // Temporary talisman craft tester
   const craftCard = document.createElement('div');
   craftCard.className = 'card';
