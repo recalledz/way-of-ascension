@@ -187,6 +187,30 @@ export function updateBattleDisplay() {
     const playerQiPct = playerMaxQi ? (playerQi / playerMaxQi) * 100 : 0;
     playerQiFill.style.width = `${playerQiPct}%`;
   }
+  const playerStunFill = document.getElementById('playerStunFill');
+  const playerStunBarEl = document.getElementById('playerStunBar');
+  const playerStunGauge = S.adventure.playerStunBar || 0;
+  if (playerStunFill) {
+    const pct = playerStunGauge / STUN_THRESHOLD;
+    playerStunFill.style.width = `${pct * 100}%`;
+    const hue = 39 * (1 - pct);
+    playerStunFill.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+  }
+  if (playerStunBarEl) {
+    const show = S.adventure.inCombat && playerStunGauge > 1;
+    playerStunBarEl.style.display = show ? 'block' : 'none';
+    playerStunBarEl.classList.toggle('stun-flash', playerStunGauge >= STUN_THRESHOLD * 0.9 && playerStunGauge < STUN_THRESHOLD);
+    playerStunBarEl.classList.toggle('stun-shake', playerStunGauge >= STUN_THRESHOLD);
+    const statuses = S.statuses || {};
+    const info = [
+      `Gauge: ${Math.round(playerStunGauge)}`,
+      `Threshold: ${STUN_THRESHOLD}`,
+      `Decay: ${DECAY_PER_SECOND}/s`
+    ];
+    if (statuses.stunWeakened) info.push('stunWeakened active');
+    if (statuses.stunImmune) info.push('stunImmune active');
+    playerStunBarEl.title = info.join('\n');
+  }
   const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
   let playerAttackRate = calculatePlayerAttackRate(S);
   if (S.lightningStep) {
@@ -419,6 +443,7 @@ export function updateAdventureCombat() {
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
     tickStunDecay(S, deltaTime, now); // STATUS-REFORM
+    S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
     if (S.adventure.currentEnemy) {
       tickStunDecay(S.adventure.currentEnemy, deltaTime, now); // STATUS-REFORM
       S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
@@ -532,6 +557,7 @@ export function updateAdventureCombat() {
             showFloatingText({ targetEl: playerEl, result: isCrit ? 'crit' : 'hit', amount: taken });
           }
           performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
+          S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
           if (weapon.typeKey === 'focus') {
             const pos = getCombatPositions();
             if (pos) {
@@ -778,7 +804,9 @@ export function startBossCombat() {
     hp: h.enemyHP
   };
   initStun(S.adventure.currentEnemy);
+  initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
+  S.adventure.playerStunBar = S.stun.value;
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
@@ -822,7 +850,9 @@ export function startAdventureCombat() {
     hp: h.enemyHP
   };
   initStun(S.adventure.currentEnemy);
+  initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
+  S.adventure.playerStunBar = S.stun.value;
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
