@@ -202,16 +202,21 @@ async function buildTree() {
   const maxX = Math.max(...xs) + 50;
   const minY = Math.min(...ys) - 50;
   const maxY = Math.max(...ys) + 50;
-  const width = maxX - minX;
-  const height = maxY - minY;
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
+  const treeWidth = maxX - minX;
+  const treeHeight = maxY - minY;
+
+  // Center on the initial "max Qi +50" node shown in the screenshot
+  const startNode =
+    nodes.find(n => n.label === 'max Qi +50') || nodes[0];
+  const centerX = startNode.x;
+  const centerY = startNode.y;
+  const INITIAL_ZOOM = 5;
 
   const viewBox = {
-    x: centerX - width / 4,
-    y: centerY - height / 4,
-    width: width / 2,
-    height: height / 2,
+    x: centerX - treeWidth / (2 * INITIAL_ZOOM),
+    y: centerY - treeHeight / (2 * INITIAL_ZOOM),
+    width: treeWidth / INITIAL_ZOOM,
+    height: treeHeight / INITIAL_ZOOM,
   };
 
   function applyViewBox() {
