@@ -4293,13 +4293,13 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
 
 /* Ability bar */
 .ability-bar { display:flex; gap:4px; }
-.ability-card { width:60px; height:90px; background:var(--panel); border:1px solid var(--ink-light); border-radius:4px; position:relative; padding:2px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
-.ability-card .ability-name { font-size:10px; text-align:center; }
+.ability-card { width:48px; height:72px; background:var(--panel); border:1px solid var(--ink-light); border-radius:3.2px; position:relative; padding:1.6px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
+.ability-card .ability-name { font-size:8px; text-align:center; }
 .ability-card .ability-title { display:flex; flex-direction:column; align-items:center; }
-.ability-card .ability-damage { font-size:10px; }
-.ability-card .ability-icon { font-size:24px; }
-.ability-card .qi-badge { position:absolute; bottom:12px; right:2px; font-size:10px; background:var(--panel); padding:1px 3px; border-radius:3px; }
-.ability-card .keybind { font-size:10px; }
+.ability-card .ability-damage { font-size:8px; }
+.ability-card .ability-icon { font-size:19.2px; }
+.ability-card .qi-badge { position:absolute; bottom:9.6px; right:1.6px; font-size:8px; background:var(--panel); padding:0.8px 2.4px; border-radius:2.4px; }
+.ability-card .keybind { font-size:8px; }
 .ability-card.cooling { opacity:0.6; }
 .cooldown-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.6); color:#fff; display:flex; align-items:center; justify-content:center; }
 .ability-card.insufficient { filter:grayscale(1); }
