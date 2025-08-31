@@ -4573,7 +4573,7 @@ html.reduce-motion .log-sheet{transition:none;}
 .node{fill:#000;stroke-width:2;filter:drop-shadow(0 0 4px currentColor);}
 .node.start{stroke-width:2;}
 
-.connector.hub,.node.hub{stroke:#fcd34d;color:#fcd34d;}
+.connector.hub,.node.hub{stroke:#7dd3fc;color:#7dd3fc;}
 .connector.wood,.node.wood{stroke:#4caf50;color:#4caf50;}
 .connector.fire,.node.fire{stroke:#f44336;color:#f44336;}
 .connector.earth,.node.earth{stroke:#795548;color:#795548;}
