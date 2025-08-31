@@ -1,7 +1,7 @@
 // Redesigned Manuals tab with queue bar and collapsible manual cards
 
 import { listManuals, getManual } from '../data/manuals.js';
-import { calcManualSpeedDetails } from '../logic.js';
+import { calcManualSpeedDetails, calcManualSpeed } from '../logic.js';
 import { emit, on } from '../../../shared/events.js';
 
 const EFFECT_LABELS = {
@@ -28,7 +28,7 @@ function cap(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function renderSpeedInfo(manual, stats) {
+function renderSpeedInfo(manual, stats, state) {
   const info = calcManualSpeedDetails(manual, stats);
   const total = ((info.mult - 1) * 100).toFixed(0);
   const parts = Object.keys(manual.statWeights || {}).map(stat => {
@@ -36,7 +36,9 @@ function renderSpeedInfo(manual, stats) {
     const sign = pct >= 0 ? '+' : '';
     return `${cap(stat)} ${sign}${pct.toFixed(0)}%`;
   }).join(', ');
-  return `<div>Reading Speed: ${total >= 0 ? '+' : ''}${total}% (${parts})</div>`;
+  const comp = state?.astralTreeBonuses?.manualComprehensionPct || 0;
+  const compStr = comp ? `<div>Comprehension: +${comp.toFixed(0)}%</div>` : '';
+  return `<div>Reading Speed: ${total >= 0 ? '+' : ''}${total}% (${parts})</div>${compStr}`;
 }
 
 function renderEffects(manual) {
@@ -81,7 +83,7 @@ function showManualPopup(manual, S) {
         <button class="btn small ghost close-btn">×</button>
       </div>
       <div class="manual-meta">${manual.category} • Req Level ${manual.reqLevel}</div>
-      ${renderSpeedInfo(manual, S.stats)}
+      ${renderSpeedInfo(manual, S.stats, S)}
       ${renderEffects(manual)}
       <div class="manual-actions">
         <button class="btn small add-btn">Add to Queue</button>
@@ -132,7 +134,7 @@ function buildQueueItems(S) {
     const m = getManual(id);
     if (m) {
       const rec = S.mind.manualProgress[id] || { xp: 0, level: 0 };
-      const speed = calcManualSpeedDetails(m, S.stats).mult;
+      const speed = calcManualSpeed(m, S.stats, S);
       const needed = m.baseTimeSec * m.levelTimeMult[rec.level] * m.xpRate;
       const xpRate = m.xpRate * speed;
       const eta = (needed - rec.xp) / xpRate;

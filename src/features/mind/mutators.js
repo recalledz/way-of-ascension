@@ -79,7 +79,7 @@ export function onTick(S, dt) {
     stopReading(S);
     return;
   }
-  const add = calcFromManual(manual, dt, S.stats);
+  const add = calcFromManual(manual, dt, S.stats, S);
   const applied = applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.fromReading += add;
   S.mind.xp += applied;

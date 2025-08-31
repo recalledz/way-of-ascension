@@ -7,7 +7,7 @@ export function calcFromProficiency(profXp) {
   return Math.max(0, profXp) * 0.25;
 }
 
-export function calcManualSpeed(manual, stats) {
+export function calcManualSpeed(manual, stats, state) {
   const weights = manual?.statWeights;
   if (!weights || !stats) return 1;
   let boost = 0;
@@ -17,11 +17,13 @@ export function calcManualSpeed(manual, stats) {
   }
   const mult = 1 + boost / 10;
   const cap = 1 + (manual?.maxSpeedBoostPct || 0) / 100;
-  return Math.min(mult, cap);
+  const treeMult = 1 + (state?.astralTreeBonuses?.manualComprehensionPct || 0) / 100;
+  return Math.min(mult, cap) * treeMult;
 }
 
 // Return detailed reading speed information including per-stat
-// contributions and the final multiplier after caps.
+// contributions and the multiplier after caps. Does not include
+// comprehension bonuses from the astral tree.
 export function calcManualSpeedDetails(manual, stats) {
   const weights = manual?.statWeights;
   if (!weights || !stats) return { mult: 1, contributions: {} };
@@ -49,9 +51,9 @@ export function calcManualSpeedDetails(manual, stats) {
   return { mult, contributions };
 }
 
-export function calcFromManual(manual, dt, stats) {
+export function calcFromManual(manual, dt, stats, state) {
   if (!manual) return 0;
-  const speed = calcManualSpeed(manual, stats);
+  const speed = calcManualSpeed(manual, stats, state);
   return manual.xpRate * dt * speed;
 }
 
