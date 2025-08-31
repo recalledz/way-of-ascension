@@ -105,26 +105,24 @@ export function updateActivityCultivation() {
 
   const statsCard = document.getElementById('cultivationStatsCard');
   if (statsCard) {
-    statsCard.style.display = S.activities.cultivation ? 'block' : 'none';
+    statsCard.style.display = 'block';
   }
 
-  if (S.activities.cultivation) {
-    if (!S.cultivation) {
-      S.cultivation = {
-        talent: 1.0,
-        comprehension: 1.0,
-        foundationMult: 1.0,
-        pillMult: 1.0,
-        buildingMult: 1.0
-      };
-    }
-
-    setText('cultivationTalent', (S.cultivation.talent || 1.0).toFixed(1) + 'x');
-    setText('cultivationComprehension', (S.cultivation.comprehension || 1.0).toFixed(1) + 'x');
-    setText('cultivationFoundationMult', (S.cultivation.foundationMult || 1.0).toFixed(1) + 'x');
-    setText('cultivationPillMult', (S.cultivation.pillMult || 1.0).toFixed(1) + 'x');
-    setText('cultivationBuildingMult', (S.cultivation.buildingMult || 1.0).toFixed(1) + 'x');
+  if (!S.cultivation) {
+    S.cultivation = {
+      talent: 1.0,
+      comprehension: 1.0,
+      foundationMult: 1.0,
+      pillMult: 1.0,
+      buildingMult: 1.0
+    };
   }
+
+  setText('cultivationTalent', (S.cultivation.talent || 1.0).toFixed(1) + 'x');
+  setText('cultivationComprehension', (S.cultivation.comprehension || 1.0).toFixed(1) + 'x');
+  setText('cultivationFoundationMult', (S.cultivation.foundationMult || 1.0).toFixed(1) + 'x');
+  setText('cultivationPillMult', (S.cultivation.pillMult || 1.0).toFixed(1) + 'x');
+  setText('cultivationBuildingMult', (S.cultivation.buildingMult || 1.0).toFixed(1) + 'x');
 
   updateCultivationProgressionTree();
   setupCultivationTabs();
