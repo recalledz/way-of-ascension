@@ -2391,6 +2391,17 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   animation: perfectZonePulse 2s ease-in-out infinite;
 }
 
+.timing-cursor {
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  transform: translateX(-50%);
+}
+
 /* Session-Based Training Interface */
 .session-controls {
   text-align: center;
