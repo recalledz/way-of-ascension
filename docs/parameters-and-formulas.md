@@ -25,12 +25,13 @@ All attribute levels grant **+1% talent**.
 
 | Attribute | Bonus per Level |
 | --- | --- |
-| Physique | +5 HP, +1 carry capacity |
+| Physique | +3 HP, +1 carry capacity |
 | Mind | +1% Qi Shield refill efficiency, +6% Qi Shield capacity |
 | Agility | +2% dodge chance |
 
 ## Physique-Derived Bonuses
-- **Carry Capacity**: `max(0, (Physique - 10) * 5)` extra units of carrying capacity.
+- **HP**: `Physique * 3` additional maximum HP.
+- **Carry Capacity**: `Physique` extra units of carrying capacity.
 
 ## Cultivation Stats
 - **Qi**: 100
