@@ -21,8 +21,12 @@ way-of-ascension/
 │   └── rules/
 │       └── way-of-ascension.md
 ├── astral-tree-prototype/
-│   ├── astral_tree.json
-│   └── astral_tree_bulder.html
+│   ├── astral-tree-v3.0.html
+│   ├── astral-tree-v4.html
+│   ├── template-tree/
+│   │   ├── astral_tree-base-structure.json
+│   │   └── astral_tree_pentagon.json
+│   └── workoround-tree.html
 ├── browser-tools-mcp/
 │   ├── browser-tools-mcp/
 │   │   ├── README.md
@@ -768,12 +772,24 @@ function updateAll() {
 **Purpose**: Stores node coordinates and edge connections for the astral skill tree. Used by the UI to render the graph and compute adjacency.
 **Key Functions**: n/a
 
-#### `astral-tree-prototype/astral_tree.json` - Prototype Tree Data
-**Purpose**: Original exported node/edge layout used for building the astral tree.
+#### `astral-tree-prototype/astral-tree-v3.0.html` - Prototype Tree v3
+**Purpose**: Legacy prototype of the astral skill tree layout (version 3.0) used for early design tests.
 **Key Functions**: n/a
 
-#### `astral-tree-prototype/astral_tree_bulder.html` - Prototype Tree Builder
-**Purpose**: Standalone editor (using vis-network) for tweaking and exporting astral tree layouts.
+#### `astral-tree-prototype/astral-tree-v4.html` - Prototype Tree v4
+**Purpose**: Updated prototype of the astral skill tree layout (version 4) for layout experimentation.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/template-tree/astral_tree-base-structure.json` - Base Structure Template
+**Purpose**: JSON template describing a minimal base structure for astral tree layouts.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/template-tree/astral_tree_pentagon.json` - Pentagon Template
+**Purpose**: JSON template providing a pentagon-style layout for astral tree experimentation.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/workoround-tree.html` - Workaround Tree Prototype
+**Purpose**: Experimental HTML prototype exploring alternate tree rendering workarounds.
 **Key Functions**: n/a
 
 ### UI Effects (`src/features/combat/ui/`)

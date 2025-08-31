@@ -91,14 +91,23 @@ export function mountAstralTreeUI() {
   const closeBtn = document.getElementById('closeAstralTree');
   if (!openBtn || !overlay || !closeBtn) return;
 
+  let prevOverflowY = '';
+  let prevDocOverflowY = '';
+
   openBtn.addEventListener('click', () => {
     overlay.style.display = 'block';
+    prevOverflowY = document.body.style.overflowY;
+    prevDocOverflowY = document.documentElement.style.overflowY;
+    document.body.style.overflowY = 'hidden';
+    document.documentElement.style.overflowY = 'hidden';
     const el = document.getElementById('astralInsight');
     if (el) el.textContent = `Insight: ${S.astralPoints || 0}`;
   });
 
   closeBtn.addEventListener('click', () => {
     overlay.style.display = 'none';
+    document.body.style.overflowY = prevOverflowY || '';
+    document.documentElement.style.overflowY = prevDocOverflowY || '';
   });
 
   buildTree().catch(err => console.error('Failed to build Astral Tree', err));
