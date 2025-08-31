@@ -19,24 +19,7 @@ export function loadSave(){
 
 export const defaultState = () => {
   const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-  return {
-  ver: SAVE_VERSION,
-  time:0,
-  qi: 100, qiMax: 100, qiRegenPerSec: 1,
-  qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
-  qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
-  foundation: 0,
-  astralPoints: 50,
-  ...initHp(100),
-  shield: { current: 0, max: 0 },
-  autoFillShieldFromQi: true,
-  stunBar: 0, // STATUS-REFORM player stun accumulation
-  realm: { tier: 0, stage: 1 },
-  wood:0, cores:0,
-  pills:{qi:0, body:0, ward:0},
-  atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
-  // Expanded Stat System
-  stats: {
+  const stats = {
     physique: 10,        // Physical power
     mind: 10,            // Spell power, alchemy, learning speed
     agility: 10,         // Weapon handling, dodge
@@ -54,7 +37,26 @@ export const defaultState = () => {
     stunResist: 0,              // Resistance to stun effects
     ccResist: 0,                // Resistance to crowd control duration
     stunBuildTakenReduction: 0  // Reduction to stun build taken
-  },
+  };
+  const baseHP = 100 + stats.physique * 3;
+  return {
+  ver: SAVE_VERSION,
+  time:0,
+  qi: 100, qiMax: 100, qiRegenPerSec: 1,
+  qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
+  qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
+  foundation: 0,
+  astralPoints: 50,
+  ...initHp(baseHP),
+  shield: { current: 0, max: 0 },
+  autoFillShieldFromQi: true,
+  stunBar: 0, // STATUS-REFORM player stun accumulation
+  realm: { tier: 0, stage: 1 },
+  wood:0, cores:0,
+  pills:{qi:0, body:0, ward:0},
+  atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
+  // Expanded Stat System
+  stats,
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
@@ -100,7 +102,7 @@ export const defaultState = () => {
     killsInCurrentArea: 0,
     bestiary: {},
     inCombat: false,
-    playerHP: 100,
+    playerHP: baseHP,
     enemyHP,
     enemyMaxHP,
     currentEnemy: null,

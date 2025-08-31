@@ -19,9 +19,10 @@ modeled as status entries with duration, stack limits and rule modifiers. Some
 statuses scale with attributes like Physique or Mind, and special flags handle
 stun immunity and weakened states【F:src/data/status.ts†L1-L55】.
 
-The Physique attribute grants permanent bonuses. For every point above 10 the
-player gains +5 maximum HP and +1 carry capacity, with helper functions for the
-training mini‑game to step the cursor and evaluate timing accuracy【F:src/features/physique/logic.js†L7-L69】.
+The Physique attribute grants permanent bonuses. Each Physique level awards one
+Physique point. For every point the player gains +3 maximum HP and +1
+carry capacity, with helper functions for the training mini‑game to step the
+cursor and evaluate timing accuracy【F:src/features/physique/logic.js†L7-L69】.
 
 ## Combat and Abilities
 
