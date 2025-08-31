@@ -11,8 +11,8 @@ function slice(state){
 export function getPhysiqueEffects(state){
   const root = state.stats ? state : { stats: { physique: 10 } };
   const current = root.stats.physique || 10;
-  const hpBonus = Math.max(0, Math.floor((current - 10) * 5));
-  const carryCapacity = Math.max(0, current - 10);
+  const hpBonus = Math.floor(current * 3);
+  const carryCapacity = current;
   const maxStamina = current * 10;
   const baseStaminaRegen = 0.03; // base stamina recovery per second
   const staminaRegen = baseStaminaRegen * (1 + current * 0.1); // 10% per physique point

@@ -16,6 +16,11 @@ export function addPhysiqueExp(amount, state = physiqueState){
       state.stats.physique = (state.stats.physique || 10) + 1;
       p.maxStamina = (state.stats.physique || 10) * 10;
       p.stamina = Math.min(p.stamina || 0, p.maxStamina);
+      state.hpMax = (state.hpMax || 0) + 3;
+      state.hp = Math.min(state.hpMax, (state.hp || 0) + 3);
+      if(state.adventure){
+        state.adventure.playerHP = state.hp;
+      }
     }else{
       p.maxStamina += 10;
       p.stamina = Math.min(p.stamina || 0, p.maxStamina);
