@@ -1987,8 +1987,15 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .cultivation-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
   border-bottom: 1px solid var(--accent);
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  z-index: 900;
+  background: var(--panel);
+  padding: 0 var(--pad);
 }
 
 .cultivation-tab-btn {
@@ -2017,6 +2024,10 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   border-bottom: 2px solid var(--ink);
   font-weight: 600;
   box-shadow: none;
+}
+
+.cultivation-tab-content {
+  padding-top: calc(var(--gap) + var(--tabs-h));
 }
 
 /* Mind Activity Tabs */
