@@ -9,6 +9,14 @@ import { ABILITIES } from '../../ability/data/abilities.js';
 let currentFilter = 'all';
 let slotFilter = null;
 
+const ELEMENT_COLORS = {
+  metal: '#999',
+  earth: '#b58b00',
+  wood: '#2e8b57',
+  water: '#1e90ff',
+  fire: '#ff4500',
+};
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -63,6 +71,11 @@ function renderEquipment() {
     el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
+    if (item?.element) {
+      el.style.border = `2px solid ${ELEMENT_COLORS[item.element] || '#fff'}`;
+    } else {
+      el.style.border = '';
+    }
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;
@@ -98,6 +111,9 @@ function showDetails(item) {
 function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
+  if (item.element) {
+    row.style.borderLeft = `4px solid ${ELEMENT_COLORS[item.element] || '#fff'}`;
+  }
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
   const displayName = item.name || item.key;

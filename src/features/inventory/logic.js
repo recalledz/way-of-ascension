@@ -8,6 +8,9 @@ export function recomputePlayerTotals(player) {
   let accuracy = 0;
   let dodge = 0;
   let shieldMax = 0;
+  let foundationMult = 0;
+  let breakthroughBonus = 0;
+  let qiRegenMult = 0;
   const equipped = Object.values(player.equipment || {});
   for (const item of equipped) {
     if (!item) continue;
@@ -20,6 +23,11 @@ export function recomputePlayerTotals(player) {
     if (item.shield?.max) shieldMax += item.shield.max; // legacy support
     if (item.stats?.accuracy) accuracy += item.stats.accuracy; // legacy support
     if (item.stats?.dodge) dodge += item.stats.dodge; // legacy support
+    if (item.bonuses) {
+      foundationMult += item.bonuses.foundationMult || 0;
+      breakthroughBonus += item.bonuses.breakthroughBonus || 0;
+      qiRegenMult += item.bonuses.qiRegenMult || 0;
+    }
   }
   player.stats = player.stats || {};
   const baseArmor = calcBaseArmor(player);
@@ -37,6 +45,11 @@ export function recomputePlayerTotals(player) {
   // Cotton Robe. This caused the Qi shield to appear inactive until it was
   // refilled through other means.
   player.shield.current = player.shield.max;
+  player.gearBonuses = {
+    foundationMult,
+    breakthroughBonus,
+    qiRegenMult,
+  };
 }
 
 // Determine if an item can be equipped and in which slot
