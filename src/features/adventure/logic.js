@@ -172,6 +172,7 @@ export function updateBattleDisplay() {
   const shieldMax = S.shield?.max || 0;
   const shieldCur = S.shield?.current || 0;
   const shieldFrac = shieldMax ? shieldCur / shieldMax : 0;
+  setText('playerName', 'You');
   setText('playerHealthText', `${Math.round(playerHP)}/${Math.round(playerMaxHP)}`);
   setFill('playerHealthFill', hpFrac);
   setFill('advHpMaskRect', hpFrac);
