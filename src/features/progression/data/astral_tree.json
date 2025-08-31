@@ -2111,6 +2111,150 @@
       "shape": "dot",
       "color": "#7dd3fc",
       "size": 14
+    },
+    {
+      "id": 4060,
+      "label": "mind attribute +5%\nspell crit chance +10%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 950,
+      "y": 2100,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 4061,
+      "label": "when Qi shield is full: +30% spell damage",
+      "group": "Wood",
+      "type": "notable",
+      "x": 1150,
+      "y": 2200,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#22c55e",
+      "size": 40
+    },
+    {
+      "id": 4062,
+      "label": "ignite duration +20%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1500,
+      "y": 850,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 4063,
+      "label": "killing a burning enemy grants +5% attack speed for 5 s",
+      "group": "Fire",
+      "type": "notable",
+      "x": -1700,
+      "y": 1100,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#ef4444",
+      "size": 40
+    },
+    {
+      "id": 4064,
+      "label": "armor penetration +10%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2100,
+      "y": 800,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 4065,
+      "label": "physical damage taken -5%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1800,
+      "y": -1100,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 4066,
+      "label": "on block, recover 2% of max HP",
+      "group": "Earth",
+      "type": "notable",
+      "x": -2000,
+      "y": -1600,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#eab308",
+      "size": 40
+    },
+    {
+      "id": 4067,
+      "label": "dodge chance +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 2800,
+      "y": -400,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4068,
+      "label": "after dodging, next ability costs 0 Qi",
+      "group": "Water",
+      "type": "notable",
+      "x": 2550,
+      "y": -250,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#3b82f6",
+      "size": 40
+    },
+    {
+      "id": 4069,
+      "label": "attack speed +5%\nweapon damage +10%",
+      "group": "Metal",
+      "type": "basic",
+      "x": 200,
+      "y": -1200,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 4070,
+      "label": "hits apply -5% enemy armor (stacking up to 5)",
+      "group": "Metal",
+      "type": "notable",
+      "x": 400,
+      "y": -2000,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#a3a3a3",
+      "size": 40
+    },
+    {
+      "id": 4071,
+      "label": "Qi regeneration +1/sec",
+      "group": "Hub",
+      "type": "basic",
+      "x": 200,
+      "y": 100,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
     }
   ],
   "edges": [
@@ -2276,8 +2420,15 @@
       "smooth": false
     },
     {
-      "id": "f6f5c6b7-b1a6-4cc2-9797-4e28e0473eb7",
+      "id": "edge-37-4060",
       "from": 37,
+      "to": 4060,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4060-38",
+      "from": 4060,
       "to": 38,
       "width": 1.5,
       "smooth": false
@@ -2297,8 +2448,15 @@
       "smooth": false
     },
     {
-      "id": "291b602d-a4d2-4431-88f6-4f0b574c6c61",
+      "id": "edge-41-4061",
       "from": 41,
+      "to": 4061,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4061-42",
+      "from": 4061,
       "to": 42,
       "width": 1.5,
       "smooth": false
@@ -2335,6 +2493,13 @@
       "id": "e3a72dfc-8f43-46ba-ae75-9039e7a45b8a",
       "from": 6,
       "to": 51,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-6-4071",
+      "from": 6,
+      "to": 4071,
       "width": 1.5,
       "smooth": false
     },
@@ -2412,6 +2577,20 @@
       "id": "4c059c83-0e40-418e-ad56-b33f4c424355",
       "from": 1010,
       "to": 1011,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-1010-4062",
+      "from": 1010,
+      "to": 4062,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4062-1013",
+      "from": 4062,
+      "to": 1013,
       "width": 1.5,
       "smooth": false
     },
@@ -2577,6 +2756,20 @@
       "smooth": false
     },
     {
+      "id": "edge-1016-4063",
+      "from": 1016,
+      "to": 4063,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4063-4062",
+      "from": 4063,
+      "to": 4062,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
       "id": "5d8b760d-b170-46a7-8436-539a6c90fae6",
       "from": 1041,
       "to": 1016,
@@ -2626,8 +2819,15 @@
       "smooth": false
     },
     {
-      "id": "d2ffb1f8-2cd0-4e72-bf9f-65f53972ff36",
+      "id": "edge-1015-4064",
       "from": 1015,
+      "to": 4064,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4064-1017",
+      "from": 4064,
       "to": 1017,
       "width": 1.5,
       "smooth": false
@@ -2780,8 +2980,15 @@
       "smooth": false
     },
     {
-      "id": "8374e6f3-0f7b-428b-8be8-ce11cf5b0ab5",
+      "id": "edge-2035-4065",
       "from": 2035,
+      "to": 4065,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4065-2036",
+      "from": 4065,
       "to": 2036,
       "width": 1.5,
       "smooth": false
@@ -2808,8 +3015,15 @@
       "smooth": false
     },
     {
-      "id": "e8f9b2e5-749c-4122-bfd1-a4adb1bc78c6",
+      "id": "edge-2037-4066",
       "from": 2037,
+      "to": 4066,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4066-2038",
+      "from": 4066,
       "to": 2038,
       "width": 1.5,
       "smooth": false
@@ -2920,8 +3134,15 @@
       "smooth": false
     },
     {
-      "id": "5e305733-a405-46aa-8a6c-038e052e4f2d",
+      "id": "edge-3007-4069",
       "from": 3007,
+      "to": 4069,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4069-3008",
+      "from": 4069,
       "to": 3008,
       "width": 1.5,
       "smooth": false
@@ -2941,8 +3162,15 @@
       "smooth": false
     },
     {
-      "id": "634db9b5-ab77-4fc4-bae8-924d62abe2d8",
+      "id": "edge-3010-4070",
       "from": 3010,
+      "to": 4070,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4070-3011",
+      "from": 4070,
       "to": 3011,
       "width": 1.5,
       "smooth": false
@@ -3347,8 +3575,15 @@
       "smooth": false
     },
     {
-      "id": "4bd8f2ec-1429-472e-8209-2afbee4bafa1",
+      "id": "edge-4039-4067",
       "from": 4039,
+      "to": 4067,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4067-4040",
+      "from": 4067,
       "to": 4040,
       "width": 1.5,
       "smooth": false
@@ -3412,6 +3647,20 @@
     {
       "id": "c5dbc62f-95c5-40b4-8ffa-9eeda681385d",
       "from": 4037,
+      "to": 4039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4038-4068",
+      "from": 4038,
+      "to": 4068,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "edge-4068-4039",
+      "from": 4068,
       "to": 4039,
       "width": 1.5,
       "smooth": false
