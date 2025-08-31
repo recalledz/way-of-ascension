@@ -2,11 +2,10 @@ import { S, save } from '../../../shared/state.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
-// so that the player can purchase their first node. The previous values
-// referenced non-existent ids which prevented the purchase button from
-// ever appearing. Use the actual root id instead: 4054 corresponds to
-// the 'max Qi +50' node seen on load.
-const START_NODES = new Set([4054]);
+// so that the player can purchase their first node. Rather than
+// hard-coding ids that can drift from the data, the roots are
+// discovered dynamically when the tree data is loaded.
+let START_NODES = new Set();
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
@@ -200,6 +199,10 @@ async function buildTree() {
 
   const nodes = treeData.nodes;
   const edges = treeData.edges;
+  // Determine starting nodes (roots: nodes with no incoming edges)
+  START_NODES = new Set(nodes.map(n => n.id));
+  edges.forEach(e => START_NODES.delete(e.to));
+
   const manifest = buildManifest(nodes);
 
   const insightEl = document.getElementById('astralInsight');
