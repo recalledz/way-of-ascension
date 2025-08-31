@@ -4576,6 +4576,11 @@ html.reduce-motion .log-sheet{transition:none;}
   cursor:pointer;
   animation:nodeGlow 1.5s ease-in-out infinite alternate;
 }
+.connector.active{
+  stroke-width:2.5;
+  opacity:1;
+  filter:drop-shadow(0 0 6px currentColor);
+}
 .connector.link{stroke:#888;}
 
 @keyframes nodeGlow{
@@ -4590,7 +4595,7 @@ html.reduce-motion .log-sheet{transition:none;}
   border:1px solid #fff;
   padding:4px 8px;
   border-radius:4px;
-  pointer-events:none;
+  pointer-events:auto;
   white-space:nowrap;
   z-index:20;
   font-size:12px;
