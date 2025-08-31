@@ -580,16 +580,16 @@ function setupLogSheet() {
   if (!sheet || !toggle) return;
   const logEl = qs('#log');
   const mq = window.matchMedia('(max-width: 768px)');
-  function setHeight() {
+  function updateHeight() {
+    let h = 0;
     if (mq.matches) {
-      const h = sheet.getAttribute('data-open') === 'true'
-        ? sheet.getBoundingClientRect().height
-        : toggle.getBoundingClientRect().height;
-      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+      h = sheet.getAttribute('data-open') === 'true'
+        ? sheet.offsetHeight
+        : toggle.offsetHeight;
     } else {
-      const h = logEl?.getBoundingClientRect().height ?? 0;
-      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+      h = logEl?.offsetHeight ?? 0;
     }
+    document.documentElement.style.setProperty('--log-h', h + 'px');
   }
   function close() {
     sheet.setAttribute('data-open', 'false');
@@ -598,7 +598,7 @@ function setupLogSheet() {
     sheet.removeAttribute('aria-modal');
     toggle.textContent = 'Log \u25BE';
     toggle.focus();
-    setHeight();
+    updateHeight();
     window.removeEventListener('keydown', esc);
   }
   function open() {
@@ -607,16 +607,20 @@ function setupLogSheet() {
     sheet.setAttribute('role', 'dialog');
     sheet.setAttribute('aria-modal', 'true');
     toggle.textContent = 'Log \u25B4';
-    setHeight();
+    updateHeight();
     window.addEventListener('keydown', esc);
   }
   function esc(e) { if (e.key === 'Escape') close(); }
   toggle.addEventListener('click', () => {
     sheet.getAttribute('data-open') === 'true' ? close() : open();
   });
-  window.addEventListener('resize', setHeight);
-  mq.addEventListener('change', setHeight);
-  setHeight();
+  const ro = new ResizeObserver(updateHeight);
+  ro.observe(sheet);
+  if (logEl) ro.observe(logEl);
+  window.addEventListener('resize', updateHeight);
+  window.addEventListener('orientationchange', updateHeight);
+  mq.addEventListener('change', updateHeight);
+  updateHeight();
 }
 
 function enableLayoutDebug() {
