@@ -48,6 +48,7 @@ import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDAT
 import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { setupAbilityUI } from '../src/features/ability/ui.js';
+import { recomputePlayerTotals } from '../src/features/inventory/logic.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
@@ -646,6 +647,8 @@ window.addEventListener('load', ()=>{
   setupAdventureTabs();
   setupMindTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
+  // Ensure derived stats like Qi shield are initialized based on equipped gear
+  recomputePlayerTotals(S);
   mountAlchemyUI(S);
   mountKarmaUI(S);
   mountSectUI(S);
