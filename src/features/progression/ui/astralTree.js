@@ -60,6 +60,69 @@ const NOTABLES = {
   },
 };
 
+const BONUS_LABELS = {
+  foundationGainPct: 'Foundation Gain',
+  cultivationSpeedPct: 'Cultivation Speed',
+  manualComprehensionPct: 'Manual Comprehension',
+  breakthroughChancePct: 'Breakthrough Chance',
+  qiRegenPct: 'Qi Regeneration',
+  maxQiPct: 'Max Qi',
+  castSpeedPct: 'Cast Speed',
+  spellDamagePct: 'Spell Damage',
+  summonDamagePct: 'Summon Damage',
+  gatheringSpeedPct: 'Gathering Speed',
+  armorPct: 'Armor',
+  cooldownPct: 'Cooldown',
+  accuracyPct: 'Accuracy',
+  physicalPenPct: 'Physical Penetration',
+  auraReservePct: 'Aura Reserve',
+  fireDamagePct: 'Fire Damage',
+  tempoAttackSpeedPct: 'Attack Speed (Tempo)',
+  physicalDamagePct: 'Physical Damage',
+  igniteStunPct: 'Ignite Stun',
+  fireResistPct: 'Fire Resistance',
+  critDamagePct: 'Crit Damage',
+  critChancePct: 'Crit Chance',
+  critDodgeBuffPct: 'Dodge After Crit',
+  attackSpeedPct: 'Attack Speed',
+  insightGainPct: 'Insight Gain',
+};
+
+const BOOLEAN_LABELS = {
+  summonTaunt: 'Summons Taunt on first hit',
+  stunImmuneShield: 'Stun Immune with Qi Shield',
+  thresholdFury: 'Threshold Fury',
+};
+
+function renderAstralTreeTotals() {
+  const container = document.getElementById('astralTreeTotals');
+  const card = document.getElementById('astralTreeTotalsCard');
+  if (!container || !card) return;
+  const bonuses = S.astralTreeBonuses || {};
+  const entries = Object.entries(bonuses);
+  if (entries.length === 0) {
+    card.style.display = 'none';
+    container.innerHTML = '<div class="muted">No bonuses yet</div>';
+    return;
+  }
+  card.style.display = 'block';
+  container.innerHTML = '';
+  entries.forEach(([key, val]) => {
+    const div = document.createElement('div');
+    div.className = 'stat';
+    if (typeof val === 'number') {
+      const label = BONUS_LABELS[key] || key;
+      const suffix = key.endsWith('Pct') ? '%' : '';
+      const sign = val > 0 ? '+' : '';
+      div.innerHTML = `<span>${label}</span><span>${sign}${val}${suffix}</span>`;
+    } else if (typeof val === 'boolean') {
+      const label = BOOLEAN_LABELS[key] || key;
+      div.innerHTML = `<span>${label}</span><span>${val ? 'Yes' : 'No'}</span>`;
+    }
+    container.appendChild(div);
+  });
+}
+
 function buildManifest(nodes) {
   const manifest = {};
   const basicIds = nodes
@@ -366,6 +429,7 @@ async function buildTree() {
   const allocated = loadAllocations();
   S.astralTreeBonuses = {};
   allocated.forEach(id => applyEffects(id, manifest));
+  renderAstralTreeTotals();
 
   const nodeEls = {};
   const edgeEls = [];
@@ -439,5 +503,6 @@ function applyEffects(id, manifest) {
   for (const [k, v] of Object.entries(info.bonus)) {
     bonuses[k] = (bonuses[k] || 0) + v;
   }
+  renderAstralTreeTotals();
 }
 
