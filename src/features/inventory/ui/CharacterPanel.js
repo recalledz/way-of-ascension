@@ -99,9 +99,50 @@ function weaponDetailsText(item) {
   return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
 }
 
+function gearDetailsText(item) {
+  const lines = [item.name || item.key];
+  if (item.quality) lines.push(`Quality: ${item.quality}`);
+  if (item.guardType) lines.push(`Guard: ${item.guardType}`);
+  if (item.element) lines.push(`Element: ${item.element}`);
+  if (item.protection) {
+    const prot = [];
+    if (item.protection.armor) prot.push(`Armor ${item.protection.armor}`);
+    if (item.protection.dodge) prot.push(`Dodge ${item.protection.dodge}`);
+    if (item.protection.qiShield) prot.push(`Qi Shield ${item.protection.qiShield}`);
+    if (prot.length) lines.push(`Protection: ${prot.join(', ')}`);
+  }
+  if (item.offense) {
+    const off = [];
+    if (item.offense.accuracy) off.push(`Accuracy ${item.offense.accuracy}`);
+    if (off.length) lines.push(`Offense: ${off.join(', ')}`);
+  }
+  if (item.bonuses) {
+    const bonusLines = Object.entries(item.bonuses).map(([k, v]) => {
+      let label = k;
+      switch (k) {
+        case 'foundationMult':
+          label = 'Foundation';
+          break;
+        case 'breakthroughBonus':
+          label = 'Breakthrough';
+          break;
+        case 'qiRegenMult':
+          label = 'Qi Regen';
+          break;
+      }
+      return `${label}: +${(v * 100).toFixed(0)}%`;
+    });
+    lines.push(...bonusLines);
+  }
+  return lines.join('\n');
+}
+
 function showDetails(item) {
   if (item.type === 'weapon') {
     const text = weaponDetailsText(item);
+    if (text) window.alert(text);
+  } else if (item.type === 'armor') {
+    const text = gearDetailsText(item);
     if (text) window.alert(text);
   } else {
     window.alert(item.name || item.key);
