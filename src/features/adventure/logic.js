@@ -274,6 +274,8 @@ export function updateBattleDisplay() {
       stunFill.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
     }
     if (stunBarEl) {
+      const show = stunGauge > 1;
+      stunBarEl.style.display = show ? 'block' : 'none';
       stunBarEl.classList.toggle('stun-flash', stunGauge >= STUN_THRESHOLD * 0.9 && stunGauge < STUN_THRESHOLD);
       stunBarEl.classList.toggle('stun-shake', stunGauge >= STUN_THRESHOLD);
       const statuses = enemy.statuses || {};
@@ -286,7 +288,6 @@ export function updateBattleDisplay() {
       if (statuses.stunImmune) info.push('stunImmune active');
       stunBarEl.title = info.join('\n');
     }
-    setText('enemyStunText', `${Math.round(stunGauge)}/${STUN_THRESHOLD}`);
   } else {
     setText('enemyName', 'Select an area to begin');
     setText('enemyHealthText', '--/--');
@@ -308,11 +309,11 @@ export function updateBattleDisplay() {
       enemyStunFill.style.width = '0%';
       enemyStunFill.style.backgroundColor = 'hsl(39, 100%, 50%)';
     }
-    setText('enemyStunText', `0/${STUN_THRESHOLD}`);
     const enemyStunBar = document.getElementById('enemyStunBar');
     if (enemyStunBar) {
       enemyStunBar.classList.remove('stun-flash', 'stun-shake');
       enemyStunBar.title = `Gauge: 0\nThreshold: ${STUN_THRESHOLD}\nDecay: ${DECAY_PER_SECOND}/s`;
+      enemyStunBar.style.display = 'none';
     }
   }
   const combatLog = document.getElementById('combatLog');
