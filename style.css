@@ -1987,8 +1987,12 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .cultivation-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
   border-bottom: 1px solid var(--accent);
+  position: sticky;
+  top: var(--header-h);
+  z-index: 900;
+  background: var(--panel);
 }
 
 .cultivation-tab-btn {
