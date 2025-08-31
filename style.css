@@ -4570,13 +4570,17 @@ html.reduce-motion .log-sheet{transition:none;}
 .connector.water,.node.water{stroke:#2196f3;color:#2196f3;}
 .node.taken{
   fill:currentColor;
-  filter:drop-shadow(0 0 6px currentColor);
+  filter:drop-shadow(0 0 10px currentColor);
 }
 .node.allocatable{
   cursor:pointer;
   animation:nodeGlow 1.5s ease-in-out infinite alternate;
 }
-.connector.link{stroke:#888;}
+.connector.link{
+  stroke-width:2.5;
+  opacity:1;
+  filter:drop-shadow(0 0 3px currentColor);
+}
 
 @keyframes nodeGlow{
   from{filter:drop-shadow(0 0 4px currentColor);}

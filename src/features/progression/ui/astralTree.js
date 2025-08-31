@@ -125,17 +125,48 @@ async function buildTree() {
     tooltip.style.top = `${evt.clientY + 10}px`;
   }
 
+  function hideTooltip() {
+    tooltip.style.display = 'none';
+  }
+
+  overlay.addEventListener('click', e => {
+    if (!tooltip.contains(e.target)) hideTooltip();
+  });
+
+  function purchaseNode(id) {
+    if (!isAllocatable(id, allocated, adj, manifest)) return;
+    const info = manifest[id];
+    if ((S.astralPoints || 0) < (info?.cost || 0)) return;
+    S.astralPoints -= info.cost;
+    allocated.add(id);
+    applyEffects(id, manifest);
+    saveAllocations(allocated);
+    updateInsight();
+    refreshClasses();
+  }
+
   function showTooltip(evt, n) {
     const info = manifest[n.id] || {};
     const lines = [n.label, `Cost: ${info.cost ?? '-'}`];
     if (info.effects) lines.push(...info.effects);
     tooltip.innerHTML = lines.join('<br>');
+    if (
+      !allocated.has(n.id) &&
+      isAllocatable(n.id, allocated, adj, manifest) &&
+      (S.astralPoints || 0) >= (info.cost || 0)
+    ) {
+      tooltip.appendChild(document.createElement('br'));
+      const btn = document.createElement('button');
+      btn.textContent = 'Purchase';
+      btn.addEventListener('click', ev => {
+        ev.stopPropagation();
+        purchaseNode(n.id);
+        hideTooltip();
+      });
+      tooltip.appendChild(btn);
+    }
     tooltip.style.display = 'block';
     positionTooltip(evt);
-  }
-
-  function hideTooltip() {
-    tooltip.style.display = 'none';
   }
 
   const res = await fetch(new URL('../data/astral_tree.json', import.meta.url));
@@ -206,6 +237,7 @@ async function buildTree() {
   allocated.forEach(id => applyEffects(id, manifest));
 
   const nodeEls = {};
+  const edgeEls = [];
 
   edges.forEach(e => {
     const a = nodeById[e.from];
@@ -218,6 +250,7 @@ async function buildTree() {
     line.setAttribute('y2', b.y);
     line.setAttribute('class', `connector ${a.group.toLowerCase()}`);
     svg.appendChild(line);
+    edgeEls.push({ el: line, from: e.from, to: e.to });
   });
 
   nodes.forEach(n => {
@@ -229,21 +262,9 @@ async function buildTree() {
     circle.setAttribute('r', r);
     circle.setAttribute('class', `node ${n.group.toLowerCase()} ${n.type}`);
 
-    circle.addEventListener('mouseenter', e => showTooltip(e, n));
-    circle.addEventListener('mousemove', positionTooltip);
-    circle.addEventListener('mouseleave', hideTooltip);
-
     circle.addEventListener('click', e => {
+      e.stopPropagation();
       showTooltip(e, n);
-      if (!isAllocatable(n.id, allocated, adj, manifest)) return;
-      const info = manifest[n.id];
-      if ((S.astralPoints || 0) < (info?.cost || 0)) return;
-      S.astralPoints -= info.cost;
-      allocated.add(n.id);
-      applyEffects(n.id, manifest);
-      saveAllocations(allocated);
-      updateInsight();
-      refreshClasses();
     });
 
     nodeEls[n.id] = circle;
@@ -258,6 +279,10 @@ async function buildTree() {
         'allocatable',
         !allocated.has(n.id) && isAllocatable(n.id, allocated, adj, manifest)
       );
+    });
+    edgeEls.forEach(edge => {
+      const active = allocated.has(edge.from) && allocated.has(edge.to);
+      edge.el.classList.toggle('link', active);
     });
   }
 
