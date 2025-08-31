@@ -2537,10 +2537,10 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 .content > section{display:none}
 
 /* STYLE-GUIDE-UPDATE: Cards with parchment texture */
-.cards{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px}
-.card{background: var(--panel); border:1px solid rgba(45, 37, 32, 0.35); border-radius:var(--radius); padding:14px; box-shadow: 0 10px 25px rgba(45, 37, 32, 0.2), 0 4px 8px rgba(45, 37, 32, 0.15); position: relative;}
+.cards{display:grid; grid-template-columns: repeat(auto-fit, minmax(calc(260px * 0.8), 1fr)); gap:14px}
+.card{background: var(--panel); border:1px solid rgba(45, 37, 32, 0.35); border-radius:var(--radius); padding:calc(14px * 0.8); box-shadow: 0 10px 25px rgba(45, 37, 32, 0.2), 0 4px 8px rgba(45, 37, 32, 0.15); position: relative; font-size:80%;}
 .card::before{content:''; position:absolute; inset:0; background: radial-gradient(circle at 25% 25%, rgba(139, 117, 95, 0.04) 0%, transparent 60%), radial-gradient(circle at 75% 75%, rgba(160, 140, 115, 0.03) 0%, transparent 50%); border-radius:var(--radius); pointer-events:none;}
-.card h4{margin:0 0 8px; font-size:15px}
+.card h4{margin:0 0 calc(8px * 0.8); font-size:12px}
 .muted{color:var(--muted); font-size:12px}
 
 /* Adventure Layout - MAP-UI-UPDATE */
@@ -4301,13 +4301,13 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
 
 /* Ability bar */
 .ability-bar { display:flex; gap:4px; }
-.ability-card { width:60px; height:90px; background:var(--panel); border:1px solid var(--ink-light); border-radius:4px; position:relative; padding:2px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
-.ability-card .ability-name { font-size:10px; text-align:center; }
+.ability-card { width:48px; height:72px; background:var(--panel); border:1px solid var(--ink-light); border-radius:4px; position:relative; padding:calc(2px * 0.8); display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
+.ability-card .ability-name { font-size:8px; text-align:center; }
 .ability-card .ability-title { display:flex; flex-direction:column; align-items:center; }
-.ability-card .ability-damage { font-size:10px; }
-.ability-card .ability-icon { font-size:24px; }
-.ability-card .qi-badge { position:absolute; bottom:12px; right:2px; font-size:10px; background:var(--panel); padding:1px 3px; border-radius:3px; }
-.ability-card .keybind { font-size:10px; }
+.ability-card .ability-damage { font-size:8px; }
+.ability-card .ability-icon { font-size:calc(24px * 0.8); }
+.ability-card .qi-badge { position:absolute; bottom:calc(12px * 0.8); right:2px; font-size:8px; background:var(--panel); padding:calc(1px * 0.8) calc(3px * 0.8); border-radius:3px; }
+.ability-card .keybind { font-size:8px; }
 .ability-card.cooling { opacity:0.6; }
 .cooldown-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.6); color:#fff; display:flex; align-items:center; justify-content:center; }
 .ability-card.insufficient { filter:grayscale(1); }
@@ -4413,10 +4413,10 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
   .log{position:relative;left:auto;right:auto;bottom:auto;height:auto;flex:1;overflow-y:auto;}
 
   /* Ensure cards and contents fit small screens */
-  .cards{grid-template-columns:1fr;}
-  .cards .card{width:100%;box-sizing:border-box;}
-  .cards .card h4{font-size:1rem;}
-  .cards .btn{font-size:0.9rem;}
+    .cards{grid-template-columns:1fr;}
+    .cards .card{width:80%;box-sizing:border-box;}
+    .cards .card h4{font-size:0.8rem;}
+    .cards .btn{font-size:0.72rem;}
   .cultivation-layout{
     flex-direction:column;
     align-items:stretch;
