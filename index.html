@@ -470,11 +470,14 @@
 
               <div class="combat-hud">
                 <div class="hud player">
-                  <div class="bar-group">
-                    <div class="player-name" id="playerName">You</div>
-                    <div class="health-bar">
-                      <div class="health-fill" id="playerHealthFill"></div>
-                      <svg class="shield-overlay" id="advShieldOverlay" viewBox="0 0 100 24" preserveAspectRatio="none">
+                    <div class="bar-group">
+                      <div class="player-name" id="playerName">You</div>
+                      <div class="health-bar">
+                        <div class="stun-bar" id="playerStunBar">
+                          <div class="stun-fill" id="playerStunFill"></div>
+                        </div>
+                        <div class="health-fill" id="playerHealthFill"></div>
+                        <svg class="shield-overlay" id="advShieldOverlay" viewBox="0 0 100 24" preserveAspectRatio="none">
                         <defs>
                           <linearGradient id="advShieldGradient">
                             <stop offset="0%" stop-color="rgba(255,255,255,0)" />
