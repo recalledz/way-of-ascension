@@ -128,6 +128,7 @@ export const defaultState = () => {
 
   equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null }, // EQUIP-CHAR-UI
   inventory: [{ id: 'palmWraps', key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' }],
+  gearBonuses: {},
   sessionLoot: [], // EQUIP-CHAR-UI
   flags: { weaponsEnabled: true },
   cultivation: {
