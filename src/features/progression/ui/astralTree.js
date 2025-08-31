@@ -223,17 +223,114 @@ async function buildTree() {
 
   applyViewBox();
 
-  function zoom(factor) {
+  function zoom(factor, cx = viewBox.x + viewBox.width / 2, cy = viewBox.y + viewBox.height / 2) {
     viewBox.width *= factor;
     viewBox.height *= factor;
-    viewBox.x = centerX - viewBox.width / 2;
-    viewBox.y = centerY - viewBox.height / 2;
+    viewBox.x = cx - viewBox.width / 2;
+    viewBox.y = cy - viewBox.height / 2;
     applyViewBox();
   }
 
   const ZOOM_STEP = 0.8;
   if (zoomInBtn) zoomInBtn.addEventListener('click', () => zoom(ZOOM_STEP));
   if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => zoom(1 / ZOOM_STEP));
+
+  // Wheel zoom
+  svg.addEventListener(
+    'wheel',
+    e => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
+      const rect = svg.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const cx = viewBox.x + (mx / rect.width) * viewBox.width;
+      const cy = viewBox.y + (my / rect.height) * viewBox.height;
+      zoom(factor, cx, cy);
+    },
+    { passive: false }
+  );
+
+  // Panning
+  let isPanning = false;
+  let startX = 0;
+  let startY = 0;
+  svg.addEventListener('mousedown', e => {
+    isPanning = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    svg.classList.add('dragging');
+  });
+  svg.addEventListener('mousemove', e => {
+    if (!isPanning) return;
+    const dx = (e.clientX - startX) * (viewBox.width / svg.clientWidth);
+    const dy = (e.clientY - startY) * (viewBox.height / svg.clientHeight);
+    viewBox.x -= dx;
+    viewBox.y -= dy;
+    startX = e.clientX;
+    startY = e.clientY;
+    applyViewBox();
+  });
+  window.addEventListener('mouseup', () => {
+    isPanning = false;
+    svg.classList.remove('dragging');
+  });
+
+  // Touch interactions
+  let touchMode = null; // 'pan' or 'pinch'
+  let lastTouchX = 0;
+  let lastTouchY = 0;
+  let pinchDist = 0;
+  let pinchCx = 0;
+  let pinchCy = 0;
+
+  svg.addEventListener(
+    'touchstart',
+    e => {
+      if (e.touches.length === 1) {
+        touchMode = 'pan';
+        lastTouchX = e.touches[0].clientX;
+        lastTouchY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        touchMode = 'pinch';
+        const [t1, t2] = e.touches;
+        pinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+        const rect = svg.getBoundingClientRect();
+        const midX = (t1.clientX + t2.clientX) / 2 - rect.left;
+        const midY = (t1.clientY + t2.clientY) / 2 - rect.top;
+        pinchCx = viewBox.x + (midX / rect.width) * viewBox.width;
+        pinchCy = viewBox.y + (midY / rect.height) * viewBox.height;
+      }
+    },
+    { passive: false }
+  );
+
+  svg.addEventListener(
+    'touchmove',
+    e => {
+      e.preventDefault();
+      if (touchMode === 'pan' && e.touches.length === 1) {
+        const dx = (e.touches[0].clientX - lastTouchX) * (viewBox.width / svg.clientWidth);
+        const dy = (e.touches[0].clientY - lastTouchY) * (viewBox.height / svg.clientHeight);
+        viewBox.x -= dx;
+        viewBox.y -= dy;
+        lastTouchX = e.touches[0].clientX;
+        lastTouchY = e.touches[0].clientY;
+        applyViewBox();
+      } else if (touchMode === 'pinch' && e.touches.length === 2) {
+        const [t1, t2] = e.touches;
+        const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+        const factor = pinchDist / dist;
+        zoom(factor, pinchCx, pinchCy);
+        pinchDist = dist;
+      }
+    },
+    { passive: false }
+  );
+
+  window.addEventListener('touchend', e => {
+    if (e.touches.length === 0) touchMode = null;
+  });
 
   const allocated = loadAllocations();
   S.astralTreeBonuses = {};
