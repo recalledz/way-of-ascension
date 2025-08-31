@@ -10,7 +10,6 @@ const START_NODES = new Set([4054]);
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
-  { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
   { desc: '+2% Manual Comprehension', bonus: { manualComprehensionPct: 2 } },
   { desc: '+1% Breakthrough Chance', bonus: { breakthroughChancePct: 1 } },
   { desc: '+2% Qi Regeneration', bonus: { qiRegenPct: 2 } },
@@ -124,13 +123,16 @@ function renderAstralTreeTotals() {
 
 function buildManifest(nodes) {
   const manifest = {};
-  const basicIds = nodes
-    .filter(n => n.type === 'basic')
-    .map(n => n.id)
-    .sort((a, b) => a - b);
-  basicIds.forEach((id, idx) => {
+  const basicNodes = nodes.filter(n => n.type === 'basic');
+  let idx = 0;
+  basicNodes.forEach(n => {
+    if (n.group === 'Hub') {
+      manifest[n.id] = { cost: 10 };
+      return;
+    }
     const rot = BASIC_ROTATION[idx % BASIC_ROTATION.length];
-    manifest[id] = { cost: 10, effects: [rot.desc], bonus: rot.bonus };
+    manifest[n.id] = { cost: 10, effects: [rot.desc], bonus: rot.bonus };
+    idx++;
   });
   Object.entries(NOTABLES).forEach(([id, data]) => {
     manifest[Number(id)] = { cost: 30, ...data };
