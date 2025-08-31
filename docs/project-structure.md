@@ -27,30 +27,6 @@ way-of-ascension/
 │   │   ├── astral_tree-base-structure.json
 │   │   └── astral_tree_pentagon.json
 │   └── workoround-tree.html
-├── browser-tools-mcp/
-│   ├── browser-tools-mcp/
-│   │   ├── README.md
-│   │   ├── mcp-server.ts
-│   │   ├── package-lock.json
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   ├── browser-tools-server/
-│   │   ├── lighthouse/
-│   │   ├── README.md
-│   │   ├── browser-connector.ts
-│   │   ├── package.json
-│   │   ├── server.ts
-│   │   └── tsconfig.json
-│   ├── chrome-extension/
-│   │   ├── background.js
-│   │   ├── devtools.html
-│   │   ├── devtools.js
-│   │   ├── manifest.json
-│   │   ├── panel.html
-│   │   └── panel.js
-│   └── docs/
-│       ├── mcp-docs.md
-│       └── mcp.md
 ├── docs/
 │   ├── To-dos/
 │   │   ├── Balance.md

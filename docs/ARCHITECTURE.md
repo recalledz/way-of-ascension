@@ -15,7 +15,7 @@ At the root of the repository you will find the following top‑level folders:
 | `src/ui/`         | Legacy user interface code organised by view or component.  Feature UIs being added in the new structure live inside `src/features/<feature>/ui`. |
 | `docs/`           | Project documentation (design guides, UI style guidelines, proficiency explanation, etc.).  This file lives here. |
 
-Other folders such as `scripts/` (build or deployment scripts), `browser-tools-mcp/` (internal dev tooling), and `index.html` remain unchanged from the previous structure.
+Other folders such as `scripts/` (build or deployment scripts) and `index.html` remain unchanged from the previous structure.
 
 #### Runtime Orchestration: GameController
 
