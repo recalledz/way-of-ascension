@@ -4,8 +4,9 @@ const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
 // so that the player can purchase their first node. The previous values
 // referenced non-existent ids which prevented the purchase button from
-// ever appearing. Use the actual root ids instead.
-const START_NODES = new Set([4056, 4057]);
+// ever appearing. Use the actual root id instead: 4054 corresponds to
+// the 'max Qi +50' node seen on load.
+const START_NODES = new Set([4054]);
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
