@@ -714,11 +714,9 @@ function defeatEnemy() {
   if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   // zone and area already defined earlier in this function
 
+  // Continue combat even after reaching kill requirements
   if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
-    const killReq = area?.killReq ?? Infinity;
-    if (S.adventure.killsInCurrentArea < killReq) {
-      startAdventureCombat();
-    }
+    startAdventureCombat();
   }
 
   updateActivityAdventure();
@@ -777,6 +775,10 @@ export function generateBossEnemy() {
 
 export function startBossCombat() {
   if (!S.adventure) return;
+  // Retreat from current enemy if still in combat
+  if (S.adventure.inCombat) {
+    retreatFromCombat();
+  }
   const bossInfo = generateBossEnemy();
   if (!bossInfo) {
     log('Failed to generate boss enemy!', 'bad');
@@ -1013,9 +1015,10 @@ export function updateProgressButton() {
   
   // Show boss button when area is cleared but boss not defeated
   if (bossBtn) {
-    if (isAreaCleared && !isBossDefeated) {
+    const isBossFight = S.adventure.isBossFight;
+    if (isAreaCleared && !isBossDefeated && !isBossFight) {
       bossBtn.style.display = 'inline-block';
-      bossBtn.disabled = S.adventure.inCombat;
+      bossBtn.disabled = false;
     } else {
       bossBtn.style.display = 'none';
     }
