@@ -65,6 +65,7 @@ const BONUS_LABELS = {
   breakthroughChancePct: 'Breakthrough Chance',
   qiRegenPct: 'Qi Regeneration',
   maxQiPct: 'Max Qi',
+  maxQi: 'Max Qi',
   castSpeedPct: 'Cast Speed',
   spellDamagePct: 'Spell Damage',
   summonDamagePct: 'Summon Damage',
@@ -125,13 +126,43 @@ function buildManifest(nodes) {
   const manifest = {};
   const basicNodes = nodes.filter(n => n.type === 'basic');
   let idx = 0;
+
+  function parseLabel(label) {
+    const effects = label.split(/\n/).map(s => s.trim()).filter(Boolean);
+    const bonus = {};
+    effects.forEach(line => {
+      const m = line.match(/([+-]?\d+(?:\.\d+)?)\s*%?\+?/);
+      if (!m) return;
+      const value = Number(m[1]);
+      const before = line.slice(0, m.index).trim();
+      const after = line.slice(m.index + m[0].length).trim();
+      const words = (before || after).replace(/[^a-zA-Z ]/g, '').trim();
+      if (!words) return;
+      const key =
+        words
+          .split(/\s+/)
+          .map((w, i) =>
+            i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+          )
+          .join('') + (line.includes('%') ? 'Pct' : '');
+      bonus[key] = (bonus[key] || 0) + value;
+    });
+    return { effects, bonus };
+  }
+
   basicNodes.forEach(n => {
     if (n.group === 'Hub') {
       manifest[n.id] = { cost: 10 };
       return;
     }
     const rot = BASIC_ROTATION[idx % BASIC_ROTATION.length];
-    manifest[n.id] = { cost: 10, effects: [rot.desc], bonus: rot.bonus };
+    const parsed = parseLabel(n.label || '');
+    const effects = [...parsed.effects, rot.desc];
+    const bonus = { ...parsed.bonus };
+    for (const [k, v] of Object.entries(rot.bonus)) {
+      bonus[k] = typeof v === 'number' ? (bonus[k] || 0) + v : v || bonus[k];
+    }
+    manifest[n.id] = { cost: 10, effects, bonus };
     idx++;
   });
   Object.entries(NOTABLES).forEach(([id, data]) => {
@@ -227,8 +258,8 @@ async function buildTree() {
 
   function showTooltip(evt, n) {
     const info = manifest[n.id] || {};
-    const lines = [n.label, `Cost: ${info.cost ?? '-'}`];
-    if (info.effects) lines.push(...info.effects);
+    const lines = info.effects ? [...info.effects] : [];
+    lines.push(`Cost: ${info.cost ?? '-'}`);
     tooltip.innerHTML = lines.join('<br>');
 
     if (isAllocatable(n.id, allocated, adj, manifest)) {
@@ -295,9 +326,8 @@ async function buildTree() {
   const treeWidth = maxX - minX;
   const treeHeight = maxY - minY;
 
-  // Center on the initial "max Qi +50" node shown in the screenshot
-  const startNode =
-    nodes.find(n => n.label === 'max Qi +50') || nodes[0];
+  // Center on the initial root node (id 4054)
+  const startNode = nodeById[4054] || nodes[0];
   const centerX = startNode.x;
   const centerY = startNode.y;
   const INITIAL_ZOOM = 5;
@@ -502,7 +532,11 @@ function applyEffects(id, manifest) {
   if (!info || !info.bonus) return;
   const bonuses = S.astralTreeBonuses || (S.astralTreeBonuses = {});
   for (const [k, v] of Object.entries(info.bonus)) {
-    bonuses[k] = (bonuses[k] || 0) + v;
+    if (typeof v === 'number') {
+      bonuses[k] = (bonuses[k] || 0) + v;
+    } else if (typeof v === 'boolean') {
+      bonuses[k] = bonuses[k] || v;
+    }
   }
   renderAstralTreeTotals();
 }
