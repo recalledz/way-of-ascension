@@ -44,7 +44,7 @@
   --bg-dim: .97;      /* lower = darker */
   --bg-contrast: .98; /* 1 = none */
 }
-html,body{height:100%}
+html,body{height:100%;overflow:hidden}
 
 .sr-only{
   position:absolute;
@@ -125,8 +125,7 @@ body{
   margin:0;
   font-family: 'IM Fell English', serif;
   color: #000;
-  overflow-x:hidden;
-  overflow-y:auto;
+  overflow:hidden;
   position: relative;
 }
 
