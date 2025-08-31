@@ -1984,10 +1984,12 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
 
 /* Cultivation Sub Tabs */
 .cultivation-tabs {
-  display: flex;
+  display: inline-flex;
   gap: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
   border-bottom: 1px solid var(--accent);
+  width: fit-content;
+  background: transparent;
 }
 
 .cultivation-tab-btn {
