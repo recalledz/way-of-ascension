@@ -1,7 +1,11 @@
 import { S, save } from '../../../shared/state.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
-const START_NODES = new Set([1, 2, 3, 4, 5]);
+// Starting nodes must match the roots in the astral_tree.json dataset
+// so that the player can purchase their first node. The previous values
+// referenced non-existent ids which prevented the purchase button from
+// ever appearing. Use the actual root ids instead.
+const START_NODES = new Set([4056, 4057]);
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
@@ -130,6 +134,27 @@ async function buildTree() {
     const lines = [n.label, `Cost: ${info.cost ?? '-'}`];
     if (info.effects) lines.push(...info.effects);
     tooltip.innerHTML = lines.join('<br>');
+
+    if (isAllocatable(n.id, allocated, adj, manifest)) {
+      const btn = document.createElement('button');
+      btn.textContent = 'Purchase';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (!isAllocatable(n.id, allocated, adj, manifest)) return;
+        const info2 = manifest[n.id];
+        if ((S.astralPoints || 0) < (info2?.cost || 0)) return;
+        S.astralPoints -= info2.cost;
+        allocated.add(n.id);
+        applyEffects(n.id, manifest);
+        saveAllocations(allocated);
+        updateInsight();
+        refreshClasses();
+        hideTooltip();
+      });
+      tooltip.appendChild(document.createElement('br'));
+      tooltip.appendChild(btn);
+    }
+
     tooltip.style.display = 'block';
     positionTooltip(evt);
   }
@@ -206,6 +231,7 @@ async function buildTree() {
   allocated.forEach(id => applyEffects(id, manifest));
 
   const nodeEls = {};
+  const edgeEls = [];
 
   edges.forEach(e => {
     const a = nodeById[e.from];
@@ -218,6 +244,7 @@ async function buildTree() {
     line.setAttribute('y2', b.y);
     line.setAttribute('class', `connector ${a.group.toLowerCase()}`);
     svg.appendChild(line);
+    edgeEls.push({ el: line, from: e.from, to: e.to });
   });
 
   nodes.forEach(n => {
@@ -229,26 +256,16 @@ async function buildTree() {
     circle.setAttribute('r', r);
     circle.setAttribute('class', `node ${n.group.toLowerCase()} ${n.type}`);
 
-    circle.addEventListener('mouseenter', e => showTooltip(e, n));
-    circle.addEventListener('mousemove', positionTooltip);
-    circle.addEventListener('mouseleave', hideTooltip);
-
     circle.addEventListener('click', e => {
+      e.stopPropagation();
       showTooltip(e, n);
-      if (!isAllocatable(n.id, allocated, adj, manifest)) return;
-      const info = manifest[n.id];
-      if ((S.astralPoints || 0) < (info?.cost || 0)) return;
-      S.astralPoints -= info.cost;
-      allocated.add(n.id);
-      applyEffects(n.id, manifest);
-      saveAllocations(allocated);
-      updateInsight();
-      refreshClasses();
     });
 
     nodeEls[n.id] = circle;
     svg.appendChild(circle);
   });
+
+  svg.addEventListener('click', hideTooltip);
 
   function refreshClasses() {
     nodes.forEach(n => {
@@ -258,6 +275,10 @@ async function buildTree() {
         'allocatable',
         !allocated.has(n.id) && isAllocatable(n.id, allocated, adj, manifest)
       );
+    });
+    edgeEls.forEach(e => {
+      const active = allocated.has(e.from) && allocated.has(e.to);
+      e.el.classList.toggle('active', active);
     });
   }
 
