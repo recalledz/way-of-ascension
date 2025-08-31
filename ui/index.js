@@ -574,16 +574,18 @@ function setupLogSheet() {
   const sheet = qs('#logSheet');
   const toggle = qs('#logToggle');
   if (!sheet || !toggle) return;
+  const logEl = qs('#log');
   const mq = window.matchMedia('(max-width: 768px)');
   function setHeight() {
-    if (!mq.matches) {
-      document.documentElement.style.setProperty('--bottom-log-h', '0px');
-      return;
+    if (mq.matches) {
+      const h = sheet.getAttribute('data-open') === 'true'
+        ? sheet.getBoundingClientRect().height
+        : toggle.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+    } else {
+      const h = logEl?.getBoundingClientRect().height ?? 0;
+      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
     }
-    const h = sheet.getAttribute('data-open') === 'true'
-      ? sheet.getBoundingClientRect().height
-      : toggle.getBoundingClientRect().height;
-    document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
   }
   function close() {
     sheet.setAttribute('data-open', 'false');
