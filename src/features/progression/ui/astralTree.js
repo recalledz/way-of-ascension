@@ -10,7 +10,7 @@ const START_NODES = new Set([4054]);
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
-  { desc: '+2% Cultivation Speed', bonus: { cultivationSpeedPct: 2 } },
+  { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
   { desc: '+2% Manual Comprehension', bonus: { manualComprehensionPct: 2 } },
   { desc: '+1% Breakthrough Chance', bonus: { breakthroughChancePct: 1 } },
   { desc: '+2% Qi Regeneration', bonus: { qiRegenPct: 2 } },
@@ -19,8 +19,8 @@ const BASIC_ROTATION = [
 
 const NOTABLES = {
   50: {
-    effects: ['+12% Manual Comprehension', '+10% Cultivation Speed'],
-    bonus: { manualComprehensionPct: 12, cultivationSpeedPct: 10 },
+    effects: ['+12% Manual Comprehension', '+10% Foundation Gain'],
+    bonus: { manualComprehensionPct: 12, foundationGainPct: 10 },
   },
   75: {
     effects: ['+20% Manual Comprehension', '+10% Cast Speed', '+10% Spell Damage'],
@@ -62,7 +62,6 @@ const NOTABLES = {
 
 const BONUS_LABELS = {
   foundationGainPct: 'Foundation Gain',
-  cultivationSpeedPct: 'Cultivation Speed',
   manualComprehensionPct: 'Manual Comprehension',
   breakthroughChancePct: 'Breakthrough Chance',
   qiRegenPct: 'Qi Regeneration',
