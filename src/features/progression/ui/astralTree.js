@@ -227,7 +227,7 @@ async function buildTree() {
 
   function showTooltip(evt, n) {
     const info = manifest[n.id] || {};
-    const lines = [n.label, `Cost: ${info.cost ?? '-'}`];
+    const lines = [n.label, `Cost: ${info.cost ?? '-'}`, ''];
     if (info.effects) lines.push(...info.effects);
     tooltip.innerHTML = lines.join('<br>');
 
