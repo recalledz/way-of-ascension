@@ -452,7 +452,11 @@ function tick(){
   // Physique training progression
   const sessionEnd = tickPhysiqueTraining(S);
   if(sessionEnd){
-    log(`Training session complete! ${sessionEnd.hits} hits for ${sessionEnd.xp} XP`, 'good');
+    let msg = `Training session complete! ${sessionEnd.hits} hits for ${sessionEnd.xp} XP`;
+    if(sessionEnd.qiRecovered){
+      msg += ` and recovered ${sessionEnd.qiRecovered.toFixed(0)} Qi`;
+    }
+    log(msg, 'good');
   }
   
   // Auto meditation fallback for old saves
