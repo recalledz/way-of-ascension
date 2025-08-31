@@ -90,11 +90,12 @@ export function endTrainingSession(state = physiqueState){
   return summary;
 }
 
-export function moveTrainingCursor(state = physiqueState){
+// Move the training cursor based on elapsed time (in seconds)
+export function moveTrainingCursor(state = physiqueState, dt = 1){
   const p = slice(state);
   if(!p.timingActive || !p.trainingSession) return;
   if(!p.cursorSpeed) p.cursorSpeed = 5;
-  const speed = p.cursorSpeed * 3; // Triple cursor movement speed
+  const speed = p.cursorSpeed * 3 * dt; // Scale movement by delta time
   const { position, direction } = stepTrainingCursor(p.cursorPosition, p.cursorDirection, speed);
   p.cursorPosition = position;
   p.cursorDirection = direction;
@@ -120,9 +121,6 @@ export function tickPhysiqueTraining(state = physiqueState){
     consumePhysiqueStamina(6, state);
     if(p.sessionStamina <= 0 || p.stamina <= 0){
       return endTrainingSession(state);
-    }
-    if(p.timingActive){
-      moveTrainingCursor(state);
     }
   }else{
     const { staminaRegen } = getPhysiqueEffects(state);

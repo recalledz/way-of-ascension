@@ -1,6 +1,6 @@
 import { on } from '../../../shared/events.js';
 import { setText, log } from '../../../shared/utils/dom.js';
-import { startTrainingSession, hitTrainingTarget, trainPhysique } from '../mutators.js';
+import { startTrainingSession, hitTrainingTarget, trainPhysique, moveTrainingCursor } from '../mutators.js';
 import {
   getPhysiqueLevel,
   getPhysiqueExp,
@@ -48,6 +48,11 @@ function render(state){
     }
   }
 
+  // Start cursor animation if a session is active
+  if(active && cursorAnimFrame === null){
+    startCursorAnimation(state);
+  }
+
   const startSessionBtn = document.getElementById('startTrainingSession');
   if(startSessionBtn){
     const canStart = getPhysiqueStamina(state) >= 20;
@@ -81,6 +86,31 @@ function showHitFeedback(message, color){
   }
 }
 
+let cursorAnimFrame = null;
+let lastFrameTime = 0;
+let animState;
+
+function animateCursor(timestamp){
+  if(!isPhysiqueTraining(animState)){
+    cursorAnimFrame = null;
+    return;
+  }
+  const dt = lastFrameTime ? (timestamp - lastFrameTime) / 1000 : 0;
+  lastFrameTime = timestamp;
+  moveTrainingCursor(animState, dt);
+  const cursor = document.getElementById('timingCursor');
+  if(cursor){
+    cursor.style.left = getTrainingCursorPosition(animState) + '%';
+  }
+  cursorAnimFrame = requestAnimationFrame(animateCursor);
+}
+
+function startCursorAnimation(state){
+  animState = state;
+  lastFrameTime = performance.now();
+  cursorAnimFrame = requestAnimationFrame(animateCursor);
+}
+
 export function mountTrainingGameUI(state){
   // Ensure the associated Physique cards are visible when the feature mounts
   const cardIds = ['activeTrainingCard', 'passiveTrainingCard', 'physiqueEffectsCard'];
@@ -94,6 +124,8 @@ export function mountTrainingGameUI(state){
     startBtn.addEventListener('click', () => {
       if(startTrainingSession(state)){
         log('Training session started! Hit the perfect zone for maximum XP!', 'good');
+        startCursorAnimation(state);
+        render(state);
       }
     });
   }
