@@ -2563,7 +2563,8 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: calc(100vh - 120px);
+  /* use min-height so content like the proficiency card isn't clipped on mobile */
+  min-height: calc(100dvh - 120px);
 }
 
 .adventure-progress-container {
