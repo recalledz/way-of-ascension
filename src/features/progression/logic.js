@@ -62,7 +62,8 @@ export function qCap(state = progressionState){
 export function qiRegenPerSec(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).qiRegenMult || 0;
-  return (REALMS[state.realm.tier].baseRegen + karmaQiRegenBonus(state)) * (1 + state.qiRegenMult + building) * lawBonuses.qiRegen;
+  const gear = state.gearBonuses?.qiRegenMult || 0;
+  return (REALMS[state.realm.tier].baseRegen + karmaQiRegenBonus(state)) * (1 + state.qiRegenMult + building + gear) * lawBonuses.qiRegen;
 }
 
 export function fCap(state = progressionState){
@@ -89,7 +90,8 @@ export function foundationGainPerSec(state = progressionState){
   const bonuses = getBuildingBonuses(state);
   const buildingMult = state.cultivation.buildingMult * (1 + (bonuses.foundationMult || 0));
   const pillMult = state.cultivation.pillMult;
-  return baseGain * cultivationMult * lawMult * buildingMult * pillMult;
+  const gear = state.gearBonuses?.foundationMult || 0;
+  return baseGain * cultivationMult * lawMult * buildingMult * pillMult * (1 + gear);
 }
 
 export function foundationGainPerMeditate(state = progressionState){
@@ -193,7 +195,9 @@ export function breakthroughChance(state = progressionState){
   const buildingBonus = getBuildingBonuses(state).breakthroughBonus || 0;
   const cultivationBonus = (state.cultivation.talent - 1) * 0.1;
 
-  const totalChance = base + ward + cookingBonus + buildingBonus + cultivationBonus;
+  const gearBonus = state.gearBonuses?.breakthroughBonus || 0;
+
+  const totalChance = base + ward + cookingBonus + buildingBonus + cultivationBonus + gearBonus;
 
   return clamp(totalChance, 0.01, 0.95);
 }

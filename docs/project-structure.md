@@ -257,6 +257,8 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── puzzles/
+│   │   │   │   └── sequenceMemory.js
 │   │   │   └── ui/
 │   │   │       ├── mindMainTab.js
 │   │   │       ├── mindPuzzlesTab.js
@@ -977,6 +979,7 @@ Paths added:
 - `src/features/mind/ui/mindPuzzlesTab.js` – Displays puzzle progress and multiplier info.
 - `src/features/mind/ui/mindReadingTab.js` – Lists manuals and controls reading actions.
 - `src/features/mind/ui/mindStatsTab.js` – Shows cumulative manual bonuses.
+- `src/features/mind/puzzles/sequenceMemory.js` – Implements the sequence memory puzzle used for mind training.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.

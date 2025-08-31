@@ -1,5 +1,21 @@
 import { BODY_BASES } from './data/bodyBases.js';
 import { MATERIALS_STUB } from '../weaponGeneration/data/materials.stub.js';
+import { ZONES as ZONE_IDS } from '../adventure/data/zoneIds.js';
+
+const ELEMENTS = ['metal', 'earth', 'wood', 'water', 'fire'];
+const ZONE_ELEMENT_WEIGHTS = {
+  [ZONE_IDS.STARTING]: { earth: 3, wood: 3, metal: 1, water: 1, fire: 1 },
+};
+
+function pickWeighted(rows) {
+  const total = rows.reduce((s, r) => s + (r.weight || 0), 0);
+  let r = Math.random() * total;
+  for (const row of rows) {
+    r -= row.weight || 0;
+    if (r <= 0) return row;
+  }
+  return rows[rows.length - 1];
+}
 
 /**
  * @typedef {{
@@ -34,6 +50,24 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'normal' }/** 
     quality: qualityKey,
     material: material?.key,
   };
+}
+
+export function generateCultivationGear(gear, zoneKey) {
+  const weights = ZONE_ELEMENT_WEIGHTS[zoneKey] || {};
+  const element = pickWeighted(
+    ELEMENTS.map(el => ({ key: el, weight: weights[el] || 1 }))
+  ).key;
+  const out = { ...gear };
+  delete out.protection;
+  delete out.offense;
+  out.element = element;
+  out.bonuses = {
+    foundationMult: 0.1,
+    breakthroughBonus: 0.05,
+    qiRegenMult: 0.1,
+  };
+  out.cultivation = true;
+  return out;
 }
 
 function composeName(baseName, materialName) {

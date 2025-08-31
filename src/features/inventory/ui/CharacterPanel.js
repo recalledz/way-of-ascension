@@ -9,6 +9,14 @@ import { ABILITIES } from '../../ability/data/abilities.js';
 let currentFilter = 'all';
 let slotFilter = null;
 
+const ELEMENT_BG_COLORS = {
+  metal: 'rgba(153, 153, 153, 0.2)',
+  earth: 'rgba(181, 139, 0, 0.2)',
+  wood: 'rgba(46, 139, 87, 0.2)',
+  water: 'rgba(30, 144, 255, 0.2)',
+  fire: 'rgba(255, 69, 0, 0.2)'
+};
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -63,6 +71,11 @@ function renderEquipment() {
     el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
+    if (item?.element) {
+      el.style.backgroundColor = ELEMENT_BG_COLORS[item.element] || '';
+    } else {
+      el.style.backgroundColor = '';
+    }
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;
@@ -98,6 +111,9 @@ function showDetails(item) {
 function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
+  if (item.element) {
+    row.style.backgroundColor = ELEMENT_BG_COLORS[item.element] || '';
+  }
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
   const displayName = item.name || item.key;
