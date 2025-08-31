@@ -578,19 +578,17 @@ function setupLogSheet() {
   const sheet = qs('#logSheet');
   const toggle = qs('#logToggle');
   if (!sheet || !toggle) return;
-  const logEl = qs('#log');
-  const mq = window.matchMedia('(max-width: 768px)');
+
   function setHeight() {
-    if (mq.matches) {
-      const h = sheet.getAttribute('data-open') === 'true'
-        ? sheet.getBoundingClientRect().height
-        : toggle.getBoundingClientRect().height;
-      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
-    } else {
-      const h = logEl?.getBoundingClientRect().height ?? 0;
-      document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
-    }
+    const h = sheet.getAttribute('data-open') === 'true'
+      ? sheet.offsetHeight
+      : toggle.offsetHeight;
+    document.documentElement.style.setProperty('--log-h', `${h}px`);
   }
+
+  const ro = new ResizeObserver(setHeight);
+  ro.observe(sheet);
+  ro.observe(toggle);
   function close() {
     sheet.setAttribute('data-open', 'false');
     toggle.setAttribute('aria-expanded', 'false');
@@ -615,7 +613,7 @@ function setupLogSheet() {
     sheet.getAttribute('data-open') === 'true' ? close() : open();
   });
   window.addEventListener('resize', setHeight);
-  mq.addEventListener('change', setHeight);
+  window.addEventListener('orientationchange', setHeight);
   setHeight();
 }
 
