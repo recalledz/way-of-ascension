@@ -89,7 +89,8 @@ export function foundationGainPerSec(state = progressionState){
   const bonuses = getBuildingBonuses(state);
   const buildingMult = state.cultivation.buildingMult * (1 + (bonuses.foundationMult || 0));
   const pillMult = state.cultivation.pillMult;
-  return baseGain * cultivationMult * lawMult * buildingMult * pillMult;
+  return baseGain * cultivationMult * lawMult * buildingMult * pillMult *
+    (1 + (state.astralTreeBonuses?.foundationGainPct || 0) / 100);
 }
 
 export function foundationGainPerMeditate(state = progressionState){
