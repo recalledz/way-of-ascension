@@ -1,5 +1,5 @@
 import { physiqueState } from './state.js';
-import { stepTrainingCursor, evaluateTrainingHit } from './logic.js';
+import { stepTrainingCursor, evaluateTrainingHit, getPhysiqueEffects } from './logic.js';
 
 function slice(state){
   return state.physique || state;
@@ -125,7 +125,8 @@ export function tickPhysiqueTraining(state = physiqueState){
       moveTrainingCursor(state);
     }
   }else{
-    regenPhysiqueStamina(1, state);
+    const { staminaRegen } = getPhysiqueEffects(state);
+    regenPhysiqueStamina(staminaRegen, state);
     const passiveRate = (2 + (p.level * 0.2)) / 3;
     addPhysiqueExp(passiveRate, state);
     p.passiveXpGained = (p.passiveXpGained || 0) + passiveRate;
