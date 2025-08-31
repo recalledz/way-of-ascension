@@ -42,6 +42,10 @@ export function startAdventure(state = S) {
 }
 
 export function retreatFromCombat(state = S) {
+  if (state.adventure?.isBossFight) {
+    log('Retreat is impossible during a boss fight.', 'bad');
+    return;
+  }
   baseRetreatFromCombat();
   const loss = Math.floor(qCap(state) * 0.25);
   state.qi = Math.max(0, state.qi - loss);

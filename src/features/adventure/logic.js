@@ -974,6 +974,12 @@ export function selectZone(zoneIndex) {
 
 export function retreatFromCombat() {
   if (!S.adventure) return;
+  if (S.adventure.isBossFight) {
+    S.adventure.combatLog = S.adventure.combatLog || [];
+    S.adventure.combatLog.push('Retreat is impossible during a boss fight.');
+    log('Retreat is impossible during a boss fight.', 'bad');
+    return;
+  }
   if (S.adventure.inCombat) {
     S.hp = S.adventure.playerHP;
     S.adventure.inCombat = false;
