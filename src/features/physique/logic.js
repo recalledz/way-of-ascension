@@ -14,7 +14,8 @@ export function getPhysiqueEffects(state){
   const hpBonus = Math.max(0, Math.floor((current - 10) * 5));
   const carryCapacity = Math.max(0, current - 10);
   const maxStamina = current * 10;
-  const staminaRegen = 1; // base stamina recovery per second
+  const baseStaminaRegen = 0.03; // base stamina recovery per second
+  const staminaRegen = baseStaminaRegen * (1 + current * 0.1); // 10% per physique point
   const staminaDrain = 6; // stamina drain per second during training
   return { hpBonus, carryCapacity, maxStamina, staminaRegen, staminaDrain };
 }
