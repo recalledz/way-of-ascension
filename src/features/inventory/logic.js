@@ -30,7 +30,13 @@ export function recomputePlayerTotals(player) {
   const mind = player.stats.mind || 0;
   const shieldMult = 1 + mind * 0.06;
   player.shield.max = Math.round(shieldMax * shieldMult);
-  player.shield.current = Math.min(player.shield.current, player.shield.max);
+  // Fully refresh the player's Qi shield whenever equipment changes so that
+  // newly equipped gear providing shield protection immediately applies its
+  // full value. Previously the shield's current value was simply clamped to
+  // the new maximum, leaving it at zero after equipping items like the
+  // Cotton Robe. This caused the Qi shield to appear inactive until it was
+  // refilled through other means.
+  player.shield.current = player.shield.max;
 }
 
 // Determine if an item can be equipped and in which slot
