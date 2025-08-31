@@ -15,7 +15,7 @@ function render(state){
   setText('physiqueHpStat', `+${bonuses.hpBonus}`);
   setText('physiqueCarryStat', `+${bonuses.carryCapacity}`);
   setText('physiqueMaxStaminaStat', `${bonuses.maxStamina}`);
-  setText('physiqueStaminaRegenStat', `+${bonuses.staminaRegen}/s`);
+  setText('physiqueStaminaRegenStat', `+${bonuses.staminaRegen.toFixed(2)}/s`);
   setText('physiqueStaminaDrainStat', `-${bonuses.staminaDrain}/s`);
 }
 
