@@ -5,6 +5,11 @@
 ❌ VERIFICATION FAILED - MUST fix before proceeding
 
 🚨 VIOLATIONS DETECTED:
+   • UNDOCUMENTED FILE: astral-tree-prototype/astral tree v3.0.html
+   • UNDOCUMENTED FILE: astral-tree-prototype/astral tree v4.html
+   • UNDOCUMENTED FILE: astral-tree-prototype/template tree/astral_tree base structure.json
+   • UNDOCUMENTED FILE: astral-tree-prototype/template tree/astral_tree_pentagon.json
+   • UNDOCUMENTED FILE: astral-tree-prototype/workoround tree.html
    • UI state violation: src/features/adventure/ui/adventureDisplay.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/mapUI.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/progressBar.js imports S from shared/state.js
@@ -29,6 +34,16 @@
    • UI timer: src/features/physique/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
    • UI rule: src/features/progression/ui/realm.js uses Math.random() — move randomness to logic.js
    • UI timer: src/features/progression/ui/realm.js uses timers/RAF — prefer feature.tick and RENDER
+
+📝 REQUIRED ACTION:
+   Update docs/project-structure.md with these files:
+   • astral-tree-prototype/astral tree v3.0.html
+   • astral-tree-prototype/astral tree v4.html
+   • astral-tree-prototype/template tree/astral_tree base structure.json
+   • astral-tree-prototype/template tree/astral_tree_pentagon.json
+   • astral-tree-prototype/workoround tree.html
+
+   Then document their purpose and functions.
 
 =====================================
 
