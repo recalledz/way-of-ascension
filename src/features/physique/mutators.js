@@ -77,7 +77,8 @@ export function moveTrainingCursor(state = physiqueState){
   const p = slice(state);
   if(!p.timingActive || !p.trainingSession) return;
   if(!p.cursorSpeed) p.cursorSpeed = 5;
-  const { position, direction } = stepTrainingCursor(p.cursorPosition, p.cursorDirection, p.cursorSpeed);
+  const speed = p.cursorSpeed * 3; // Triple cursor movement speed
+  const { position, direction } = stepTrainingCursor(p.cursorPosition, p.cursorDirection, speed);
   p.cursorPosition = position;
   p.cursorDirection = direction;
 }
