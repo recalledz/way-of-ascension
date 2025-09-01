@@ -4536,6 +4536,27 @@ html.reduce-motion .log-sheet{transition:none;}
   z-index:1000;
 }
 
+.astral-skill-tree::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%);
+  z-index:2;
+}
+
+.astral-skill-tree::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEAAACAAAAAgCAAAAABWESUoAAAEK0lEQVR4nAEgBN/7AfqVqcvIGx3uX7GCDkir6nSQF8RN3xtKMA2DOYYyJVrMAqZfUckawPmIKX9SFoL6hXhW3lQauPq5oO5twWLeU/vQAY9jUCsJYZpWAAdVntRQ9hwrsqweA0sns8+LTQFLtN3XBNajTkafNTT0rU4CTfvOIxG9FNqgGWONkJG5nUHZ75jqAOAIPp/XTB1daM/b29BQFisSaNe+/uga45ohu2Et1HhsAgJVFXXk5heGF7Rt58B1aPNr8HHhuk7tYf3gZADtjgAfBD/5lwsyVFv0Y64fBDZVeCY5he44m7zIU16hCSFA4r0nAEDciK9YByVkwufS5bGS81eqFHCOB5ERH1Ao8cUy+BywAY0zPaQ0w+F3IE2MvRXdYQGYELiG84LnBR5BFcuDYeurBCahsQAxJwdNKp7P6TEsn47g2DQ4jHVm4AxC07j36tHZBM3Vu/fm4F0vJhaR3SzViUY1OZ624cD4d1iABjSslo4OBOLk36jCiVtIOr2265TfRihJytaTieMJuSkqBnC3sqb+AjYkOeUHkjcU5o1aPWPk4KWU0BEOPN3uKB3d4Th5FrFMAFOw0PKn+mb5EhCW/dJM384/9VrmYtgorCoXm2+ge06lBId1KSZPrHuPvYi5BegCF8HHyaoUqCy+NHBraxayOIDEBL/hXhf9qqsrQvv0qwRl4+0xxI4upEM4jGvDIZQZ0vNNAOGlCDymJqRVeSxsUR2J4Qzq3TUFNNGPQ8hKK3m/Q88wAee4F/5R1lGjqUrw1D2Yz90/i403GtwJdZo3B2DFSqrNAsxwUe191f+EmwLZ8qTUUNYlL9AsEAIEYki675xjlc7lATLXwzdOxkY15sk32BLSr6sqWOch0OdiVUf67TLNmgG6BFb7mbJw/kwpDnO3Krvuio9r6SXp9f8Gyhuw6eMadA6bALbkzXFg0NDkLKsuiePXSCXannYbUWzxNDquL0XrY2OiAAgr7rdcPPEKVVBduoxPtQL58SjYaVzZ995o3Rj2HnerBFvxBoPbV2jwGrUR3bDfYKjS5QgWVg+M53o8/WHypNpKAgXHyxWGUu64ad+aV67tRinKh+zRVlsjC7ANETNYwr/jAkp+/vt8FgKrN3n+1pITzcgvi1IBzqD/kmUJResb42MzAHp9Geg58yxnYb/8lEp8+9SBL37oQPbif70woTMCa/3xASIr7hlMjCnNrCQit3WMCc5m7f+C+uXb1zdgJRa9ESL2AAGcKyk4eq2oHlYD1uCQIWEJlEv0+QxWtIwbvsqYG9PLATvRUcYOFART4gTBKIMnDw//vv1xYKOoiawXrCp7vqklAtj7Is1K/za5quUfHJSBokedCVPc6v54NOeuT3YqOLXAajWx9OBUknI7iqIwcRL4v1tyPnu/fIW7+QaFWrziRJbg6ULCHzLnk8AAAAASUVORK5CYII=');
+  background-size:256px 256px;
+  mix-blend-mode:overlay;
+  opacity:0.05;
+  z-index:3;
+}
+
 .astral-skill-tree .starfield{
   position:absolute;
   width:100%;
