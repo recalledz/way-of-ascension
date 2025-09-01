@@ -23,14 +23,14 @@ function pickQuality(weights = { basic: 80, refined: 15, superior: 5 }) {
   return entries[0][0];
 }
 
-export function rollGearDropForZone(zoneKey) {
+export function rollGearDropForZone(zoneKey, stage = 1) {
   const rows = GEAR_LOOT_TABLES[zoneKey];
   if (!rows || !rows.length) return null;
   const row = pickWeighted(rows);
   const dropMult = 1 + (S.gearBonuses?.dropRateMult || 0);
   if (Math.random() > Math.min(1, (row.chance ?? 1) * dropMult)) return null;
   const qualityKey = row.qualityKey || pickQuality();
-  let gear = generateGear({ baseKey: row.baseKey, materialKey: row.materialKey, qualityKey });
+  let gear = generateGear({ baseKey: row.baseKey, materialKey: row.materialKey, qualityKey, stage });
   if (Math.random() < 0.1) {
     gear = generateCultivationGear(gear, zoneKey);
   }

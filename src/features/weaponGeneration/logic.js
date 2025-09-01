@@ -5,7 +5,8 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
  *  typeKey:string,
  *  materialKey?:string,         // optional; for naming only (no stats impact)
  *  qualityKey?:'basic'|'refined'|'superior',
- *  level?:number                // placeholder; no scaling applied yet
+ *  level?:number,               // placeholder; no scaling applied yet
+ *  stage?:number                // zone stage for scaling
  * }} GenArgs */
 
 /** @typedef {{
@@ -22,13 +23,14 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
  * }} WeaponItem */
 
 /** Compose final item. Minimal quality/affix support. */
-export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic' }/** @type {GenArgs} */){
+export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', stage = 1 }/** @type {GenArgs} */){
   const type = WEAPON_TYPES[typeKey];
   if (!type) throw new Error(`Unknown weapon type: ${typeKey}`);
 
   const material = materialKey ? MATERIALS_STUB[materialKey] : undefined;
 
   const qualityMult = { basic: 1, refined: 1.1, superior: 1.25 }[qualityKey] || 1;
+  const stageMult = 1.04 ** (stage - 1);
 
   const abilityKeys = [];
   if (type.signatureAbilityKey) abilityKeys.push(type.signatureAbilityKey);
@@ -36,8 +38,8 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic' }/**
   const name = composeName({ typeName: type.displayName, materialName: material?.displayName });
 
   const base = {
-    min: Math.round(type.base.min * qualityMult),
-    max: Math.round(type.base.max * qualityMult),
+    min: Math.round(type.base.min * qualityMult * stageMult),
+    max: Math.round(type.base.max * qualityMult * stageMult),
     rate: type.base.rate,
   };
 
@@ -52,7 +54,11 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic' }/**
     abilityKeys,                // e.g., ['powerSlash'] for swords
     quality: qualityKey,
     affixes: [],
-    stats: type.implicitStats ? { ...type.implicitStats } : undefined,
+    stats: type.implicitStats
+      ? Object.fromEntries(
+          Object.entries(type.implicitStats).map(([k, v]) => [k, v * stageMult])
+        )
+      : undefined,
   };
 }
 

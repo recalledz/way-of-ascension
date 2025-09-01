@@ -677,7 +677,7 @@ function defeatEnemy() {
       lootEntries.push([drop, 1]);
     }
 
-    const gear = rollGearDropForZone(ZONE_IDS.STARTING);
+    const gear = rollGearDropForZone(ZONE_IDS.STARTING, (S.adventure.currentArea ?? 0) + 1);
     if (gear) {
       addToInventory(gear, S);
       lootEntries.push([gear.name, 1]);

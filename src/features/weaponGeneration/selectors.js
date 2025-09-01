@@ -17,7 +17,7 @@ function pickWeighted(rows){
   return rows[rows.length - 1];
 }
 
-export function rollWeaponDropForZone(zoneKey){
+export function rollWeaponDropForZone(zoneKey, stage = 1){
   const rows = WEAPON_LOOT_TABLES[zoneKey];
   if (!rows || rows.length === 0) return null;
 
@@ -27,5 +27,6 @@ export function rollWeaponDropForZone(zoneKey){
     typeKey: row.typeKey,
     materialKey: row.materialKey,
     qualityKey,
+    stage,
   });
 }
