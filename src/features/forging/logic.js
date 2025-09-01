@@ -54,3 +54,19 @@ export function advanceForging(state = S) {
     if (state.activities) state.activities.forging = false;
   }
 }
+
+export function imbueItem(itemId, element, state = S) {
+  const item = state.inventory?.find(it => it.id === itemId);
+  if (!item) { log?.('Item not found', 'bad'); return; }
+  const tier = item.imbuement?.tier || 0;
+  const woodCost = (tier + 1) * 20;
+  const coreCost = (tier + 1) * 10;
+  if ((state.wood || 0) < woodCost || (state.cores || 0) < coreCost) {
+    log?.('Not enough resources', 'bad');
+    return;
+  }
+  state.wood -= woodCost;
+  state.cores -= coreCost;
+  item.imbuement = { element, tier: tier + 1 };
+  log?.(`Imbued ${item.name || item.id} with ${element} to tier ${tier + 1}`, 'good');
+}
