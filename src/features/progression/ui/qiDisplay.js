@@ -5,11 +5,12 @@ import { fmt } from '../../../shared/utils/number.js';
 import { updateQiOrbEffect } from './qiOrb.js';
 
 export function updateQiAndFoundation(state = S) {
+  const qiRegen = qiRegenPerSec(state);
   setText('qiVal', fmt(state.qi));
   setText('qiCap', fmt(qCap(state)));
   setText('qiValL', fmt(state.qi));
   setText('qiCapL', fmt(qCap(state)));
-  setText('qiRegen', qiRegenPerSec(state).toFixed(1));
+  setText('qiRegen', qiRegen.toFixed(1));
   setFill('qiFill', state.qi / qCap(state));
   setFill('qiFill2', state.qi / qCap(state));
   setText('qiPct', Math.floor(100 * state.qi / qCap(state)) + '%');

@@ -63,7 +63,8 @@ export function qiRegenPerSec(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).qiRegenMult || 0;
   const gear = state.gearBonuses?.qiRegenMult || 0;
-  return (REALMS[state.realm.tier].baseRegen + karmaQiRegenBonus(state)) * (1 + state.qiRegenMult + building + gear) * lawBonuses.qiRegen;
+  const astral = 1 + (state.astralTreeBonuses?.qiRegenPct || 0) / 100;
+  return (REALMS[state.realm.tier].baseRegen + karmaQiRegenBonus(state)) * (1 + state.qiRegenMult + building + gear) * lawBonuses.qiRegen * astral;
 }
 
 export function fCap(state = progressionState){
