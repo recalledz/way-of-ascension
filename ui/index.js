@@ -169,10 +169,11 @@ function initUI(){
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       if (confirm('Hard reset?')) {
-        // Remove all known save slots so legacy data doesn't persist
-        localStorage.removeItem('woa-save');
-        localStorage.removeItem('woa:save:v1');
-
+        // Wipe all persisted data so no stray keys survive a reset.
+        // This covers older save slots and any feature-specific flags.
+        try {
+          localStorage.clear();
+        } catch {}
         setState(defaultState());
         save();
         location.reload();

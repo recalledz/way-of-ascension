@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Hard reset now clears all local data so prior saves or settings don't linger.
 - Expanded weapon families (Straight Sword, Crude Dagger, etc.) with implicit stat bonuses.
 - Peaceful Lands, Forest Edge, and Meadow Path can now drop these sample weapons at low rates for testing.
 - Generalized weapon proficiency to all weapon types with enemy HP–based XP gains (max HP ÷ 30 per attack).
