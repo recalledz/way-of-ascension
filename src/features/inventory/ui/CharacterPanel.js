@@ -18,9 +18,9 @@ const ELEMENT_BG_COLORS = {
 };
 
 const QUALITY_STARS = {
-  normal: '',
-  magic: '★',
-  rare: '★★'
+  basic: '',
+  refined: '★',
+  superior: '★★',
 };
 
 export function renderEquipmentPanel() {
@@ -102,7 +102,7 @@ function weaponDetailsText(item) {
     .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
     .join(', ');
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
-  const quality = w.quality ?? 'normal';
+  const quality = w.quality ?? 'basic';
   const affixes = w.affixes && w.affixes.length ? w.affixes.join(', ') : 'None';
   return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
 }

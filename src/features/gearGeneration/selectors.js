@@ -11,7 +11,7 @@ function pickWeighted(rows) {
   return rows[rows.length - 1];
 }
 
-function pickQuality(weights = { normal: 80, magic: 15, rare: 5 }) {
+function pickQuality(weights = { basic: 80, refined: 15, superior: 5 }) {
   const entries = Object.entries(weights);
   const total = entries.reduce((s, [, w]) => s + w, 0);
   let r = Math.random() * total;
