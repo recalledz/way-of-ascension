@@ -95,6 +95,11 @@ way-of-ascension/
 │   │   │   ├── ui.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
+│   │   ├── accessories/
+│   │   │   ├── data/
+│   │   │   │   └── rings.js
+│   │   │   ├── logic.js
+│   │   │   └── selectors.js
 │   │   ├── affixes/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
@@ -149,7 +154,8 @@ way-of-ascension/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── lootTables.js
 │   │   │   │   ├── lootTables.gear.js
-│   │   │   │   └── lootTables.weapons.js
+│   │   │   │   ├── lootTables.weapons.js
+│   │   │   │   └── lootTables.rings.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
@@ -271,7 +277,8 @@ way-of-ascension/
 │   │   ├── gearGeneration/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
-│   │   │   │   └── gearBases.js
+│   │   │   │   ├── gearBases.js
+│   │   │   │   └── modifiers.js
 │   │   │   ├── imbuement.js
 │   │   │   ├── logic.js
 │   │   │   └── selectors.js
@@ -534,12 +541,16 @@ export function runMigrations(save) {
 
 #### `src/features/loot/qualityWeights.js` - Quality Weight Helper
 **Purpose**: Rolls a weapon or gear quality based on weighted chances.
-**Key Functions**: `rollQualityKey()`.
-**When to modify**: Adjust default quality probabilities or introduce zone-specific distributions.
+**Key Functions**: `rollQualityKey()`, `rollRarity()`.
+**When to modify**: Adjust default quality or rarity probabilities or introduce zone-specific distributions.
 
 #### `src/features/loot/data/lootTables.gear.js` - Gear Loot Tables
 **Purpose**: Defines starter zone body gear drops and their weights.
 **When to modify**: Add or rebalance gear drops for zones.
+
+#### `src/features/loot/data/lootTables.rings.js` - Ring Loot Tables
+**Purpose**: Defines ring drops and weights for each zone.
+**When to modify**: Adjust ring availability or balance drop rates.
 
 #### `src/features/inventory/mutators.js` - Inventory Management
 **Purpose**: Adds, removes, and equips items in the player's inventory and equipment slots.
@@ -1025,6 +1036,7 @@ Paths added:
 - `src/features/gearGeneration/imbuement.js` – Defines imbuement tiers, multipliers, and zone element themes.
 - `src/features/gearGeneration/data/gearBases.js` – Base armor definitions (body, head, feet).
 - `src/features/gearGeneration/data/_balance.contract.js` – Balance contract placeholder for gear generation.
+- `src/features/gearGeneration/data/modifiers.js` – Modifier definitions used by gear and weapon generation.
 
 ### Weapon Generation Feature (`src/features/weaponGeneration/`)
 - `src/features/weaponGeneration/index.js` – Registers weapon generation hooks.
@@ -1032,6 +1044,11 @@ Paths added:
 - `src/features/weaponGeneration/logic.js` – Generates weapons from base types and materials.
 - `src/features/weaponGeneration/mutators.js` – Writes generated weapons into state.
 - `src/features/weaponGeneration/selectors.js` – Helpers to roll and access generated weapons.
+
+### Accessories Feature (`src/features/accessories/`)
+- `src/features/accessories/data/rings.js` – Base ring definitions and stats.
+- `src/features/accessories/logic.js` – Generates rings and applies minor modifiers.
+- `src/features/accessories/selectors.js` – Rolls ring drops using ring loot tables.
 
 ### Core Data (`src/data/`)
 - `src/data/status.ts` – Global status effect definitions.

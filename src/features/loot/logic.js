@@ -28,27 +28,29 @@ export function rollLoot(key, rng = Math.random) {
 export function onEnemyDefeated(state) {
   const zoneKey = state.world?.zoneKey ?? ZONES.STARTING;
   const zoneStage = (state.world?.stage ?? state.adventure?.currentArea ?? 0) + 1;
+  const log = (state.log = state.log || []);
+  const earlyZones = new Set([ZONES.STARTING]);
+  const isEarlyZone = earlyZones.has(zoneKey);
 
   const weaponDrop = rollWeaponDropForZone(zoneKey, zoneStage);
-  if (weaponDrop) {
+  if (weaponDrop && weaponDrop.type !== 'talisman') {
     addToInventory(weaponDrop, state);
-    state.log = state.log || [];
-    state.log.push(`You found: ${weaponDrop.name}.`);
+    log.push(`You found: ${weaponDrop.name}.`);
   }
 
-  const gearDrop = rollGearDropForZone(zoneKey, zoneStage);
-  if (gearDrop) {
-    addToInventory(gearDrop, state);
-    state.log = state.log || [];
-    state.log.push(`You found: ${gearDrop.name}.`);
+  if (isEarlyZone) {
+    const gearDrop = rollGearDropForZone(zoneKey, zoneStage);
+    if (gearDrop && gearDrop.type !== 'talisman') {
+      addToInventory(gearDrop, state);
+      log.push(`You found: ${gearDrop.name}.`);
+    }
   }
 
   if (state.adventure?.isBossFight) {
     const ringDrop = rollRingDropForZone(zoneKey);
-    if (ringDrop) {
+    if (ringDrop && ringDrop.type !== 'talisman') {
       addToInventory(ringDrop, state);
-      state.log = state.log || [];
-      state.log.push(`You found: ${ringDrop.name}.`);
+      log.push(`You found: ${ringDrop.name}.`);
     }
   }
 
