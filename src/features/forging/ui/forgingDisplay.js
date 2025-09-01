@@ -1,9 +1,9 @@
-import { S } from '../../../shared/state.js';
-import { setText } from '../../../shared/utils/dom.js';
+import { setText, log } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
+import { getInventoryItems } from '../logic.js';
 
-function updateForgingActivity(state = S) {
+function updateForgingActivity(state) {
   if (!state.forging) return;
   setText('forgingLevel', state.forging.level);
   setText('forgingExp', Math.floor(state.forging.exp));
@@ -19,38 +19,37 @@ function updateForgingActivity(state = S) {
       status.textContent = `Forging... ${Math.ceil(state.forging.current.time)}s`; }
     else status.textContent = 'Idle';
   }
-  const itemSel = document.getElementById('forgeItemSelect');
-  if (itemSel) {
-    const prev = itemSel.value;
-    itemSel.innerHTML = '';
-    state.inventory?.filter(it => it.type === 'weapon' || it.type === 'gear')
-      .forEach(it => {
-        const opt = document.createElement('option');
-        opt.value = String(it.id);
-        opt.textContent = it.name || it.id;
-        itemSel.appendChild(opt);
-      });
-    if (prev) itemSel.value = prev;
-  }
-  const btn = document.getElementById('startForgingBtn');
-  if (btn) {
-    if (state.activities.forging) {
-      btn.textContent = '🛑 Stop Forging';
-      btn.onclick = () => { state.forging.current = null; window.stopActivity('forging'); };
-    } else {
-      btn.textContent = 'Start Forging';
+  const gearList = document.getElementById('forgeGearList');
+  if (gearList) {
+    gearList.innerHTML = '';
+
+    const items = getInventoryItems(state).filter(
+      it => it.type === 'weapon' || it.type === 'armor'
+    );
+
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'inventory-row';
+      row.innerHTML = `<span class="inv-name">${it.name || it.id}</span>`;
+      const act = document.createElement('div');
+      act.className = 'inv-actions';
+      const btn = document.createElement('button');
+      btn.className = 'btn small';
+      btn.textContent = 'Place in Forge';
       btn.onclick = () => {
-        const itemId = document.getElementById('forgeItemSelect')?.value;
         const element = document.getElementById('forgeElementSelect')?.value;
-        if (!itemId || !element) return;
+        if (!element) { log?.('Select an element to forge', 'bad'); return; }
         window.startActivity('forging');
-        startForging(itemId, element, state);
+        startForging(it.id, element, state);
       };
-    }
+      act.appendChild(btn);
+      row.appendChild(act);
+      gearList.appendChild(row);
+    });
   }
 }
 
-function updateForgingSidebar(state = S) {
+function updateForgingSidebar(state) {
   if (!state.forging) return;
   setText('forgingLevelSidebar', `Level ${state.forging.level}`);
   const fill = document.getElementById('forgingProgressFillSidebar');
@@ -61,7 +60,7 @@ function updateForgingSidebar(state = S) {
   }
 }
 
-export function mountForgingUI(state = S) {
+export function mountForgingUI(state) {
   on('RENDER', () => {
     updateForgingActivity(state);
     updateForgingSidebar(state);

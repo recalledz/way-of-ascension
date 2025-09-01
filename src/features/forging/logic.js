@@ -1,6 +1,15 @@
 import { S } from '../../shared/state.js';
 import { log } from '../../shared/utils/dom.js';
 
+export function getInventoryItems(state = S) {
+  if (Array.isArray(state.inventory)) return state.inventory;
+  if (Array.isArray(state.inventory?.inventory)) return state.inventory.inventory;
+  return [
+    ...(state.inventory?.weapons || []),
+    ...(state.inventory?.armor || []),
+  ];
+}
+
 export function getForgingTime(tier, state = S) {
   const baseMinutes = tier === 0 ? 1 : Math.pow(3, tier + 1);
   const level = state.forging?.level || 1;
@@ -10,7 +19,7 @@ export function getForgingTime(tier, state = S) {
 
 export function startForging(itemId, element, state = S) {
   if (!state.forging) return;
-  const item = state.inventory?.find(it => String(it.id) === String(itemId));
+  const item = getInventoryItems(state).find(it => String(it.id) === String(itemId));
   if (!item) { log?.('Item not found', 'bad'); return; }
   const tier = item.tier || 0;
   const woodCost = (tier + 1) * 10;
@@ -37,7 +46,7 @@ export function advanceForging(state = S) {
   const job = state.forging.current;
   job.time -= 1;
   if (job.time <= 0) {
-    const item = state.inventory?.find(it => String(it.id) === job.itemId);
+    const item = getInventoryItems(state).find(it => String(it.id) === job.itemId);
     if (item) {
       item.element = job.element;
       item.tier = job.targetTier;
@@ -56,7 +65,7 @@ export function advanceForging(state = S) {
 }
 
 export function imbueItem(itemId, element, state = S) {
-  const item = state.inventory?.find(it => String(it.id) === String(itemId));
+  const item = getInventoryItems(state).find(it => String(it.id) === String(itemId));
   if (!item) { log?.('Item not found', 'bad'); return; }
   const tier = item.imbuement?.tier || 0;
   const woodCost = (tier + 1) * 20;
