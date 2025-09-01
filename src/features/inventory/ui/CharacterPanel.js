@@ -93,7 +93,7 @@ function renderEquipment() {
     const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
     const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
     el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
+    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
     const element = item?.element || item?.imbuement?.element;
     el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
@@ -312,8 +312,8 @@ function canEquipToSlot(item, slot) {
   return false;
 }
 
-function renderInventory() {
-  hideItemTooltip();
+function renderInventory({ dismissTooltip = false } = {}) {
+  if (dismissTooltip) hideItemTooltip();
   const list = document.getElementById('inventoryList');
   if (!list) return;
   list.innerHTML = '';
@@ -322,7 +322,7 @@ function renderInventory() {
   const filterBtns = document.querySelectorAll('#inventoryFilters button');
   filterBtns.forEach(btn => {
     btn.classList.toggle('active', btn.dataset.filter === currentFilter);
-    btn.onclick = () => { currentFilter = btn.dataset.filter; slotFilter = null; renderInventory(); };
+    btn.onclick = () => { currentFilter = btn.dataset.filter; slotFilter = null; renderInventory({ dismissTooltip: true }); };
   });
 }
 
