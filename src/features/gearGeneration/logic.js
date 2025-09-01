@@ -1,21 +1,6 @@
 import { GEAR_BASES } from './data/gearBases.js';
 import { MATERIALS_STUB } from '../weaponGeneration/data/materials.stub.js';
-import { ZONES as ZONE_IDS } from '../adventure/data/zoneIds.js';
-
-const ELEMENTS = ['metal', 'earth', 'wood', 'water', 'fire'];
-const ZONE_ELEMENT_WEIGHTS = {
-  [ZONE_IDS.STARTING]: { earth: 3, wood: 3, metal: 1, water: 1, fire: 1 },
-};
-
-function pickWeighted(rows) {
-  const total = rows.reduce((s, r) => s + (r.weight || 0), 0);
-  let r = Math.random() * total;
-  for (const row of rows) {
-    r -= row.weight || 0;
-    if (r <= 0) return row;
-  }
-  return rows[rows.length - 1];
-}
+import { getImbuementMultiplier, pickZoneElement } from './imbuement.js';
 
 /**
  * @typedef {{
@@ -26,19 +11,20 @@ function pickWeighted(rows) {
  * }} GearGenArgs
  */
 
-export function generateGear({ baseKey, materialKey, qualityKey = 'basic', stage = 1 }/** @type {GearGenArgs} */) {
+export function generateGear({ baseKey, materialKey, qualityKey = 'basic', stage = 1, imbuement }/** @type {GearGenArgs & {imbuement?:{element:string,tier:number}}} */) {
   const base = GEAR_BASES[baseKey];
   if (!base) throw new Error(`Unknown base gear: ${baseKey}`);
   const material = materialKey ? MATERIALS_STUB[materialKey] : null;
   const qualityMult = { basic: 1, refined: 1.1, superior: 1.25 }[qualityKey] || 1;
   const stageMult = 1.04 ** (stage - 1);
+  const imbMult = getImbuementMultiplier(imbuement?.tier || 0);
   const protection = {
-    armor: Math.round((base.baseProtection.armor || 0) * qualityMult * stageMult),
-    dodge: Math.round((base.baseProtection.dodge || 0) * qualityMult * stageMult),
-    qiShield: Math.round((base.baseProtection.qiShield || 0) * qualityMult * stageMult),
+    armor: Math.round((base.baseProtection.armor || 0) * qualityMult * stageMult * imbMult),
+    dodge: Math.round((base.baseProtection.dodge || 0) * qualityMult * stageMult * imbMult),
+    qiShield: Math.round((base.baseProtection.qiShield || 0) * qualityMult * stageMult * imbMult),
   };
   const offense = {
-    accuracy: Math.round((base.baseOffense?.accuracy || 0) * qualityMult),
+    accuracy: Math.round((base.baseOffense?.accuracy || 0) * qualityMult * imbMult),
   };
   const name = composeName(base.displayName, material?.displayName);
   return {
@@ -51,14 +37,12 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'basic', stage
     offense,
     quality: qualityKey,
     material: material?.key,
+    imbuement: imbuement && { ...imbuement },
   };
 }
 
 export function generateCultivationGear(gear, zoneKey) {
-  const weights = ZONE_ELEMENT_WEIGHTS[zoneKey] || {};
-  const element = pickWeighted(
-    ELEMENTS.map(el => ({ key: el, weight: weights[el] || 1 }))
-  ).key;
+  const element = pickZoneElement(zoneKey);
   const out = { ...gear };
   delete out.protection;
   delete out.offense;

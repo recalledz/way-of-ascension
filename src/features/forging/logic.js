@@ -10,7 +10,7 @@ export function getForgingTime(tier, state = S) {
 
 export function startForging(itemId, element, state = S) {
   if (!state.forging) return;
-  const item = state.inventory?.find(it => it.id === itemId);
+  const item = state.inventory?.find(it => String(it.id) === String(itemId));
   if (!item) { log?.('Item not found', 'bad'); return; }
   const tier = item.tier || 0;
   const woodCost = (tier + 1) * 10;
@@ -24,7 +24,7 @@ export function startForging(itemId, element, state = S) {
   state.cores -= coreCost;
   state.qi -= qiCost;
   state.forging.current = {
-    itemId,
+    itemId: String(itemId),
     element,
     targetTier: tier + 1,
     time: getForgingTime(tier, state),
@@ -37,7 +37,7 @@ export function advanceForging(state = S) {
   const job = state.forging.current;
   job.time -= 1;
   if (job.time <= 0) {
-    const item = state.inventory?.find(it => it.id === job.itemId);
+    const item = state.inventory?.find(it => String(it.id) === job.itemId);
     if (item) {
       item.element = job.element;
       item.tier = job.targetTier;
@@ -53,4 +53,20 @@ export function advanceForging(state = S) {
     state.forging.current = null;
     if (state.activities) state.activities.forging = false;
   }
+}
+
+export function imbueItem(itemId, element, state = S) {
+  const item = state.inventory?.find(it => String(it.id) === String(itemId));
+  if (!item) { log?.('Item not found', 'bad'); return; }
+  const tier = item.imbuement?.tier || 0;
+  const woodCost = (tier + 1) * 20;
+  const coreCost = (tier + 1) * 10;
+  if ((state.wood || 0) < woodCost || (state.cores || 0) < coreCost) {
+    log?.('Not enough resources', 'bad');
+    return;
+  }
+  state.wood -= woodCost;
+  state.cores -= coreCost;
+  item.imbuement = { element, tier: tier + 1 };
+  log?.(`Imbued ${item.name || item.id} with ${element} to tier ${tier + 1}`, 'good');
 }

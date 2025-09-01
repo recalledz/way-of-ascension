@@ -26,7 +26,7 @@ function updateForgingActivity(state = S) {
     state.inventory?.filter(it => it.type === 'weapon' || it.type === 'gear')
       .forEach(it => {
         const opt = document.createElement('option');
-        opt.value = it.id;
+        opt.value = String(it.id);
         opt.textContent = it.name || it.id;
         itemSel.appendChild(opt);
       });

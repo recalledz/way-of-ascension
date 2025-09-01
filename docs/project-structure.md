@@ -272,6 +272,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   └── gearBases.js
+│   │   │   ├── imbuement.js
 │   │   │   ├── logic.js
 │   │   │   └── selectors.js
 │   │   └── weaponGeneration/
@@ -1021,6 +1022,7 @@ Paths added:
 ### Gear Generation Feature (`src/features/gearGeneration/`)
 - `src/features/gearGeneration/logic.js` – Generates gear from base definitions and materials.
 - `src/features/gearGeneration/selectors.js` – Rolls zone gear drops using gear loot tables.
+- `src/features/gearGeneration/imbuement.js` – Defines imbuement tiers, multipliers, and zone element themes.
 - `src/features/gearGeneration/data/gearBases.js` – Base armor definitions (body, head, feet).
 - `src/features/gearGeneration/data/_balance.contract.js` – Balance contract placeholder for gear generation.
 
