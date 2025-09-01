@@ -4611,19 +4611,30 @@ html.reduce-motion .log-sheet{transition:none;}
   touch-action:none;
 }
 .astral-skill-tree svg.dragging{cursor:grabbing;}
-.connector{stroke-width:1.5;fill:none;opacity:0.7;filter:drop-shadow(0 0 2px currentColor);}
-.node{fill:#000;stroke-width:2;filter:drop-shadow(0 0 4px currentColor);}
+.connector{
+  stroke:#fff;
+  stroke-width:1.5;
+  fill:none;
+  opacity:0.9;
+  color:#fff;
+  filter:drop-shadow(0 0 6px #fff);
+}
+.node{
+  fill:#000;
+  stroke-width:2;
+  filter:drop-shadow(0 0 6px currentColor);
+}
 .node.start{stroke-width:2;}
 
-.connector.hub,.node.hub{stroke:#7dd3fc;color:#7dd3fc;}
-.connector.wood,.node.wood{stroke:#4caf50;color:#4caf50;}
-.connector.fire,.node.fire{stroke:#f44336;color:#f44336;}
-.connector.earth,.node.earth{stroke:#795548;color:#795548;}
-.connector.metal,.node.metal{stroke:#c0c0c0;color:#c0c0c0;}
-.connector.water,.node.water{stroke:#2196f3;color:#2196f3;}
+.node.hub{stroke:#7dd3fc;color:#7dd3fc;}
+.node.wood{stroke:#4caf50;color:#4caf50;}
+.node.fire{stroke:#f44336;color:#f44336;}
+.node.earth{stroke:#795548;color:#795548;}
+.node.metal{stroke:#c0c0c0;color:#c0c0c0;}
+.node.water{stroke:#2196f3;color:#2196f3;}
 .node.taken{
   fill:currentColor;
-  filter:drop-shadow(0 0 6px currentColor);
+  filter:drop-shadow(0 0 8px currentColor);
 }
 .node.allocatable{
   cursor:pointer;
@@ -4632,9 +4643,9 @@ html.reduce-motion .log-sheet{transition:none;}
 .connector.active{
   stroke-width:2.5;
   opacity:1;
-  filter:drop-shadow(0 0 6px currentColor);
+  filter:drop-shadow(0 0 8px #fff);
 }
-.connector.link{stroke:#888;}
+.connector.link{stroke:#fff;}
 
 @keyframes nodeGlow{
   from{filter:drop-shadow(0 0 4px currentColor);}
