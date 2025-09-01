@@ -84,11 +84,8 @@ function renderEquipment() {
     el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
-    if (item?.element) {
-      el.style.backgroundColor = ELEMENT_BG_COLORS[item.element] || '';
-    } else {
-      el.style.backgroundColor = '';
-    }
+    const element = item?.element || item?.imbuement?.element;
+    el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;
@@ -225,8 +222,9 @@ function showDetails(item, evt) {
 function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
-  if (item.element) {
-    row.style.backgroundColor = ELEMENT_BG_COLORS[item.element] || '';
+  const element = item.element || item.imbuement?.element;
+  if (element) {
+    row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
   }
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
