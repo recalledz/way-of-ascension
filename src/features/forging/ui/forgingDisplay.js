@@ -1,5 +1,5 @@
 import { S } from '../../../shared/state.js';
-import { setText } from '../../../shared/utils/dom.js';
+import { setText, log } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
 
@@ -23,14 +23,25 @@ function updateForgingActivity(state = S) {
   if (itemSel) {
     const prev = itemSel.value;
     itemSel.innerHTML = '';
-    state.inventory?.filter(it => it.type === 'weapon' || it.type === 'gear')
-      .forEach(it => {
-        const opt = document.createElement('option');
-        opt.value = String(it.id);
-        opt.textContent = it.name || it.id;
-        itemSel.appendChild(opt);
-      });
+
+    // Gather all forgeable equipment regardless of inventory structure
+    const items = Array.isArray(state.inventory)
+      ? state.inventory.filter(it => it.type === 'weapon' || it.type === 'armor')
+      : [
+          ...(state.inventory?.weapons || []),
+          ...(state.inventory?.armor || []),
+        ];
+
+    items.forEach(it => {
+      const opt = document.createElement('option');
+      opt.value = String(it.id);
+      opt.textContent = it.name || it.id;
+      itemSel.appendChild(opt);
+    });
+
     if (prev) itemSel.value = prev;
+    // Ensure something is selected so the forge button works
+    if (!itemSel.value && itemSel.options.length) itemSel.selectedIndex = 0;
   }
   const btn = document.getElementById('startForgingBtn');
   if (btn) {
@@ -42,7 +53,10 @@ function updateForgingActivity(state = S) {
       btn.onclick = () => {
         const itemId = document.getElementById('forgeItemSelect')?.value;
         const element = document.getElementById('forgeElementSelect')?.value;
-        if (!itemId || !element) return;
+        if (!itemId || !element) {
+          log?.('Select an item and element to forge', 'bad');
+          return;
+        }
         window.startActivity('forging');
         startForging(itemId, element, state);
       };
