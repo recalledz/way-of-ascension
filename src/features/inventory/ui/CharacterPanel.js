@@ -167,15 +167,58 @@ function gearDetailsText(item) {
   return lines.join('\n');
 }
 
-function showDetails(item) {
+let currentTooltip = null;
+let currentTooltipListener = null;
+
+function hideItemTooltip() {
+  if (currentTooltip) {
+    currentTooltip.remove();
+    currentTooltip = null;
+  }
+  if (currentTooltipListener) {
+    document.removeEventListener('pointerdown', currentTooltipListener);
+    currentTooltipListener = null;
+  }
+}
+
+function showItemTooltip(anchor, text) {
+  hideItemTooltip();
+  const tooltip = document.createElement('div');
+  tooltip.className = 'astral-tooltip';
+  tooltip.innerHTML = text.replace(/\n/g, '<br>');
+  document.body.appendChild(tooltip);
+  const rect = anchor.getBoundingClientRect();
+  const tRect = tooltip.getBoundingClientRect();
+  let left = rect.right + 8;
+  let top = rect.top + rect.height / 2 - tRect.height / 2;
+  if (left + tRect.width > window.innerWidth - 8) left = rect.left - tRect.width - 8;
+  if (left < 8) left = 8;
+  if (top < 8) top = 8;
+  if (top + tRect.height > window.innerHeight - 8) top = window.innerHeight - tRect.height - 8;
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+  currentTooltip = tooltip;
+  function onDocPointerDown(e) {
+    if (!tooltip.contains(e.target)) {
+      hideItemTooltip();
+    }
+  }
+  document.addEventListener('pointerdown', onDocPointerDown);
+  currentTooltipListener = onDocPointerDown;
+}
+
+function showDetails(item, evt) {
+  let text = '';
   if (item.type === 'weapon') {
-    const text = weaponDetailsText(item);
-    if (text) window.alert(text);
+    text = weaponDetailsText(item);
   } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
-    const text = gearDetailsText(item);
-    if (text) window.alert(text);
+    text = gearDetailsText(item);
   } else {
-    window.alert(item.name || item.key);
+    text = item.name || item.key;
+  }
+  if (text && evt?.target) {
+    evt.stopPropagation();
+    showItemTooltip(evt.target, text);
   }
 }
 
@@ -228,7 +271,7 @@ function createInventoryRow(item) {
     const detailsBtn = document.createElement('button');
     detailsBtn.className = 'btn small';
     detailsBtn.textContent = 'Details';
-    detailsBtn.onclick = () => showDetails(item);
+    detailsBtn.onclick = (e) => showDetails(item, e);
     act.appendChild(detailsBtn);
   }
   row.appendChild(act);
@@ -252,6 +295,7 @@ function canEquipToSlot(item, slot) {
 }
 
 function renderInventory() {
+  hideItemTooltip();
   const list = document.getElementById('inventoryList');
   if (!list) return;
   list.innerHTML = '';
