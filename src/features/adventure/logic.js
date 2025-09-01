@@ -348,6 +348,7 @@ export function updateBattleDisplay() {
   }
 }
 
+let lastAbilityHTML = '';
 export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
@@ -357,11 +358,9 @@ export function updateAbilityBar() {
     'game-icons:mighty-force': '💥',
     'game-icons:fireball': '🔥',
   };
-  bar.innerHTML = '';
+  let html = '';
+  const slotData = [];
   slots.forEach((slot, i) => {
-    const card = document.createElement('div');
-    card.className = 'ability-card';
-    card.dataset.slot = i + 1;
     if (slot.abilityKey) {
       const def = ABILITIES[slot.abilityKey];
       const dmg = getAbilityDamage(slot.abilityKey, S);
@@ -373,7 +372,12 @@ export function updateAbilityBar() {
       );
       const dmgLine = dmg !== null ? `<div class="ability-damage">${dmg}</div>` : '';
       const castLine = castTimeMs > 0 ? `<div class="ability-cast-time">${(castTimeMs / 1000).toFixed(2)}s</div>` : '';
-      card.innerHTML = `
+      const cdSec = (def.cooldownMs || 0) / 1000;
+      const ctSec = castTimeMs / 1000;
+      let title = `${def.displayName} — Cost ${def.costQi} Qi`;
+      if (castTimeMs > 0) title += `, Cast ${ctSec}s`;
+      title += `, CD ${cdSec}s`;
+      let content = `
         <div class="ability-title">
           <div class="ability-name">${def.displayName}</div>
           ${dmgLine}
@@ -383,39 +387,40 @@ export function updateAbilityBar() {
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
-      const cdSec = (def.cooldownMs || 0) / 1000;
-      const ctSec = castTimeMs / 1000;
-      let title = `${def.displayName} — Cost ${def.costQi} Qi`;
-      if (castTimeMs > 0) title += `, Cast ${ctSec}s`;
-      title += `, CD ${cdSec}s`;
-      card.title = title;
       if (slot.cooldownRemainingMs > 0) {
-        const overlay = document.createElement('div');
-        overlay.className = 'cooldown-overlay';
-        overlay.textContent = Math.ceil(slot.cooldownRemainingMs / 1000);
-        card.appendChild(overlay);
-        card.classList.add('cooling');
+        content += `<div class="cooldown-overlay">${Math.ceil(slot.cooldownRemainingMs / 1000)}</div>`;
       }
-      if (slot.insufficientQi) card.classList.add('insufficient');
+      const classes = ['ability-card'];
+      if (slot.cooldownRemainingMs > 0) classes.push('cooling');
+      if (slot.insufficientQi) classes.push('insufficient');
+      html += `<div class="${classes.join(' ')}" data-slot="${i + 1}" title="${title}">${content}</div>`;
+      slotData.push({ abilityKey: slot.abilityKey });
+    } else {
+      html += `<div class="ability-card empty" data-slot="${i + 1}">
+        <div class="ability-name">—</div>
+        <div class="ability-icon"></div>
+        <div class="qi-badge"></div>
+        <div class="keybind">[${i + 1}]</div>
+      </div>`;
+      slotData.push({ abilityKey: null });
+    }
+  });
+  if (html === lastAbilityHTML) return;
+  lastAbilityHTML = html;
+  bar.innerHTML = html;
+  Array.from(bar.children).forEach((card, i) => {
+    const data = slotData[i];
+    if (data.abilityKey) {
       card.addEventListener('click', () => {
-        if (tryCastAbility(slot.abilityKey)) {
-          S.qi -= ABILITIES[slot.abilityKey].costQi;
+        if (tryCastAbility(data.abilityKey)) {
+          S.qi -= ABILITIES[data.abilityKey].costQi;
           flashAbilityCard(i + 1);
           updateAbilityBar();
         } else {
           shakeAbilityCard(i + 1);
         }
       });
-    } else {
-      card.classList.add('empty');
-      card.innerHTML = `
-        <div class="ability-name">—</div>
-        <div class="ability-icon"></div>
-        <div class="qi-badge"></div>
-        <div class="keybind">[${i + 1}]</div>
-      `;
     }
-    bar.appendChild(card);
   });
 }
 
