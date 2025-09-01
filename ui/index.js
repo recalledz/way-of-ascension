@@ -83,6 +83,10 @@ import { usePill } from '../src/features/inventory/mutators.js';
 // Global variables
 const progressBars = {};
 
+// Track last known equipment/inventory state to avoid unnecessary re-renders
+let lastInventorySnapshot = JSON.stringify(S.inventory || []);
+let lastEquipmentSnapshot = JSON.stringify(S.equipment || {});
+
 // Activity Management System (delegates to feature)
 function selectActivity(activityType) { selectActivityMut(S, activityType); }
 function startActivity(activityName)  { startActivityMut(S, activityName); }
@@ -281,9 +285,16 @@ function updateActivityContent() {
     case 'adventure':
       updateActivityAdventure();
       break;
-    case 'character':
-      renderEquipmentPanel(); // EQUIP-CHAR-UI
+    case 'character': {
+      const invState = JSON.stringify(S.inventory || []);
+      const equipState = JSON.stringify(S.equipment || {});
+      if (invState !== lastInventorySnapshot || equipState !== lastEquipmentSnapshot) {
+        renderEquipmentPanel(); // EQUIP-CHAR-UI
+        lastInventorySnapshot = invState;
+        lastEquipmentSnapshot = equipState;
+      }
       break;
+    }
     case 'cooking':
       updateActivityCooking();
       break;
