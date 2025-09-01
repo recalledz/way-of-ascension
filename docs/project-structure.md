@@ -249,6 +249,13 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   └── ui/
 │   │   │       └── miningDisplay.js
+│   │   ├── forging/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── forgingDisplay.js
 │   │   ├── physique/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -331,6 +338,7 @@ way-of-ascension/
 ├── src/features/combat/index.js
 ├── src/features/karma/index.js
 ├── src/features/mining/index.js
+├── src/features/forging/index.js
 ├── src/features/physique/index.js
 └── style.css
 ```
@@ -976,6 +984,14 @@ Paths added:
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
 
+
+
+### Forging Feature (`src/features/forging/`)
+- `src/features/forging/state.js` – Tracks forging level, experience, and current forging job.
+- `src/features/forging/logic.js` – Calculates tier times, costs, and applies forging results.
+- `src/features/forging/mutators.js` – Starts forging jobs and advances progress each tick.
+- `src/features/forging/selectors.js` – Helpers to read forging state.
+- `src/features/forging/ui/forgingDisplay.js` – Renders forging panel and sidebar info.
 
 ### Physique Feature (`src/features/physique/`)
 - `src/features/physique/state.js` – Tracks physique training progress and stamina.

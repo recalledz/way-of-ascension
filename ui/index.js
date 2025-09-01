@@ -50,6 +50,7 @@ import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { setupAbilityUI } from '../src/features/ability/ui.js';
 import { recomputePlayerTotals } from '../src/features/inventory/logic.js';
 import { advanceMining } from '../src/features/mining/logic.js';
+import { advanceForging } from '../src/features/forging/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
@@ -449,6 +450,7 @@ function tick(){
   
   // Passive mining progression
   advanceMining(S);
+  advanceForging(S);
   
   // Physique training progression
   const sessionEnd = tickPhysiqueTraining(S);

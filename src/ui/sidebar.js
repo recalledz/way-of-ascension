@@ -34,6 +34,17 @@ export function renderSidebarActivities() {
       cost: {}
     },
     {
+      id: 'forging',
+      label: 'Forging',
+      icon: '<iconify-icon icon="mdi:anvil" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'forgingLevelSidebar',
+      initialLevel: 'Level 1',
+      progressFillId: 'forgingProgressFillSidebar',
+      progressTextId: 'forgingProgressTextSidebar',
+      cost: {},
+    },
+    {
       id: 'cooking',
       label: 'Cooking',
       icon: '<iconify-icon icon="ep:food" class="ui-icon" width="20"></iconify-icon>',

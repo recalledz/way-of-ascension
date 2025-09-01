@@ -113,6 +113,7 @@ export function updateCurrentTaskDisplay(root) {
     cultivation: 'Cultivating',
     physique: 'Physique Training',
     mining: 'Mining',
+    forging: 'Forging',
     adventure: 'Adventuring',
     cooking: 'Cooking',
     alchemy: 'Brewing'
