@@ -4,7 +4,7 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
 /** @typedef {{
  *  typeKey:string,
  *  materialKey?:string,         // optional; for naming only (no stats impact)
- *  qualityKey?:'normal'|'magic'|'rare',
+ *  qualityKey?:'basic'|'refined'|'superior',
  *  level?:number                // placeholder; no scaling applied yet
  * }} GenArgs */
 
@@ -22,13 +22,13 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
  * }} WeaponItem */
 
 /** Compose final item. Minimal quality/affix support. */
-export function generateWeapon({ typeKey, materialKey, qualityKey = 'normal' }/** @type {GenArgs} */){
+export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic' }/** @type {GenArgs} */){
   const type = WEAPON_TYPES[typeKey];
   if (!type) throw new Error(`Unknown weapon type: ${typeKey}`);
 
   const material = materialKey ? MATERIALS_STUB[materialKey] : undefined;
 
-  const qualityMult = { normal: 1, magic: 1.1, rare: 1.25 }[qualityKey] || 1;
+  const qualityMult = { basic: 1, refined: 1.1, superior: 1.25 }[qualityKey] || 1;
 
   const abilityKeys = [];
   if (type.signatureAbilityKey) abilityKeys.push(type.signatureAbilityKey);
