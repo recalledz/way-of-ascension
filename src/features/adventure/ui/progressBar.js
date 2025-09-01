@@ -35,6 +35,7 @@ function hideTooltip() {
   }
 }
 
+let lastBarHTML = '';
 export function updateAdventureProgressBar(selectAreaById) {
   if (!S.adventure) return;
   const progressBar = document.getElementById('adventureProgressBar');
@@ -42,46 +43,48 @@ export function updateAdventureProgressBar(selectAreaById) {
   const currentZoneId = ZONES[S.adventure.selectedZone || 0]?.id;
   const currentZone = getZoneById(currentZoneId);
   if (!currentZone || !currentZone.areas) return;
-  progressBar.innerHTML = '';
+  const segmentData = [];
+  let html = '';
   currentZone.areas.forEach((area, index) => {
     const areaKey = `${currentZoneId}-${area.id}`;
     const legacyAreaKey = `${S.adventure.selectedZone}-${index}`;
     const isUnlocked = isAreaUnlocked(currentZoneId, area.id, S) || S.adventure.unlockedAreas?.[legacyAreaKey] || false;
     const isCurrent = index === (S.adventure.currentArea || 0) && (S.adventure.selectedZone === S.adventure.currentZone);
     const progress = S.adventure.areaProgress?.[areaKey] || S.adventure.areaProgress?.[legacyAreaKey] || { kills: 0, bossDefeated: false };
-    const segment = document.createElement('div');
-    segment.className = 'progress-segment';
-    segment.setAttribute('aria-label', `${area.name}: ${isUnlocked ? `${progress.kills}/${area.killReq} kills` : 'Locked'}`);
+    const classes = ['progress-segment'];
+    let content = '';
     if (isUnlocked) {
-      segment.classList.add('unlocked');
-      segment.textContent = area.name.split(' ')[0];
-      segment.style.background = `linear-gradient(135deg, ${currentZone.color}88, ${currentZone.color}cc)`;
-      segment.style.borderColor = currentZone.color;
-      if (progress.bossDefeated) {
-        segment.innerHTML = segment.textContent + ' ✓';
-      }
+      classes.push('unlocked');
+      content = area.name.split(' ')[0];
+      if (progress.bossDefeated) content += ' ✓';
     } else {
-      segment.classList.add('locked');
-      segment.innerHTML = '<span class="lock-icon">🔒</span>';
-      segment.setAttribute('title', `${area.name} - Locked`);
+      classes.push('locked');
+      content = '<span class="lock-icon">🔒</span>';
     }
-    if (isCurrent) {
-      segment.classList.add('current');
-      const playerIcon = document.createElement('div');
-      playerIcon.className = 'player-icon';
-      playerIcon.innerHTML = '🪷';
-      segment.appendChild(playerIcon);
-    }
-    segment.addEventListener('mouseenter', (e) => showTooltip(e, area, progress));
-    segment.addEventListener('mouseleave', hideTooltip);
-    if (isUnlocked) {
-      segment.onclick = () => selectAreaById(currentZoneId, area.id, index);
-      segment.style.cursor = 'pointer';
-      segment.setAttribute('tabindex', '0');
-      segment.setAttribute('role', 'button');
-    }
-    progressBar.appendChild(segment);
+    if (isCurrent) classes.push('current');
+    html += `<div class="${classes.join(' ')}" aria-label="${area.name}: ${isUnlocked ? `${progress.kills}/${area.killReq} kills` : 'Locked'}" ${isUnlocked ? 'style="background: linear-gradient(135deg,' + currentZone.color + '88,' + currentZone.color + 'cc); border-color: ' + currentZone.color + ';"' : ''}>${content}${isCurrent ? '<div class="player-icon">🪷</div>' : ''}</div>`;
+    segmentData.push({ area, index, isUnlocked });
   });
+  if (html !== lastBarHTML) {
+    lastBarHTML = html;
+    progressBar.innerHTML = html;
+    Array.from(progressBar.children).forEach((segment, i) => {
+      const { area, index, isUnlocked } = segmentData[i];
+      segment.addEventListener('mouseenter', (e) => {
+        const areaKey = `${currentZoneId}-${area.id}`;
+        const legacyAreaKey = `${S.adventure.selectedZone}-${index}`;
+        const progress = S.adventure.areaProgress?.[areaKey] || S.adventure.areaProgress?.[legacyAreaKey] || { kills: 0, bossDefeated: false };
+        showTooltip(e, area, progress);
+      });
+      segment.addEventListener('mouseleave', hideTooltip);
+      if (isUnlocked) {
+        segment.style.cursor = 'pointer';
+        segment.setAttribute('tabindex', '0');
+        segment.setAttribute('role', 'button');
+        segment.addEventListener('click', () => selectAreaById(currentZoneId, area.id, index));
+      }
+    });
+  }
   const currentArea = currentZone.areas[S.adventure.currentArea || 0];
   const currentAreaKey = `${currentZoneId}-${currentArea?.id}`;
   const legacyCurrentAreaKey = `${S.adventure.currentZone}-${S.adventure.currentArea}`;
