@@ -4,6 +4,7 @@ import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
 import { equipItem, unequip, removeFromInventory } from '../mutators.js';
 import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
+import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -21,6 +22,11 @@ const QUALITY_STARS = {
   basic: '',
   refined: '★',
   superior: '★★'
+};
+
+const RARITY_COLORS = {
+  magic: '#3b82f6',
+  rare: '#fbbf24',
 };
 
 export function renderEquipmentPanel() {
@@ -79,8 +85,13 @@ function renderEquipment() {
     const iconKey = item?.key ? WEAPONS[item.key]?.proficiencyKey : null;
     const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
     const stars = QUALITY_STARS[item?.quality] || '';
-    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${name}` : name;
-    const nameHtml = stars ? `${stars} ${baseNameHtml}` : baseNameHtml;
+    const rarity = item?.rarity;
+    const rarityColor = RARITY_COLORS[rarity] || '';
+    const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+    const displayName = rarityPrefix + name;
+    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+    const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
+    const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
     el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
@@ -108,7 +119,8 @@ function weaponDetailsText(item) {
     .join(', ');
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
   const quality = w.quality ?? 'basic';
-  const affixes = w.affixes && w.affixes.length ? w.affixes.join(', ') : 'None';
+  const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
+  const modLine = mods.length ? mods.join(', ') : 'None';
   const imbLine = item.imbuement
     ? `Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`
     : 'Imbue: None';
@@ -116,7 +128,8 @@ function weaponDetailsText(item) {
     w.displayName || w.name,
     imbLine,
     `Quality: ${quality}`,
-    `Affixes: ${affixes}`,
+    `Modifiers: ${modLine}`,
+    `Rarity: ${w.rarity || 'normal'}`,
     `Base: ${base}`,
     `Scales: ${scales}`,
     `Tags: ${(w.tags || []).join(', ')}`,
@@ -127,6 +140,7 @@ function weaponDetailsText(item) {
 function gearDetailsText(item) {
   const lines = [item.name || item.key];
   if (item.quality) lines.push(`Quality: ${item.quality}`);
+  if (item.rarity) lines.push(`Rarity: ${item.rarity}`);
   if (item.guardType) lines.push(`Guard: ${item.guardType}`);
   if (item.element) lines.push(`Element: ${item.element}`);
   if (item.imbuement) lines.push(`Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`);
@@ -142,6 +156,10 @@ function gearDetailsText(item) {
     const off = [];
     if (item.offense.accuracy) off.push(`Accuracy ${item.offense.accuracy}`);
     if (off.length) lines.push(`Offense: ${off.join(', ')}`);
+  }
+  if (item.modifiers && item.modifiers.length) {
+    const modLine = item.modifiers.map(k => MODIFIERS[k]?.desc || k).join(', ');
+    lines.push(`Modifiers: ${modLine}`);
   }
   if (item.bonuses) {
     const bonusLines = Object.entries(item.bonuses).map(([k, v]) => {
@@ -187,10 +205,14 @@ function createInventoryRow(item) {
   }
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
-  const displayName = item.name || item.key;
+  const rarity = item.rarity;
+  const rarityColor = RARITY_COLORS[rarity] || '';
+  const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+  const displayName = rarityPrefix + (item.name || item.key);
   const stars = QUALITY_STARS[item?.quality] || '';
   const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
-  const nameHtml = stars ? `${stars} ${baseNameHtml}` : baseNameHtml;
+  const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
+  const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
   row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';

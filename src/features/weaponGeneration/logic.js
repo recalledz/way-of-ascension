@@ -1,6 +1,7 @@
 import { WEAPON_TYPES } from './data/weaponTypes.js';
 import { MATERIALS_STUB } from './data/materials.stub.js';
 import { getImbuementMultiplier } from '../gearGeneration/imbuement.js';
+import { MODIFIERS, MODIFIER_KEYS } from '../gearGeneration/data/modifiers.js';
 
 /** @typedef {{
  *  typeKey:string,
@@ -20,12 +21,12 @@ import { getImbuementMultiplier } from '../gearGeneration/imbuement.js';
  *  tags:('physical')[]|[],
  *  abilityKeys:string[],
  *  quality:string,
- *  affixes:string[],
+ *  modifiers:string[],
  *  stats?:Record<string,number>
  * }} WeaponItem */
 
 /** Compose final item. Minimal quality/affix support. */
-export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', stage = 1, imbuement }/** @type {GenArgs} */){
+export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', stage = 1, imbuement, rarity = 'normal' }/** @type {GenArgs & {rarity?:'normal'|'magic'|'rare'}} */){
   const type = WEAPON_TYPES[typeKey];
   if (!type) throw new Error(`Unknown weapon type: ${typeKey}`);
 
@@ -46,6 +47,15 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
     rate: type.base.rate,
   };
 
+  const stats = type.implicitStats
+    ? Object.fromEntries(
+        Object.entries(type.implicitStats).map(([k, v]) => [k, v * stageMult * imbMult])
+      )
+    : undefined;
+
+  const mods = rollModifiers(rarity);
+  applyWeaponModifiers({ base }, mods);
+
   /** @type {WeaponItem} */
   return {
     name,
@@ -56,16 +66,45 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
     tags: [...type.tags],       // only 'physical' or []
     abilityKeys,                // e.g., ['powerSlash'] for swords
     quality: qualityKey,
-    affixes: [],
-    stats: type.implicitStats
-      ? Object.fromEntries(
-          Object.entries(type.implicitStats).map(([k, v]) => [k, v * stageMult * imbMult])
-        )
-      : undefined,
+    rarity,
+    modifiers: mods.map(m => m.key),
+    stats,
     imbuement: imbuement && { ...imbuement },
   };
 }
 
 function composeName({typeName, materialName}){
   return materialName ? `${materialName} ${typeName}` : typeName;
+}
+
+function rollModifiers(rarity) {
+  const config = {
+    normal: [0, 0],
+    magic: [1, 2],
+    rare: [3, 4],
+  };
+  const [min, max] = config[rarity] || [0, 0];
+  const count = Math.floor(Math.random() * (max - min + 1)) + min;
+  const keys = [...MODIFIER_KEYS];
+  const mods = [];
+  for (let i = 0; i < count && keys.length; i++) {
+    const idx = Math.floor(Math.random() * keys.length);
+    const key = keys.splice(idx, 1)[0];
+    mods.push({ key, ...MODIFIERS[key] });
+  }
+  return mods;
+}
+
+function applyWeaponModifiers(target, mods) {
+  const totals = {};
+  for (const mod of mods) totals[mod.lane] = (totals[mod.lane] || 0) + mod.value;
+  for (const lane of Object.keys(totals)) {
+    const val = 1 + totals[lane];
+    switch (lane) {
+      case 'damage':
+        target.base.min = Math.round(target.base.min * val);
+        target.base.max = Math.round(target.base.max * val);
+        break;
+    }
+  }
 }
