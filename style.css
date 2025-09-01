@@ -4657,9 +4657,10 @@ html.reduce-motion .log-sheet{transition:none;}
   fill:currentColor;
   filter:drop-shadow(0 0 8px currentColor);
 }
+/* Highlight purchasable nodes with a stronger yellow pulse */
 .node.allocatable{
   cursor:pointer;
-  animation:nodeGlow 1.5s ease-in-out infinite alternate;
+  animation:nodePulse 2.5s ease-in-out infinite;
 }
 .connector.active{
   stroke-width:2.5;
@@ -4668,9 +4669,23 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 .connector.link{stroke:#fff;}
 
-@keyframes nodeGlow{
-  from{filter:drop-shadow(0 0 4px currentColor);}
-  to{filter:drop-shadow(0 0 10px currentColor);}
+.connector.travel{
+  stroke:#fff;
+  stroke-width:3;
+  stroke-linecap:round;
+  filter:drop-shadow(0 0 8px #fff);
+  pointer-events:none;
+}
+
+@keyframes nodePulse{
+  0%,100%{
+    stroke-width:3;
+    filter:drop-shadow(0 0 6px #ffd54f);
+  }
+  50%{
+    stroke-width:6;
+    filter:drop-shadow(0 0 14px #ffd54f);
+  }
 }
 
 .astral-tooltip{
