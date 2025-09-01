@@ -166,7 +166,19 @@ function initUI(){
   if (saveBtn) saveBtn.addEventListener('click', save);
   
   const resetBtn = qs('#resetBtn');
-  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }});
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (confirm('Hard reset?')) {
+        // Remove all known save slots so legacy data doesn't persist
+        localStorage.removeItem('woa-save');
+        localStorage.removeItem('woa:save:v1');
+
+        setState(defaultState());
+        save();
+        location.reload();
+      }
+    });
+  }
   const exportBtn = qs('#exportBtn');
   if (exportBtn) {
     exportBtn.addEventListener('click', ()=>{
