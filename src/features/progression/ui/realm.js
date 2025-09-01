@@ -67,7 +67,8 @@ export function updateActivityCultivation() {
   
   // Update qi display below silhouette
   setText('qiValSilhouette', Math.floor(S.qi));
-  setText('qiCapSilhouette', qCap(S));
+  const cap = qCap(S);
+  setText('qiCapSilhouette', cap);
   setText('qiRegenActivity', qiRegenPerSec(S).toFixed(1));
   setText('foundationRate', foundationGainPerSec(S).toFixed(1));
   setText('astralInsightMini', `Insight: ${Math.round(S.astralPoints || 0)}`);
@@ -77,7 +78,7 @@ export function updateActivityCultivation() {
   // Update qi fill bar in silhouette
   const qiFillSilhouette = document.getElementById('qiFillSilhouette');
   if (qiFillSilhouette) {
-    qiFillSilhouette.style.width = (S.qi / qCap(S) * 100) + '%';
+    qiFillSilhouette.style.width = (S.qi / cap * 100) + '%';
   }
 
   const startBtn = document.getElementById('startCultivationActivity');

@@ -52,11 +52,12 @@ export function getLawBonuses(state = progressionState){
 
 export function qCap(state = progressionState){
   const realm = REALMS[state.realm.tier];
-  const baseQi = realm.cap;
+  const baseQi = realm.cap + (state.astralTreeBonuses?.maxQi || 0);
   const stageMultiplier = 1 + (state.realm.stage - 1) * 0.12;
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).qiCapMult || 0;
-  return Math.floor(baseQi * stageMultiplier * (1 + state.qiCapMult + building) * lawBonuses.qiCap);
+  const astralPct = (state.astralTreeBonuses?.maxQiPct || 0) / 100;
+  return Math.floor(baseQi * stageMultiplier * (1 + state.qiCapMult + building) * lawBonuses.qiCap * (1 + astralPct));
 }
 
 export function qiRegenPerSec(state = progressionState){
