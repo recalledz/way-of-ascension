@@ -132,7 +132,12 @@ export function calcArmor(state = progressionState){
   const base = Number(state.armorBase) || 0;
   const temp = Number(state.tempArmor) || 0;
   const karma = Number(karmaArmorBonus(state)) || 0;
-  return Math.floor((base + building + temp + baseArmor + stageBonus + karma) * (lawBonuses.armor || 1));
+  const astral = 1 + (state.astralTreeBonuses?.armorPct || 0) / 100;
+  return Math.floor(
+    (base + building + temp + baseArmor + stageBonus + karma) *
+      (lawBonuses.armor || 1) *
+      astral
+  );
 }
 
 export function getStatEffects(state = progressionState) {
