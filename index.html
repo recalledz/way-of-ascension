@@ -452,17 +452,12 @@
             <div class="stat"><span>Experience</span><span id="forgingExp">0</span> / <span id="forgingExpMax">100</span></div>
             <div class="progress-bar"><div class="progress-fill" id="forgingProgressFill"></div></div>
             <div class="stat"><span>Status</span><span id="forgingStatus">Idle</span></div>
-            <div class="stat">
-              <span>Item</span>
-              <select id="forgeItemSelect"></select>
-            </div>
-            <div class="stat">
-              <span>Element</span>
-              <select id="forgeElementSelect">
-                <option value="wood">Wood</option>
-              </select>
-            </div>
-            <button class="btn primary" id="startForgingBtn">Start Forging</button>
+            <div id="forgeSlot" class="forge-slot">Select an item</div>
+            <div id="forgeOptions" class="forge-options"></div>
+          </div>
+          <div class="card">
+            <h4>Inventory</h4>
+            <div id="forgeInventory" class="forge-inventory"></div>
           </div>
         </div>
       </section>
