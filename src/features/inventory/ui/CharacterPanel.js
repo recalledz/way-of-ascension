@@ -109,7 +109,19 @@ function weaponDetailsText(item) {
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
   const quality = w.quality ?? 'basic';
   const affixes = w.affixes && w.affixes.length ? w.affixes.join(', ') : 'None';
-  return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+  const imbLine = item.imbuement
+    ? `Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`
+    : 'Imbue: None';
+  return [
+    w.displayName || w.name,
+    imbLine,
+    `Quality: ${quality}`,
+    `Affixes: ${affixes}`,
+    `Base: ${base}`,
+    `Scales: ${scales}`,
+    `Tags: ${(w.tags || []).join(', ')}`,
+    `Reqs: ${reqs}`,
+  ].join('\n');
 }
 
 function gearDetailsText(item) {
@@ -117,6 +129,8 @@ function gearDetailsText(item) {
   if (item.quality) lines.push(`Quality: ${item.quality}`);
   if (item.guardType) lines.push(`Guard: ${item.guardType}`);
   if (item.element) lines.push(`Element: ${item.element}`);
+  if (item.imbuement) lines.push(`Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`);
+  else lines.push('Imbue: None');
   if (item.protection) {
     const prot = [];
     if (item.protection.armor) prot.push(`Armor ${item.protection.armor}`);
