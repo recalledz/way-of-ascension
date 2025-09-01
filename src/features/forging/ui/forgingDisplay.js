@@ -1,7 +1,7 @@
 import { S } from '../../../shared/state.js';
 import { setText } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
-import { startForging } from '../mutators.js';
+import { imbueItem } from '../mutators.js';
 
 function updateForgingActivity(state = S) {
   if (!state.forging) return;
@@ -16,37 +16,74 @@ function updateForgingActivity(state = S) {
   const status = document.getElementById('forgingStatus');
   if (status) {
     if (state.activities.forging && state.forging.current) {
-      status.textContent = `Forging... ${Math.ceil(state.forging.current.time)}s`; }
-    else status.textContent = 'Idle';
+      status.textContent = `Forging... ${Math.ceil(state.forging.current.time)}s`;
+    } else status.textContent = 'Idle';
   }
-  const itemSel = document.getElementById('forgeItemSelect');
-  if (itemSel) {
-    const prev = itemSel.value;
-    itemSel.innerHTML = '';
-    state.inventory?.filter(it => it.type === 'weapon' || it.type === 'gear')
-      .forEach(it => {
-        const opt = document.createElement('option');
-        opt.value = String(it.id);
-        opt.textContent = it.name || it.id;
-        itemSel.appendChild(opt);
-      });
-    if (prev) itemSel.value = prev;
-  }
-  const btn = document.getElementById('startForgingBtn');
-  if (btn) {
-    if (state.activities.forging) {
-      btn.textContent = '🛑 Stop Forging';
-      btn.onclick = () => { state.forging.current = null; window.stopActivity('forging'); };
-    } else {
-      btn.textContent = 'Start Forging';
-      btn.onclick = () => {
-        const itemId = document.getElementById('forgeItemSelect')?.value;
-        const element = document.getElementById('forgeElementSelect')?.value;
-        if (!itemId || !element) return;
-        window.startActivity('forging');
-        startForging(itemId, element, state);
+}
+
+function updateForgeInventory(state = S) {
+  const list = document.getElementById('forgeInventory');
+  if (!list) return;
+  list.innerHTML = '';
+  state.inventory?.filter(it => it.type === 'weapon' || it.type === 'gear')
+    .forEach(it => {
+      const card = document.createElement('div');
+      card.className = 'forge-item-card';
+      card.textContent = it.name || it.id;
+      if (String(state.forging.slot) === String(it.id)) card.classList.add('selected');
+      card.onclick = () => {
+        state.forging.slot = it.id;
+        updateForgeSlot(state);
+        updateForgeInventory(state);
       };
-    }
+      list.appendChild(card);
+    });
+}
+
+function updateForgeSlot(state = S) {
+  const slot = document.getElementById('forgeSlot');
+  const opts = document.getElementById('forgeOptions');
+  if (!slot || !opts) return;
+  if (!state.forging.slot) {
+    slot.textContent = 'Empty';
+    opts.innerHTML = '';
+    return;
+  }
+  const item = state.inventory?.find(it => String(it.id) === String(state.forging.slot));
+  slot.textContent = item?.name || item?.id;
+  opts.innerHTML = '';
+  const elementSel = document.createElement('select');
+  elementSel.id = 'forgeElementSelect';
+  ['wood', 'fire', 'water', 'earth', 'metal'].forEach(el => {
+    const opt = document.createElement('option');
+    opt.value = el;
+    opt.textContent = el[0].toUpperCase() + el.slice(1);
+    elementSel.appendChild(opt);
+  });
+  if (item?.imbuement?.element) elementSel.value = item.imbuement.element;
+  opts.appendChild(elementSel);
+  if (!item?.imbuement) {
+    const imbBtn = document.createElement('button');
+    imbBtn.className = 'btn small';
+    imbBtn.textContent = 'Imbue';
+    imbBtn.onclick = () => {
+      const element = elementSel.value;
+      imbueItem(item.id, element, state);
+      updateForgeSlot(state);
+      updateForgeInventory(state);
+    };
+    opts.appendChild(imbBtn);
+  } else {
+    const feedBtn = document.createElement('button');
+    feedBtn.className = 'btn small';
+    feedBtn.textContent = 'Feed material';
+    feedBtn.onclick = () => {
+      const element = item.imbuement?.element || elementSel.value;
+      imbueItem(item.id, element, state);
+      updateForgeSlot(state);
+      updateForgeInventory(state);
+    };
+    opts.appendChild(feedBtn);
   }
 }
 
@@ -65,7 +102,11 @@ export function mountForgingUI(state = S) {
   on('RENDER', () => {
     updateForgingActivity(state);
     updateForgingSidebar(state);
+    updateForgeInventory(state);
+    updateForgeSlot(state);
   });
   updateForgingActivity(state);
   updateForgingSidebar(state);
+  updateForgeInventory(state);
+  updateForgeSlot(state);
 }
