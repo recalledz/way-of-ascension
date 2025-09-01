@@ -1,8 +1,14 @@
 import { RINGS } from './data/rings.js';
 import { MODIFIERS, MODIFIER_KEYS } from '../gearGeneration/data/modifiers.js';
 
-function rollMinorModifiers() {
-  const count = Math.floor(Math.random() * 3); // 0-2
+function rollMinorModifiers(rarity = 'normal') {
+  const config = {
+    normal: [0, 0],
+    magic: [1, 2],
+    rare: [3, 4],
+  };
+  const [min, max] = config[rarity] || [0, 0];
+  const count = Math.floor(Math.random() * (max - min + 1)) + min;
   const keys = [...MODIFIER_KEYS];
   const mods = [];
   for (let i = 0; i < count && keys.length; i++) {
@@ -36,12 +42,13 @@ function applyRingModifiers(ring, mods) {
   }
 }
 
-export function generateRing(baseKey) {
+export function generateRing(baseKey, rarity = 'normal') {
   const base = RINGS[baseKey];
   if (!base) throw new Error(`Unknown ring: ${baseKey}`);
   const ring = JSON.parse(JSON.stringify(base));
-  const mods = rollMinorModifiers();
+  const mods = rollMinorModifiers(rarity);
   applyRingModifiers(ring, mods);
   ring.modifiers = mods.map(m => m.key);
+  ring.rarity = rarity;
   return ring;
 }
