@@ -82,7 +82,8 @@ function applyAbilityResult(abilityKey, res, state) {
     if (isSpell) {
       const { spellPowerMult } = getStatEffects(state);
       const spellDamage = state.stats?.spellDamage || 0;
-      amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100));
+      const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+      amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
     }
 
     const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
