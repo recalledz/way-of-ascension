@@ -365,18 +365,30 @@ export function updateAbilityBar() {
     if (slot.abilityKey) {
       const def = ABILITIES[slot.abilityKey];
       const dmg = getAbilityDamage(slot.abilityKey, S);
+      const mods = S.abilityMods?.[slot.abilityKey] || {};
+      const castTimeMs = Math.round(
+        def.castTimeMs *
+          (1 + (mods.castTimePct || 0) / 100) /
+          (1 + (S.astralTreeBonuses?.castSpeedPct || 0) / 100)
+      );
       const dmgLine = dmg !== null ? `<div class="ability-damage">${dmg}</div>` : '';
+      const castLine = castTimeMs > 0 ? `<div class="ability-cast-time">${(castTimeMs / 1000).toFixed(2)}s</div>` : '';
       card.innerHTML = `
         <div class="ability-title">
           <div class="ability-name">${def.displayName}</div>
           ${dmgLine}
+          ${castLine}
         </div>
         <div class="ability-icon">${iconMap[def.icon] || def.icon}</div>
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
       const cdSec = (def.cooldownMs || 0) / 1000;
-      card.title = `${def.displayName} — Cost ${def.costQi} Qi, CD ${cdSec}s`;
+      const ctSec = castTimeMs / 1000;
+      let title = `${def.displayName} — Cost ${def.costQi} Qi`;
+      if (castTimeMs > 0) title += `, Cast ${ctSec}s`;
+      title += `, CD ${cdSec}s`;
+      card.title = title;
       if (slot.cooldownRemainingMs > 0) {
         const overlay = document.createElement('div');
         overlay.className = 'cooldown-overlay';
