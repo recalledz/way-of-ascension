@@ -4,6 +4,7 @@ import { migrations as alchemy } from '../features/alchemy/migrations.js';
 import { migrations as affixes } from '../features/affixes/migrations.js';
 import { migrations as combat } from '../features/combat/migrations.js';
 import { migrations as cooking } from '../features/cooking/migrations.js';
+import { migrations as forging } from '../features/forging/migrations.js';
 import { migrations as inventory } from '../features/inventory/migrations.js';
 import { migrations as karma } from '../features/karma/migrations.js';
 import { migrations as loot } from '../features/loot/migrations.js';
@@ -21,6 +22,7 @@ const migrations = [
   ...alchemy,
   ...inventory,
   ...cooking,
+  ...forging,
   ...ability,
   ...adventure,
   ...affixes,
