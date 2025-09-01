@@ -2,6 +2,7 @@
 import { LOOT_TABLES } from './data/lootTables.js';
 import { rollWeaponDropForZone } from '../weaponGeneration/selectors.js';
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
+import { rollRingDropForZone } from '../accessories/selectors.js';
 import { addToInventory } from '../inventory/mutators.js';
 import { ZONES } from '../adventure/data/zoneIds.js';
 
@@ -42,8 +43,17 @@ export function onEnemyDefeated(state) {
     state.log.push(`You found: ${gearDrop.name}.`);
   }
 
+  if (state.adventure?.isBossFight) {
+    const ringDrop = rollRingDropForZone(zoneKey);
+    if (ringDrop) {
+      addToInventory(ringDrop, state);
+      state.log = state.log || [];
+      state.log.push(`You found: ${ringDrop.name}.`);
+    }
+  }
+
   // … add other rewards (xp, coins) as you already do
 }
 
-// Re-export weapon drop helper for any callers that previously imported it from this module.
-export { rollWeaponDropForZone, rollGearDropForZone };
+// Re-export drop helpers for any callers that previously imported them from this module.
+export { rollWeaponDropForZone, rollGearDropForZone, rollRingDropForZone };
