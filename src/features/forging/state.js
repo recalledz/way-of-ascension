@@ -3,4 +3,5 @@ export const forgingState = {
   exp: 0,
   expMax: 100,
   current: null,
+  slot: null,
 };
