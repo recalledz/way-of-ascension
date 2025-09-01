@@ -202,6 +202,10 @@ function showItemTooltip(anchor, text) {
   tooltip.className = 'astral-tooltip';
   tooltip.innerHTML = text.replace(/\n/g, '<br>');
   document.body.appendChild(tooltip);
+  // Prevent clicks inside the tooltip from bubbling and closing it
+  ['pointerdown', 'click'].forEach(evt =>
+    tooltip.addEventListener(evt, e => e.stopPropagation())
+  );
   const rect = anchor.getBoundingClientRect();
   const tRect = tooltip.getBoundingClientRect();
   let left = rect.right + 8;
@@ -218,8 +222,12 @@ function showItemTooltip(anchor, text) {
       hideItemTooltip();
     }
   }
-  document.addEventListener('pointerdown', onDocPointerDown);
-  currentTooltipListener = onDocPointerDown;
+  // Defer adding the outside click listener so the initial click that
+  // triggered the tooltip doesn't immediately close it
+  setTimeout(() => {
+    document.addEventListener('pointerdown', onDocPointerDown);
+    currentTooltipListener = onDocPointerDown;
+  });
 }
 
 function showDetails(item, evt) {
@@ -233,6 +241,7 @@ function showDetails(item, evt) {
   }
   if (text && evt?.target) {
     evt.stopPropagation();
+    evt.preventDefault();
     showItemTooltip(evt.target, text);
   }
 }
