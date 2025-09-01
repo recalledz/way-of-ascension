@@ -21,7 +21,11 @@ export function tryCastAbility(abilityKey, state = S) {
   if (cd > 0) return false;
   if (state.qi < ability.costQi) return false;
   if (!state.abilityCooldowns) state.abilityCooldowns = {};
-  const cooldownMs = Math.round(ability.cooldownMs * (1 + (mods.cooldownPct || 0) / 100));
+  const cooldownMs = Math.round(
+    ability.cooldownMs *
+      (1 + (mods.cooldownPct || 0) / 100) *
+      (1 + (state.astralTreeBonuses?.cooldownPct || 0) / 100)
+  );
   state.abilityCooldowns[abilityKey] = cooldownMs;
   if (!state.actionQueue) state.actionQueue = [];
   const enqueue = () => state.actionQueue.push({ type: 'ABILITY_HIT', abilityKey });
