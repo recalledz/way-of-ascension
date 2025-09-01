@@ -27,17 +27,25 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'normal' }/*
 
   const material = materialKey ? MATERIALS_STUB[materialKey] : undefined;
 
+  const qualityMult = { normal: 1, magic: 1.1, rare: 1.25 }[qualityKey] || 1;
+
   const abilityKeys = [];
   if (type.signatureAbilityKey) abilityKeys.push(type.signatureAbilityKey);
 
   const name = composeName({ typeName: type.displayName, materialName: material?.displayName });
+
+  const base = {
+    min: Math.round(type.base.min * qualityMult),
+    max: Math.round(type.base.max * qualityMult),
+    rate: type.base.rate,
+  };
 
   /** @type {WeaponItem} */
   return {
     name,
     typeKey: type.key,
     materialKey: material?.key,
-    base: { ...type.base },
+    base,
     scales: { ...type.scales },
     tags: [...type.tags],       // only 'physical' or []
     abilityKeys,                // e.g., ['powerSlash'] for swords

@@ -80,9 +80,9 @@ const PALM_WRAPS = {
 export const WEAPONS = {
   fist: FIST,
   palmWraps: PALM_WRAPS,
-  ironSword: toLegacy('ironSword', generateWeapon({ typeKey: 'sword', materialKey: 'iron' })),
-  bronzeHammer: toLegacy('bronzeHammer', generateWeapon({ typeKey: 'hammer', materialKey: 'bronze' })),
-  elderWand: toLegacy('elderWand', generateWeapon({ typeKey: 'wand', materialKey: 'spiritwood' })),
+  ironSword: toLegacy('ironSword', generateWeapon({ typeKey: 'sword', materialKey: 'iron', qualityKey: 'normal' })),
+  bronzeHammer: toLegacy('bronzeHammer', generateWeapon({ typeKey: 'hammer', materialKey: 'bronze', qualityKey: 'normal' })),
+  elderWand: toLegacy('elderWand', generateWeapon({ typeKey: 'wand', materialKey: 'spiritwood', qualityKey: 'normal' })),
 };
 
 const FIST_BASE_MAX = FIST.base.max;
