@@ -202,6 +202,11 @@ function showItemTooltip(anchor, text) {
   tooltip.className = 'astral-tooltip';
   tooltip.innerHTML = text.replace(/\n/g, '<br>');
   document.body.appendChild(tooltip);
+  // Prevent clicks inside the tooltip from bubbling or capturing and closing it
+  ['pointerdown', 'click'].forEach(evt => {
+    tooltip.addEventListener(evt, e => e.stopPropagation());
+    tooltip.addEventListener(evt, e => e.stopPropagation(), true);
+  });
   const rect = anchor.getBoundingClientRect();
   const tRect = tooltip.getBoundingClientRect();
   let left = rect.right + 8;
@@ -218,8 +223,12 @@ function showItemTooltip(anchor, text) {
       hideItemTooltip();
     }
   }
-  document.addEventListener('pointerdown', onDocPointerDown);
-  currentTooltipListener = onDocPointerDown;
+  // Defer adding the outside click listener so the initial click that
+  // triggered the tooltip doesn't immediately close it
+  setTimeout(() => {
+    document.addEventListener('pointerdown', onDocPointerDown);
+    currentTooltipListener = onDocPointerDown;
+  });
 }
 
 function showDetails(item, evt) {
@@ -233,6 +242,7 @@ function showDetails(item, evt) {
   }
   if (text && evt?.target) {
     evt.stopPropagation();
+    evt.preventDefault();
     showItemTooltip(evt.target, text);
   }
 }
@@ -291,6 +301,8 @@ function createInventoryRow(item) {
     const detailsBtn = document.createElement('button');
     detailsBtn.className = 'btn small';
     detailsBtn.textContent = 'Details';
+    // Stop pointerdown from bubbling so existing listeners don't hide the tooltip
+    detailsBtn.addEventListener('pointerdown', e => e.stopPropagation());
     detailsBtn.onclick = (e) => showDetails(item, e);
     act.appendChild(detailsBtn);
   }
