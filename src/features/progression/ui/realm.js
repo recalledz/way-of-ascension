@@ -66,9 +66,10 @@ export function updateActivityCultivation() {
   }
   
   // Update qi display below silhouette
+  const qiRegen = qiRegenPerSec(S);
   setText('qiValSilhouette', Math.floor(S.qi));
   setText('qiCapSilhouette', qCap(S));
-  setText('qiRegenActivity', qiRegenPerSec(S).toFixed(1));
+  setText('qiRegenActivity', qiRegen.toFixed(1));
   setText('foundationRate', foundationGainPerSec(S).toFixed(1));
   setText('astralInsightMini', `Insight: ${Math.round(S.astralPoints || 0)}`);
   setText('btChanceActivity', (breakthroughChance(S) * 100).toFixed(1) + '%');
