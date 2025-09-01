@@ -191,7 +191,7 @@ function hideItemTooltip() {
     currentTooltip = null;
   }
   if (currentTooltipListener) {
-    document.removeEventListener('pointerdown', currentTooltipListener);
+    document.removeEventListener('click', currentTooltipListener);
     currentTooltipListener = null;
   }
 }
@@ -202,6 +202,10 @@ function showItemTooltip(anchor, text) {
   tooltip.className = 'astral-tooltip';
   tooltip.innerHTML = text.replace(/\n/g, '<br>');
   document.body.appendChild(tooltip);
+  // Prevent clicks inside the tooltip from bubbling and closing it
+  ['pointerdown', 'click'].forEach(evt =>
+    tooltip.addEventListener(evt, e => e.stopPropagation())
+  );
   const rect = anchor.getBoundingClientRect();
   const tRect = tooltip.getBoundingClientRect();
   let left = rect.right + 8;
@@ -213,13 +217,17 @@ function showItemTooltip(anchor, text) {
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   currentTooltip = tooltip;
-  function onDocPointerDown(e) {
+  function onDocClick(e) {
     if (!tooltip.contains(e.target)) {
       hideItemTooltip();
     }
   }
-  document.addEventListener('pointerdown', onDocPointerDown);
-  currentTooltipListener = onDocPointerDown;
+  // Defer adding the outside click listener so the initial click that
+  // triggered the tooltip doesn't immediately close it
+  setTimeout(() => {
+    document.addEventListener('click', onDocClick);
+    currentTooltipListener = onDocClick;
+  }, 0);
 }
 
 function showDetails(item, evt) {
@@ -233,6 +241,7 @@ function showDetails(item, evt) {
   }
   if (text && evt?.target) {
     evt.stopPropagation();
+    evt.preventDefault();
     showItemTooltip(evt.target, text);
   }
 }
