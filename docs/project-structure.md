@@ -153,6 +153,7 @@ way-of-ascension/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
+│   │   │   ├── qualityWeights.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   ├── index.js
@@ -518,6 +519,11 @@ export function runMigrations(save) {
 **Purpose**: Provides weighted random item selection based on zone loot tables.
 **Key Functions**: `rollLoot()`, `toLootTableKey()`, `onEnemyDefeated()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
+
+#### `src/features/loot/qualityWeights.js` - Quality Weight Helper
+**Purpose**: Rolls a weapon or gear quality based on weighted chances.
+**Key Functions**: `rollQualityKey()`.
+**When to modify**: Adjust default quality probabilities or introduce zone-specific distributions.
 
 #### `src/features/loot/data/lootTables.gear.js` - Gear Loot Tables
 **Purpose**: Defines starter zone body gear drops and their weights.
