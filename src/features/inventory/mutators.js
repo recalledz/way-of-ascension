@@ -23,21 +23,21 @@ export function removeFromInventory(id, state = S) {
   return false;
 }
 
-export function equipItem(item, state = S) {
-  const info = canEquip(item);
+export function equipItem(item, slot = null, state = S) {
+  const info = canEquip(item, slot, state);
   if (!info) return false;
-  const slot = info.slot;
-  const existing = state.equipment[slot];
+  const slotKey = info.slot;
+  const existing = state.equipment[slotKey];
   const existingKey = typeof existing === 'string' ? existing : existing?.key;
   if (existingKey && existingKey !== 'fist') addToInventory(existing, state);
   const { id, ...equipData } = item;
-  state.equipment[slot] = equipData;
+  state.equipment[slotKey] = equipData;
   removeFromInventory(id, state);
-  console.log('[equip]', 'slot→', slot, 'item→', item.key);
+  console.log('[equip]', 'slot→', slotKey, 'item→', item.key);
   recomputePlayerTotals(state);
   save?.();
-  const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.name || item.key, slot };
-  if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
+  const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.name || item.key, slot: slotKey };
+  if (slotKey === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
   return payload;
 }
 

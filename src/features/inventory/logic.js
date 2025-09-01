@@ -53,7 +53,7 @@ export function recomputePlayerTotals(player) {
 }
 
 // Determine if an item can be equipped and in which slot
-export function canEquip(item) {
+export function canEquip(item, slot = null, state = {}) {
   if (!item) return false;
   switch (item.type) {
     case 'weapon':
@@ -63,6 +63,18 @@ export function canEquip(item) {
       break;
     case 'food':
       return { slot: 'food' };
+    case 'foot':
+      return { slot: 'foot' };
+    case 'ring':
+      if (slot === 'ring1' || slot === 'ring2') return { slot };
+      if (!state.equipment?.ring1) return { slot: 'ring1' };
+      if (!state.equipment?.ring2) return { slot: 'ring2' };
+      return { slot: 'ring1' };
+    case 'talisman':
+      if (slot === 'talisman1' || slot === 'talisman2') return { slot };
+      if (!state.equipment?.talisman1) return { slot: 'talisman1' };
+      if (!state.equipment?.talisman2) return { slot: 'talisman2' };
+      return { slot: 'talisman1' };
   }
   return false;
 }

@@ -32,7 +32,7 @@ export const migrations = [
       }
     }
     if (!save.equipment || typeof save.equipment !== 'object') {
-      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null };
+      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, foot: null, ring1: null, ring2: null, talisman1: null, talisman2: null, food: null };
     } else {
       if (!save.equipment.mainhand) save.equipment.mainhand = { key: 'fist', type: 'weapon' };
       if (typeof save.equipment.head === 'undefined') save.equipment.head = null;
@@ -46,6 +46,11 @@ export const migrations = [
       } else if (typeof save.equipment.torso !== 'undefined') {
         delete save.equipment.torso;
       }
+      if (typeof save.equipment.foot === 'undefined') save.equipment.foot = null;
+      if (typeof save.equipment.ring1 === 'undefined') save.equipment.ring1 = null;
+      if (typeof save.equipment.ring2 === 'undefined') save.equipment.ring2 = null;
+      if (typeof save.equipment.talisman1 === 'undefined') save.equipment.talisman1 = null;
+      if (typeof save.equipment.talisman2 === 'undefined') save.equipment.talisman2 = null;
       if (typeof save.equipment.food === 'undefined') save.equipment.food = null;
     }
     if (!Array.isArray(save.sessionLoot)) save.sessionLoot = [];
