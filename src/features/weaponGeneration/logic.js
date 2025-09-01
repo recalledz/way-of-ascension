@@ -17,7 +17,8 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
  *  tags:('physical')[]|[],
  *  abilityKeys:string[],
  *  quality:string,
- *  affixes:string[]
+ *  affixes:string[],
+ *  stats?:Record<string,number>
  * }} WeaponItem */
 
 /** Compose final item. Minimal quality/affix support. */
@@ -51,6 +52,7 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'normal' }/*
     abilityKeys,                // e.g., ['powerSlash'] for swords
     quality: qualityKey,
     affixes: [],
+    stats: type.implicitStats ? { ...type.implicitStats } : undefined,
   };
 }
 
