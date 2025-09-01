@@ -2,6 +2,7 @@ import { S } from '../../../shared/state.js';
 import { ZONES, getZoneById, isAreaUnlocked } from '../data/zones.js';
 
 let currentTooltip = null;
+let currentTooltipListener = null;
 
 function showTooltip(event, area, progress) {
   hideTooltip();
@@ -26,12 +27,21 @@ function showTooltip(event, area, progress) {
   if (top < 8) top = rect.bottom + 8;
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
+  const onDocPointerDown = (e) => {
+    if (!tooltip.contains(e.target)) hideTooltip();
+  };
+  document.addEventListener('pointerdown', onDocPointerDown);
+  currentTooltipListener = onDocPointerDown;
 }
 
 function hideTooltip() {
   if (currentTooltip) {
     currentTooltip.remove();
     currentTooltip = null;
+  }
+  if (currentTooltipListener) {
+    document.removeEventListener('pointerdown', currentTooltipListener);
+    currentTooltipListener = null;
   }
 }
 
@@ -73,7 +83,6 @@ export function updateAdventureProgressBar(selectAreaById) {
       segment.appendChild(playerIcon);
     }
     segment.addEventListener('mouseenter', (e) => showTooltip(e, area, progress));
-    segment.addEventListener('mouseleave', hideTooltip);
     if (isUnlocked) {
       segment.onclick = () => selectAreaById(currentZoneId, area.id, index);
       segment.style.cursor = 'pointer';
