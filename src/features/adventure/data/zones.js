@@ -32,7 +32,7 @@ export const ZONES = [
         enemy: 'River Frog', 
         killReq: 10,
         description: 'Mystical frogs inhabit the creek waters.',
-        loot: { stones: 4, herbs: 1 }
+        loot: { stones: 4, wood: 1 }
       },
       { 
         id: 'flower-field', 
@@ -40,7 +40,7 @@ export const ZONES = [
         enemy: 'Honey Bee', 
         killReq: 12,
         description: 'Giant bees protect their flower fields.',
-        loot: { stones: 5, herbs: 2 }
+        loot: { stones: 5, wood: 2 }
       },
       { 
         id: 'old-oak-grove', 
@@ -64,7 +64,7 @@ export const ZONES = [
         enemy: 'Water Snake', 
         killReq: 20,
         description: 'Serpents glide through the babbling waters.',
-        loot: { stones: 8, herbs: 2 }
+        loot: { stones: 8, wood: 2 }
       },
       { 
         id: 'sunny-clearing', 
@@ -88,7 +88,7 @@ export const ZONES = [
         enemy: 'Forest Spirit', 
         killReq: 40,
         description: 'The forest\'s guardian spirit awaits challengers.',
-        loot: { stones: 15, wood: 3, herbs: 3 },
+        loot: { stones: 15, wood: 6 },
         isBoss: true
       }
     ]

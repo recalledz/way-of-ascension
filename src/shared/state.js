@@ -193,7 +193,7 @@ recalculateBuildingBonuses(S);
 // single source of truth for all items.  These properties are not
 // serialized directly; instead their values are derived from the
 // corresponding entries in `S.inventory`.
-['stones', 'ore', 'herbs'].forEach(key => {
+['stones', 'ore', 'herbs', 'wood'].forEach(key => {
   const initial = S[key] || 0;
   Object.defineProperty(S, key, {
     get() {
