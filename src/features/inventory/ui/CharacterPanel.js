@@ -183,16 +183,11 @@ function gearDetailsText(item) {
 }
 
 let currentTooltip = null;
-let currentTooltipListener = null;
 
 function hideItemTooltip() {
   if (currentTooltip) {
     currentTooltip.remove();
     currentTooltip = null;
-  }
-  if (currentTooltipListener) {
-    document.removeEventListener('pointerdown', currentTooltipListener);
-    currentTooltipListener = null;
   }
 }
 
@@ -200,7 +195,17 @@ function showItemTooltip(anchor, text) {
   hideItemTooltip();
   const tooltip = document.createElement('div');
   tooltip.className = 'astral-tooltip';
-  tooltip.innerHTML = text.replace(/\n/g, '<br>');
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'tooltip-close';
+  closeBtn.textContent = '✖';
+  closeBtn.onclick = hideItemTooltip;
+  tooltip.appendChild(closeBtn);
+
+  const content = document.createElement('div');
+  content.innerHTML = text.replace(/\n/g, '<br>');
+  tooltip.appendChild(content);
+
   document.body.appendChild(tooltip);
   const rect = anchor.getBoundingClientRect();
   const tRect = tooltip.getBoundingClientRect();
@@ -213,13 +218,6 @@ function showItemTooltip(anchor, text) {
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   currentTooltip = tooltip;
-  function onDocPointerDown(e) {
-    if (!tooltip.contains(e.target)) {
-      hideItemTooltip();
-    }
-  }
-  document.addEventListener('pointerdown', onDocPointerDown);
-  currentTooltipListener = onDocPointerDown;
 }
 
 function showDetails(item, evt) {
