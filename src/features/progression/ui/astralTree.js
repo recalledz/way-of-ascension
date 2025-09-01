@@ -492,8 +492,8 @@ async function buildTree() {
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('cx', n.x);
     circle.setAttribute('cy', n.y);
-    // Increase node sizes: basic nodes 50% larger, notables 100% larger
-    const r = n.type === 'notable' ? 16 : 6;
+    // Expand node radius by 50% for better visibility
+    const r = n.type === 'notable' ? 24 : 9;
     circle.setAttribute('r', r);
     circle.setAttribute('class', `node ${n.group.toLowerCase()} ${n.type}`);
 

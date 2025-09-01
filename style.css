@@ -4634,7 +4634,8 @@ html.reduce-motion .log-sheet{transition:none;}
 .astral-skill-tree svg.dragging{cursor:grabbing;}
 .connector{
   stroke:#fff;
-  stroke-width:1.5;
+  /* increase base connector width by 25% */
+  stroke-width:1.9;
   fill:none;
   opacity:0.9;
   color:#fff;
@@ -4663,7 +4664,8 @@ html.reduce-motion .log-sheet{transition:none;}
   animation:nodePulse 2.5s ease-in-out infinite;
 }
 .connector.active{
-  stroke-width:2.5;
+  /* 25% wider active connectors */
+  stroke-width:3.1;
   opacity:1;
   filter:drop-shadow(0 0 8px #fff);
 }
@@ -4671,7 +4673,8 @@ html.reduce-motion .log-sheet{transition:none;}
 
 .connector.travel{
   stroke:#fff;
-  stroke-width:3;
+  /* 25% wider travel animation line */
+  stroke-width:3.8;
   stroke-linecap:round;
   filter:drop-shadow(0 0 8px #fff);
   pointer-events:none;
