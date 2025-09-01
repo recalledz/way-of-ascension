@@ -46,7 +46,7 @@ Forest Edge, Meadow Path and Creek Crossing that introduce enemies like Forest
 Rabbit or Wild Boar【F:src/features/adventure/data/zones.js†L4-L60】.
 
 Enemy entries specify combat stats and drop tables. For example, the Forest
-Rabbit has 45 HP, 3 attack and can drop stones and herbs, while the Honey Bee has
+Rabbit has 45 HP, 3 attack and can drop stones and wood, while the Honey Bee has
 a higher attack rate and may drop honey【F:src/features/adventure/data/enemies.js†L1-L41】.
 
 ## Training Systems
