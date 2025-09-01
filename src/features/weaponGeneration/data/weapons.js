@@ -2,23 +2,24 @@ import { generateWeapon } from '../logic.js';
 
 function defaultAnimationsForType(typeKey) {
   switch (typeKey) {
-    case 'sword':
+    case 'straightSword':
+    case 'crudeAxe':
       return { fx: ['slashArc'], tint: 'auto' };
+    case 'crudeDagger':
+    case 'crudeRapier':
     case 'spear':
       return { fx: ['pierceThrust'], tint: 'auto' };
-    case 'hammer':
+    case 'crudeHammer':
+    case 'crudeBludgeon':
       return { fx: ['smash'], tint: 'auto' };
-    case 'nunchaku':
+    case 'crudeNunchaku':
+    case 'tameNunchaku':
       return { fx: ['flurry'], tint: 'auto' };
-    case 'chakram':
-      return { fx: ['spinThrow'], tint: 'auto' };
-    case 'wand':
+    case 'dimFocus':
+    case 'starFocus':
       return { fx: ['magicBolt'], tint: '#8ecaff' };
-    case 'scepter':
-      return { fx: ['smite'], tint: '#ffd27a' };
-    case 'focus':
-      // Focus has special defensive FX handled in adventure.js
-      return { fx: [], tint: '#9ed2ff' };
+    case 'crudeKnuckles':
+      return { fx: ['palmStrike'], tint: 'auto' };
     case 'palm':
       return { fx: ['palmStrike'], tint: 'auto' };
     case 'fist':
@@ -43,6 +44,7 @@ function toLegacy(key, item){
     reqs: { realmMin: 1, proficiencyMin: 0 },
     proficiencyKey: item.typeKey,
     abilityKeys: [...item.abilityKeys],
+    stats: item.stats ? { ...item.stats } : undefined,
     animations: defaultAnimationsForType(item.typeKey),
   };
 }
@@ -80,9 +82,18 @@ const PALM_WRAPS = {
 export const WEAPONS = {
   fist: FIST,
   palmWraps: PALM_WRAPS,
-  ironSword: toLegacy('ironSword', generateWeapon({ typeKey: 'sword', materialKey: 'iron', qualityKey: 'normal' })),
-  bronzeHammer: toLegacy('bronzeHammer', generateWeapon({ typeKey: 'hammer', materialKey: 'bronze', qualityKey: 'normal' })),
-  elderWand: toLegacy('elderWand', generateWeapon({ typeKey: 'wand', materialKey: 'spiritwood', qualityKey: 'normal' })),
+  ironStraightSword: toLegacy('ironStraightSword', generateWeapon({ typeKey: 'straightSword', materialKey: 'iron', qualityKey: 'normal' })),
+  crudeDagger: toLegacy('crudeDagger', generateWeapon({ typeKey: 'crudeDagger', materialKey: 'iron', qualityKey: 'normal' })),
+  crudeRapier: toLegacy('crudeRapier', generateWeapon({ typeKey: 'crudeRapier', materialKey: 'iron', qualityKey: 'normal' })),
+  crudeHammer: toLegacy('crudeHammer', generateWeapon({ typeKey: 'crudeHammer', materialKey: 'bronze', qualityKey: 'normal' })),
+  crudeBludgeon: toLegacy('crudeBludgeon', generateWeapon({ typeKey: 'crudeBludgeon', materialKey: 'bronze', qualityKey: 'normal' })),
+  crudeAxe: toLegacy('crudeAxe', generateWeapon({ typeKey: 'crudeAxe', materialKey: 'iron', qualityKey: 'normal' })),
+  bronzeSpear: toLegacy('bronzeSpear', generateWeapon({ typeKey: 'spear', materialKey: 'bronze', qualityKey: 'normal' })),
+  dimFocus: toLegacy('dimFocus', generateWeapon({ typeKey: 'dimFocus', materialKey: 'spiritwood', qualityKey: 'normal' })),
+  starFocus: toLegacy('starFocus', generateWeapon({ typeKey: 'starFocus', materialKey: 'spiritwood', qualityKey: 'normal' })),
+  crudeKnuckles: toLegacy('crudeKnuckles', generateWeapon({ typeKey: 'crudeKnuckles', materialKey: 'iron', qualityKey: 'normal' })),
+  crudeNunchaku: toLegacy('crudeNunchaku', generateWeapon({ typeKey: 'crudeNunchaku', materialKey: 'spiritwood', qualityKey: 'normal' })),
+  tameNunchaku: toLegacy('tameNunchaku', generateWeapon({ typeKey: 'tameNunchaku', materialKey: 'spiritwood', qualityKey: 'normal' })),
 };
 
 const FIST_BASE_MAX = FIST.base.max;
