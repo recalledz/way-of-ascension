@@ -21,15 +21,15 @@ function pickWeighted(rows) {
  * @typedef {{
  *  baseKey:string,
  *  materialKey?:string,
- *  qualityKey?:'normal'|'magic'|'rare'
+ *  qualityKey?:'basic'|'refined'|'superior'
  * }} GearGenArgs
  */
 
-export function generateGear({ baseKey, materialKey, qualityKey = 'normal' }/** @type {GearGenArgs} */) {
+export function generateGear({ baseKey, materialKey, qualityKey = 'basic' }/** @type {GearGenArgs} */) {
   const base = GEAR_BASES[baseKey];
   if (!base) throw new Error(`Unknown base gear: ${baseKey}`);
   const material = materialKey ? MATERIALS_STUB[materialKey] : null;
-  const qualityMult = { normal: 1, magic: 1.1, rare: 1.25 }[qualityKey] || 1;
+  const qualityMult = { basic: 1, refined: 1.1, superior: 1.25 }[qualityKey] || 1;
   const protection = {
     armor: Math.round((base.baseProtection.armor || 0) * qualityMult),
     dodge: Math.round((base.baseProtection.dodge || 0) * qualityMult),
