@@ -84,8 +84,9 @@ function renderEquipment() {
     el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
-    if (item?.element) {
-      el.style.backgroundColor = ELEMENT_BG_COLORS[item.element] || '';
+    const element = item?.element || item?.imbuement?.element;
+    if (element) {
+      el.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
     } else {
       el.style.backgroundColor = '';
     }
@@ -109,14 +110,18 @@ function weaponDetailsText(item) {
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
   const quality = w.quality ?? 'basic';
   const affixes = w.affixes && w.affixes.length ? w.affixes.join(', ') : 'None';
-  return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+  const imb = item.imbuement;
+  const imbLine = imb?.element ? `\nElement: ${imb.element}${imb.tier ? ` (Tier ${imb.tier})` : ''}` : '';
+  return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}${imbLine}`;
 }
 
 function gearDetailsText(item) {
   const lines = [item.name || item.key];
   if (item.quality) lines.push(`Quality: ${item.quality}`);
   if (item.guardType) lines.push(`Guard: ${item.guardType}`);
-  if (item.element) lines.push(`Element: ${item.element}`);
+  const element = item.element || item.imbuement?.element;
+  if (element) lines.push(`Element: ${element}`);
+  if (item.imbuement?.tier) lines.push(`Imbue Tier: ${item.imbuement.tier}`);
   if (item.protection) {
     const prot = [];
     if (item.protection.armor) prot.push(`Armor ${item.protection.armor}`);
@@ -168,8 +173,9 @@ function showDetails(item) {
 function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
-  if (item.element) {
-    row.style.backgroundColor = ELEMENT_BG_COLORS[item.element] || '';
+  const element = item.element || item.imbuement?.element;
+  if (element) {
+    row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
   }
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
