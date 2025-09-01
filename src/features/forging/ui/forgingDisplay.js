@@ -43,15 +43,23 @@ function updateForgeInventory(state = S) {
 function updateForgeSlot(state = S) {
   const slot = document.getElementById('forgeSlot');
   const opts = document.getElementById('forgeOptions');
-  if (!slot || !opts) return;
+  const req = document.getElementById('forgeReqs');
+  if (!slot || !opts || !req) return;
   if (!state.forging.slot) {
     slot.textContent = 'Empty';
     opts.innerHTML = '';
+    req.textContent = '';
     return;
   }
   const item = state.inventory?.find(it => String(it.id) === String(state.forging.slot));
   slot.textContent = item?.name || item?.id;
   opts.innerHTML = '';
+  const tier = item?.tier || 0;
+  const woodCost = (tier + 1) * 10;
+  const coreCost = (tier + 1) * 5;
+  const qiCost = (tier + 1) * 10;
+  const action = tier === 0 ? 'Align' : 'Imbue';
+  req.textContent = `${action} requires ${woodCost} wood, ${coreCost} cores, ${qiCost} qi`;
   const elementSel = document.createElement('select');
   elementSel.id = 'forgeElementSelect';
   ['wood', 'fire', 'water', 'earth', 'metal'].forEach(el => {
