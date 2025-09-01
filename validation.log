@@ -1,4 +1,26 @@
+
+> way-of-ascension@1.0.0 validate
+> node scripts/validate-structure.js
+
 🤖 ENFORCING AI VERIFICATION PROTOCOL (feature-first + doc-sync)...
+
+> way-of-ascension@1.0.0 lint:balance
+> node scripts/balance-validate.js
+
+SKIP  features/ability/data/_balance.contract.js (no validate())
+SKIP  features/adventure/data/_balance.contract.js (no validate())
+SKIP  features/affixes/data/_balance.contract.js (no validate())
+SKIP  features/alchemy/data/_balance.contract.js (no validate())
+SKIP  features/combat/data/_balance.contract.js (no validate())
+PASS  features/gearGeneration/data/_balance.contract.js
+SKIP  features/loot/data/_balance.contract.js (no validate())
+SKIP  features/mind/data/_balance.contract.js (no validate())
+PASS  features/proficiency/data/_balance.contract.js
+SKIP  features/progression/data/_balance.contract.js (no validate())
+SKIP  features/sect/data/_balance.contract.js (no validate())
+PASS  features/weaponGeneration/data/_balance.contract.js
+
+Contracts: 3 checked, 0 failed.
 
 📋 AI VERIFICATION ENFORCEMENT REPORT
 =====================================
@@ -11,6 +33,7 @@
    • UI state violation: src/features/combat/ui/combatStats.js imports S from shared/state.js
    • UI state violation: src/features/cooking/ui/cookControls.js imports S from shared/state.js
    • UI state violation: src/features/cooking/ui/cookingDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/forging/ui/forgingDisplay.js imports S from shared/state.js
    • UI state violation: src/features/inventory/ui/resourceDisplay.js imports S from shared/state.js
    • UI state violation: src/features/karma/ui/karmaHUD.js imports S from shared/state.js
    • UI state violation: src/features/loot/ui/lootTab.js imports S from shared/state.js

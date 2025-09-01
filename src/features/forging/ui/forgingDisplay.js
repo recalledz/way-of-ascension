@@ -23,7 +23,8 @@ function updateForgingActivity(state = S) {
   if (itemSel) {
     const prev = itemSel.value;
     itemSel.innerHTML = '';
-    state.inventory?.filter(it => it.type === 'weapon' || it.type === 'gear')
+    // Show all equipment that can be imbued
+    state.inventory?.filter(it => it.type === 'weapon' || it.type === 'armor')
       .forEach(it => {
         const opt = document.createElement('option');
         opt.value = String(it.id);
