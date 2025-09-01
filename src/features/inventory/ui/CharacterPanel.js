@@ -64,6 +64,11 @@ function renderEquipment() {
     { key: 'mainhand', label: 'Weapon' },
     { key: 'head', label: 'Head' },
     { key: 'body', label: 'Body' },
+    { key: 'foot', label: 'Feet' },
+    { key: 'ring1', label: 'Ring 1' },
+    { key: 'ring2', label: 'Ring 2' },
+    { key: 'talisman1', label: 'Talisman 1' },
+    { key: 'talisman2', label: 'Talisman 2' },
     { key: 'food', label: 'Food' }
   ];
   slots.forEach(s => {
@@ -149,7 +154,7 @@ function showDetails(item) {
   if (item.type === 'weapon') {
     const text = weaponDetailsText(item);
     if (text) window.alert(text);
-  } else if (item.type === 'armor') {
+  } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
     const text = gearDetailsText(item);
     if (text) window.alert(text);
   } else {
@@ -172,25 +177,25 @@ function createInventoryRow(item) {
   row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';
-  if (['weapon', 'armor', 'food'].includes(item.type)) {
+  if (['weapon', 'armor', 'food', 'foot', 'ring', 'talisman'].includes(item.type)) {
     const equipBtn = document.createElement('button');
     equipBtn.className = 'btn small';
     equipBtn.textContent = 'Equip';
-    equipBtn.onclick = () => { equipItem(item); slotFilter = null; renderEquipmentPanel(); };
+    equipBtn.onclick = () => { equipItem(item, slotFilter); slotFilter = null; renderEquipmentPanel(); };
     act.appendChild(equipBtn);
-    const useBtn = document.createElement('button');
-    useBtn.className = 'btn small';
-    useBtn.textContent = item.type === 'food' ? 'Eat' : 'Use';
-    useBtn.onclick = () => {
-      if (item.type === 'food') {
+    if (item.type === 'food') {
+      const useBtn = document.createElement('button');
+      useBtn.className = 'btn small';
+      useBtn.textContent = 'Eat';
+      useBtn.onclick = () => {
         const heal = item.key === 'cookedMeat' ? 40 : 20;
         S.hp = Math.min(S.hpMax, (S.hp || 0) + heal);
         item.qty = (item.qty || 1) - 1;
         if (item.qty <= 0) removeFromInventory(item.id);
-      }
-      renderEquipmentPanel();
-    };
-    act.appendChild(useBtn);
+        renderEquipmentPanel();
+      };
+      act.appendChild(useBtn);
+    }
     const scrapBtn = document.createElement('button');
     scrapBtn.className = 'btn small warn';
     scrapBtn.textContent = 'Scrap';
@@ -219,6 +224,11 @@ function canEquipToSlot(item, slot) {
     case 'mainhand': return item.type === 'weapon';
     case 'head':
     case 'body': return item.type === 'armor' && item.slot === slot;
+    case 'foot': return item.type === 'foot';
+    case 'ring1':
+    case 'ring2': return item.type === 'ring';
+    case 'talisman1':
+    case 'talisman2': return item.type === 'talisman';
     case 'food': return item.type === 'food';
   }
   return false;
