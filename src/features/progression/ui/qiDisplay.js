@@ -5,14 +5,15 @@ import { fmt } from '../../../shared/utils/number.js';
 import { updateQiOrbEffect } from './qiOrb.js';
 
 export function updateQiAndFoundation(state = S) {
+  const cap = qCap(state);
   setText('qiVal', fmt(state.qi));
-  setText('qiCap', fmt(qCap(state)));
+  setText('qiCap', fmt(cap));
   setText('qiValL', fmt(state.qi));
-  setText('qiCapL', fmt(qCap(state)));
+  setText('qiCapL', fmt(cap));
   setText('qiRegen', qiRegenPerSec(state).toFixed(1));
-  setFill('qiFill', state.qi / qCap(state));
-  setFill('qiFill2', state.qi / qCap(state));
-  setText('qiPct', Math.floor(100 * state.qi / qCap(state)) + '%');
+  setFill('qiFill', state.qi / cap);
+  setFill('qiFill2', state.qi / cap);
+  setText('qiPct', Math.floor(100 * state.qi / cap) + '%');
 
   setFill('cultivationProgressFill', state.foundation / fCap(state));
   setText('cultivationProgressText', `${fmt(state.foundation)} / ${fmt(fCap(state))}`);

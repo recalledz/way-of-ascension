@@ -56,7 +56,8 @@ export function qCap(state = progressionState){
   const stageMultiplier = 1 + (state.realm.stage - 1) * 0.12;
   const lawBonuses = getLawBonuses(state);
   const building = getBuildingBonuses(state).qiCapMult || 0;
-  return Math.floor(baseQi * stageMultiplier * (1 + state.qiCapMult + building) * lawBonuses.qiCap);
+  const astral = (state.astralTreeBonuses?.maxQiPct || 0) / 100;
+  return Math.floor(baseQi * stageMultiplier * (1 + state.qiCapMult + building) * lawBonuses.qiCap * (1 + astral));
 }
 
 export function qiRegenPerSec(state = progressionState){
