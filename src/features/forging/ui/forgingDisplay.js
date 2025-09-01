@@ -1,7 +1,7 @@
 import { S } from '../../../shared/state.js';
 import { setText } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
-import { imbueItem } from '../mutators.js';
+import { startForging } from '../mutators.js';
 
 function updateForgingActivity(state = S) {
   if (!state.forging) return;
@@ -60,30 +60,32 @@ function updateForgeSlot(state = S) {
     opt.textContent = el[0].toUpperCase() + el.slice(1);
     elementSel.appendChild(opt);
   });
-  if (item?.imbuement?.element) elementSel.value = item.imbuement.element;
+  if (item?.element) elementSel.value = item.element;
   opts.appendChild(elementSel);
-  if (!item?.imbuement) {
+  if ((item?.tier || 0) === 0) {
+    const alignBtn = document.createElement('button');
+    alignBtn.className = 'btn small';
+    alignBtn.textContent = 'Align';
+    alignBtn.onclick = () => {
+      const element = elementSel.value;
+      startForging(item.id, element, state);
+      window.startActivity('forging');
+      updateForgeSlot(state);
+      updateForgeInventory(state);
+    };
+    opts.appendChild(alignBtn);
+  } else {
     const imbBtn = document.createElement('button');
     imbBtn.className = 'btn small';
     imbBtn.textContent = 'Imbue';
     imbBtn.onclick = () => {
-      const element = elementSel.value;
-      imbueItem(item.id, element, state);
+      const element = item.element || elementSel.value;
+      startForging(item.id, element, state);
+      window.startActivity('forging');
       updateForgeSlot(state);
       updateForgeInventory(state);
     };
     opts.appendChild(imbBtn);
-  } else {
-    const feedBtn = document.createElement('button');
-    feedBtn.className = 'btn small';
-    feedBtn.textContent = 'Feed material';
-    feedBtn.onclick = () => {
-      const element = item.imbuement?.element || elementSel.value;
-      imbueItem(item.id, element, state);
-      updateForgeSlot(state);
-      updateForgeInventory(state);
-    };
-    opts.appendChild(feedBtn);
   }
 }
 
