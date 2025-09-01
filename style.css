@@ -4757,6 +4757,12 @@ html.reduce-motion .log-sheet{transition:none;}
   min-height:40px;
 }
 
+.forge-reqs{
+  margin-bottom:8px;
+  font-size:14px;
+  color:#888;
+}
+
 .forge-options button{
   margin-right:4px;
 }
