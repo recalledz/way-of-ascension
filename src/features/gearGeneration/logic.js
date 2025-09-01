@@ -32,9 +32,11 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'basic', stage
   const mods = rollModifiers(rarity);
   applyGearModifiers({ protection, offense }, mods);
 
+  const type = base.slot === 'ring' ? 'ring' : 'armor';
+
   return {
     key: base.key,
-    type: 'armor',
+    type,
     slot: base.slot,
     name,
     guardType: base.guardType,

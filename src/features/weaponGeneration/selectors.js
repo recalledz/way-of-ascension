@@ -18,7 +18,7 @@ function pickWeighted(rows){
   return rows[rows.length - 1];
 }
 
-export function rollWeaponDropForZone(zoneKey, stage = 1){
+export function rollWeaponDropForZone(zoneKey, stage = 1, rarity = 'normal'){
   const rows = WEAPON_LOOT_TABLES[zoneKey];
   if (!rows || rows.length === 0) return null;
 
@@ -32,5 +32,6 @@ export function rollWeaponDropForZone(zoneKey, stage = 1){
     qualityKey,
     stage,
     imbuement,
+    rarity,
   });
 }

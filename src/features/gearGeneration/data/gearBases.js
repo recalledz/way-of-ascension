@@ -70,4 +70,13 @@ export const GEAR_BASES = {
     guardType: 'qiShield',
     baseProtection: { qiShield: 20 },
   },
+
+  // Ring gear (boss drops)
+  iron_ring: {
+    key: 'iron_ring',
+    displayName: 'Iron Ring',
+    slot: 'ring',
+    guardType: 'none',
+    baseProtection: {},
+  },
 };

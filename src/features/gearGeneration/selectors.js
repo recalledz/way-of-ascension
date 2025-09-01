@@ -24,7 +24,7 @@ function pickQuality(weights = { basic: 80, refined: 15, superior: 5 }) {
   return entries[0][0];
 }
 
-export function rollGearDropForZone(zoneKey, stage = 1) {
+export function rollGearDropForZone(zoneKey, stage = 1, rarity = 'normal') {
   const rows = GEAR_LOOT_TABLES[zoneKey];
   if (!rows || !rows.length) return null;
   const row = pickWeighted(rows);
@@ -33,7 +33,7 @@ export function rollGearDropForZone(zoneKey, stage = 1) {
   const qualityKey = row.qualityKey || pickQuality();
   const imbChance = 0.05 + Math.random() * 0.05;
   const imbuement = Math.random() < imbChance ? { element: pickZoneElement(zoneKey), tier: 1 } : undefined;
-  let gear = generateGear({ baseKey: row.baseKey, materialKey: row.materialKey, qualityKey, stage, imbuement });
+  let gear = generateGear({ baseKey: row.baseKey, materialKey: row.materialKey, qualityKey, stage, imbuement, rarity });
   if (Math.random() < 0.1) {
     gear = generateCultivationGear(gear, zoneKey);
   }
