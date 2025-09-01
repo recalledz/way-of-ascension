@@ -1,4 +1,4 @@
-import { BODY_BASES } from './data/bodyBases.js';
+import { GEAR_BASES } from './data/gearBases.js';
 import { MATERIALS_STUB } from '../weaponGeneration/data/materials.stub.js';
 import { ZONES as ZONE_IDS } from '../adventure/data/zoneIds.js';
 
@@ -26,7 +26,7 @@ function pickWeighted(rows) {
  */
 
 export function generateGear({ baseKey, materialKey, qualityKey = 'normal' }/** @type {GearGenArgs} */) {
-  const base = BODY_BASES[baseKey];
+  const base = GEAR_BASES[baseKey];
   if (!base) throw new Error(`Unknown base gear: ${baseKey}`);
   const material = materialKey ? MATERIALS_STUB[materialKey] : null;
   const qualityMult = { normal: 1, magic: 1.1, rare: 1.25 }[qualityKey] || 1;
@@ -42,7 +42,7 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'normal' }/** 
   return {
     key: base.key,
     type: 'armor',
-    slot: 'body',
+    slot: base.slot,
     name,
     guardType: base.guardType,
     protection,

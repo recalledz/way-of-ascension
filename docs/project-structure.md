@@ -261,7 +261,7 @@ way-of-ascension/
 │   │   ├── gearGeneration/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
-│   │   │   │   └── bodyBases.js
+│   │   │   │   └── gearBases.js
 │   │   │   ├── logic.js
 │   │   │   └── selectors.js
 │   │   └── weaponGeneration/
@@ -997,9 +997,9 @@ Paths added:
 - `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
 
 ### Gear Generation Feature (`src/features/gearGeneration/`)
-- `src/features/gearGeneration/logic.js` – Generates body gear from base definitions and materials.
+- `src/features/gearGeneration/logic.js` – Generates gear from base definitions and materials.
 - `src/features/gearGeneration/selectors.js` – Rolls zone gear drops using gear loot tables.
-- `src/features/gearGeneration/data/bodyBases.js` – Base body armor definitions (iron cuirass, leather tunic, cotton robe).
+- `src/features/gearGeneration/data/gearBases.js` – Base armor definitions (body, head, feet).
 - `src/features/gearGeneration/data/_balance.contract.js` – Balance contract placeholder for gear generation.
 
 ### Weapon Generation Feature (`src/features/weaponGeneration/`)
