@@ -26,15 +26,16 @@ export function rollLoot(key, rng = Math.random) {
 
 export function onEnemyDefeated(state) {
   const zoneKey = state.world?.zoneKey ?? ZONES.STARTING;
+  const stage = state.world?.stage ?? 1;
 
-  const weaponDrop = rollWeaponDropForZone(zoneKey);
+  const weaponDrop = rollWeaponDropForZone(zoneKey, stage);
   if (weaponDrop) {
     addToInventory(weaponDrop, state);
     state.log = state.log || [];
     state.log.push(`You found: ${weaponDrop.name}.`);
   }
 
-  const gearDrop = rollGearDropForZone(zoneKey);
+  const gearDrop = rollGearDropForZone(zoneKey, stage);
   if (gearDrop) {
     addToInventory(gearDrop, state);
     state.log = state.log || [];

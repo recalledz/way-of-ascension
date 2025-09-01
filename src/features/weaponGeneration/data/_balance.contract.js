@@ -1,5 +1,9 @@
 import { WEAPON_TYPES } from './weaponTypes.js';
 
+const MAX_STAGE = 100;
+const STAGE_MULT = Math.pow(1.1, MAX_STAGE - 1);
+const MAX_SAFE = Number.MAX_SAFE_INTEGER;
+
 export function validate() {
   const errors = [];
 
@@ -15,6 +19,11 @@ export function validate() {
     const totalScale = (def.scales?.physique ?? 0) + (def.scales?.agility ?? 0) + (def.scales?.mind ?? 0);
     if (totalScale < 0 || totalScale > 1.2) {
       errors.push(`weaponTypes.${key}.scales total ${totalScale.toFixed(2)} out of [0,1.2]`);
+    }
+
+    const scaledMax = def.base.max * STAGE_MULT;
+    if (scaledMax > MAX_SAFE) {
+      errors.push(`weaponTypes.${key}.base.max overflows at stage ${MAX_STAGE}`);
     }
   }
 

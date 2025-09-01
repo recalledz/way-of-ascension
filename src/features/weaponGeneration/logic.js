@@ -5,7 +5,8 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
  *  typeKey:string,
  *  materialKey?:string,         // optional; for naming only (no stats impact)
  *  qualityKey?:'normal'|'magic'|'rare',
- *  level?:number                // placeholder; no scaling applied yet
+ *  level?:number,               // placeholder; no scaling applied yet
+ *  stage?:number                // zone stage scaling
  * }} GenArgs */
 
 /** @typedef {{
@@ -21,13 +22,14 @@ import { MATERIALS_STUB } from './data/materials.stub.js';
  * }} WeaponItem */
 
 /** Compose final item. Minimal quality/affix support. */
-export function generateWeapon({ typeKey, materialKey, qualityKey = 'normal' }/** @type {GenArgs} */){
+export function generateWeapon({ typeKey, materialKey, qualityKey = 'normal', stage = 1 }/** @type {GenArgs} */){
   const type = WEAPON_TYPES[typeKey];
   if (!type) throw new Error(`Unknown weapon type: ${typeKey}`);
 
   const material = materialKey ? MATERIALS_STUB[materialKey] : undefined;
 
   const qualityMult = { normal: 1, magic: 1.1, rare: 1.25 }[qualityKey] || 1;
+  const stageMult = Math.pow(1.1, (stage ?? 1) - 1);
 
   const abilityKeys = [];
   if (type.signatureAbilityKey) abilityKeys.push(type.signatureAbilityKey);
@@ -35,8 +37,8 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'normal' }/*
   const name = composeName({ typeName: type.displayName, materialName: material?.displayName });
 
   const base = {
-    min: Math.round(type.base.min * qualityMult),
-    max: Math.round(type.base.max * qualityMult),
+    min: Math.round(type.base.min * qualityMult * stageMult),
+    max: Math.round(type.base.max * qualityMult * stageMult),
     rate: type.base.rate,
   };
 
