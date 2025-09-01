@@ -11,6 +11,7 @@ export function recomputePlayerTotals(player) {
   let foundationMult = 0;
   let breakthroughBonus = 0;
   let qiRegenMult = 0;
+  let dropRateMult = 0;
   const equipped = Object.values(player.equipment || {});
   for (const item of equipped) {
     if (!item) continue;
@@ -27,6 +28,7 @@ export function recomputePlayerTotals(player) {
       foundationMult += item.bonuses.foundationMult || 0;
       breakthroughBonus += item.bonuses.breakthroughBonus || 0;
       qiRegenMult += item.bonuses.qiRegenMult || 0;
+      dropRateMult += item.bonuses.dropRateMult || 0;
     }
   }
   player.stats = player.stats || {};
@@ -49,6 +51,7 @@ export function recomputePlayerTotals(player) {
     foundationMult,
     breakthroughBonus,
     qiRegenMult,
+    dropRateMult,
   };
 }
 

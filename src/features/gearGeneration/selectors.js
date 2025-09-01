@@ -1,5 +1,6 @@
 import { generateGear, generateCultivationGear } from './logic.js';
 import { GEAR_LOOT_TABLES } from '../loot/data/lootTables.gear.js';
+import { S } from '../../shared/state.js';
 
 function pickWeighted(rows) {
   const total = rows.reduce((s, r) => s + (r.weight || 0), 0);
@@ -26,7 +27,8 @@ export function rollGearDropForZone(zoneKey) {
   const rows = GEAR_LOOT_TABLES[zoneKey];
   if (!rows || !rows.length) return null;
   const row = pickWeighted(rows);
-  if (Math.random() > (row.chance ?? 1)) return null;
+  const dropMult = 1 + (S.gearBonuses?.dropRateMult || 0);
+  if (Math.random() > Math.min(1, (row.chance ?? 1) * dropMult)) return null;
   const qualityKey = row.qualityKey || pickQuality();
   let gear = generateGear({ baseKey: row.baseKey, materialKey: row.materialKey, qualityKey });
   if (Math.random() < 0.1) {
