@@ -25,7 +25,11 @@ export function tryCastAbility(abilityKey, state = S) {
   state.abilityCooldowns[abilityKey] = cooldownMs;
   if (!state.actionQueue) state.actionQueue = [];
   const enqueue = () => state.actionQueue.push({ type: 'ABILITY_HIT', abilityKey });
-  let castTimeMs = Math.round(ability.castTimeMs * (1 + (mods.castTimePct || 0) / 100));
+  let castTimeMs = Math.round(
+    ability.castTimeMs *
+      (1 + (mods.castTimePct || 0) / 100) /
+      (1 + (state.astralTreeBonuses?.castSpeedPct || 0) / 100)
+  );
   if (castTimeMs > 0) setTimeout(enqueue, castTimeMs);
   else {
     enqueue();
