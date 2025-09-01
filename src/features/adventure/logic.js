@@ -660,8 +660,9 @@ function defeatEnemy() {
   });
 
   if (enemy.drops) {
+    const dropMult = 1 + (S.gearBonuses?.dropRateMult || 0);
     Object.entries(enemy.drops).forEach(([item, chance]) => {
-      if (Math.random() < chance) {
+      if (Math.random() < Math.min(1, chance * dropMult)) {
         addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty: 1, source: area?.name });
         lootEntries.push([item, 1]);
       }

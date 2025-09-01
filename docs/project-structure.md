@@ -258,6 +258,9 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       ├── physiqueDisplay.js
 │   │   │       └── trainingGame.js
+│   │   ├── talismans/
+│   │   │   └── data/
+│   │   │       └── talismans.js
 │   │   ├── gearGeneration/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
@@ -955,13 +958,16 @@ Paths added:
 - `src/features/mind/selectors.js` – Accessors for current mind stats and progress.
 - `src/features/mind/index.js` – Bundles mind exports and event listeners.
 - `src/features/mind/data/manuals.js` – Manual definitions with requirements, timers and max levels.
-- `src/features/mind/data/talismans.js` – Talisman definitions and their bonuses.
+- `src/features/mind/data/talismans.js` – Crafting recipes for talismans.
 - `src/features/mind/data/_balance.contract.js` – Balance snapshot for mind-related data.
 - `src/features/mind/ui/mindMainTab.js` – Renders summary view for the Mind feature.
 - `src/features/mind/ui/mindPuzzlesTab.js` – Displays puzzle progress and multiplier info.
 - `src/features/mind/ui/mindReadingTab.js` – Lists manuals and controls reading actions.
 - `src/features/mind/ui/mindStatsTab.js` – Shows cumulative manual bonuses.
 - `src/features/mind/puzzles/sequenceMemory.js` – Implements the sequence memory puzzle used for mind training.
+
+### Talismans Feature (`src/features/talismans/`)
+- `src/features/talismans/data/talismans.js` – Definitions for equipable talismans with utility bonuses.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.

@@ -2,7 +2,7 @@
 
 import { mindBreakdown } from '../selectors.js';
 import { craftTalisman } from '../mutators.js';
-import { listTalismans } from '../data/talismans.js';
+import { listTalismanRecipes } from '../data/talismans.js';
 import { renderMindReadingTab } from './mindReadingTab.js';
 import { renderMindPuzzlesTab } from './mindPuzzlesTab.js';
 import { renderMindStatsTab } from './mindStatsTab.js';
@@ -73,7 +73,7 @@ export function renderMindMainTab(rootEl, state) {
 
   const select = document.createElement('select');
   select.className = 'btn';
-  for (const t of listTalismans()) {
+  for (const t of listTalismanRecipes()) {
     const opt = document.createElement('option');
     opt.value = t.id;
     opt.textContent = t.name;

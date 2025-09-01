@@ -142,6 +142,9 @@ function gearDetailsText(item) {
         case 'qiRegenMult':
           label = 'Qi Regen';
           break;
+        case 'dropRateMult':
+          label = 'Drop Rate';
+          break;
       }
       return `${label}: +${(v * 100).toFixed(0)}%`;
     });
