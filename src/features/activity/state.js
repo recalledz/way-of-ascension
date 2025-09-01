@@ -9,6 +9,7 @@ export function ensureActivities(root) {
       cooking: false,
       alchemy: false,
       sect: false,
+      forging: false,
     };
   }
 }

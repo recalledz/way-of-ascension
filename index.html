@@ -443,6 +443,30 @@
         </div>
       </section>
 
+      <section id="activity-forging" class="activity-content tab-content" style="display:none;">
+        <h2>⚒️ Forging</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Forging</h4>
+            <div class="stat"><span>Level</span><span id="forgingLevel">1</span></div>
+            <div class="stat"><span>Experience</span><span id="forgingExp">0</span> / <span id="forgingExpMax">100</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="forgingProgressFill"></div></div>
+            <div class="stat"><span>Status</span><span id="forgingStatus">Idle</span></div>
+            <div class="stat">
+              <span>Item</span>
+              <select id="forgeItemSelect"></select>
+            </div>
+            <div class="stat">
+              <span>Element</span>
+              <select id="forgeElementSelect">
+                <option value="wood">Wood</option>
+              </select>
+            </div>
+            <button class="btn primary" id="startForgingBtn">Start Forging</button>
+          </div>
+        </div>
+      </section>
+
       <section id="activity-adventure" class="activity-content" style="display:none;">
         <h2>🗺️ Adventure</h2>
         <div class="adventure-layout"> <!-- MAP-UI-UPDATE -->

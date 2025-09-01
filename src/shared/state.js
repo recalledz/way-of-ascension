@@ -6,6 +6,7 @@ import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 import { karmaState } from '../features/karma/state.js';
 import { miningState } from '../features/mining/state.js';
 import { physiqueState } from '../features/physique/state.js';
+import { forgingState } from '../features/forging/state.js';
 
 export function loadSave(){
   try{
@@ -80,11 +81,13 @@ export const defaultState = () => {
     mining: false,
     adventure: false,
     cooking: false,
-    alchemy: false
+    alchemy: false,
+    forging: false
   },
   // Activity data containers
   physique: structuredClone(physiqueState),
   mining: structuredClone(miningState),
+  forging: structuredClone(forgingState),
   cooking: {
     level: 1,
     exp: 0,

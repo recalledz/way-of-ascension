@@ -95,6 +95,14 @@ Its `state.js` defines `automationState` and an `initialState()` helper that add
 `logic.js` contains pure calculations like `isAnyAutomationEnabled()` for derived checks.
 Mutators flip automation flags while selectors read them, and `migrations.js` exports an array for save upgrades.
 
+### Forging feature
+The **Forging** module lets players imbue gear with elemental power and raise its tier.
+- **State:** `level, exp, expMax, current` (active job)
+- **Mutators:** `startForging`, `advanceForging`
+- **Logic:** `getForgingTime` computes tier duration with level-based reduction.
+- **UI:** `ui/forgingDisplay.js` updates forging panel and sidebar.
+- **Interactions:** Consumes `wood`, `cores`, and Qi; locks other activities while active.
+
 ## Legacy `src/game` modules
 
 The original `src/game` folder has largely been superseded.  With the root state and helpers moved into `src/shared/`, this directory now primarily houses `GameController.js` as a bridge for the legacy world.  Any remaining legacy systems will continue to be migrated into `src/features` until the folder can be retired entirely.
