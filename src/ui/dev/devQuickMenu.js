@@ -109,6 +109,21 @@ export function mountDevQuickMenu() {
   mindWrap.append(manualBtn);
   panel.appendChild(row("Mind", mindWrap));
 
+  // Astral point helpers
+  const astralWrap = el("div");
+  astralWrap.style.display = "flex";
+  astralWrap.style.gap = "6px";
+  const astralBtn = smallBtn("+100", () => {
+    S.astralPoints = (S.astralPoints || 0) + 100;
+    const v = Math.round(S.astralPoints || 0);
+    const insightEl = document.getElementById('astralInsight');
+    if (insightEl) insightEl.textContent = `Insight: ${v}`;
+    const miniEl = document.getElementById('astralInsightMini');
+    if (miniEl) miniEl.textContent = `Insight: ${v}`;
+  });
+  astralWrap.append(astralBtn);
+  panel.appendChild(row("Astral", astralWrap));
+
   // Auto-mount console using Eruda
   const consoleHdr = el("div", { textContent: "Console" });
   consoleHdr.style.cssText = "margin-top:8px; font:600 12px ui-monospace,monospace; opacity:.9;";
