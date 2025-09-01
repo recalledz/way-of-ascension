@@ -26,6 +26,6 @@
 
 * **Zone Loot Tables**:
 
-  * **Peaceful Lands** – `ironSword` 10 %, `herbs` 90 %.
+  * **Peaceful Lands** – `ironSword` 10 %, `wood` 90 %.
   * **Forest Edge** – `bronzeHammer` 3 %, `ironSword` 8 %, `ore` 89 %.
-  * **Meadow Path** – `elderWand` 2 %, `bronzeHammer` 3 %, `herbs` 95 %.
+  * **Meadow Path** – `elderWand` 2 %, `bronzeHammer` 3 %, `wood` 95 %.

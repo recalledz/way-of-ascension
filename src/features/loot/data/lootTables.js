@@ -4,7 +4,7 @@ export const LOOT_TABLES = {
     { item: 'ironStraightSword', weight: 8 },
     { item: 'crudeDagger', weight: 6 },
     { item: 'crudeRapier', weight: 4 },
-    { item: 'herbs', weight: 82 },
+    { item: 'wood', weight: 82 },
   ],
   forestEdge: [
     { item: 'crudeHammer', weight: 5 },
@@ -19,7 +19,7 @@ export const LOOT_TABLES = {
     { item: 'crudeKnuckles', weight: 3 },
     { item: 'crudeNunchaku', weight: 1 },
     { item: 'tameNunchaku', weight: 1 },
-    { item: 'herbs', weight: 85 },
+    { item: 'wood', weight: 85 },
   ],
   // existing zones…
 };
