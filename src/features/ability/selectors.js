@@ -51,7 +51,8 @@ export function getAbilityDamage(abilityKey, state = S) {
   if (ability.tags?.includes('spell')) {
     const { spellPowerMult } = getStatEffects(state);
     const spellDamage = state.stats?.spellDamage || 0;
-    amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100));
+    const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+    amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
   }
   return amount;
 }
