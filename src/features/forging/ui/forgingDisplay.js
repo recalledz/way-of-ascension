@@ -56,10 +56,10 @@ function updateForgeSlot(state = S) {
   opts.innerHTML = '';
   const tier = item?.tier || 0;
   const woodCost = (tier + 1) * 10;
-  const coreCost = (tier + 1) * 5;
+  const stoneCost = (tier + 1) * 5;
   const qiCost = (tier + 1) * 10;
   const action = tier === 0 ? 'Align' : 'Imbue';
-  req.textContent = `${action} requires ${woodCost} wood, ${coreCost} cores, ${qiCost} qi`;
+  req.textContent = `${action} requires ${woodCost} wood, ${stoneCost} spirit stones, ${qiCost} qi`;
   const elementSel = document.createElement('select');
   elementSel.id = 'forgeElementSelect';
   ['wood', 'fire', 'water', 'earth', 'metal'].forEach(el => {
