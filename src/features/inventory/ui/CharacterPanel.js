@@ -202,6 +202,7 @@ function showItemTooltip(anchor, text) {
   tooltip.className = 'astral-tooltip';
   tooltip.innerHTML = text.replace(/\n/g, '<br>');
   document.body.appendChild(tooltip);
+  tooltip.addEventListener('pointerdown', e => e.stopPropagation());
   const rect = anchor.getBoundingClientRect();
   const tRect = tooltip.getBoundingClientRect();
   let left = rect.right + 8;
