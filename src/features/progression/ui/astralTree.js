@@ -277,12 +277,14 @@ async function buildTree() {
         if (!isAllocatable(n.id, allocated, adj, manifest)) return;
         const info2 = manifest[n.id];
         if ((S.astralPoints || 0) < (info2?.cost || 0)) return;
+        const parentId = (adj[n.id] || []).find(id => allocated.has(id));
         S.astralPoints -= info2.cost;
         allocated.add(n.id);
         applyEffects(n.id, manifest);
         saveAllocations(allocated);
         updateInsight();
         refreshClasses();
+        animateEdge(parentId, n.id);
         hideTooltip();
       });
       tooltip.appendChild(document.createElement('br'));
@@ -505,6 +507,39 @@ async function buildTree() {
   });
 
   svg.addEventListener('click', hideTooltip);
+
+  function animateEdge(fromId, toId) {
+    if (!fromId) return;
+    const edge = edgeEls.find(
+      e =>
+        (e.from === fromId && e.to === toId) ||
+        (e.to === fromId && e.from === toId)
+    );
+    if (!edge) return;
+    const { el } = edge;
+    const x1 = Number(el.getAttribute('x1'));
+    const y1 = Number(el.getAttribute('y1'));
+    const x2 = Number(el.getAttribute('x2'));
+    const y2 = Number(el.getAttribute('y2'));
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    const spark = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    spark.setAttribute('x1', x1);
+    spark.setAttribute('y1', y1);
+    spark.setAttribute('x2', x2);
+    spark.setAttribute('y2', y2);
+    spark.setAttribute('class', 'connector travel');
+    spark.setAttribute('stroke-dasharray', `1 ${len}`);
+    spark.setAttribute('stroke-dashoffset', len);
+    svg.appendChild(spark);
+    const anim = spark.animate(
+      [
+        { strokeDashoffset: len },
+        { strokeDashoffset: 0 }
+      ],
+      { duration: 600, easing: 'linear' }
+    );
+    anim.onfinish = () => spark.remove();
+  }
 
   function refreshClasses() {
     nodes.forEach(n => {
