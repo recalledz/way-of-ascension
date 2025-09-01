@@ -69,6 +69,7 @@ export function canEquip(item, slot = null, state = {}) {
     case 'foot':
       return { slot: 'foot' };
     case 'ring':
+      // rings occupy two dedicated slots
       if (slot === 'ring1' || slot === 'ring2') return { slot };
       if (!state.equipment?.ring1) return { slot: 'ring1' };
       if (!state.equipment?.ring2) return { slot: 'ring2' };
