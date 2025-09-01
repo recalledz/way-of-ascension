@@ -1,4 +1,5 @@
 import { S, save } from '../../../shared/state.js';
+import { recomputePlayerTotals } from '../../inventory/logic.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
@@ -581,5 +582,6 @@ function applyEffects(id, manifest) {
     }
   }
   renderAstralTreeTotals();
+  recomputePlayerTotals(S);
 }
 
