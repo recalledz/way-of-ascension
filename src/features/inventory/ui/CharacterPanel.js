@@ -17,6 +17,12 @@ const ELEMENT_BG_COLORS = {
   fire: 'rgba(255, 69, 0, 0.2)'
 };
 
+const QUALITY_STARS = {
+  normal: '',
+  magic: '★',
+  rare: '★★'
+};
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -67,7 +73,9 @@ function renderEquipment() {
     const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
     const iconKey = item?.key ? WEAPONS[item.key]?.proficiencyKey : null;
     const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
-    const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${name}` : name;
+    const stars = QUALITY_STARS[item?.quality] || '';
+    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${name}` : name;
+    const nameHtml = stars ? `${stars} ${baseNameHtml}` : baseNameHtml;
     el.querySelector('.slot-name').innerHTML = nameHtml;
     el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
@@ -158,7 +166,9 @@ function createInventoryRow(item) {
   const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
   const displayName = item.name || item.key;
-  const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+  const stars = QUALITY_STARS[item?.quality] || '';
+  const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+  const nameHtml = stars ? `${stars} ${baseNameHtml}` : baseNameHtml;
   row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';
