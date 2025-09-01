@@ -4659,7 +4659,7 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 .node.allocatable{
   cursor:pointer;
-  animation:nodeGlow 1.5s ease-in-out infinite alternate;
+  animation:nodePulse 2.5s ease-in-out infinite;
 }
 .connector.active{
   stroke-width:2.5;
@@ -4668,9 +4668,23 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 .connector.link{stroke:#fff;}
 
-@keyframes nodeGlow{
-  from{filter:drop-shadow(0 0 4px currentColor);}
-  to{filter:drop-shadow(0 0 10px currentColor);}
+.connector.travel{
+  stroke:#fff;
+  stroke-width:3;
+  stroke-linecap:round;
+  filter:drop-shadow(0 0 8px #fff);
+  pointer-events:none;
+}
+
+@keyframes nodePulse{
+  0%,100%{
+    stroke-width:2;
+    filter:drop-shadow(0 0 4px currentColor);
+  }
+  50%{
+    stroke-width:4;
+    filter:drop-shadow(0 0 8px currentColor);
+  }
 }
 
 .astral-tooltip{
