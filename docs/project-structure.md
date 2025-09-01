@@ -260,6 +260,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── migrations.js
 │   │   │   └── ui/
 │   │   │       └── forgingDisplay.js
 │   │   ├── physique/
@@ -1002,6 +1003,7 @@ Paths added:
 - `src/features/forging/state.js` – Tracks forging level, experience, and current forging job.
 - `src/features/forging/logic.js` – Calculates tier times, costs, and applies forging results.
 - `src/features/forging/mutators.js` – Starts forging jobs and advances progress each tick.
+- `src/features/forging/migrations.js` – Ensures forging state exists in saves and initializes defaults.
 - `src/features/forging/selectors.js` – Helpers to read forging state.
 - `src/features/forging/ui/forgingDisplay.js` – Renders forging panel and sidebar info.
 

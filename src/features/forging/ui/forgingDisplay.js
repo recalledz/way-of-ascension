@@ -22,6 +22,7 @@ function updateForgingActivity(state = S) {
 }
 
 function updateForgeInventory(state = S) {
+  if (!state.forging) return;
   const list = document.getElementById('forgeInventory');
   if (!list) return;
   list.innerHTML = '';
@@ -41,6 +42,7 @@ function updateForgeInventory(state = S) {
 }
 
 function updateForgeSlot(state = S) {
+  if (!state.forging) return;
   const slot = document.getElementById('forgeSlot');
   const opts = document.getElementById('forgeOptions');
   const req = document.getElementById('forgeReqs');
