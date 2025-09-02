@@ -4724,6 +4724,86 @@ html.reduce-motion .log-sheet{transition:none;}
   cursor:pointer;
 }
 
+.astral-tooltip.item-tooltip{
+  background:rgba(45,40,38,0.94);
+  border:none;
+  padding:12px;
+  width:340px;
+  line-height:1.33;
+  font-size:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4),0 0 6px rgba(255,255,255,0.1);
+  border-radius:8px;
+  white-space:normal;
+  color:#f0f0f0;
+}
+
+.item-tooltip .item-header{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:16px;
+  font-weight:600;
+}
+
+.item-tooltip .item-header .item-quality{
+  margin-left:auto;
+}
+
+.item-tooltip .core-stats{
+  margin-top:8px;
+}
+
+.item-tooltip .core-row{
+  display:flex;
+  justify-content:space-between;
+}
+
+.item-tooltip .core-row .label{
+  flex:1;
+}
+
+.item-tooltip .core-row .value{
+  flex:0 0 60px;
+  text-align:right;
+}
+
+.item-tooltip .dps-row{
+  font-size:18px;
+  margin-bottom:4px;
+}
+
+.item-tooltip .imbue-block{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-top:4px;
+}
+
+.item-tooltip .tooltip-divider{
+  border-top:1px solid rgba(59,130,246,0.3);
+  margin:8px 0;
+}
+
+.item-tooltip .modifiers-block{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+.item-tooltip .mod-chip{
+  background:rgba(59,130,246,0.15);
+  border:1px solid rgba(59,130,246,0.3);
+  border-radius:4px;
+  padding:2px 4px;
+  font-size:12px;
+}
+
+.item-tooltip .tooltip-footer{
+  margin-top:8px;
+  font-size:12px;
+  opacity:0.8;
+}
+
 /* Sequence memory puzzle */
 .sequence-memory-card .memory-runes{
   display:flex;

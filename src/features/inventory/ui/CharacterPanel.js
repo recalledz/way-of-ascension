@@ -29,6 +29,24 @@ const RARITY_COLORS = {
   rare: '#fbbf24',
 };
 
+const ELEMENT_TEXT_COLORS = {
+  metal: '#999',
+  earth: '#b58b00',
+  wood: '#2e8b57',
+  water: '#1e90ff',
+  fire: '#ff4500',
+  physical: '#fff'
+};
+
+const ELEMENT_ICONS = {
+  metal: '⚙️',
+  earth: '🪨',
+  wood: '🌿',
+  water: '💧',
+  fire: '🔥',
+  physical: '⚪'
+};
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -109,76 +127,250 @@ function renderEquipment() {
   if (dodgeEl) dodgeEl.textContent = S.stats?.dodge || 0;
 }
 
-function weaponDetailsText(item) {
+function createWeaponTooltip(item) {
   const w = WEAPONS[item.key] || item;
-  if (!w) return '';
-  const baseRate = w.base ? (w.base.attackRate ?? w.base.rate) : null;
-  const base = w.base ? `${w.base.phys.min}-${w.base.phys.max} (${baseRate}/s)` : 'n/a';
-  const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
-  const quality = w.quality ?? 'basic';
-  const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
-  const modLine = mods.length ? mods.join(', ') : 'None';
-  const imbLine = item.imbuement
-    ? `Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`
-    : 'Imbue: None';
-  return [
-    w.displayName || w.name,
-    imbLine,
-    `Quality: ${quality}`,
-    `Modifiers: ${modLine}`,
-    `Rarity: ${w.rarity || 'normal'}`,
-    `Base: ${base}`,
-    `Tags: ${(w.tags || []).join(', ')}`,
-    `Reqs: ${reqs}`,
-  ].join('\n');
+  const content = document.createElement('div');
+  content.className = 'item-tooltip-content';
+
+  const header = document.createElement('div');
+  header.className = 'item-header';
+  const iconKey = w.proficiencyKey;
+  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+  if (icon) {
+    const iconEl = document.createElement('iconify-icon');
+    iconEl.setAttribute('icon', icon);
+    iconEl.className = 'item-icon';
+    header.appendChild(iconEl);
+  }
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'item-name';
+  nameSpan.textContent = w.displayName || w.name;
+  const rarityColor = RARITY_COLORS[w.rarity] || '';
+  if (rarityColor) nameSpan.style.color = rarityColor;
+  header.appendChild(nameSpan);
+  const stars = QUALITY_STARS[w.quality] || '';
+  if (stars) {
+    const starSpan = document.createElement('span');
+    starSpan.className = 'item-quality';
+    starSpan.textContent = stars;
+    header.appendChild(starSpan);
+  }
+  content.appendChild(header);
+
+  const core = document.createElement('div');
+  core.className = 'core-stats';
+  const dmgMin = w.base?.phys?.min ?? 0;
+  const dmgMax = w.base?.phys?.max ?? 0;
+  const rate = w.base ? (w.base.attackRate ?? w.base.rate ?? 0) : 0;
+  const dps = ((dmgMin + dmgMax) / 2) * rate;
+
+  const dpsRow = document.createElement('div');
+  dpsRow.className = 'core-row dps-row';
+  const dpsLabel = document.createElement('span');
+  dpsLabel.className = 'label';
+  dpsLabel.textContent = '✨ DPS';
+  dpsRow.appendChild(dpsLabel);
+  const dpsVal = document.createElement('span');
+  dpsVal.className = 'value';
+  dpsVal.textContent = dps.toFixed(1);
+  dpsRow.appendChild(dpsVal);
+  core.appendChild(dpsRow);
+
+  const dmgRow = document.createElement('div');
+  dmgRow.className = 'core-row';
+  const dmgLabel = document.createElement('span');
+  dmgLabel.className = 'label';
+  dmgLabel.textContent = '⚔ Damage';
+  dmgRow.appendChild(dmgLabel);
+  const dmgVal = document.createElement('span');
+  dmgVal.className = 'value';
+  const imbElem = item.imbuement?.element || 'physical';
+  dmgVal.style.color = ELEMENT_TEXT_COLORS[imbElem] || ELEMENT_TEXT_COLORS.physical;
+  dmgVal.textContent = `${dmgMin}–${dmgMax}`;
+  dmgRow.appendChild(dmgVal);
+  core.appendChild(dmgRow);
+
+  const speedRow = document.createElement('div');
+  speedRow.className = 'core-row';
+  const speedLabel = document.createElement('span');
+  speedLabel.className = 'label';
+  speedLabel.textContent = '⏱ Speed';
+  speedRow.appendChild(speedLabel);
+  const speedVal = document.createElement('span');
+  speedVal.className = 'value';
+  speedVal.textContent = `${rate.toFixed(1)}/s`;
+  speedRow.appendChild(speedVal);
+  core.appendChild(speedRow);
+
+  content.appendChild(core);
+
+  const imbBlock = document.createElement('div');
+  imbBlock.className = 'imbue-block';
+  const imbIcon = document.createElement('span');
+  imbIcon.textContent = ELEMENT_ICONS[imbElem] || ELEMENT_ICONS.physical;
+  imbIcon.style.color = ELEMENT_TEXT_COLORS[imbElem] || ELEMENT_TEXT_COLORS.physical;
+  imbBlock.appendChild(imbIcon);
+  const imbText = document.createElement('span');
+  imbText.textContent = `— T${item.imbuement?.tier || 0}`;
+  imbBlock.appendChild(imbText);
+  content.appendChild(imbBlock);
+
+  const divider = document.createElement('div');
+  divider.className = 'tooltip-divider';
+  content.appendChild(divider);
+
+  if (w.modifiers && w.modifiers.length) {
+    const modBlock = document.createElement('div');
+    modBlock.className = 'modifiers-block';
+    w.modifiers.forEach(k => {
+      const chip = document.createElement('span');
+      chip.className = 'mod-chip';
+      chip.textContent = MODIFIERS[k]?.desc || k;
+      modBlock.appendChild(chip);
+    });
+    content.appendChild(modBlock);
+  }
+
+  const footer = document.createElement('div');
+  footer.className = 'tooltip-footer';
+  const reqs = w.reqs || { realmMin: 0, proficiencyMin: 0 };
+  const reqDiv = document.createElement('div');
+  reqDiv.textContent = `Req: Realm ${reqs.realmMin || 0} • Prof ${reqs.proficiencyMin || 0}`;
+  footer.appendChild(reqDiv);
+  if (w.tags && w.tags.length) {
+    const tagDiv = document.createElement('div');
+    tagDiv.textContent = `Tags: ${w.tags.join(', ')}`;
+    footer.appendChild(tagDiv);
+  }
+  content.appendChild(footer);
+
+  return content;
 }
 
-function gearDetailsText(item) {
-  const lines = [item.name || item.key];
-  if (item.quality) lines.push(`Quality: ${item.quality}`);
-  if (item.rarity) lines.push(`Rarity: ${item.rarity}`);
-  if (item.guardType) lines.push(`Guard: ${item.guardType}`);
-  if (item.element) lines.push(`Element: ${item.element}`);
-  if (item.imbuement) lines.push(`Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`);
-  else lines.push('Imbue: None');
+function createGearTooltip(item) {
+  const content = document.createElement('div');
+  content.className = 'item-tooltip-content';
+
+  const header = document.createElement('div');
+  header.className = 'item-header';
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'item-name';
+  nameSpan.textContent = item.name || item.key;
+  const rarityColor = RARITY_COLORS[item.rarity] || '';
+  if (rarityColor) nameSpan.style.color = rarityColor;
+  header.appendChild(nameSpan);
+  const stars = QUALITY_STARS[item.quality] || '';
+  if (stars) {
+    const starSpan = document.createElement('span');
+    starSpan.className = 'item-quality';
+    starSpan.textContent = stars;
+    header.appendChild(starSpan);
+  }
+  content.appendChild(header);
+
+  const core = document.createElement('div');
+  core.className = 'core-stats';
   if (item.protection) {
-    const prot = [];
-    if (item.protection.armor) prot.push(`Armor ${item.protection.armor}`);
-    if (item.protection.dodge) prot.push(`Dodge ${item.protection.dodge}`);
-    if (item.protection.qiShield) prot.push(`Qi Shield ${item.protection.qiShield}`);
-    if (prot.length) lines.push(`Protection: ${prot.join(', ')}`);
+    Object.entries(item.protection).forEach(([k, v]) => {
+      const row = document.createElement('div');
+      row.className = 'core-row';
+      const label = document.createElement('span');
+      label.className = 'label';
+      const labelMap = { armor: 'Armor', dodge: 'Dodge', qiShield: 'Qi Shield' };
+      label.textContent = labelMap[k] || k;
+      row.appendChild(label);
+      const val = document.createElement('span');
+      val.className = 'value';
+      val.textContent = v;
+      row.appendChild(val);
+      core.appendChild(row);
+    });
   }
   if (item.offense) {
-    const off = [];
-    if (item.offense.accuracy) off.push(`Accuracy ${item.offense.accuracy}`);
-    if (off.length) lines.push(`Offense: ${off.join(', ')}`);
-  }
-  if (item.modifiers && item.modifiers.length) {
-    const modLine = item.modifiers.map(k => MODIFIERS[k]?.desc || k).join(', ');
-    lines.push(`Modifiers: ${modLine}`);
-  }
-  if (item.bonuses) {
-    const bonusLines = Object.entries(item.bonuses).map(([k, v]) => {
-      let label = k;
-      switch (k) {
-        case 'foundationMult':
-          label = 'Foundation';
-          break;
-        case 'breakthroughBonus':
-          label = 'Breakthrough';
-          break;
-        case 'qiRegenMult':
-          label = 'Qi Regen';
-          break;
-        case 'dropRateMult':
-          label = 'Drop Rate';
-          break;
-      }
-      return `${label}: +${(v * 100).toFixed(0)}%`;
+    Object.entries(item.offense).forEach(([k, v]) => {
+      const row = document.createElement('div');
+      row.className = 'core-row';
+      const label = document.createElement('span');
+      label.className = 'label';
+      const labelMap = { accuracy: 'Accuracy' };
+      label.textContent = labelMap[k] || k;
+      row.appendChild(label);
+      const val = document.createElement('span');
+      val.className = 'value';
+      val.textContent = v;
+      row.appendChild(val);
+      core.appendChild(row);
     });
-    lines.push(...bonusLines);
   }
-  return lines.join('\n');
+  if (core.childElementCount) content.appendChild(core);
+
+  const imbBlock = document.createElement('div');
+  imbBlock.className = 'imbue-block';
+  const imbElem = item.imbuement?.element || 'physical';
+  const imbIcon = document.createElement('span');
+  imbIcon.textContent = ELEMENT_ICONS[imbElem] || ELEMENT_ICONS.physical;
+  imbIcon.style.color = ELEMENT_TEXT_COLORS[imbElem] || ELEMENT_TEXT_COLORS.physical;
+  imbBlock.appendChild(imbIcon);
+  const imbText = document.createElement('span');
+  imbText.textContent = `— T${item.imbuement?.tier || 0}`;
+  imbBlock.appendChild(imbText);
+  content.appendChild(imbBlock);
+
+  const divider = document.createElement('div');
+  divider.className = 'tooltip-divider';
+  content.appendChild(divider);
+
+  if ((item.modifiers && item.modifiers.length) || item.bonuses) {
+    const modBlock = document.createElement('div');
+    modBlock.className = 'modifiers-block';
+    if (item.modifiers) {
+      item.modifiers.forEach(k => {
+        const chip = document.createElement('span');
+        chip.className = 'mod-chip';
+        chip.textContent = MODIFIERS[k]?.desc || k;
+        modBlock.appendChild(chip);
+      });
+    }
+    if (item.bonuses) {
+      Object.entries(item.bonuses).forEach(([k, v]) => {
+        let label = k;
+        switch (k) {
+          case 'foundationMult':
+            label = 'Foundation';
+            break;
+          case 'breakthroughBonus':
+            label = 'Breakthrough';
+            break;
+          case 'qiRegenMult':
+            label = 'Qi Regen';
+            break;
+          case 'dropRateMult':
+            label = 'Drop Rate';
+            break;
+        }
+        const chip = document.createElement('span');
+        chip.className = 'mod-chip';
+        chip.textContent = `${label} +${(v * 100).toFixed(0)}%`;
+        modBlock.appendChild(chip);
+      });
+    }
+    content.appendChild(modBlock);
+  }
+
+  const footer = document.createElement('div');
+  footer.className = 'tooltip-footer';
+  const reqs = item.reqs || { realmMin: 0, proficiencyMin: 0 };
+  const reqDiv = document.createElement('div');
+  reqDiv.textContent = `Req: Realm ${reqs.realmMin || 0} • Prof ${reqs.proficiencyMin || 0}`;
+  footer.appendChild(reqDiv);
+  if (item.tags && item.tags.length) {
+    const tagDiv = document.createElement('div');
+    tagDiv.textContent = `Tags: ${item.tags.join(', ')}`;
+    footer.appendChild(tagDiv);
+  }
+  content.appendChild(footer);
+
+  return content;
 }
 
 let currentTooltip = null;
@@ -190,10 +382,10 @@ function hideItemTooltip() {
   }
 }
 
-function showItemTooltip(anchor, text) {
+function showItemTooltip(anchor, content) {
   hideItemTooltip();
   const tooltip = document.createElement('div');
-  tooltip.className = 'astral-tooltip';
+  tooltip.className = 'astral-tooltip item-tooltip';
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'tooltip-close';
@@ -201,8 +393,6 @@ function showItemTooltip(anchor, text) {
   closeBtn.onclick = hideItemTooltip;
   tooltip.appendChild(closeBtn);
 
-  const content = document.createElement('div');
-  content.innerHTML = text.replace(/\n/g, '<br>');
   tooltip.appendChild(content);
 
   document.body.appendChild(tooltip);
@@ -220,17 +410,19 @@ function showItemTooltip(anchor, text) {
 }
 
 function showDetails(item, evt) {
-  let text = '';
+  let content = null;
   if (item.type === 'weapon') {
-    text = weaponDetailsText(item);
+    content = createWeaponTooltip(item);
   } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
-    text = gearDetailsText(item);
+    content = createGearTooltip(item);
   } else {
-    text = item.name || item.key;
+    const div = document.createElement('div');
+    div.textContent = item.name || item.key;
+    content = div;
   }
-  if (text && evt?.target) {
+  if (content && evt?.target) {
     evt.stopPropagation();
-    showItemTooltip(evt.target, text);
+    showItemTooltip(evt.target, content);
   }
 }
 
