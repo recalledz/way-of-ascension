@@ -20,8 +20,8 @@ export const MODIFIERS = {
   increasedDamage: {
     lane: 'damage',
     value: 0.1,
-    desc: '+10% Damage',
-    appliesTo: ['weapon', 'ring'],
+    desc: '+10% Weapon Damage',
+    appliesTo: ['weapon', 'ring'], // boosts base weapon damage only; spells use separate modifiers
   },
 };
 
