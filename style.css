@@ -4780,6 +4780,12 @@ html.reduce-motion .log-sheet{transition:none;}
   gap:4px;
 }
 
+.item-tooltip .tooltip-implicit{
+  border-top:1px solid rgba(255,255,255,0.1);
+  padding-top:4px;
+  margin-top:4px;
+}
+
 .item-tooltip .tooltip-mods{
   border-top:1px solid rgba(59,130,246,0.3);
   padding-top:4px;

@@ -53,7 +53,7 @@ export const WEAPON_TYPES = {
     slot: 'mainhand',
       base: { min: 5, max: 8, rate: 0.85 },
     tags: ['physical'],
-    implicitStats: { stunDurationMult: 0.1 },
+    implicitStats: { damageTransferPct: 0.1 },
   },
   crudeAxe: {
     key: 'crudeAxe',
@@ -62,7 +62,7 @@ export const WEAPON_TYPES = {
     slot: 'mainhand',
       base: { min: 6, max: 10, rate: 0.85 },
     tags: ['physical'],
-    implicitStats: { criticalChance: 0.03 },
+    implicitStats: { physDamagePct: 0.1 },
   },
   spear: {
     key: 'spear',
@@ -82,7 +82,7 @@ export const WEAPON_TYPES = {
       base: { min: 1, max: 3, rate: 1.1 },
     tags: [],
     signatureAbilityKey: 'mindSpike',
-    implicitStats: { mind: 2 },
+    implicitStats: { qiCostPct: -0.05 },
   },
   starFocus: {
     key: 'starFocus',
@@ -92,7 +92,7 @@ export const WEAPON_TYPES = {
       base: { min: 2, max: 4, rate: 1.15 },
     tags: [],
     signatureAbilityKey: 'mindSpike',
-    implicitStats: { mind: 3, criticalChance: 0.01 },
+    implicitStats: { qiConversionPct: 0.05 },
   },
   crudeKnuckles: {
     key: 'crudeKnuckles',
@@ -101,7 +101,7 @@ export const WEAPON_TYPES = {
     slot: 'mainhand',
       base: { min: 1, max: 3, rate: 1.2 },
     tags: ['physical'],
-    implicitStats: { stunBuildMult: 0.05 },
+    implicitStats: { comboDamagePct: 0.1 },
   },
   crudeNunchaku: {
     key: 'crudeNunchaku',
@@ -111,7 +111,7 @@ export const WEAPON_TYPES = {
       base: { min: 1, max: 3, rate: 1.5 },
     tags: ['physical'],
     signatureAbilityKey: 'flurryStrike',
-    implicitStats: { attackSpeed: 0.1 },
+    implicitStats: { ailmentChancePct: 0.1 },
   },
   tameNunchaku: {
     key: 'tameNunchaku',
@@ -121,6 +121,6 @@ export const WEAPON_TYPES = {
       base: { min: 2, max: 4, rate: 1.6 },
     tags: ['physical'],
     signatureAbilityKey: 'flurryStrike',
-    implicitStats: { attackSpeed: 0.15 },
+    implicitStats: { repeatBasicChancePct: 0.1 },
   },
 };
