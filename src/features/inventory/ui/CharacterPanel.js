@@ -5,6 +5,7 @@ import { equipItem, unequip, removeFromInventory, moveToJunk } from '../mutators
 import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
 import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
+import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -119,8 +120,9 @@ function renderEquipment() {
     if (!el) return;
     const item = S.equipment[s.key];
     const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
-    const iconKey = item?.key ? WEAPONS[item.key]?.classKey : null;
-    const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+    const icon = item?.type === 'weapon'
+      ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+      : GEAR_ICONS[item?.slot || item?.type];
     const stars = QUALITY_STARS[item?.quality] || '';
     const rarity = item?.rarity;
     const rarityColor = RARITY_COLORS[rarity] || '';
@@ -190,7 +192,8 @@ function gearDetailsHTML(item) {
   const stars = QUALITY_STARS[item.quality] || '';
   const rarityColor = RARITY_COLORS[item.rarity] || '';
   const name = item.name || item.key;
-  const header = `<div class="tooltip-header"><span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
+  const icon = GEAR_ICONS[item.slot || item.type];
+  const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
 
   const coreLines = [];
   if (item.protection?.armor) coreLines.push({ label: 'Armor', value: item.protection.armor });
@@ -277,8 +280,9 @@ function createInventoryRow(item) {
   if (element) {
     row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
   }
-  const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.classKey : null;
-  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+  const icon = item.type === 'weapon'
+    ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+    : GEAR_ICONS[item.slot || item.type];
   const rarity = item.rarity;
   const rarityColor = RARITY_COLORS[rarity] || '';
   const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';

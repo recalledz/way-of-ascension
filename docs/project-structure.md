@@ -279,6 +279,7 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── gearBases.js
+│   │   │   │   ├── gearIcons.js
 │   │   │   │   └── modifiers.js
 │   │   │   ├── imbuement.js
 │   │   │   ├── logic.js
@@ -1042,6 +1043,7 @@ Paths added:
 - `src/features/gearGeneration/selectors.js` – Rolls zone gear drops using gear loot tables.
 - `src/features/gearGeneration/imbuement.js` – Defines imbuement tiers, multipliers, and zone element themes.
 - `src/features/gearGeneration/data/gearBases.js` – Base armor definitions (body, head, feet).
+- `src/features/gearGeneration/data/gearIcons.js` – Icon mappings for gear slots.
 - `src/features/gearGeneration/data/_balance.contract.js` – Balance contract placeholder for gear generation.
 - `src/features/gearGeneration/data/modifiers.js` – Modifier definitions used by gear and weapon generation.
 
