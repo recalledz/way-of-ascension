@@ -1,3 +1,6 @@
+import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { GEAR_BASES } from '../gearGeneration/data/gearBases.js';
+
 export const migrations = [
   save => {
     if(!save.inventory){
@@ -71,5 +74,40 @@ export const migrations = [
   save => {
     if (typeof save.coin === 'undefined') save.coin = 0;
     if (!Array.isArray(save.junk)) save.junk = [];
+  },
+  save => {
+    if (!Array.isArray(save.inventory)) save.inventory = [];
+    save.inventory.forEach(it => {
+      if (it && typeof it === 'object' && !it.name && it.key) {
+        it.name =
+          WEAPONS[it.key]?.displayName ||
+          GEAR_BASES[it.key]?.displayName ||
+          it.key;
+      }
+    });
+    if (save.equipment && typeof save.equipment === 'object') {
+      Object.values(save.equipment).forEach(it => {
+        if (it && typeof it === 'object' && !it.name && it.key) {
+          it.name =
+            WEAPONS[it.key]?.displayName ||
+            GEAR_BASES[it.key]?.displayName ||
+            it.key;
+        }
+      });
+    }
+    const hasPalmWraps = save.inventory.some(it =>
+      typeof it === 'string' ? it === 'palmWraps' : it.key === 'palmWraps'
+    );
+    const equippedPalm =
+      typeof save.equipment?.mainhand === 'object' &&
+      save.equipment.mainhand?.key === 'palmWraps';
+    if (!hasPalmWraps && !equippedPalm) {
+      save.inventory.push({
+        id: Date.now() + Math.random(),
+        key: 'palmWraps',
+        name: 'Palm Wraps',
+        type: 'weapon'
+      });
+    }
   }
 ];

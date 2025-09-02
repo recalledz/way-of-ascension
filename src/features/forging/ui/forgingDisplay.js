@@ -2,6 +2,18 @@ import { S } from '../../../shared/state.js';
 import { setText } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
+import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
+import { GEAR_BASES } from '../../gearGeneration/data/gearBases.js';
+
+function displayName(it) {
+  if (!it) return '';
+  return (
+    it.name ||
+    WEAPONS[it.key]?.displayName ||
+    GEAR_BASES[it.key]?.displayName ||
+    it.id
+  );
+}
 
 function updateForgingActivity(state = S) {
   if (!state.forging) return;
@@ -30,7 +42,7 @@ function updateForgeInventory(state = S) {
     .forEach(it => {
       const card = document.createElement('div');
       card.className = 'forge-item-card';
-      card.textContent = it.name || it.id;
+      card.textContent = displayName(it);
       if (String(state.forging.slot) === String(it.id)) card.classList.add('selected');
       card.onclick = () => {
         state.forging.slot = it.id;
@@ -54,7 +66,7 @@ function updateForgeSlot(state = S) {
     return;
   }
   const item = state.inventory?.find(it => String(it.id) === String(state.forging.slot));
-  slot.textContent = item?.name || item?.id;
+  slot.textContent = displayName(item);
   opts.innerHTML = '';
   const tier = item?.tier || 0;
   const woodCost = (tier + 1) * 10;
