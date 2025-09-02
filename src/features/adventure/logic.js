@@ -4,6 +4,7 @@ import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getAbilitySlots, getAbilityDamage } from '../ability/selectors.js';
+import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
@@ -353,6 +354,7 @@ export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
   const slots = getAbilitySlots(S);
+  const weapon = getEquippedWeapon(S);
   const iconMap = {
     'pointy-sword': '🗡️',
     'game-icons:mighty-force': '💥',
@@ -365,14 +367,26 @@ export function updateAbilityBar() {
       const def = ABILITIES[slot.abilityKey];
       const dmg = getAbilityDamage(slot.abilityKey, S);
       const mods = S.abilityMods?.[slot.abilityKey] || {};
+      const isSpell = def.tags?.includes('spell');
+      const speedMult =
+        isSpell && weapon.classKey === 'focus'
+          ? getWeaponProficiencyBonuses(S).speedMult
+          : 1;
       const castTimeMs = Math.round(
         def.castTimeMs *
           (1 + (mods.castTimePct || 0) / 100) /
-          (1 + (S.astralTreeBonuses?.castSpeedPct || 0) / 100)
+          (1 + (S.astralTreeBonuses?.castSpeedPct || 0) / 100) /
+          speedMult
       );
       const dmgLine = dmg !== null ? `<div class="ability-damage">${dmg}</div>` : '';
       const castLine = castTimeMs > 0 ? `<div class="ability-cast-time">${(castTimeMs / 1000).toFixed(2)}s</div>` : '';
-      const cdSec = (def.cooldownMs || 0) / 1000;
+      const cooldownMs = Math.round(
+        def.cooldownMs *
+          (1 + (mods.cooldownPct || 0) / 100) *
+          (1 + (S.astralTreeBonuses?.cooldownPct || 0) / 100) /
+          speedMult
+      );
+      const cdSec = cooldownMs / 1000;
       const ctSec = castTimeMs / 1000;
       let title = `${def.displayName} — Cost ${def.costQi} Qi`;
       if (castTimeMs > 0) title += `, Cast ${ctSec}s`;

@@ -3,6 +3,7 @@ import { ABILITIES } from './data/abilities.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { resolveAbilityHit } from './logic.js';
 import { getStatEffects } from '../progression/selectors.js';
+import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 
 export function getAbilityCooldowns(state = S) {
   return state.abilityCooldowns || {};
@@ -49,6 +50,9 @@ export function getAbilityDamage(abilityKey, state = S) {
   const mods = state.abilityMods?.[abilityKey] || {};
   if (mods.damagePct) amount = Math.round(amount * (1 + mods.damagePct / 100));
   if (ability.tags?.includes('spell')) {
+    if (getEquippedWeapon(state).classKey === 'focus') {
+      amount = Math.round(amount * getWeaponProficiencyBonuses(state).damageMult);
+    }
     const { spellPowerMult } = getStatEffects(state);
     const spellDamage = state.stats?.spellDamage || 0;
     const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
