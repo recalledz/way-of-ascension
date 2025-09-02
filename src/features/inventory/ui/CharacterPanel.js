@@ -18,6 +18,24 @@ const ELEMENT_BG_COLORS = {
   fire: 'rgba(255, 69, 0, 0.2)'
 };
 
+const ELEMENT_TEXT_COLORS = {
+  physical: '#ffffff',
+  metal: '#999999',
+  earth: '#b58b00',
+  wood: '#2e8b57',
+  water: '#1e90ff',
+  fire: '#ff4500',
+};
+
+const ELEMENT_GLYPHS = {
+  metal: '⚙',
+  earth: '🗿',
+  wood: '🌿',
+  water: '💧',
+  fire: '🔥',
+  none: '◯',
+};
+
 const QUALITY_STARS = {
   basic: '',
   refined: '★',
@@ -28,6 +46,95 @@ const RARITY_COLORS = {
   magic: '#3b82f6',
   rare: '#fbbf24',
 };
+
+function getElementGlyph(element){
+  return ELEMENT_GLYPHS[element] || ELEMENT_GLYPHS.none;
+}
+
+function formatStats(stats){
+  if (!stats) return [];
+  return Object.entries(stats).map(([k,v]) => {
+    switch(k){
+      case 'stunBuildMult': return `Stun Build +${Math.round(v*100)}%`;
+      case 'stunDurationMult': return `Stun Duration +${Math.round(v*100)}%`;
+      default: return `${k}: ${v}`;
+    }
+  });
+}
+
+function formatDamage(base){
+  if (!base) return '';
+  const parts = [];
+  if (base.phys){
+    parts.push(`<span style="color:${ELEMENT_TEXT_COLORS.physical}">${base.phys.min}-${base.phys.max}</span>`);
+  }
+  Object.entries(base.elems || {}).forEach(([el,val]) => {
+    parts.push(`<span style="color:${ELEMENT_TEXT_COLORS[el] || '#fff'}">${val.min}-${val.max}</span>`);
+  });
+  return parts.join(' + ');
+}
+
+function avgDamage(base){
+  if (!base) return 0;
+  let total = 0;
+  if (base.phys) total += (base.phys.min + base.phys.max)/2;
+  Object.values(base.elems || {}).forEach(v => { total += (v.min + v.max)/2; });
+  return total;
+}
+
+function weaponTooltipHtml(item){
+  const w = WEAPONS[item.key] || item;
+  if (!w) return '';
+  const iconKey = w.proficiencyKey;
+  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+  const stars = QUALITY_STARS[item.quality || w.quality] || '';
+  const rarityColor = RARITY_COLORS[w.rarity] || '';
+  const headerIcon = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : '';
+  const header = `<div class="tooltip-header">${headerIcon}<span class="tooltip-name" style="color:${rarityColor}">${w.displayName || w.name}</span>${stars ? `<span class="quality-stars">${stars}</span>` : ''}</div>`;
+  const rate = w.base?.attackRate ?? w.base?.rate ?? 1;
+  const dmgText = formatDamage(w.base);
+  const dps = (avgDamage(w.base) * rate).toFixed(1);
+  const core = `<div class="core-stats">
+      <div class="stat-row dps"><span class="stat-label"><span class="stat-icon">✨</span>DPS</span><span class="stat-value">${dps}</span></div>
+      <div class="core-line"><span class="stat-label"><span class="stat-icon">⚔</span>Damage</span><span class="stat-value">${dmgText}</span><span class="stat-label"><span class="stat-icon">⏱</span>Speed</span><span class="stat-value">${rate}/s</span></div>
+    </div>`;
+  const imbElem = item.imbuement?.element;
+  const imbTier = item.imbuement?.tier || 0;
+  const imbGlyph = getElementGlyph(imbElem);
+  const imbColor = ELEMENT_TEXT_COLORS[imbElem] || '#fff';
+  const imbue = `<div class="imbue-row"><span class="stat-label">Imbue:</span><span class="imbue-icon" style="color:${imbColor}">${imbGlyph}</span> — T${imbTier}</div>`;
+  const implicit = formatStats(w.stats);
+  const modDescs = (item.modifiers || w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
+  const modsBlock = (implicit.length || modDescs.length) ? `<div class="mods-block">${implicit.map(m => `<div class="implicit-mod">${m}</div>`).join('')}${modDescs.length ? `<div class="mods-list">${modDescs.map(m => `<span class="mod-chip">${m}</span>`).join('')}</div>` : ''}</div>` : '';
+  const reqs = w.reqs || { realmMin:0, proficiencyMin:0 };
+  const tags = w.tags || [];
+  const footer = `<div class="tooltip-footer"><div>Req: Realm ${reqs.realmMin || 0} • Prof ${reqs.proficiencyMin || 0}</div><div>Tags: ${tags.join(', ') || 'none'}</div></div>`;
+  return header + core + imbue + modsBlock + footer;
+}
+
+function gearTooltipHtml(item){
+  const stars = QUALITY_STARS[item.quality] || '';
+  const rarityColor = RARITY_COLORS[item.rarity] || '';
+  const header = `<div class="tooltip-header"><span class="tooltip-name" style="color:${rarityColor}">${item.name || item.key}</span>${stars ? `<span class="quality-stars">${stars}</span>` : ''}</div>`;
+  const rows = [];
+  if (item.protection?.armor) rows.push(`<div class="stat-row"><span class="stat-label">Armor</span><span class="stat-value">${item.protection.armor}</span></div>`);
+  if (item.protection?.dodge) rows.push(`<div class="stat-row"><span class="stat-label">Dodge</span><span class="stat-value">${item.protection.dodge}</span></div>`);
+  if (item.protection?.qiShield) rows.push(`<div class="stat-row"><span class="stat-label">Qi Shield</span><span class="stat-value">${item.protection.qiShield}</span></div>`);
+  if (item.offense?.accuracy) rows.push(`<div class="stat-row"><span class="stat-label">Accuracy</span><span class="stat-value">${item.offense.accuracy}</span></div>`);
+  const core = rows.length ? `<div class="core-stats">${rows.join('')}</div>` : '';
+  const imbElem = item.imbuement?.element;
+  const imbTier = item.imbuement?.tier || 0;
+  const imbGlyph = getElementGlyph(imbElem);
+  const imbColor = ELEMENT_TEXT_COLORS[imbElem] || '#fff';
+  const imbue = `<div class="imbue-row"><span class="stat-label">Imbue:</span><span class="imbue-icon" style="color:${imbColor}">${imbGlyph}</span> — T${imbTier}</div>`;
+  const modDescs = (item.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
+  const modsBlock = modDescs.length ? `<div class="mods-block"><div class="mods-list">${modDescs.map(m => `<span class="mod-chip">${m}</span>`).join('')}</div></div>` : '';
+  const footerParts = [];
+  if (item.reqs) footerParts.push(`Req: Realm ${item.reqs.realmMin} • Prof ${item.reqs.proficiencyMin}`);
+  if (item.tags?.length) footerParts.push(`Tags: ${item.tags.join(', ')}`);
+  const footer = footerParts.length ? `<div class="tooltip-footer">${footerParts.map(t => `<div>${t}</div>`).join('')}</div>` : '';
+  return header + core + imbue + modsBlock + footer;
+}
 
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
@@ -107,80 +214,6 @@ function renderEquipment() {
   if (accEl) accEl.textContent = S.stats?.accuracy || 0;
   const dodgeEl = document.getElementById('dodgeVal');
   if (dodgeEl) dodgeEl.textContent = S.stats?.dodge || 0;
-}
-
-function weaponDetailsText(item) {
-  const w = WEAPONS[item.key] || item;
-  if (!w) return '';
-  const baseRate = w.base ? (w.base.attackRate ?? w.base.rate) : null;
-  const base = w.base ? `${w.base.phys.min}-${w.base.phys.max} (${baseRate}/s)` : 'n/a';
-  const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
-  const quality = w.quality ?? 'basic';
-  const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
-  const modLine = mods.length ? mods.join(', ') : 'None';
-  const imbLine = item.imbuement
-    ? `Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`
-    : 'Imbue: None';
-  return [
-    w.displayName || w.name,
-    imbLine,
-    `Quality: ${quality}`,
-    `Modifiers: ${modLine}`,
-    `Rarity: ${w.rarity || 'normal'}`,
-    `Base: ${base}`,
-    `Tags: ${(w.tags || []).join(', ')}`,
-    `Reqs: ${reqs}`,
-  ].join('\n');
-}
-
-function gearDetailsText(item) {
-  const lines = [item.name || item.key];
-  if (item.quality) lines.push(`Quality: ${item.quality}`);
-  if (item.rarity) lines.push(`Rarity: ${item.rarity}`);
-  if (item.guardType) lines.push(`Guard: ${item.guardType}`);
-  if (item.element) lines.push(`Element: ${item.element}`);
-  if (item.imbuement) lines.push(`Imbue: ${item.imbuement.element} Tier ${item.imbuement.tier}`);
-  else lines.push('Imbue: None');
-  if (item.protection) {
-    const prot = [];
-    if (item.protection.armor) prot.push(`Armor ${item.protection.armor}`);
-    if (item.protection.dodge) prot.push(`Dodge ${item.protection.dodge}`);
-    if (item.protection.qiShield) prot.push(`Qi Shield ${item.protection.qiShield}`);
-    if (prot.length) lines.push(`Protection: ${prot.join(', ')}`);
-  }
-  if (item.offense) {
-    const off = [];
-    if (item.offense.accuracy) off.push(`Accuracy ${item.offense.accuracy}`);
-    if (off.length) lines.push(`Offense: ${off.join(', ')}`);
-  }
-  if (item.modifiers && item.modifiers.length) {
-    const modLine = item.modifiers.map(k => MODIFIERS[k]?.desc || k).join(', ');
-    lines.push(`Modifiers: ${modLine}`);
-  }
-  if (item.bonuses) {
-    const bonusLines = Object.entries(item.bonuses).map(([k, v]) => {
-      let label = k;
-      switch (k) {
-        case 'foundationMult':
-          label = 'Foundation';
-          break;
-        case 'breakthroughBonus':
-          label = 'Breakthrough';
-          break;
-        case 'qiRegenMult':
-          label = 'Qi Regen';
-          break;
-        case 'dropRateMult':
-          label = 'Drop Rate';
-          break;
-      }
-      return `${label}: +${(v * 100).toFixed(0)}%`;
-    });
-    lines.push(...bonusLines);
-  }
-  return lines.join('\n');
-}
-
 let currentTooltip = null;
 
 function hideItemTooltip() {
@@ -190,10 +223,10 @@ function hideItemTooltip() {
   }
 }
 
-function showItemTooltip(anchor, text) {
+function showItemTooltip(anchor, html) {
   hideItemTooltip();
   const tooltip = document.createElement('div');
-  tooltip.className = 'astral-tooltip';
+  tooltip.className = 'astral-tooltip item-tooltip';
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'tooltip-close';
@@ -202,7 +235,7 @@ function showItemTooltip(anchor, text) {
   tooltip.appendChild(closeBtn);
 
   const content = document.createElement('div');
-  content.innerHTML = text.replace(/\n/g, '<br>');
+  content.innerHTML = html;
   tooltip.appendChild(content);
 
   document.body.appendChild(tooltip);
@@ -220,17 +253,17 @@ function showItemTooltip(anchor, text) {
 }
 
 function showDetails(item, evt) {
-  let text = '';
+  let html = '';
   if (item.type === 'weapon') {
-    text = weaponDetailsText(item);
+    html = weaponTooltipHtml(item);
   } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
-    text = gearDetailsText(item);
+    html = gearTooltipHtml(item);
   } else {
-    text = item.name || item.key;
+    html = `<div class="tooltip-header">${item.name || item.key}</div>`;
   }
-  if (text && evt?.target) {
+  if (html && evt?.target) {
     evt.stopPropagation();
-    showItemTooltip(evt.target, text);
+    showItemTooltip(evt.target, html);
   }
 }
 
