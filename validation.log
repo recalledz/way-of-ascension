@@ -16,7 +16,6 @@
    • UI state violation: src/features/karma/ui/karmaHUD.js imports S from shared/state.js
    • UI state violation: src/features/loot/ui/lootTab.js imports S from shared/state.js
    • UI state violation: src/features/mining/ui/miningDisplay.js imports S from shared/state.js
-   • UI state violation: src/features/proficiency/ui/weaponProficiencyDisplay.js imports S from shared/state.js
    • UI state violation: src/features/progression/ui/lawDisplay.js imports S from shared/state.js
    • UI state violation: src/features/progression/ui/qiDisplay.js imports S from shared/state.js
    • UI state violation: src/features/progression/ui/qiOrb.js imports S from shared/state.js
