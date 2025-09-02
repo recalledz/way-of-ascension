@@ -66,6 +66,16 @@ html,body{height:100%;overflow:hidden}
   margin-bottom:0;
 }
 
+/* Nested tab bars (like those inside cards) should sit at the top of
+   their container rather than sticking to the page header. Reset the
+   positioning so the subsequent content isn't overlapped. */
+.card .tab-bar{
+  position:static;
+  top:auto;
+  z-index:auto;
+  margin-bottom:var(--card-gap);
+}
+
 .tab-content{
   padding-top:var(--gap);
   display:flex;
