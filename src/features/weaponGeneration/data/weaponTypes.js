@@ -1,6 +1,6 @@
 /** @typedef {{min:number,max:number,rate:number}} BaseDps */
 /** @typedef {{
- *  key:string, displayName:string, slot:'mainhand',
+ *  key:string, displayName:string, classKey:string, slot:'mainhand',
  *  base: BaseDps,
  *  tags: ('physical')[]|[],        // only 'physical' or []
  *  signatureAbilityKey?: string,   // e.g., 'powerSlash' for swords
@@ -12,6 +12,7 @@ export const WEAPON_TYPES = {
   straightSword: {
     key: 'straightSword',
     displayName: 'Straight Sword',
+    classKey: 'sword',
     slot: 'mainhand',
       base: { min: 4, max: 6, rate: 1.0 },
     tags: ['physical'],
@@ -21,6 +22,7 @@ export const WEAPON_TYPES = {
   crudeDagger: {
     key: 'crudeDagger',
     displayName: 'Crude Dagger',
+    classKey: 'dagger',
     slot: 'mainhand',
       base: { min: 2, max: 4, rate: 1.4 },
     tags: ['physical'],
@@ -29,6 +31,7 @@ export const WEAPON_TYPES = {
   crudeRapier: {
     key: 'crudeRapier',
     displayName: 'Crude Rapier',
+    classKey: 'sword',
     slot: 'mainhand',
       base: { min: 3, max: 5, rate: 1.3 },
     tags: ['physical'],
@@ -37,6 +40,7 @@ export const WEAPON_TYPES = {
   crudeHammer: {
     key: 'crudeHammer',
     displayName: 'Crude Hammer',
+    classKey: 'hammer',
     slot: 'mainhand',
       base: { min: 7, max: 11, rate: 0.75 },
     tags: ['physical'],
@@ -45,6 +49,7 @@ export const WEAPON_TYPES = {
   crudeBludgeon: {
     key: 'crudeBludgeon',
     displayName: 'Crude Bludgeon',
+    classKey: 'bludgeon',
     slot: 'mainhand',
       base: { min: 5, max: 8, rate: 0.85 },
     tags: ['physical'],
@@ -53,6 +58,7 @@ export const WEAPON_TYPES = {
   crudeAxe: {
     key: 'crudeAxe',
     displayName: 'Crude Axe',
+    classKey: 'axe',
     slot: 'mainhand',
       base: { min: 6, max: 10, rate: 0.85 },
     tags: ['physical'],
@@ -61,6 +67,7 @@ export const WEAPON_TYPES = {
   spear: {
     key: 'spear',
     displayName: 'Spear',
+    classKey: 'spear',
     slot: 'mainhand',
       base: { min: 5, max: 7, rate: 0.95 },
     tags: ['physical'],
@@ -70,6 +77,7 @@ export const WEAPON_TYPES = {
   dimFocus: {
     key: 'dimFocus',
     displayName: 'Dim Focus',
+    classKey: 'focus',
     slot: 'mainhand',
       base: { min: 1, max: 3, rate: 1.1 },
     tags: [],
@@ -79,6 +87,7 @@ export const WEAPON_TYPES = {
   starFocus: {
     key: 'starFocus',
     displayName: 'Star Focus',
+    classKey: 'focus',
     slot: 'mainhand',
       base: { min: 2, max: 4, rate: 1.15 },
     tags: [],
@@ -88,6 +97,7 @@ export const WEAPON_TYPES = {
   crudeKnuckles: {
     key: 'crudeKnuckles',
     displayName: 'Crude Knuckles',
+    classKey: 'fist',
     slot: 'mainhand',
       base: { min: 1, max: 3, rate: 1.2 },
     tags: ['physical'],
@@ -96,6 +106,7 @@ export const WEAPON_TYPES = {
   crudeNunchaku: {
     key: 'crudeNunchaku',
     displayName: 'Crude Nunchaku',
+    classKey: 'nunchaku',
     slot: 'mainhand',
       base: { min: 1, max: 3, rate: 1.5 },
     tags: ['physical'],
@@ -105,6 +116,7 @@ export const WEAPON_TYPES = {
   tameNunchaku: {
     key: 'tameNunchaku',
     displayName: 'Tame Nunchaku',
+    classKey: 'nunchaku',
     slot: 'mainhand',
       base: { min: 2, max: 4, rate: 1.6 },
     tags: ['physical'],

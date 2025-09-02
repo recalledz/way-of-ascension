@@ -39,6 +39,7 @@ function toLegacy(key, item){
     rarity: item.rarity,
     slot: 'mainhand',
     typeKey: item.typeKey,
+    classKey: item.classKey,
     base: {
       phys: { min: item.base.phys.min, max: item.base.phys.max },
       rate: item.base.rate,
@@ -46,7 +47,6 @@ function toLegacy(key, item){
     },
     tags: [...item.tags],
     reqs: { realmMin: 1, proficiencyMin: 0 },
-    proficiencyKey: item.typeKey,
     abilityKeys: [...item.abilityKeys],
     stats: item.stats ? { ...item.stats } : undefined,
     animations: defaultAnimationsForType(item.typeKey),
@@ -57,6 +57,7 @@ const FIST = {
   key: 'fist',
   displayName: 'Fists',
   typeKey: 'fist',
+  classKey: 'fist',
   quality: 'basic',
   modifiers: [],
   rarity: 'normal',
@@ -64,7 +65,6 @@ const FIST = {
   base: { phys: { min: 1, max: 3 }, rate: 1.0, elems: {} },
   tags: ['melee'],
   reqs: { realmMin: 0, proficiencyMin: 0 },
-  proficiencyKey: 'fist',
   abilityKeys: ['seventyFive'],
   animations: defaultAnimationsForType('fist'),
 };
@@ -74,7 +74,7 @@ const PALM_WRAPS = {
   key: 'palmWraps',
   displayName: 'Palm Wraps',
   typeKey: 'palm',
-  proficiencyKey: 'palm',
+  classKey: 'palm',
   abilityKeys: ['palmStrike'],
   stats: {
     stunBuildMult: 0.3,

@@ -494,7 +494,7 @@ export function updateAdventureCombat() {
           { attacker: S, target: S.adventure.currentEnemy, type: attackType, nowMs: now },
           S
         );
-        gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
+        gainProficiencyFromEnemy(weapon.classKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
         const enemyEl = document.querySelector('.combatant.enemy');
@@ -575,7 +575,7 @@ export function updateAdventureCombat() {
           }
           performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
           S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
-          if (weapon.typeKey === 'focus') {
+          if (weapon.classKey === 'focus') {
             const pos = getCombatPositions();
             if (pos) {
               setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -705,7 +705,7 @@ function defeatEnemy() {
   if (isBoss) {
     const bonusXP = Math.max(1, Math.round(enemy.hp / 10));
     const weapon = getEquippedWeapon(S);
-    gainProficiency(weapon.proficiencyKey, bonusXP, S);
+    gainProficiency(weapon.classKey, bonusXP, S);
     S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
   }
   

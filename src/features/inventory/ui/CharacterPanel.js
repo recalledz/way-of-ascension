@@ -85,7 +85,7 @@ function renderEquipment() {
     if (!el) return;
     const item = S.equipment[s.key];
     const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
-    const iconKey = item?.key ? WEAPONS[item.key]?.proficiencyKey : null;
+    const iconKey = item?.key ? WEAPONS[item.key]?.classKey : null;
     const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
     const stars = QUALITY_STARS[item?.quality] || '';
     const rarity = item?.rarity;
@@ -241,7 +241,7 @@ function createInventoryRow(item) {
   if (element) {
     row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
   }
-  const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
+  const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.classKey : null;
   const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
   const rarity = item.rarity;
   const rarityColor = RARITY_COLORS[rarity] || '';
