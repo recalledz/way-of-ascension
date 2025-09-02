@@ -24,8 +24,9 @@ export function updateWeaponProficiencyDisplay(state = S) {
   setText('weaponExp', progress.toFixed(0));
   setText('weaponExpMax', '100');
   setFill('weaponExpFill', progress / 100);
-  const bonus = 1 + level * 0.01;
-  setText('weaponBonus', bonus.toFixed(2));
+  const damageMult = 1 + level * 0.02;
+  const speedMult = 1 + level * 0.01;
+  setText('weaponBonus', `DMG x${damageMult.toFixed(2)}, SPD x${speedMult.toFixed(2)}`);
 }
 
 export function mountProficiencyUI(state) {
