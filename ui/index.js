@@ -41,7 +41,6 @@ import {
   retreatFromCombat,
   instakillCurrentEnemy
 } from '../src/features/adventure/mutators.js';
-import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/inventory/ui/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
