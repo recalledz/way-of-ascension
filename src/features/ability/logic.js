@@ -3,10 +3,18 @@ import { S } from '../../shared/state.js';
 
 function buildWeaponAttacks(weapon, mult, target) {
   const attacks = [];
-  const physRoll = Math.floor(
-    Math.random() * (weapon.base.phys.max - weapon.base.phys.min + 1)
-  ) + weapon.base.phys.min;
-  attacks.push({ amount: Math.round(mult * physRoll), type: 'physical', target });
+  const phys = weapon.base.phys || { min: 0, max: 0 };
+  if ((phys.max ?? 0) > 0 || (phys.min ?? 0) > 0) {
+    const physRoll =
+      Math.floor(Math.random() * (phys.max - phys.min + 1)) + phys.min;
+    if (physRoll > 0) {
+      attacks.push({
+        amount: Math.round(mult * physRoll),
+        type: 'physical',
+        target,
+      });
+    }
+  }
   for (const [elem, range] of Object.entries(weapon.base.elems || {})) {
     const elemRoll = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
     if (elemRoll > 0) {
