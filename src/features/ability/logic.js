@@ -22,7 +22,7 @@ export function resolveAbilityHit(abilityKey, state) {
 
 function resolveFlowingPalm(state) {
   const weapon = getEquippedWeapon(state);
-  const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
+  const roll = Math.floor(Math.random() * (weapon.base.phys.max - weapon.base.phys.min + 1)) + weapon.base.phys.min;
   return {
     attack: { amount: roll, type: 'physical', target: state.adventure.currentEnemy },
     stun: { mult: 2 },
@@ -31,7 +31,7 @@ function resolveFlowingPalm(state) {
 
 function resolvePowerSlash(state) {
   const weapon = getEquippedWeapon(state);
-  const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
+  const roll = Math.floor(Math.random() * (weapon.base.phys.max - weapon.base.phys.min + 1)) + weapon.base.phys.min;
   const raw = Math.round(1.3 * roll);
   return {
     attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
@@ -50,7 +50,7 @@ function resolveFireball(state) {
 
 function resolvePalmStrike(state) {
   const weapon = getEquippedWeapon(state);
-  const roll = Math.floor(Math.random() * (weapon.base.max - weapon.base.min + 1)) + weapon.base.min;
+  const roll = Math.floor(Math.random() * (weapon.base.phys.max - weapon.base.phys.min + 1)) + weapon.base.phys.min;
   const raw = Math.round(roll);
   return {
     attack: { amount: raw, type: 'physical', target: state.adventure.currentEnemy },
