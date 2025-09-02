@@ -112,9 +112,6 @@ function weaponDetailsText(item) {
   if (!w) return '';
   const baseRate = w.base ? (w.base.attackRate ?? w.base.rate) : null;
   const base = w.base ? `${w.base.min}-${w.base.max} (${baseRate}/s)` : 'n/a';
-  const scales = Object.entries(w.scales || {})
-    .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
-    .join(', ');
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
   const quality = w.quality ?? 'basic';
   const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
@@ -129,7 +126,6 @@ function weaponDetailsText(item) {
     `Modifiers: ${modLine}`,
     `Rarity: ${w.rarity || 'normal'}`,
     `Base: ${base}`,
-    `Scales: ${scales}`,
     `Tags: ${(w.tags || []).join(', ')}`,
     `Reqs: ${reqs}`,
   ].join('\n');
