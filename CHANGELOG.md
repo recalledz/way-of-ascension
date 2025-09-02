@@ -7,3 +7,4 @@
 - Generalized weapon proficiency to all weapon types with enemy HP–based XP gains (max HP ÷ 30 per attack).
 - Each weapon level now grants +1 damage and +1% attack speed; 100 XP required per level.
 - Imbued weapon drops now convert their base damage to the imbued element, producing elemental attacks.
+- Added icons for non-weapon gear items.
