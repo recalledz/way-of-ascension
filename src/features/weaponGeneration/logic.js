@@ -1,7 +1,7 @@
 import { WEAPON_TYPES } from './data/weaponTypes.js';
 import { MATERIALS_STUB } from './data/materials.stub.js';
 import { getImbuementMultiplier } from '../gearGeneration/imbuement.js';
-import { MODIFIERS, MODIFIER_KEYS } from '../gearGeneration/data/modifiers.js';
+import { MODIFIERS, MODIFIER_POOLS } from '../gearGeneration/data/modifiers.js';
 
 /** @typedef {{
  *  typeKey:string,
@@ -53,7 +53,7 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
       )
     : undefined;
 
-  const mods = rollModifiers(rarity);
+  const mods = rollModifiers('weapon', rarity);
   applyWeaponModifiers({ base }, mods);
 
   /** @type {WeaponItem} */
@@ -77,7 +77,7 @@ function composeName({typeName, materialName}){
   return materialName ? `${materialName} ${typeName}` : typeName;
 }
 
-function rollModifiers(rarity) {
+function rollModifiers(itemType, rarity) {
   const config = {
     normal: [0, 0],
     magic: [1, 2],
@@ -85,7 +85,7 @@ function rollModifiers(rarity) {
   };
   const [min, max] = config[rarity] || [0, 0];
   const count = Math.floor(Math.random() * (max - min + 1)) + min;
-  const keys = [...MODIFIER_KEYS];
+  const keys = [...(MODIFIER_POOLS[itemType] || [])];
   const mods = [];
   for (let i = 0; i < count && keys.length; i++) {
     const idx = Math.floor(Math.random() * keys.length);

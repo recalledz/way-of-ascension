@@ -1,7 +1,7 @@
 import { GEAR_BASES } from './data/gearBases.js';
 import { MATERIALS_STUB } from '../weaponGeneration/data/materials.stub.js';
 import { getImbuementMultiplier, pickZoneElement } from './imbuement.js';
-import { MODIFIERS, MODIFIER_KEYS } from './data/modifiers.js';
+import { MODIFIERS, MODIFIER_POOLS } from './data/modifiers.js';
 
 /**
  * @typedef {{
@@ -29,7 +29,7 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'basic', stage
   };
   const name = composeName(base.displayName, material?.displayName);
   /** roll and apply modifiers */
-  const mods = rollModifiers(rarity);
+  const mods = rollModifiers('armor', rarity);
   applyGearModifiers({ protection, offense }, mods);
 
   return {
@@ -70,7 +70,7 @@ function composeName(baseName, materialName) {
     : `${materialName} ${baseName}`;
 }
 
-function rollModifiers(rarity) {
+function rollModifiers(itemType, rarity) {
   const config = {
     normal: [0, 0],
     magic: [1, 2],
@@ -78,7 +78,7 @@ function rollModifiers(rarity) {
   };
   const [min, max] = config[rarity] || [0, 0];
   const count = Math.floor(Math.random() * (max - min + 1)) + min;
-  const keys = [...MODIFIER_KEYS];
+  const keys = [...(MODIFIER_POOLS[itemType] || [])];
   const mods = [];
   for (let i = 0; i < count && keys.length; i++) {
     const idx = Math.floor(Math.random() * keys.length);
