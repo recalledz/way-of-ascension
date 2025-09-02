@@ -65,9 +65,9 @@ function applyAbilityResult(abilityKey, res, state) {
   const ability = ABILITIES[abilityKey];
   const logs = state.adventure?.combatLog;
   const mods = state.abilityMods?.[abilityKey];
-  if (res.attack) {
-    const { type, target } = res.attack;
-    let amount = res.attack.amount;
+  const attacks = res.attacks || (res.attack ? [res.attack] : []);
+  if (attacks.length) {
+    const { target } = attacks[0];
     const isSpell = ability.tags?.includes('spell');
 
     if (!isSpell) {
@@ -79,26 +79,34 @@ function applyAbilityResult(abilityKey, res, state) {
       }
     }
 
-    if (mods?.damagePct) {
-      amount = Math.round(amount * (1 + mods.damagePct / 100));
+    let totalDealt = 0;
+    for (const atk of attacks) {
+      const { type, target: atkTarget } = atk;
+      let amount = atk.amount;
+
+      if (mods?.damagePct) {
+        amount = Math.round(amount * (1 + mods.damagePct / 100));
+      }
+
+      if (isSpell) {
+        const { spellPowerMult } = getStatEffects(state);
+        const spellDamage = state.stats?.spellDamage || 0;
+        const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+        amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
+      }
+
+      const dealt = processAttack(amount, { target: atkTarget, type, attacker: state, nowMs: Date.now() }, state);
+      totalDealt += dealt;
+      logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
     }
 
-    if (isSpell) {
-      const { spellPowerMult } = getStatEffects(state);
-      const spellDamage = state.stats?.spellDamage || 0;
-      const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
-      amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
-    }
-
-    const dealt = processAttack(amount, { target, type, attacker: state, nowMs: Date.now() }, state);
-    logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
     if (res.stun) {
       const mult = (res.stun.mult || 0) * (1 + (mods?.stunPct || 0) / 100);
       const attackerStats = { ...(state.stats || {}), stunDurationMult: (state.stats?.stunDurationMult || 0) + (mult - 1) };
-      const targetStats = target?.stats || {};
-      applyStatus(target, 'stun', 1, state, { attackerStats, targetStats });
+      const targetStats = attacks[0]?.target?.stats || {};
+      applyStatus(attacks[0]?.target, 'stun', 1, state, { attackerStats, targetStats });
     }
-    if (res.healOnHit && dealt > 0) {
+    if (res.healOnHit && totalDealt > 0) {
       const healed = Math.min(res.healOnHit, state.hpMax - state.hp);
       state.hp += healed;
       state.adventure.playerHP = state.hp;
