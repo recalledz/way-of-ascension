@@ -47,6 +47,22 @@ const ELEMENT_COLORS = {
   fire: '#ff4500'
 };
 
+const IMPLICIT_STAT_LABELS = {
+  accuracy: 'Accuracy',
+  criticalChance: 'Critical Chance',
+  attackSpeed: 'Attack Speed',
+  stunBuildMult: 'Stun Strength',
+  stunDurationMult: 'Stun Duration',
+  mind: 'Mind',
+  qiCostPct: 'Qi Cost Reduction',
+  qiConversionPct: 'Qi Conversion',
+  comboDamagePct: 'Combo Multiplier',
+  ailmentChancePct: 'Ailment Chance',
+  repeatBasicChancePct: 'Repeat Attack Chance',
+  damageTransferPct: 'Damage Transfer',
+  physDamagePct: 'Physical Damage',
+};
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -149,6 +165,16 @@ function weaponDetailsHTML(item) {
   const imbColor = ELEMENT_COLORS[imbEl] || ELEMENT_COLORS.physical;
   const imbue = `<div class="tooltip-imbue"><span class="element-icon" style="color:${imbColor}">${imbIcon}</span> — T${imbTier}</div>`;
 
+  const pctStats = new Set(['criticalChance','attackSpeed','stunBuildMult','stunDurationMult','qiCostPct','qiConversionPct','comboDamagePct','ailmentChancePct','repeatBasicChancePct','damageTransferPct','physDamagePct']);
+  const implicitLines = w.stats
+    ? Object.entries(w.stats).map(([k,v]) => {
+        const label = IMPLICIT_STAT_LABELS[k] || k;
+        const val = pctStats.has(k) ? `${v >= 0 ? '+' : ''}${(v*100).toFixed(0)}%` : v;
+        return `<div class="stat-row"><span class="label">${label}</span><span class="value">${val}</span></div>`;
+      }).join('')
+    : '';
+  const implicitHtml = implicitLines ? `<div class="tooltip-implicit">${implicitLines}</div>` : '';
+
   const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
   const modsHtml = mods.length ? `<div class="tooltip-mods">${mods.map(m => `<span class="mod-chip">${m}</span>`).join('')}</div>` : '';
 
@@ -157,7 +183,7 @@ function weaponDetailsHTML(item) {
   const tags = (w.tags || []).join(', ');
   const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
 
-  return header + core + imbue + modsHtml + footer;
+  return header + core + imbue + implicitHtml + modsHtml + footer;
 }
 
 function gearDetailsHTML(item) {
