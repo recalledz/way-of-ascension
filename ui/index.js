@@ -41,7 +41,6 @@ import {
   retreatFromCombat,
   instakillCurrentEnemy
 } from '../src/features/adventure/mutators.js';
-import { updateWeaponProficiencyDisplay } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { setupLootUI } from '../src/features/loot/ui/lootTab.js';
 import { renderEquipmentPanel, setupEquipmentTab } from '../src/features/inventory/ui/CharacterPanel.js'; // EQUIP-CHAR-UI
 import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDATE
@@ -53,6 +52,7 @@ import { advanceMining } from '../src/features/mining/logic.js';
 import { advanceForging } from '../src/features/forging/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountForgingUI } from '../src/features/forging/ui/forgingDisplay.js';
+import { mountProficiencyUI } from '../src/features/proficiency/ui/weaponProficiencyDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
@@ -119,6 +119,7 @@ function initUI(){
   const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
   initializeWeaponChip({ key: mhKey, name: mhName });
   mountTrainingGameUI(S);
+  mountProficiencyUI(S);
   mountMiningUI(S);
   mountForgingUI(S);
   setupAbilityUI();
