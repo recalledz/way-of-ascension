@@ -43,9 +43,9 @@ export function getAbilityDamage(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
   if (!ability) return null;
   const res = resolveAbilityHit(abilityKey, state);
-  const attack = res?.attack;
-  if (!attack) return null;
-  let amount = attack.amount;
+  const attacks = res?.attacks || (res?.attack ? [res.attack] : []);
+  if (!attacks.length) return null;
+  let amount = attacks.reduce((sum, a) => sum + a.amount, 0);
   const mods = state.abilityMods?.[abilityKey] || {};
   if (mods.damagePct) amount = Math.round(amount * (1 + mods.damagePct / 100));
   if (ability.tags?.includes('spell')) {
