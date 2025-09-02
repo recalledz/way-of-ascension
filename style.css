@@ -4235,6 +4235,8 @@ tr:last-child td {
 .sprite-stage .sprite::after{content:"";position:absolute;top:100%;left:50%;transform:translate(-50%,-40%);width:60%;height:8px;background:rgba(0,0,0,.25);border-radius:50%;filter:blur(2px)}
 .sprite-stage .player-sprite{background-color:hsl(200,50%,60%)}
 .sprite-stage .enemy-sprite{background-color:hsl(0,50%,60%)}
+.sprite-stage .cast-bar{position:absolute;top:100%;left:50%;transform:translateX(-50%);width:72px;height:6px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden;display:none;margin-top:4px}
+.sprite-stage .cast-bar .fill{height:100%;width:0%;background:linear-gradient(90deg,#f59e0b,#d97706)}
 @keyframes sprite-bob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
 @media (prefers-reduced-motion:reduce){.sprite-stage .sprite{animation:none}}
 html.reduce-motion .sprite-stage .sprite{animation:none}

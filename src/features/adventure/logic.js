@@ -101,6 +101,32 @@ on('ABILITY:FX', ({ abilityKey }) => {
   }
 });
 
+function showCastBar(castTimeMs) {
+  const bar = document.getElementById('playerCastBar');
+  const fill = document.getElementById('playerCastFill');
+  const enemyBar = document.getElementById('enemyCastBar');
+  if (enemyBar) enemyBar.style.display = 'none';
+  if (!bar || !fill) return;
+  bar.style.display = 'block';
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  void fill.offsetWidth;
+  fill.style.transition = `width ${castTimeMs}ms linear`;
+  fill.style.width = '100%';
+}
+
+function hideCastBar() {
+  const bar = document.getElementById('playerCastBar');
+  const fill = document.getElementById('playerCastFill');
+  if (!bar || !fill) return;
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  bar.style.display = 'none';
+}
+
+on('CAST:START', ({ castTimeMs }) => showCastBar(castTimeMs));
+on('CAST:END', hideCastBar);
+
 // Subtle red-and-break visual on death
 function triggerDeathBreak(target) {
   const sel = target === 'enemy' ? '.combatant.enemy' : '.combatant.player';
@@ -485,7 +511,7 @@ export function updateAdventureCombat() {
     if (regen) {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
-    if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
+    if (!S.currentCast && now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       S.adventure.lastPlayerAttack = now;
       const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
