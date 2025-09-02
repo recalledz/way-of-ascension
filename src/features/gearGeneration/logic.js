@@ -32,10 +32,15 @@ export function generateGear({ baseKey, materialKey, qualityKey = 'basic', stage
   const mods = rollModifiers('armor', rarity);
   applyGearModifiers({ protection, offense }, mods);
 
+  // Map the base slot to the item type/equipment slot. Foot gear should use
+  // the dedicated "foot" type/slot rather than being treated as armor.
+  const slot = base.slot === 'feet' ? 'foot' : base.slot;
+  const type = slot === 'foot' ? 'foot' : 'armor';
+
   return {
     key: base.key,
-    type: 'armor',
-    slot: base.slot,
+    type,
+    slot,
     name,
     guardType: base.guardType,
     protection,
