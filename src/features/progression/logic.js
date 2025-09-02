@@ -113,12 +113,12 @@ export function calcAtk(state = progressionState){
   const baseAtk = Number(realm.atk) || 0;
   const stageBonus = Math.floor(baseAtk * (stage - 1) * 0.08);
   const lawBonuses = getLawBonuses(state);
-  const profBonus = Number(getWeaponProficiencyBonuses(state).damage) || 0;
+  const profMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
   const building = Number(getBuildingBonuses(state).atkBase) || 0;
   const base = Number(state.atkBase) || 0;
   const temp = Number(state.tempAtk) || 0;
   const karma = Number(karmaAtkBonus(state)) || 0;
-  return Math.floor((base + building + profBonus + temp + baseAtk + stageBonus + karma) * (lawBonuses.atk || 1));
+  return Math.floor((base + building + temp + baseAtk + stageBonus + karma) * profMult * (lawBonuses.atk || 1));
 }
 
 export function calcArmor(state = progressionState){
@@ -171,17 +171,17 @@ export function calculatePlayerCombatAttack(state = progressionState) {
   const tier = state?.realm?.tier ?? 0;
   const stage = Number(state?.realm?.stage) || 0;
   const realmAtk = Number(REALMS[tier]?.atk) || 0;
-  const profBonus = Number(getWeaponProficiencyBonuses(state).damage) || 0;
-  return baseAttack + profBonus + realmAtk * stage;
+  const dmgMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
+  return (baseAttack + realmAtk * stage) * dmgMult;
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
   const baseRate = 1.0;
   const dex = Number(state.stats?.dexterity) || 10;
   const attackSpeedBonus = Number(state.stats?.attackSpeed) || 0;
-  const profBonus = Number(getWeaponProficiencyBonuses(state).speed) || 0;
+  const speedMult = Number(getWeaponProficiencyBonuses(state).speedMult) || 1;
   const dexterityBonus = (dex - 10) * 0.05;
-  return baseRate + dexterityBonus + attackSpeedBonus / 100 + profBonus;
+  return (baseRate + dexterityBonus + attackSpeedBonus / 100) * speedMult;
 }
 
 export function breakthroughChance(state = progressionState){

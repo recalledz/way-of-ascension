@@ -735,7 +735,7 @@ function updateAll() {
 **Purpose**: Read-only helpers to derive proficiency data and bonuses.
 **Key Functions**:
 - `getProficiency(key, state)` – get stored proficiency and bonus.
-- `getWeaponProficiencyBonuses(state)` – compute damage and speed bonuses for the equipped weapon.
+- `getWeaponProficiencyBonuses(state)` – compute damage and speed multipliers for the equipped weapon.
 
 #### `src/features/proficiency/ui/weaponProficiencyDisplay.js` - Proficiency HUD
 **Purpose**: Updates HUD elements showing weapon proficiency levels and progress.
