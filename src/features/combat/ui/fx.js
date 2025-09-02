@@ -164,7 +164,7 @@ export function playFireball(svg, from, to, duration = 600) {
       requestAnimationFrame(animate);
     } else {
       svg.removeChild(circle);
-      playRingShockwave(svg, to, 6);
+      playRingShockwave(svg, to, 6 * 1.05);
     }
   }
   if (!reduceMotion && active < MAX_FX) {
