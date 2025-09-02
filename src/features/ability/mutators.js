@@ -2,6 +2,7 @@ import { S } from '../../shared/state.js';
 import { ABILITIES } from './data/abilities.js';
 import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
+import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { processAttack, applyStatus } from '../combat/mutators.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { getStatEffects } from '../progression/selectors.js';
@@ -21,10 +22,16 @@ export function tryCastAbility(abilityKey, state = S) {
   if (cd > 0) return false;
   if (state.qi < ability.costQi) return false;
   if (!state.abilityCooldowns) state.abilityCooldowns = {};
+  const isSpell = ability.tags?.includes('spell');
+  const speedMult =
+    isSpell && weapon.classKey === 'focus'
+      ? getWeaponProficiencyBonuses(state).speedMult
+      : 1;
   const cooldownMs = Math.round(
     ability.cooldownMs *
       (1 + (mods.cooldownPct || 0) / 100) *
-      (1 + (state.astralTreeBonuses?.cooldownPct || 0) / 100)
+      (1 + (state.astralTreeBonuses?.cooldownPct || 0) / 100) /
+      speedMult
   );
   state.abilityCooldowns[abilityKey] = cooldownMs;
   if (!state.actionQueue) state.actionQueue = [];
@@ -32,7 +39,8 @@ export function tryCastAbility(abilityKey, state = S) {
   let castTimeMs = Math.round(
     ability.castTimeMs *
       (1 + (mods.castTimePct || 0) / 100) /
-      (1 + (state.astralTreeBonuses?.castSpeedPct || 0) / 100)
+      (1 + (state.astralTreeBonuses?.castSpeedPct || 0) / 100) /
+      speedMult
   );
   if (castTimeMs > 0) setTimeout(enqueue, castTimeMs);
   else {
@@ -65,6 +73,7 @@ function applyAbilityResult(abilityKey, res, state) {
   const ability = ABILITIES[abilityKey];
   const logs = state.adventure?.combatLog;
   const mods = state.abilityMods?.[abilityKey];
+  const weapon = getEquippedWeapon(state);
   const attacks = res.attacks || (res.attack ? [res.attack] : []);
   if (attacks.length) {
     const { target } = attacks[0];
@@ -89,6 +98,9 @@ function applyAbilityResult(abilityKey, res, state) {
       }
 
       if (isSpell) {
+        if (weapon.classKey === 'focus') {
+          amount = Math.round(amount * getWeaponProficiencyBonuses(state).damageMult);
+        }
         const { spellPowerMult } = getStatEffects(state);
         const spellDamage = state.stats?.spellDamage || 0;
         const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
