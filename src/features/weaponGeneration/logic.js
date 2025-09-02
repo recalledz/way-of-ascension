@@ -16,12 +16,17 @@ import { MODIFIERS, MODIFIER_POOLS } from '../gearGeneration/data/modifiers.js';
  *  name:string,
  *  typeKey:string,
  *  materialKey?:string,
- *  base:{min:number,max:number,rate:number},
+ *  base:{
+ *    phys:{min:number,max:number},
+ *    rate:number,
+ *    elems:Record<string,{min:number,max:number}>
+ *  },
  *  tags:('physical')[]|[],
  *  abilityKeys:string[],
  *  quality:string,
  *  modifiers:string[],
- *  stats?:Record<string,number>
+ *  stats?:Record<string,number>,
+ *  imbuement?:{element:string,tier:number}
  * }} WeaponItem */
 
 /** Compose final item. Minimal quality/affix support. */
@@ -41,9 +46,12 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
   const name = composeName({ typeName: type.displayName, materialName: material?.displayName });
 
   const base = {
-    min: Math.round(type.base.min * qualityMult * stageMult * imbMult),
-    max: Math.round(type.base.max * qualityMult * stageMult * imbMult),
+    phys: {
+      min: Math.round(type.base.min * qualityMult * stageMult * imbMult),
+      max: Math.round(type.base.max * qualityMult * stageMult * imbMult),
+    },
     rate: type.base.rate,
+    elems: {},
   };
 
   const stats = type.implicitStats
@@ -100,8 +108,8 @@ function applyWeaponModifiers(target, mods) {
     const val = 1 + totals[lane];
     switch (lane) {
       case 'damage':
-        target.base.min = Math.round(target.base.min * val);
-        target.base.max = Math.round(target.base.max * val);
+        target.base.phys.min = Math.round(target.base.phys.min * val);
+        target.base.phys.max = Math.round(target.base.phys.max * val);
         break;
     }
   }

@@ -39,7 +39,11 @@ function toLegacy(key, item){
     rarity: item.rarity,
     slot: 'mainhand',
     typeKey: item.typeKey,
-    base: { min: item.base.min, max: item.base.max, attackRate: item.base.rate },
+    base: {
+      phys: { min: item.base.phys.min, max: item.base.phys.max },
+      rate: item.base.rate,
+      elems: { ...item.base.elems }
+    },
     tags: [...item.tags],
     reqs: { realmMin: 1, proficiencyMin: 0 },
     proficiencyKey: item.typeKey,
@@ -57,7 +61,7 @@ const FIST = {
   modifiers: [],
   rarity: 'normal',
   slot: 'mainhand',
-  base: { min: 1, max: 3, attackRate: 1.0 },
+  base: { phys: { min: 1, max: 3 }, rate: 1.0, elems: {} },
   tags: ['melee'],
   reqs: { realmMin: 0, proficiencyMin: 0 },
   proficiencyKey: 'fist',
@@ -96,7 +100,7 @@ export const WEAPONS = {
   tameNunchaku: toLegacy('tameNunchaku', generateWeapon({ typeKey: 'tameNunchaku', materialKey: 'spiritwood', qualityKey: 'basic' })),
 };
 
-const FIST_BASE_MAX = FIST.base.max;
+const FIST_BASE_MAX = FIST.base.phys.max;
 export const WEAPON_FLAGS = Object.fromEntries(
   Object.keys(WEAPONS).map(key => [key, true])
 );
@@ -105,7 +109,7 @@ export const WEAPON_CONFIG = Object.fromEntries(
   Object.entries(WEAPONS).map(([key, weapon]) => [
     key,
     {
-      damageMultiplier: (weapon.base?.max ?? FIST_BASE_MAX) / FIST_BASE_MAX,
+      damageMultiplier: (weapon.base?.phys.max ?? FIST_BASE_MAX) / FIST_BASE_MAX,
       proficiencyBase: 0,
     },
   ])

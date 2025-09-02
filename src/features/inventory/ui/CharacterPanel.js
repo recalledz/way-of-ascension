@@ -113,7 +113,7 @@ function weaponDetailsText(item) {
   const w = WEAPONS[item.key] || item;
   if (!w) return '';
   const baseRate = w.base ? (w.base.attackRate ?? w.base.rate) : null;
-  const base = w.base ? `${w.base.min}-${w.base.max} (${baseRate}/s)` : 'n/a';
+  const base = w.base ? `${w.base.phys.min}-${w.base.phys.max} (${baseRate}/s)` : 'n/a';
   const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
   const quality = w.quality ?? 'basic';
   const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
