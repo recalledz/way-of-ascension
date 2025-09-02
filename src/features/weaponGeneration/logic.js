@@ -64,6 +64,19 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
   const mods = rollModifiers('weapon', rarity);
   applyWeaponModifiers({ base }, mods);
 
+  const tags = [...type.tags];
+  if (imbuement?.element) {
+    const elem = imbuement.element;
+    const existing = base.elems[elem] || { min: 0, max: 0 };
+    existing.min += base.phys.min;
+    existing.max += base.phys.max;
+    base.elems[elem] = existing;
+    base.phys = { min: 0, max: 0 };
+    const idx = tags.indexOf('physical');
+    if (idx !== -1) tags.splice(idx, 1);
+    if (!tags.includes(elem)) tags.push(elem);
+  }
+
   /** @type {WeaponItem} */
   return {
     name,
@@ -71,7 +84,7 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
     classKey: type.classKey,
     materialKey: material?.key,
     base,
-    tags: [...type.tags],       // only 'physical' or []
+    tags,
     abilityKeys,                // e.g., ['powerSlash'] for swords
     quality: qualityKey,
     rarity,
