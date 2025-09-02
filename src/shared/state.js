@@ -48,6 +48,7 @@ export const defaultState = () => {
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
   astralPoints: 50,
+  coin: 0,
   ...initHp(baseHP),
   shield: { current: 0, max: 0 },
   autoFillShieldFromQi: true,
@@ -131,6 +132,7 @@ export const defaultState = () => {
 
   equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null }, // EQUIP-CHAR-UI
   inventory: [{ id: 'palmWraps', key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' }],
+  junk: [],
   gearBonuses: {},
   sessionLoot: [], // EQUIP-CHAR-UI
   flags: { weaponsEnabled: true },

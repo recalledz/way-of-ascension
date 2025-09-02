@@ -67,5 +67,9 @@ export const migrations = [
     if (!hasPalmWraps && !equippedPalm) {
       save.inventory.push({ id: Date.now() + Math.random(), key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' });
     }
+  },
+  save => {
+    if (typeof save.coin === 'undefined') save.coin = 0;
+    if (!Array.isArray(save.junk)) save.junk = [];
   }
 ];
