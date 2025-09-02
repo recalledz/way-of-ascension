@@ -30,7 +30,13 @@ function defaultAnimationsForType(typeKey) {
   }
 }
 
+const PROFICIENCY_OVERRIDES = {
+  crudeNunchaku: 'nunchaku',
+  tameNunchaku: 'nunchaku',
+};
+
 function toLegacy(key, item){
+  const proficiencyKey = PROFICIENCY_OVERRIDES[item.typeKey] || item.typeKey;
   return {
     key,
     displayName: item.name,
@@ -42,7 +48,7 @@ function toLegacy(key, item){
     base: { min: item.base.min, max: item.base.max, attackRate: item.base.rate },
     tags: [...item.tags],
     reqs: { realmMin: 1, proficiencyMin: 0 },
-    proficiencyKey: item.typeKey,
+    proficiencyKey,
     abilityKeys: [...item.abilityKeys],
     stats: item.stats ? { ...item.stats } : undefined,
     animations: defaultAnimationsForType(item.typeKey),

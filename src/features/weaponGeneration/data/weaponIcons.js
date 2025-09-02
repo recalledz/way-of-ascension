@@ -9,6 +9,7 @@ export const WEAPON_ICONS = {
   dimFocus: 'ri:focus-line',
   starFocus: 'ri:focus-line',
   crudeKnuckles: 'game-icons:knuckles',
+  nunchaku: 'game-icons:nunchaku',
   crudeNunchaku: 'game-icons:nunchaku',
   tameNunchaku: 'game-icons:nunchaku',
   fist: 'game-icons:fist',
