@@ -11,11 +11,6 @@ export function validate() {
     if (def.base.rate <= 0 || def.base.rate > 20) {
       errors.push(`weaponTypes.${key}.rate out of bounds (0,20]`);
     }
-    // scaling weights sanity (0..1, ~<=1.2 total to allow hybrids)
-    const totalScale = (def.scales?.physique ?? 0) + (def.scales?.agility ?? 0) + (def.scales?.mind ?? 0);
-    if (totalScale < 0 || totalScale > 1.2) {
-      errors.push(`weaponTypes.${key}.scales total ${totalScale.toFixed(2)} out of [0,1.2]`);
-    }
 
     const MAX_STAGE = 500;
     const stageMult = 1.04 ** (MAX_STAGE - 1);

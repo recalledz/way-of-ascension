@@ -82,11 +82,11 @@ On the UI side, `weaponProficiencyDisplay.js` updates HTML elements to display t
 
 ### Weapon Generation feature
 
-The **Weapon Generation** module is responsible for constructing and dropping weapons.  Its data folder defines base weapon types (`WEAPON_TYPES`) with their stats, scaling and optional signature abilities:contentReference[oaicite:10]{index=10}.  The `logic.js` file provides `generateWeapon()`, which creates a weapon item combining type and material and returns an object with name, base stats and ability keys:contentReference[oaicite:11]{index=11}.  It also defines helper types and composition functions.
+The **Weapon Generation** module is responsible for constructing and dropping weapons.  Its data folder defines base weapon types (`WEAPON_TYPES`) with their stats and optional signature abilities:contentReference[oaicite:10]{index=10}.  The `logic.js` file provides `generateWeapon()`, which creates a weapon item combining type and material and returns an object with name, base stats and ability keys:contentReference[oaicite:11]{index=11}.  It also defines helper types and composition functions.
 
 The `mutators.js` file writes a generated weapon into the state slice and exposes a `clearGeneratedWeapon()` helper to reset it:contentReference[oaicite:12]{index=12}.  Selectors include `getGeneratedWeapon()` and `rollWeaponDropForZone()`, which uses weighted loot tables to return a randomly generated weapon based on the current zone:contentReference[oaicite:13]{index=13}.
 
-Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js` and `materials.stub.js`.  The `weaponTypes.js` file defines the base DPS, scaling and tags for each weapon type and references signature abilities that are still stubs for later implementation:contentReference[oaicite:14]{index=14}.  The `weapons.js` file builds a list of default weapon items using `generateWeapon()` and exports convenience objects like `WEAPON_FLAGS` and `WEAPON_CONFIG` for quick lookups:contentReference[oaicite:15]{index=15}.
+Weapon generation data includes `weaponTypes.js`, `weapons.js`, `weaponIcons.js` and `materials.stub.js`.  The `weaponTypes.js` file defines the base DPS and tags for each weapon type and references signature abilities that are still stubs for later implementation:contentReference[oaicite:14]{index=14}.  The `weapons.js` file builds a list of default weapon items using `generateWeapon()` and exports convenience objects like `WEAPON_FLAGS` and `WEAPON_CONFIG` for quick lookups:contentReference[oaicite:15]{index=15}.
 
 ### Automation feature
 

@@ -17,7 +17,6 @@ import { MODIFIERS, MODIFIER_KEYS } from '../gearGeneration/data/modifiers.js';
  *  typeKey:string,
  *  materialKey?:string,
  *  base:{min:number,max:number,rate:number},
- *  scales:{physique:number,agility:number,mind:number},
  *  tags:('physical')[]|[],
  *  abilityKeys:string[],
  *  quality:string,
@@ -62,7 +61,6 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
     typeKey: type.key,
     materialKey: material?.key,
     base,
-    scales: { ...type.scales },
     tags: [...type.tags],       // only 'physical' or []
     abilityKeys,                // e.g., ['powerSlash'] for swords
     quality: qualityKey,
