@@ -102,15 +102,49 @@ function rollModifiers(itemType, rarity) {
 }
 
 function applyWeaponModifiers(target, mods) {
-  const totals = {};
-  for (const mod of mods) totals[mod.lane] = (totals[mod.lane] || 0) + mod.value;
-  for (const lane of Object.keys(totals)) {
-    const val = 1 + totals[lane];
-    switch (lane) {
-      case 'damage':
-        target.base.phys.min = Math.round(target.base.phys.min * val);
-        target.base.phys.max = Math.round(target.base.phys.max * val);
-        break;
+  /** Roll and sum flat values per lane. */
+  const flatTotals = {};
+  /** Sum percentage bonuses per lane. */
+  const pctTotals = {};
+
+  for (const mod of mods) {
+    if (mod.range) {
+      // Roll separate additions for min/max damage within the provided range.
+      const roll = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+      let min = roll(mod.range.min, mod.range.max);
+      let max = roll(mod.range.min, mod.range.max);
+      if (min > max) [min, max] = [max, min];
+      const totals = flatTotals[mod.lane] || { min: 0, max: 0 };
+      totals.min += min;
+      totals.max += max;
+      flatTotals[mod.lane] = totals;
+    } else if (typeof mod.value === 'number') {
+      pctTotals[mod.lane] = (pctTotals[mod.lane] || 0) + mod.value;
+    }
+  }
+
+  // Apply physical damage flats then multiply by percentage lanes.
+  const physFlat = flatTotals.physFlat || { min: 0, max: 0 };
+  target.base.phys.min += physFlat.min;
+  target.base.phys.max += physFlat.max;
+  const physMult = (1 + (pctTotals.damage || 0)) * (1 + (pctTotals.physPct || 0));
+  target.base.phys.min = Math.round(target.base.phys.min * physMult);
+  target.base.phys.max = Math.round(target.base.phys.max * physMult);
+
+  // Handle elemental damage additions and percentage modifiers.
+  const elements = ['fire', 'water', 'wood', 'earth', 'metal'];
+  for (const elem of elements) {
+    const flat = flatTotals[`${elem}Flat`];
+    const pct = (1 + (pctTotals.damage || 0)) * (1 + (pctTotals[`${elem}Pct`] || 0));
+    if (flat || pct !== 1) {
+      const base = target.base.elems[elem] || { min: 0, max: 0 };
+      if (flat) {
+        base.min += flat.min;
+        base.max += flat.max;
+      }
+      base.min = Math.round(base.min * pct);
+      base.max = Math.round(base.max * pct);
+      target.base.elems[elem] = base;
     }
   }
 }
