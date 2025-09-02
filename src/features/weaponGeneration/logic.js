@@ -15,6 +15,7 @@ import { MODIFIERS, MODIFIER_POOLS } from '../gearGeneration/data/modifiers.js';
 /** @typedef {{
  *  name:string,
  *  typeKey:string,
+ *  classKey:string,
  *  materialKey?:string,
  *  base:{
  *    phys:{min:number,max:number},
@@ -67,6 +68,7 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
   return {
     name,
     typeKey: type.key,
+    classKey: type.classKey,
     materialKey: material?.key,
     base,
     tags: [...type.tags],       // only 'physical' or []

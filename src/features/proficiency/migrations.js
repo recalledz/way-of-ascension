@@ -19,8 +19,8 @@ export const migrations = [
       const converted = {};
       for (const [key, val] of Object.entries(save.proficiency)) {
         const weapon = WEAPONS[key];
-        const typeKey = weapon?.proficiencyKey || key;
-        converted[typeKey] = (converted[typeKey] || 0) + val;
+        const classKey = weapon?.classKey || key;
+        converted[classKey] = (converted[classKey] || 0) + val;
       }
       save.proficiency = converted;
     }

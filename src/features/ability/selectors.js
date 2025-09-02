@@ -21,7 +21,7 @@ export function getAbilitySlots(state = S) {
     const abilityKey = abilityKeys[i];
     if (abilityKey) {
       const def = ABILITIES[abilityKey];
-      const meetsReq = def && (!def.requiresWeaponType || def.requiresWeaponType === weapon.typeKey);
+      const meetsReq = def && (!def.requiresWeaponClass || def.requiresWeaponClass === weapon.classKey);
       if (meetsReq) {
         const cooldown = state.abilityCooldowns?.[abilityKey] || 0;
         slots.push({

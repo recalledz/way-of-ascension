@@ -288,6 +288,7 @@ way-of-ascension/
 │   │       │   ├── _balance.contract.js
 │   │       │   ├── materials.stub.js
 │   │       │   ├── weaponIcons.js
+│   │       │   ├── weaponClasses.js
 │   │       │   ├── weaponTypes.js
 │   │       │   └── weapons.js
 │   │       ├── index.js
@@ -637,6 +638,10 @@ export const ZONES = [
 #### `weaponIcons.js` - Weapon Type Icons
 **Purpose**: Maps weapon type keys to Iconify icon names for UI display.
 **When to modify**: Add or update icons when introducing new weapon types.
+
+#### `weaponClasses.js` - Weapon Classes
+**Purpose**: Defines high-level weapon classes (e.g., swords, spears) used for shared effects and proficiency.
+**When to modify**: Add or rename weapon classes.
 
 ### User Interface (`ui/`)
 
@@ -1046,6 +1051,7 @@ Paths added:
 - `src/features/weaponGeneration/logic.js` – Generates weapons from base types and materials.
 - `src/features/weaponGeneration/mutators.js` – Writes generated weapons into state.
 - `src/features/weaponGeneration/selectors.js` – Helpers to roll and access generated weapons.
+- `src/features/weaponGeneration/data/weaponClasses.js` – Lists shared weapon classes used for proficiency.
 
 ### Accessories Feature (`src/features/accessories/`)
 - `src/features/accessories/data/rings.js` – Base ring definitions and stats.

@@ -1,7 +1,7 @@
 /** @typedef {{
  *  key:string, displayName:string, icon:string,
  *  costQi:number, cooldownMs:number, castTimeMs:number,
- *  tags:string[], requiresWeaponType?:string
+ *  tags:string[], requiresWeaponClass?:string
  * }} AbilityDef */
 
 /** @type {Record<string, AbilityDef>} */
@@ -14,7 +14,7 @@ export const ABILITIES = {
     cooldownMs: 10_000,
     castTimeMs: 0,
     tags: ['weapon-skill', 'physical'],
-    requiresWeaponType: 'sword',
+    requiresWeaponClass: 'sword',
   },
   
   palmStrike: {
@@ -35,7 +35,7 @@ export const ABILITIES = {
     cooldownMs: 5_000,
     castTimeMs: 0,
     tags: ['martial', 'physical'],
-    requiresWeaponType: 'palm',
+    requiresWeaponClass: 'palm',
   },
   seventyFive: {
     key: 'seventyFive',

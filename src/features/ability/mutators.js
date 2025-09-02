@@ -13,7 +13,7 @@ export function tryCastAbility(abilityKey, state = S) {
   if (!ability) return false;
   if (!state.adventure?.inCombat) return false;
   const weapon = getEquippedWeapon(state);
-  if (ability.requiresWeaponType && ability.requiresWeaponType !== weapon.typeKey) return false;
+  if (ability.requiresWeaponClass && ability.requiresWeaponClass !== weapon.classKey) return false;
   const unlocked = weapon.abilityKeys?.includes(abilityKey) || state.manualAbilityKeys?.includes(abilityKey);
   if (!unlocked) return false;
   const mods = state.abilityMods?.[abilityKey] || {};
