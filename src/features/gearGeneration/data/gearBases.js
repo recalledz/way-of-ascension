@@ -51,14 +51,14 @@ export const GEAR_BASES = {
   iron_boots: {
     key: 'iron_boots',
     displayName: 'Iron Boots',
-    slot: 'feet',
+    slot: 'foot',
     guardType: 'armor',
     baseProtection: { armor: 15 },
   },
   leather_boots: {
     key: 'leather_boots',
     displayName: 'Leather Boots',
-    slot: 'feet',
+    slot: 'foot',
     guardType: 'dodge',
     baseProtection: { dodge: 10 },
     baseOffense: { accuracy: 5 },
@@ -66,7 +66,7 @@ export const GEAR_BASES = {
   cotton_sandals: {
     key: 'cotton_sandals',
     displayName: 'Cotton Sandals',
-    slot: 'feet',
+    slot: 'foot',
     guardType: 'qiShield',
     baseProtection: { qiShield: 20 },
   },
