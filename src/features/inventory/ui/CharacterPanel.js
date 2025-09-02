@@ -33,6 +33,7 @@ export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
   renderInventory();
+  renderMaterials();
   renderStats();
   renderAbilitySlots();
 }
@@ -317,12 +318,24 @@ function renderInventory({ dismissTooltip = false } = {}) {
   const list = document.getElementById('inventoryList');
   if (!list) return;
   list.innerHTML = '';
-  const items = (S.inventory || []).filter(it => currentFilter === 'all' || it.type === currentFilter);
+  const items = (S.inventory || []).filter(it => it.type !== 'mat' && (currentFilter === 'all' || it.type === currentFilter));
   items.forEach(it => list.appendChild(createInventoryRow(it)));
   const filterBtns = document.querySelectorAll('#inventoryFilters button');
   filterBtns.forEach(btn => {
     btn.classList.toggle('active', btn.dataset.filter === currentFilter);
     btn.onclick = () => { currentFilter = btn.dataset.filter; slotFilter = null; renderInventory({ dismissTooltip: true }); };
+  });
+}
+
+function renderMaterials() {
+  const list = document.getElementById('materialsList');
+  if (!list) return;
+  list.innerHTML = '';
+  const mats = (S.inventory || []).filter(it => it.type === 'mat');
+  mats.forEach(it => {
+    const row = createInventoryRow(it);
+    row.classList.remove('muted');
+    list.appendChild(row);
   });
 }
 
