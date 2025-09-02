@@ -4,6 +4,10 @@
 
 import { emit } from '../../shared/events.js';
 import { S } from '../../shared/state.js';
+import { rollWeaponDropForZone } from '../../features/weaponGeneration/selectors.js';
+import { rollGearDropForZone } from '../../features/gearGeneration/selectors.js';
+import { addToInventory } from '../../features/inventory/mutators.js';
+import { ZONES as ZONE_IDS } from '../../features/adventure/data/zoneIds.js';
 
 let mounted = false;
 
@@ -123,6 +127,58 @@ export function mountDevQuickMenu() {
   });
   astralWrap.append(astralBtn);
   panel.appendChild(row("Astral", astralWrap));
+
+  // Loot generators
+  const lootWrap = el("div");
+  lootWrap.style.display = "flex";
+  lootWrap.style.gap = "6px";
+  const zoneIn = el("input");
+  zoneIn.placeholder = "zone";
+  zoneIn.value = ZONE_IDS.STARTING;
+  Object.assign(zoneIn.style, {
+    width: "100px",
+    padding: "4px 6px",
+    borderRadius: "6px",
+    border: "1px solid #2b3a55",
+    background: "#0b1422",
+    color: "#e8f0ff",
+  });
+  const stageIn = el("input");
+  stageIn.type = "number";
+  stageIn.value = "1";
+  stageIn.min = "1";
+  Object.assign(stageIn.style, {
+    width: "40px",
+    padding: "4px 6px",
+    borderRadius: "6px",
+    border: "1px solid #2b3a55",
+    background: "#0b1422",
+    color: "#e8f0ff",
+  });
+  const weaponBtn = smallBtn("Weapon", () => {
+    const z = zoneIn.value || ZONE_IDS.STARTING;
+    const stage = parseInt(stageIn.value, 10) || 1;
+    const drop = rollWeaponDropForZone(z, stage);
+    if (drop) {
+      addToInventory(drop, S);
+      console.log('[dev] generated weapon', drop);
+    } else {
+      console.log('[dev] no weapon drop', z);
+    }
+  });
+  const gearBtn = smallBtn("Gear", () => {
+    const z = zoneIn.value || ZONE_IDS.STARTING;
+    const stage = parseInt(stageIn.value, 10) || 1;
+    const drop = rollGearDropForZone(z, stage);
+    if (drop) {
+      addToInventory(drop, S);
+      console.log('[dev] generated gear', drop);
+    } else {
+      console.log('[dev] no gear drop', z);
+    }
+  });
+  lootWrap.append(zoneIn, stageIn, weaponBtn, gearBtn);
+  panel.appendChild(row("Loot", lootWrap));
 
   // Auto-mount console using Eruda
   const consoleHdr = el("div", { textContent: "Console" });

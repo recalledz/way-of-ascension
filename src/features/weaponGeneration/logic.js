@@ -14,6 +14,8 @@ import { MODIFIERS, MODIFIER_POOLS } from '../gearGeneration/data/modifiers.js';
 
 /** @typedef {{
  *  name:string,
+ *  type:'weapon',
+ *  slot:'mainhand',
  *  typeKey:string,
  *  classKey:string,
  *  materialKey?:string,
@@ -80,6 +82,8 @@ export function generateWeapon({ typeKey, materialKey, qualityKey = 'basic', sta
   /** @type {WeaponItem} */
   return {
     name,
+    type: 'weapon',
+    slot: 'mainhand',
     typeKey: type.key,
     classKey: type.classKey,
     materialKey: material?.key,
