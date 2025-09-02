@@ -67,6 +67,7 @@ export const defaultState = () => {
   actionQueue:[],
   manualAbilityKeys:[],
   abilityMods:{},
+  abilityCasting:null,
   availableAbilityKeys:[],
   abilitySlotLimit:2,
   bought:{},

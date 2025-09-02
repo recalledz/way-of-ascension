@@ -452,9 +452,26 @@ function shakeAbilityCard(index) {
   setTimeout(() => el.classList.remove('shake'), 300);
 }
 
+function updateCastBar() {
+  const container = document.getElementById('playerCastBar');
+  const fill = document.getElementById('playerCastFill');
+  if (!container || !fill) return;
+  const cast = S.abilityCasting;
+  if (cast) {
+    const now = Date.now();
+    const pct = Math.min(1, (now - cast.startMs) / cast.duration);
+    fill.style.width = `${pct * 100}%`;
+    container.style.display = '';
+  } else {
+    container.style.display = 'none';
+    fill.style.width = '0%';
+  }
+}
+
 export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
   processAbilityQueue(S);
+  updateCastBar();
   // If an ability reduced enemy HP to 0, resolve defeat immediately
   if (S.adventure.currentEnemy && S.adventure.enemyHP <= 0) {
     defeatEnemy();
@@ -485,7 +502,7 @@ export function updateAdventureCombat() {
     if (regen) {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
-    if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
+    if (!S.abilityCasting && now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       S.adventure.lastPlayerAttack = now;
       const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);

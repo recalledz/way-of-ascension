@@ -13,6 +13,7 @@ export function tryCastAbility(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
   if (!ability) return false;
   if (!state.adventure?.inCombat) return false;
+  if (state.abilityCasting) return false;
   const weapon = getEquippedWeapon(state);
   if (ability.requiresWeaponClass && ability.requiresWeaponClass !== weapon.classKey) return false;
   const unlocked = weapon.abilityKeys?.includes(abilityKey) || state.manualAbilityKeys?.includes(abilityKey);
@@ -42,8 +43,15 @@ export function tryCastAbility(abilityKey, state = S) {
       (1 + (state.astralTreeBonuses?.castSpeedPct || 0) / 100) /
       speedMult
   );
-  if (castTimeMs > 0) setTimeout(enqueue, castTimeMs);
-  else {
+  if (castTimeMs > 0) {
+    const now = Date.now();
+    state.abilityCasting = { abilityKey, startMs: now, endMs: now + castTimeMs, duration: castTimeMs };
+    setTimeout(() => {
+      state.abilityCasting = null;
+      enqueue();
+      processAbilityQueue(state);
+    }, castTimeMs);
+  } else {
     enqueue();
     processAbilityQueue(state);
   }
