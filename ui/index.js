@@ -78,7 +78,7 @@ import { getSelectedActivity } from '../src/features/activity/selectors.js';
 import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } from '../src/features/activity/ui/activityUI.js';
 import { meditate } from '../src/features/progression/mutators.js';
 import { tickInsight } from '../src/features/progression/insight.js';
-import { usePill } from '../src/features/inventory/mutators.js';
+import { usePill, sellJunk } from '../src/features/inventory/mutators.js';
 
 // Global variables
 const progressBars = {};
@@ -691,6 +691,18 @@ window.addEventListener('load', ()=>{
   tick();
   log('Welcome, cultivator.');
   setInterval(tick, 1000);
+  setInterval(() => {
+    const junk = S.junk || [];
+    const total = junk.reduce((sum, it) => sum + (it.qty || 1), 0);
+    if (junk.length === 0) {
+      alert('A travelling merchant stops by, but you have no junk to sell.');
+      return;
+    }
+    if (confirm(`A travelling merchant arrives! Sell all junk for ${total} coin?`)) {
+      sellJunk(S);
+      renderEquipmentPanel();
+    }
+  }, 3600000);
 });
 
 // CHANGELOG: Added weapon HUD integration.

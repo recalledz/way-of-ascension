@@ -1,7 +1,7 @@
 import { S, save } from '../../../shared/state.js';
 import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
 import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
-import { equipItem, unequip, removeFromInventory } from '../mutators.js';
+import { equipItem, unequip, removeFromInventory, moveToJunk } from '../mutators.js';
 import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
 import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
@@ -34,6 +34,7 @@ export function renderEquipmentPanel() {
   renderEquipment();
   renderInventory();
   renderMaterials();
+  renderJunk();
   renderStats();
   renderAbilitySlots();
 }
@@ -56,7 +57,8 @@ function renderStats() {
     { id: 'criticalChance', stat: 'criticalChance', format: v => `${(v * 100).toFixed(1)}%` },
     { id: 'attackSpeed', stat: 'attackSpeed', format: v => v.toFixed(2) },
     { id: 'cooldownReduction', stat: 'cooldownReduction', format: v => `${Math.round(v * 100)}%` },
-    { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) }
+    { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) },
+    { id: 'coin', value: () => S.coin || 0 }
   ];
   defs.forEach(d => {
     const el = document.getElementById(`stat-${d.id}`);
@@ -283,6 +285,11 @@ function createInventoryRow(item) {
       renderEquipmentPanel();
     };
     act.appendChild(scrapBtn);
+    const junkBtn = document.createElement('button');
+    junkBtn.className = 'btn small';
+    junkBtn.textContent = 'Junk';
+    junkBtn.onclick = () => { moveToJunk(item.id); renderEquipmentPanel(); };
+    act.appendChild(junkBtn);
     const detailsBtn = document.createElement('button');
     detailsBtn.className = 'btn small';
     detailsBtn.textContent = 'Details';
@@ -333,6 +340,29 @@ function renderMaterials() {
     row.classList.remove('muted');
     list.appendChild(row);
   });
+}
+
+function createJunkRow(item) {
+  const row = createInventoryRow(item);
+  row.classList.remove('muted');
+  const act = row.querySelector('.inv-actions');
+  if (act) {
+    act.innerHTML = '';
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'btn small';
+    detailsBtn.textContent = 'Details';
+    detailsBtn.onclick = (e) => showDetails(item, e);
+    act.appendChild(detailsBtn);
+  }
+  return row;
+}
+
+function renderJunk() {
+  const list = document.getElementById('junkList');
+  if (!list) return;
+  list.innerHTML = '';
+  const items = S.junk || [];
+  items.forEach(it => list.appendChild(createJunkRow(it)));
 }
 
 export function setupEquipmentTab() {
