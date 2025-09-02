@@ -12,6 +12,7 @@ import { qCap } from '../progression/selectors.js';
 export function tryCastAbility(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
   if (!ability) return false;
+  if (state.currentCast) return false;
   if (!state.adventure?.inCombat) return false;
   const weapon = getEquippedWeapon(state);
   if (ability.requiresWeaponClass && ability.requiresWeaponClass !== weapon.classKey) return false;
@@ -42,8 +43,16 @@ export function tryCastAbility(abilityKey, state = S) {
       (1 + (state.astralTreeBonuses?.castSpeedPct || 0) / 100) /
       speedMult
   );
-  if (castTimeMs > 0) setTimeout(enqueue, castTimeMs);
-  else {
+  if (castTimeMs > 0) {
+    state.currentCast = { abilityKey, startMs: Date.now(), duration: castTimeMs };
+    emit('CAST:START', { abilityKey, castTimeMs });
+    setTimeout(() => {
+      enqueue();
+      delete state.currentCast;
+      emit('CAST:END', { abilityKey });
+      processAbilityQueue(state);
+    }, castTimeMs);
+  } else {
     enqueue();
     processAbilityQueue(state);
   }
