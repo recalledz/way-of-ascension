@@ -673,14 +673,14 @@ function defeatEnemy() {
   const area = zone?.areas?.[S.adventure.currentArea];
   const lootEntries = enemy.loot ? Object.entries(enemy.loot) : [];
   lootEntries.forEach(([item, qty]) => {
-    addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty, source: area?.name });
+    addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'material', qty, source: area?.name });
   });
 
   if (enemy.drops) {
     const dropMult = 1 + (S.gearBonuses?.dropRateMult || 0);
     Object.entries(enemy.drops).forEach(([item, chance]) => {
       if (Math.random() < Math.min(1, chance * dropMult)) {
-        addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty: 1, source: area?.name });
+        addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'material', qty: 1, source: area?.name });
         lootEntries.push([item, 1]);
       }
     });
@@ -690,7 +690,7 @@ function defeatEnemy() {
     const tableKey = toLootTableKey(area?.id || zone?.id);
     const drop = rollLoot(tableKey);
     if (drop) {
-      addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'mat', qty: 1, source: area?.name });
+      addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'material', qty: 1, source: area?.name });
       lootEntries.push([drop, 1]);
     }
 

@@ -321,7 +321,7 @@ function renderInventory({ dismissTooltip = false } = {}) {
   const list = document.getElementById('inventoryList');
   if (!list) return;
   list.innerHTML = '';
-  const items = (S.inventory || []).filter(it => it.type !== 'mat' && (currentFilter === 'all' || it.type === currentFilter));
+  const items = (S.inventory || []).filter(it => it.type !== 'material' && (currentFilter === 'all' || it.type === currentFilter));
   items.forEach(it => list.appendChild(createInventoryRow(it)));
   const filterBtns = document.querySelectorAll('#inventoryFilters button');
   filterBtns.forEach(btn => {
@@ -334,7 +334,7 @@ function renderMaterials() {
   const list = document.getElementById('materialsList');
   if (!list) return;
   list.innerHTML = '';
-  const mats = (S.inventory || []).filter(it => it.type === 'mat');
+  const mats = (S.inventory || []).filter(it => it.type === 'material');
   mats.forEach(it => {
     const row = createInventoryRow(it);
     row.classList.remove('muted');

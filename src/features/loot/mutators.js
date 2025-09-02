@@ -2,7 +2,7 @@ import { S, save } from '../../shared/state.js';
 import { addToInventory } from '../inventory/mutators.js';
 
 // Item types that should be consolidated in the session loot list
-const STACKABLE_TYPES = new Set(['mat']);
+const STACKABLE_TYPES = new Set(['material']);
 
 // EQUIP-CHAR-UI: session loot helpers
 export function addSessionLoot(item, state = S) {
@@ -30,8 +30,12 @@ export function claimSessionLoot(state = S) {
   state.sessionLoot = state.sessionLoot || [];
   const count = state.sessionLoot.length;
   state.sessionLoot.forEach(item => {
-    if (item.type === 'mat') {
-      state[item.key] = (state[item.key] || 0) + (item.qty || 1);
+    if (item.type === 'material') {
+      if (Object.prototype.hasOwnProperty.call(state, item.key)) {
+        state[item.key] = (state[item.key] || 0) + (item.qty || 1);
+      } else {
+        addToInventory(item);
+      }
     } else {
       addToInventory(item);
     }
