@@ -3,7 +3,18 @@ import { applyAilment, applyStatus } from './mutators.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 
 export function performAttack(attacker, target, options = {}, state) { // STATUS-REFORM
-  const { ability, attackElement, attackIsPhysical, physDamageDealt = 0, isCrit = false, weapon } = options;
+  const { ability, isCrit = false, weapon, profile } = options;
+
+  let attackElement;
+  let attackIsPhysical = false;
+  if (profile) {
+    attackIsPhysical = (profile.phys || 0) > 0;
+    const elems = profile.elems || {};
+    attackElement = Object.keys(elems).reduce(
+      (best, elem) => (elems[elem] > (elems[best] || 0) ? elem : best),
+      undefined
+    );
+  }
 
   const attackerStats = mergeStats(attacker?.stats, weapon?.stats);
   const targetStats = target?.stats || {};

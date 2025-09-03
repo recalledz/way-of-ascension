@@ -521,7 +521,10 @@ export function updateAdventureCombat() {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
         const critMult = isCrit ? 2 : 1;
-        const profile = calculatePlayerCombatAttack(S);
+        const profile = {
+          phys: S.adventure.playerAtkProfile?.phys || 0,
+          elems: { ...(S.adventure.playerAtkProfile?.elems || {}) },
+        };
         let externalMult = 1;
         if (S.lightningStep) {
           externalMult *= S.lightningStep.damageMult;
@@ -543,7 +546,7 @@ export function updateAdventureCombat() {
           const key = `${elem}DamagePct`;
           typeMults[elem] = 1 + (S.astralTreeBonuses?.[key] || 0) / 100;
         }
-        const dealt = processAttack(
+        const { total: dealt, components } = processAttack(
           profile,
           weapon,
           {
@@ -557,13 +560,19 @@ export function updateAdventureCombat() {
         );
         gainProficiencyFromEnemy(weapon.classKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
-        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
+        const parts = [];
+        if (components.phys) parts.push(`${components.phys} physical`);
+        for (const [elem, val] of Object.entries(components.elems)) {
+          parts.push(`${val} ${elem}`);
+        }
+        const compText = parts.length ? ` (${parts.join(', ')})` : '';
+        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}${compText}`);
         const enemyEl = document.querySelector('.combatant.enemy');
         if (enemyEl) {
           showFloatingText({ targetEl: enemyEl, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
         S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
-        performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
+        performAttack(S, S.adventure.currentEnemy, { weapon, profile, isCrit }, S); // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -624,18 +633,28 @@ export function updateAdventureCombat() {
           const isCrit = Math.random() < critChance;
           const baseDamage = Math.round(Number(S.adventure.currentEnemy.attack) || 5);
           const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
-          const taken = processAttack(
-            { phys: enemyDamage, elems: {} },
+          const profile = {
+            phys: enemyDamage,
+            elems: { ...(S.adventure.currentEnemy.attackElems || {}) },
+          };
+          const { total: taken, components } = processAttack(
+            profile,
             undefined,
             { attacker: S.adventure.currentEnemy, target: S, nowMs: now },
             S
           );
-          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
+          const parts = [];
+          if (components.phys) parts.push(`${components.phys} physical`);
+          for (const [elem, val] of Object.entries(components.elems)) {
+            parts.push(`${val} ${elem}`);
+          }
+          const compText = parts.length ? ` (${parts.join(', ')})` : '';
+          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you${compText}`);
           const playerEl = document.querySelector('.combatant.player');
           if (playerEl) {
             showFloatingText({ targetEl: playerEl, result: isCrit ? 'crit' : 'hit', amount: taken });
           }
-          performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
+          performAttack(S.adventure.currentEnemy, S, { profile, isCrit }, S); // STATUS-REFORM
           S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
           if (weapon.classKey === 'focus') {
             const pos = getCombatPositions();
@@ -892,6 +911,7 @@ export function startBossCombat() {
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
+  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
@@ -938,6 +958,7 @@ export function startAdventureCombat() {
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
+  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
