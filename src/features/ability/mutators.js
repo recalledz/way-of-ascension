@@ -3,7 +3,9 @@ import { ABILITIES } from './data/abilities.js';
 import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
-import { processAttack, applyStatus } from '../combat/mutators.js';
+import { processAttack, applyStatus, applyAilment } from '../combat/mutators.js';
+import { STATUSES_BY_ELEMENT } from '../combat/data/statusesByElement.js';
+import { mergeStats } from '../../shared/utils/stats.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { getStatEffects } from '../progression/selectors.js';
 import { emit } from '../../shared/events.js';
@@ -83,9 +85,13 @@ function applyAbilityResult(abilityKey, res, state) {
   const logs = state.adventure?.combatLog;
   const mods = state.abilityMods?.[abilityKey];
   const weapon = getEquippedWeapon(state);
+  const attackerStats = mergeStats(state.stats, weapon?.stats);
   const attacks = res.attacks || (res.attack ? [res.attack] : []);
   if (attacks.length) {
     const { target } = attacks[0];
+    const targetStats = target?.stats || {};
+    const attackerCtx = { ...(state || {}), stats: attackerStats };
+    const now = Date.now();
     const isSpell = ability.tags?.includes('spell');
 
     if (!isSpell) {
@@ -116,16 +122,29 @@ function applyAbilityResult(abilityKey, res, state) {
         amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
       }
 
-      const dealt = processAttack(amount, { target: atkTarget, type, attacker: state, nowMs: Date.now() }, state);
+      const dealt = processAttack(amount, { target: atkTarget, type, attacker: state, nowMs: now }, state);
       totalDealt += dealt;
       logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
+
+      if (type && STATUSES_BY_ELEMENT[type]) {
+        const { key, power } = STATUSES_BY_ELEMENT[type];
+        if (Math.random() < power) {
+          applyAilment(attackerCtx, atkTarget, key, power, now);
+        }
+      }
+    }
+
+    if (ability.status) {
+      const { key, power } = ability.status;
+      if (Math.random() < power) {
+        applyAilment(attackerCtx, target, key, power, now);
+      }
     }
 
     if (res.stun) {
       const mult = (res.stun.mult || 0) * (1 + (mods?.stunPct || 0) / 100);
-      const attackerStats = { ...(state.stats || {}), stunDurationMult: (state.stats?.stunDurationMult || 0) + (mult - 1) };
-      const targetStats = attacks[0]?.target?.stats || {};
-      applyStatus(attacks[0]?.target, 'stun', 1, state, { attackerStats, targetStats });
+      const stunAttackerStats = { ...attackerStats, stunDurationMult: (attackerStats.stunDurationMult || 0) + (mult - 1) };
+      applyStatus(target, 'stun', 1, state, { attackerStats: stunAttackerStats, targetStats });
     }
     if (res.healOnHit && totalDealt > 0) {
       const healed = Math.min(res.healOnHit, state.hpMax - state.hp);

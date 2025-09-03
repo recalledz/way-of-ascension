@@ -1,5 +1,5 @@
 import { STATUSES_BY_ELEMENT } from './data/statusesByElement.js';
-import { applyStatus } from './mutators.js';
+import { applyAilment, applyStatus } from './mutators.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 
 export function performAttack(attacker, target, options = {}, state) { // STATUS-REFORM
@@ -7,13 +7,15 @@ export function performAttack(attacker, target, options = {}, state) { // STATUS
 
   const attackerStats = mergeStats(attacker?.stats, weapon?.stats);
   const targetStats = target?.stats || {};
+  const attackerCtx = { ...(attacker || {}), stats: attackerStats };
+  const now = Date.now();
 
   if (ability && ability.status) { // STATUS-REFORM
     const { key, power } = ability.status;
     const chance = isCrit ? 1 : power;
     if (Math.random() < chance) {
       console.log(`[status] ${key} applied ${isCrit ? '(crit)' : '(roll)'}`); // STATUS-REFORM
-      applyStatus(target, key, power, state, { attackerStats, targetStats }); // STATUS-REFORM
+      applyAilment(attackerCtx, target, key, power, now);
     } else {
       console.log(`[status] ${key} failed (roll)`); // STATUS-REFORM
     }
@@ -22,7 +24,7 @@ export function performAttack(attacker, target, options = {}, state) { // STATUS
     const chance = isCrit ? 1 : power;
     if (Math.random() < chance) {
       console.log(`[status] ${key} applied ${isCrit ? '(crit)' : '(roll)'}`); // STATUS-REFORM
-      applyStatus(target, key, power, state, { attackerStats, targetStats }); // STATUS-REFORM
+      applyAilment(attackerCtx, target, key, power, now);
     } else {
       console.log(`[status] ${key} failed (roll)`); // STATUS-REFORM
     }
