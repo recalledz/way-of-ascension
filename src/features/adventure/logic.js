@@ -530,34 +530,28 @@ export function updateAdventureCombat() {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
         }
-        const attacks = [];
-        const pushAttack = (amount, type) => {
-          if (amount <= 0) return;
-          const bonusKey =
-            type === 'physical' ? 'physicalDamagePct' : `${type}DamagePct`;
-          const treeMult =
-            1 + (S.astralTreeBonuses?.[bonusKey] || 0) / 100;
-          attacks.push({
-            amount: Math.max(1, Math.round(amount * critMult)),
-            type,
-            mult: externalMult * treeMult,
-          });
-        };
         if (S.lightningStep) {
-          pushAttack(profile.phys, 'metal');
-        } else {
-          pushAttack(profile.phys, 'physical');
+          profile.elems.metal = (profile.elems.metal || 0) + profile.phys;
+          profile.phys = 0;
         }
-        for (const [elem, amt] of Object.entries(profile.elems)) {
-          pushAttack(amt, elem);
+        const typeMults = {};
+        if (profile.phys > 0) {
+          typeMults.physical =
+            1 + (S.astralTreeBonuses?.physicalDamagePct || 0) / 100;
+        }
+        for (const elem of Object.keys(profile.elems)) {
+          const key = `${elem}DamagePct`;
+          typeMults[elem] = 1 + (S.astralTreeBonuses?.[key] || 0) / 100;
         }
         const dealt = processAttack(
-          attacks,
+          profile,
+          weapon,
           {
             attacker: S,
             target: S.adventure.currentEnemy,
             nowMs: now,
-            weapon: weapon.key,
+            typeMults,
+            globalMult: externalMult * critMult,
           },
           S
         );
@@ -631,7 +625,8 @@ export function updateAdventureCombat() {
           const baseDamage = Math.round(Number(S.adventure.currentEnemy.attack) || 5);
           const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
           const taken = processAttack(
-            [{ amount: enemyDamage, type: 'physical' }],
+            { phys: enemyDamage, elems: {} },
+            undefined,
             { attacker: S.adventure.currentEnemy, target: S, nowMs: now },
             S
           );

@@ -127,9 +127,15 @@ function applyAbilityResult(abilityKey, res, state) {
         treeMult = 1 + (state.astralTreeBonuses?.[bonusKey] || 0) / 100;
       }
 
+      const profile =
+        type === 'physical'
+          ? { phys: amount, elems: {} }
+          : { phys: 0, elems: { [type]: amount } };
+      const typeMults = { [type === 'physical' ? 'physical' : type]: treeMult };
       const dealt = processAttack(
-        [{ amount, type, mult }],
-        { target: atkTarget, attacker: state, nowMs: now, weapon: weapon.key, treeMult },
+        profile,
+        weapon,
+        { target: atkTarget, attacker: state, nowMs: now, typeMults, globalMult: mult },
         state
       );
       totalDealt += dealt;
