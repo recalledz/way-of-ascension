@@ -17,5 +17,9 @@ export function getEquippedWeapon(state = S) {
   if (!state.flags?.weaponsEnabled) return WEAPONS.fist;
   const eq = state.equipment?.mainhand;
   const key = typeof eq === 'string' ? eq : eq?.key;
-  return WEAPONS[key] || WEAPONS.fist;
+  if (WEAPONS[key]) return WEAPONS[key];
+  if (eq && typeof eq === 'object') {
+    return { ...eq, key, displayName: eq.displayName || eq.name || key };
+  }
+  return WEAPONS.fist;
 }
