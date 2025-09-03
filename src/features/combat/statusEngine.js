@@ -16,6 +16,12 @@ export function applyStatus(target, key, power, state, options = {}) { // STATUS
   duration *= 1 - (targetStats.ccResist || 0);
   current.duration = duration;
   target.statuses[key] = current;
+  if (state?.adventure) {
+    state.adventure.combatLog = state.adventure.combatLog || [];
+    const targetName = target === state ? 'You' : target.name || 'Enemy';
+    const stackText = current.stacks > 1 ? ` x${current.stacks}` : '';
+    state.adventure.combatLog.push(`${targetName} afflicted with ${key}${stackText}`);
+  }
 }
 
 export function applyAilment(attacker, target, key, power, nowMs) {
@@ -64,6 +70,12 @@ export function tickAilments(entity, dtSec, state) {
 
     if (inst._lastStack !== inst.stacks) {
       def.onApply?.({ target: entity, stack: inst.stacks });
+      if (state?.adventure) {
+        state.adventure.combatLog = state.adventure.combatLog || [];
+        const targetName = entity === state ? 'You' : entity.name || 'Enemy';
+        const stackText = inst.stacks > 1 ? ` x${inst.stacks}` : '';
+        state.adventure.combatLog.push(`${targetName} afflicted with ${key}${stackText}`);
+      }
       inst._lastStack = inst.stacks;
     }
 
@@ -76,7 +88,34 @@ export function tickAilments(entity, dtSec, state) {
 
     if (inst.expires <= 0) {
       def.onExpire?.({ target: entity });
+      if (state?.adventure) {
+        state.adventure.combatLog = state.adventure.combatLog || [];
+        const targetName = entity === state ? 'You' : entity.name || 'Enemy';
+        state.adventure.combatLog.push(`${key} on ${targetName} expired`);
+      }
       delete entity.ailments[key];
+    }
+  }
+}
+
+export function tickStatuses(entity, dtSec, state) {
+  if (!entity?.statuses) return;
+  for (const key of Object.keys(entity.statuses)) {
+    const inst = entity.statuses[key];
+    const def = STATUSES[key];
+    if (!def) {
+      delete entity.statuses[key];
+      continue;
+    }
+    inst.duration -= dtSec;
+    if (inst.duration <= 0) {
+      def.onExpire?.({ target: entity });
+      if (state?.adventure) {
+        state.adventure.combatLog = state.adventure.combatLog || [];
+        const targetName = entity === state ? 'You' : entity.name || 'Enemy';
+        state.adventure.combatLog.push(`${key} on ${targetName} expired`);
+      }
+      delete entity.statuses[key];
     }
   }
 }
