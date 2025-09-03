@@ -518,11 +518,10 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const profMult = getWeaponProficiencyBonuses(S).damageMult;
-        const playerAttackBase = (Number(calculatePlayerCombatAttack(S)) || 0) / profMult;
+        const playerAttackBase = Number(calculatePlayerCombatAttack(S)) || 0;
         let dmg = Math.max(1, Math.round(isCrit ? playerAttackBase * 2 : playerAttackBase));
         let attackType = 'physical';
-        let externalMult = profMult;
+        let externalMult = 1;
         if (S.lightningStep) {
           externalMult *= S.lightningStep.damageMult;
           attackType = 'metal';
@@ -543,8 +542,8 @@ export function updateAdventureCombat() {
         if (enemyEl) {
           showFloatingText({ targetEl: enemyEl, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
-          S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
-          performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
+        S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
+        performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
