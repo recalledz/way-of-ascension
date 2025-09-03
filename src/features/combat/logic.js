@@ -76,24 +76,57 @@ export function applyResists(damage, element, target) {
   return dmg * (1 - resist);
 }
 
-export function processAttack(currentHP, damage, options = {}) {
+export function processAttack(currentHP, attacks, options = {}) {
   let cur = Number(currentHP);
-  let dmg = Number(damage);
   if (!Number.isFinite(cur)) cur = 0;
-  if (!Number.isFinite(dmg)) dmg = 0;
-  const { element, target, type, onDamage, attacker, nowMs } = options;
-  let adjusted = applyResists(dmg, element, target);
-  if (type === 'physical') {
-    const armor = Number(target?.stats?.armor ?? target?.armor ?? 0) || 0;
-    adjusted = applyArmor(adjusted, armor);
+
+  const {
+    target,
+    onDamage,
+    attacker,
+    nowMs,
+    weapon: defaultWeapon,
+    treeMult = 1,
+    proficiencyMult = 1,
+  } = options;
+
+  const list = Array.isArray(attacks) ? attacks : [attacks];
+  let total = 0;
+
+  for (const entry of list) {
+    const atk = typeof entry === 'number' ? { amount: entry } : entry || {};
+    const {
+      amount = 0,
+      type: atkType = options.type,
+      mult: atkMult = 1,
+      weapon: atkWeapon,
+    } = atk;
+
+    const element = atkType && atkType !== 'physical' ? atkType : undefined;
+    let adjusted = applyResists(amount, element, target);
+
+    if (atkType === 'physical') {
+      const armor = Number(target?.stats?.armor ?? target?.armor ?? 0) || 0;
+      adjusted = applyArmor(adjusted, armor);
+    }
+
+    adjusted = routeDamageThroughQiShield(adjusted, target);
+
+    let final = Math.max(0, Math.round(adjusted));
+    if (!Number.isFinite(final)) final = 0;
+
+    final = applyWeaponDamage(final, atkWeapon || defaultWeapon || 'fist');
+
+    final = Math.round(final * atkMult * treeMult * proficiencyMult);
+
+    if (atkType === 'physical' && final > 0) {
+      onPhysicalHit(attacker, target, final, nowMs || Date.now());
+    }
+
+    total += final;
   }
-  adjusted = routeDamageThroughQiShield(adjusted, target);
-  let final = Math.max(0, Math.round(adjusted));
-  if (!Number.isFinite(final)) final = 0;
-  if (type === 'physical' && final > 0) {
-    onPhysicalHit(attacker, target, final, nowMs || Date.now());
-  }
-  if (typeof onDamage === 'function') onDamage(final);
-  return Math.max(0, Math.round(cur - final));
+
+  if (typeof onDamage === 'function') onDamage(total);
+  return Math.max(0, Math.round(cur - total));
 }
 
