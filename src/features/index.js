@@ -12,6 +12,7 @@ import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
+import { mountGatheringUI } from "./gathering/ui/gatheringDisplay.js";
 
 
 // Example placeholder for later:
@@ -24,6 +25,7 @@ export function mountAllFeatureUIs(state) {
   mountAlchemyUI(state);
   mountCookingUI(state);
   mountMiningUI(state);
+  mountGatheringUI(state);
   mountForgingUI(state);
   mountPhysiqueUI(state);
   mountLawDisplay(state);

@@ -257,6 +257,14 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   └── ui/
 │   │   │       └── miningDisplay.js
+│   │   ├── gathering/
+│   │   │   ├── logic.js
+│   │   │   ├── migrations.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── gatheringDisplay.js
 │   │   ├── forging/
 │   │   │   ├── logic.js
 │   │   │   ├── mutators.js
@@ -351,6 +359,7 @@ way-of-ascension/
 ├── src/features/combat/index.js
 ├── src/features/karma/index.js
 ├── src/features/mining/index.js
+├── src/features/gathering/index.js
 ├── src/features/forging/index.js
 ├── src/features/physique/index.js
 └── style.css
@@ -1009,8 +1018,15 @@ Paths added:
 - `src/features/mining/mutators.js` – External wrappers to modify mining state and listeners for `ACTIVITY:START` to apply default values.
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
-
-
+ 
+### Gathering Feature (`src/features/gathering/`)
+- `src/features/gathering/state.js` – Tracks gathering level, experience, and wood collected.
+- `src/features/gathering/logic.js` – Handles woodcutting rates and rare Spirit Wood chances.
+- `src/features/gathering/mutators.js` – Initializes gathering state when the activity starts and advances progress each tick.
+- `src/features/gathering/selectors.js` – Accessors for gathering state and rate calculations.
+- `src/features/gathering/ui/gatheringDisplay.js` – Renders gathering panels and sidebar information.
+- `src/features/gathering/migrations.js` – Save migrations for the gathering feature.
+- `src/features/gathering/index.js` – Gathering feature descriptor.
 
 ### Forging Feature (`src/features/forging/`)
 - `src/features/forging/state.js` – Tracks forging level, experience, and current forging job.

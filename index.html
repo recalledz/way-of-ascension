@@ -443,6 +443,27 @@
         </div>
       </section>
 
+      <section id="activity-gathering" class="activity-content tab-content" style="display:none;">
+        <h2>🌲 Gathering</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Gathering Status</h4>
+            <div class="stat"><span>Gathering Level</span><span id="gatheringLevelActivity">1</span></div>
+            <div class="stat"><span>Experience</span><span><span id="gatheringExpActivity">0</span>/<span id="gatheringExpMaxActivity">100</span></span></div>
+            <div class="bar"><div class="fill" id="gatheringFillActivity"></div></div>
+            <div class="stat"><span>Currently Gathering</span><span id="currentlyGathering">Nothing</span></div>
+            <button class="btn primary" id="startGatheringActivity"> Start Gathering</button>
+          </div>
+
+          <div class="card" id="gatheringStatsCard" style="display:none;">
+            <h4> Gathering Progress</h4>
+            <div class="stat"><span>Wood Gained</span><span id="resourcesGathered">0</span></div>
+            <div class="stat"><span>Gathering Rate</span><span id="currentGatheringRate">0/sec</span></div>
+            <div class="muted" style="margin-top:8px">Occasionally yields Spirit Wood</div>
+          </div>
+        </div>
+      </section>
+
       <section id="activity-forging" class="activity-content tab-content" style="display:none;">
         <h2>⚒️ Forging</h2>
         <div class="cards">

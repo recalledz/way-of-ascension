@@ -64,6 +64,7 @@ XP for consecutive perfect hits【F:src/features/physique/logic.js†L26-L69】.
 Mining lets players choose a resource and gain materials over time. Base rates
 for stones, iron and ice are modified by mining level, and experience from
 mining levels up the profession to increase efficiency【F:src/features/mining/logic.js†L4-L44】.
+Gathering provides a similar loop for chopping wood, yielding lumber over time and occasionally granting rare Spirit Wood【F:src/features/gathering/logic.js†L4-L24】.
 
 ## Sect Development
 

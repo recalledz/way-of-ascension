@@ -53,6 +53,8 @@ import { advanceMining } from '../src/features/mining/logic.js';
 import { advanceForging } from '../src/features/forging/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountForgingUI } from '../src/features/forging/ui/forgingDisplay.js';
+import { advanceGathering } from '../src/features/gathering/logic.js';
+import { mountGatheringUI } from '../src/features/gathering/ui/gatheringDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
@@ -120,6 +122,7 @@ function initUI(){
   initializeWeaponChip({ key: mhKey, name: mhName });
   mountTrainingGameUI(S);
   mountMiningUI(S);
+  mountGatheringUI(S);
   mountForgingUI(S);
   setupAbilityUI();
 
@@ -378,7 +381,7 @@ function updateActivityCards() {
 
 function updateActivityUI() {
   // Update activity status displays
-  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'cooking', 'alchemy'];
+  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'gathering', 'cooking', 'alchemy'];
 
   activities.forEach(activity => {
     const statusEl = document.getElementById(`${activity}Status`);
@@ -405,6 +408,7 @@ function updateActivityUI() {
         if (activity === 'physique') btnEl.textContent = '💪 Train Physique';
         if (activity === 'adventure') btnEl.textContent = '🗺️ Explore';
         if (activity === 'mining') btnEl.textContent = '⛏️ Mine Ore';
+        if (activity === 'gathering') btnEl.textContent = '🪓 Gather Wood';
       }
     }
   });
@@ -476,6 +480,7 @@ function tick(){
   
   // Passive mining progression
   advanceMining(S);
+  advanceGathering(S);
   advanceForging(S);
   
   // Physique training progression

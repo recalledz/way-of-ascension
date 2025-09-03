@@ -4,6 +4,7 @@ export const ActivityFeature = {
     cultivation: false,
     physique: false,
     mining: false,
+    gathering: false,
     adventure: false,
     cooking: false,
     sect: false,

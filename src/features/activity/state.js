@@ -5,6 +5,7 @@ export function ensureActivities(root) {
       cultivation: false,
       physique: false,
       mining: false,
+      gathering: false,
       adventure: false,
       cooking: false,
       alchemy: false,

@@ -8,6 +8,7 @@ export * from '../features/inventory/mutators.js';
 export * from '../features/karma/mutators.js';
 export * from '../features/loot/mutators.js';
 export * from '../features/mining/mutators.js';
+export * from '../features/gathering/mutators.js';
 export * from '../features/physique/mutators.js';
 export * from '../features/proficiency/mutators.js';
 export * from '../features/progression/mutators.js';

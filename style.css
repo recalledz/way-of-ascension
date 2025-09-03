@@ -3899,6 +3899,11 @@ tr:last-child td {
   width: 0%;
 }
 
+#gatheringProgressFill {
+  background: linear-gradient(90deg, #10b981, #059669) !important; /* Green for gathering */
+  width: 0%;
+}
+
 #cookingProgressFillSidebar {
   background: linear-gradient(90deg, #22c55e, #16a34a) !important; /* Green for cooking */
 }

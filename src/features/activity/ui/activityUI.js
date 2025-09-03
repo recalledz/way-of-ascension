@@ -19,6 +19,7 @@ export function mountActivityUI(root) {
   document.getElementById('cultivationSelector')?.addEventListener('click', () => handle('cultivation'));
   document.getElementById('physiqueSelector')?.addEventListener('click', () => handle('physique'));
   document.getElementById('miningSelector')?.addEventListener('click', () => handle('mining'));
+  document.getElementById('gatheringSelector')?.addEventListener('click', () => handle('gathering'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
   document.getElementById('sectSelector')?.addEventListener('click', () => handle('sect'));
 
@@ -31,6 +32,7 @@ export function updateActivitySelectors(root) {
   // Ensure minimal slices exist for UI reads
   root.physique ??= { level: 1, exp: 0, expMax: 100 };
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
+  root.gathering ??= { level: 1, exp: 0, expMax: 100 };
 
   const selected = root.ui?.selectedActivity || 'cultivation';
 
@@ -89,6 +91,17 @@ export function updateActivitySelectors(root) {
     miningInfo.textContent = root.activities?.mining ? 'Mining...' : `Level ${root.mining.level}`;
   }
 
+  const gatheringSel = document.getElementById('gatheringSelector');
+  const gatheringFill = document.getElementById('gatheringSelectorFill');
+  const gatheringInfo = document.getElementById('gatheringInfo');
+  gatheringSel?.classList.toggle('active', selected === 'gathering');
+  gatheringSel?.classList.toggle('running', root.activities?.gathering);
+  if (gatheringFill && gatheringInfo) {
+    const expPct = (root.gathering.exp / root.gathering.expMax) * 100;
+    gatheringFill.style.width = `${expPct}%`;
+    gatheringInfo.textContent = root.activities?.gathering ? 'Gathering...' : `Level ${root.gathering.level}`;
+  }
+
   // Adventure
   const advSel = document.getElementById('adventureSelector');
   const advInfo = document.getElementById('adventureInfo');
@@ -113,6 +126,7 @@ export function updateCurrentTaskDisplay(root) {
     cultivation: 'Cultivating',
     physique: 'Physique Training',
     mining: 'Mining',
+    gathering: 'Gathering',
     forging: 'Forging',
     adventure: 'Adventuring',
     cooking: 'Cooking',

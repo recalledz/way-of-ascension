@@ -9,6 +9,7 @@ import { migrations as inventory } from '../features/inventory/migrations.js';
 import { migrations as karma } from '../features/karma/migrations.js';
 import { migrations as loot } from '../features/loot/migrations.js';
 import { migrations as mining } from '../features/mining/migrations.js';
+import { migrations as gathering } from '../features/gathering/migrations.js';
 import { migrations as physique } from '../features/physique/migrations.js';
 import { migrations as proficiency } from '../features/proficiency/migrations.js';
 import { migrations as progression } from '../features/progression/migrations.js';
@@ -30,6 +31,7 @@ const migrations = [
   ...karma,
   ...loot,
   ...mining,
+  ...gathering,
   ...physique,
   ...weaponGeneration,
 ];
