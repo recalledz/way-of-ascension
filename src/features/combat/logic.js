@@ -146,7 +146,21 @@ export function processAttack(profile, weapon, options = {}) {
     tempMult = 1,
   } = options;
 
-  const scaled = applyWeaponDamage(profile, weapon, attacker, typeMults);
+  const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
+  const scaled = applyWeaponDamage(profile, w, attacker, typeMults);
+
+  const stats = w?.stats || {};
+  if (typeof stats.physDamagePct === 'number') {
+    scaled.phys *= 1 + stats.physDamagePct;
+  }
+  if (typeof stats.damageTransferPct === 'number') {
+    const elem = stats.damageTransferElement;
+    if (elem) {
+      const transferred = scaled.phys * stats.damageTransferPct;
+      scaled.phys -= transferred;
+      scaled.elems[elem] = (scaled.elems[elem] || 0) + transferred;
+    }
+  }
 
   const components = { phys: 0, elems: {} };
 
