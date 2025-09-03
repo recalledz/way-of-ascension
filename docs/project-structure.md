@@ -113,6 +113,7 @@ way-of-ascension/
 │   │   │   ├── attack.js
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
+│   │   │   │   ├── ailments.js
 │   │   │   │   ├── status.js
 │   │   │   │   └── statusesByElement.js
 │   │   │   ├── hit.js
@@ -968,6 +969,7 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+- `src/features/combat/data/ailments.js` – Ailment definitions and their effects.
 - `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
 
 ### Karma Feature (`src/features/karma/`)

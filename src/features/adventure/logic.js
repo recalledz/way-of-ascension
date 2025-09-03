@@ -530,9 +530,19 @@ export function updateAdventureCombat() {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
         }
+        const bonusKey =
+          attackType === 'physical' ? 'physicalDamagePct' : `${attackType}DamagePct`;
+        const treeMult =
+          1 + (S.astralTreeBonuses?.[bonusKey] || 0) / 100;
         const dealt = processAttack(
           [{ amount: dmg, type: attackType, mult: externalMult }],
-          { attacker: S, target: S.adventure.currentEnemy, nowMs: now, weapon: weapon.key },
+          {
+            attacker: S,
+            target: S.adventure.currentEnemy,
+            nowMs: now,
+            weapon: weapon.key,
+            treeMult,
+          },
           S
         );
         gainProficiencyFromEnemy(weapon.classKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION

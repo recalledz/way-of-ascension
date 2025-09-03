@@ -113,19 +113,23 @@ function applyAbilityResult(abilityKey, res, state) {
         mult *= 1 + mods.damagePct / 100;
       }
 
+      let treeMult = 1;
       if (isSpell) {
         if (weapon.classKey === 'focus') {
           mult *= getWeaponProficiencyBonuses(state).damageMult;
         }
         const { spellPowerMult } = getStatEffects(state);
         const spellDamage = state.stats?.spellDamage || 0;
-        const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
-        mult *= spellPowerMult * (1 + spellDamage / 100) * treeMult;
+        const spellTreeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+        mult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
+      } else {
+        const bonusKey = type === 'physical' ? 'physicalDamagePct' : `${type}DamagePct`;
+        treeMult = 1 + (state.astralTreeBonuses?.[bonusKey] || 0) / 100;
       }
 
       const dealt = processAttack(
         [{ amount, type, mult }],
-        { target: atkTarget, attacker: state, nowMs: now, weapon: weapon.key },
+        { target: atkTarget, attacker: state, nowMs: now, weapon: weapon.key, treeMult },
         state
       );
       totalDealt += dealt;
