@@ -115,7 +115,8 @@ way-of-ascension/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── ailments.js
 │   │   │   │   ├── status.js
-│   │   │   │   └── statusesByElement.js
+│   │   │   │   ├── statusesByElement.js
+│   │   │   │   └── ailments.js
 │   │   │   ├── hit.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -971,6 +972,10 @@ Paths added:
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
 - `src/features/combat/data/ailments.js` – Ailment definitions and their effects.
 - `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
+
+#### `src/features/combat/data/ailments.js` - Ailment Definitions
+**Purpose**: Enumerates poison, burn, chill and other ailments with durations, stack limits and effect callbacks.
+**When to modify**: Add new ailments or adjust existing damage-over-time and debuff behaviour.
 
 ### Karma Feature (`src/features/karma/`)
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.
