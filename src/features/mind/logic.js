@@ -122,6 +122,8 @@ export function applyManualEffects(player, manual, level) {
         player.stats[stat] = (player.stats[stat] || 0) * (1 + val / 100);
       } else if (stat in player) {
         player[stat] = (player[stat] || 0) * (1 + val / 100);
+      } else {
+        player.stats[key] = (player.stats[key] || 0) + val;
       }
     } else if (key in player.stats) {
       player.stats[key] = (player.stats[key] || 0) + val;

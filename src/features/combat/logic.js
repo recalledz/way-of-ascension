@@ -148,6 +148,13 @@ export function processAttack(profile, weapon, options = {}) {
 
   const scaled = applyWeaponDamage(profile, weapon, attacker, typeMults);
 
+  const baseDamageMult = 1 + ((attacker?.stats?.damagePct || 0) / 100);
+  const physDamageMult = 1 + ((attacker?.stats?.physDamagePct || 0) / 100);
+  scaled.phys *= baseDamageMult * physDamageMult;
+  for (const elem in scaled.elems) {
+    scaled.elems[elem] *= baseDamageMult;
+  }
+
   const components = { phys: 0, elems: {} };
 
   if (scaled.phys > 0) {
