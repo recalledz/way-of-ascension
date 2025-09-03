@@ -55,11 +55,23 @@ All attribute levels grant **+1% talent**.
 - Refill occurs after encounters or periodically out of combat, consuming Qi.
 
 ## Attack Damage Calculation
-1. `baseDamage = random(min, max) * attackRate`
-2. `scale = physiqueMultiplier * Physique + agilityMultiplier * Agility + mindMultiplier * Mind`
-3. `damage = baseDamage * (1 + scale) * proficiencyBonus`
-4. `damage = round(damage * weaponDamageMultiplier)` (if the weapon defines `damageMultiplier`)
-5. `finalDamage = damage * (1 - targetResist[element])`
+1. **Weapon base** – start with the weapon's base damage for each type (physical, fire, etc.).
+2. **Per-type multipliers** – for each damage type multiply by:
+   - weapon mods
+   - type multipliers from stats or effects
+   - weapon-class bonuses
+3. **Sum** the adjusted damage of all types.
+4. **Global multipliers** – apply global damage bonuses (proficiency, buffs, attack speed, etc.).
+5. **Armor/resists** – apply the target's armor or resistance for each damage type.
+
+### Example
+Weapon deals 100 physical and 50 fire base damage. It has +20% physical and +50% fire mods, +10% physical and +25% fire type multipliers, a sword bonus of +15% physical, a +30% global buff, and the target has 25% physical resist and 10% fire resist.
+
+- **Per-type**: `physical = 100 × 1.20 × 1.10 × 1.15 = 151.8`; `fire = 50 × 1.50 × 1.25 = 93.75`
+- **Sum**: `151.8 + 93.75 = 245.55`
+- **Global**: `245.55 × 1.30 = 319.215`
+- **After resists**: `physical = 151.8 × 1.30 × (1 - 0.25) ≈ 148.0`; `fire = 93.75 × 1.30 × (1 - 0.10) ≈ 109.7`
+- **Final total**: `148.0 + 109.7 ≈ 257.7 damage`
 
 ## Skill XP Requirements
 All skills start with `expMax = 100`.
