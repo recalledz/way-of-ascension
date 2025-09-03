@@ -238,13 +238,15 @@ export function updateBattleDisplay() {
     if (statuses.stunImmune) info.push('stunImmune active');
     playerStunBarEl.title = info.join('\n');
   }
-  const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
+  const atkProfile = calculatePlayerCombatAttack(S);
+  const playerPhysAtk = atkProfile.phys;
+  const totalAtk = atkProfile.phys + Object.values(atkProfile.elems).reduce((a, b) => a + b, 0);
   let playerAttackRate = calculatePlayerAttackRate(S);
   if (S.lightningStep) {
     playerAttackRate *= S.lightningStep.attackSpeedMult;
   }
   const atkEl = document.getElementById('playerAttack');
-  if (atkEl) atkEl.title = `ATK: ${Math.round(playerAttack)}`;
+  if (atkEl) atkEl.title = `ATK: ${Math.round(totalAtk)}`;
   const rateEl = document.getElementById('playerAttackRate');
   if (rateEl) rateEl.title = `Rate: ${playerAttackRate.toFixed(1)}/s`;
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
@@ -280,8 +282,8 @@ export function updateBattleDisplay() {
     if (enemyMitEl) {
       let eMitPct = 0;
       const eArmor = enemy.armor || 0;
-      if (eArmor > 0 && playerAttack > 0) {
-        eMitPct = Math.min(ARMOR_CAP, eArmor / (eArmor + ARMOR_K * playerAttack));
+      if (eArmor > 0 && playerPhysAtk > 0) {
+        eMitPct = Math.min(ARMOR_CAP, eArmor / (eArmor + ARMOR_K * playerPhysAtk));
       }
       enemyMitEl.title = `Mit: ${Math.round(eMitPct * 100)}%`;
     }
@@ -518,30 +520,44 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const playerAttackBase = Number(calculatePlayerCombatAttack(S)) || 0;
-        let dmg = Math.max(1, Math.round(isCrit ? playerAttackBase * 2 : playerAttackBase));
-        let attackType = 'physical';
+        const critMult = isCrit ? 2 : 1;
+        const profile = calculatePlayerCombatAttack(S);
         let externalMult = 1;
         if (S.lightningStep) {
           externalMult *= S.lightningStep.damageMult;
-          attackType = 'metal';
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
         }
-        const bonusKey =
-          attackType === 'physical' ? 'physicalDamagePct' : `${attackType}DamagePct`;
-        const treeMult =
-          1 + (S.astralTreeBonuses?.[bonusKey] || 0) / 100;
+        const attacks = [];
+        const pushAttack = (amount, type) => {
+          if (amount <= 0) return;
+          const bonusKey =
+            type === 'physical' ? 'physicalDamagePct' : `${type}DamagePct`;
+          const treeMult =
+            1 + (S.astralTreeBonuses?.[bonusKey] || 0) / 100;
+          attacks.push({
+            amount: Math.max(1, Math.round(amount * critMult)),
+            type,
+            mult: externalMult * treeMult,
+          });
+        };
+        if (S.lightningStep) {
+          pushAttack(profile.phys, 'metal');
+        } else {
+          pushAttack(profile.phys, 'physical');
+        }
+        for (const [elem, amt] of Object.entries(profile.elems)) {
+          pushAttack(amt, elem);
+        }
         const dealt = processAttack(
-          [{ amount: dmg, type: attackType, mult: externalMult }],
+          attacks,
           {
             attacker: S,
             target: S.adventure.currentEnemy,
             nowMs: now,
             weapon: weapon.key,
-            treeMult,
           },
           S
         );
@@ -1251,7 +1267,10 @@ export function updateActivityAdventure() {
     const equipped = getEquippedWeapon(S);
     setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   }
-  const baseAttack = Math.round(calculatePlayerCombatAttack(S));
+  const atkPreview = calculatePlayerCombatAttack(S);
+  const baseAttack = Math.round(
+    atkPreview.phys + Object.values(atkPreview.elems).reduce((a, b) => a + b, 0)
+  );
   setText('baseDamage', baseAttack);
   const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
   if (enemyData) {
