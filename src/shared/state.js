@@ -8,6 +8,7 @@ import { miningState } from '../features/mining/state.js';
 import { physiqueState } from '../features/physique/state.js';
 import { forgingState } from '../features/forging/state.js';
 import { gatheringState } from '../features/gathering/state.js';
+import { agilityState } from '../features/agility/state.js';
 
 export function loadSave(){
   try{
@@ -80,6 +81,7 @@ export const defaultState = () => {
   activities: {
     cultivation: false,
     physique: false,
+    agility: false,
     mining: false,
     gathering: false,
     adventure: false,
@@ -89,6 +91,7 @@ export const defaultState = () => {
   },
   // Activity data containers
   physique: structuredClone(physiqueState),
+  agility: structuredClone(agilityState),
   mining: structuredClone(miningState),
   gathering: structuredClone(gatheringState),
   forging: structuredClone(forgingState),
@@ -192,6 +195,7 @@ export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
 S.physique = { ...structuredClone(physiqueState), ...S.physique };
+S.agility = { ...structuredClone(agilityState), ...S.agility };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the

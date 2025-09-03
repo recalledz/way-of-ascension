@@ -391,6 +391,73 @@
         </div>
       </section>
 
+      <section id="activity-agility" class="activity-content tab-content" style="display:none;">
+        <h2> Agility Training</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Training Status</h4>
+            <div class="stat"><span>Agility Level</span><span id="agilityLevelActivity">1</span></div>
+            <div class="stat"><span>Experience</span><span><span id="agilityExpActivity">0</span>/<span id="agilityExpMaxActivity">100</span></span></div>
+            <div class="bar"><div class="fill" id="agilityFillActivity"></div></div>
+            <div class="stat"><span>Stamina</span><span><span id="agilityCurrentStamina">100</span>/<span id="agilityMaxStamina">100</span></span></div>
+            <div class="bar"><div class="fill" id="agilityStaminaFill"></div></div>
+            <button class="btn primary" id="startAgilityActivity"> Start Training</button>
+          </div>
+
+          <div class="card" id="agilityActiveTrainingCard" style="display:none;">
+            <h4> Training Session</h4>
+            <p class="muted">Start a training session! Stamina drains during training. Hit the perfect zone for maximum XP!</p>
+
+            <div class="training-interface">
+              <div class="session-controls" id="agilitySessionControls">
+                <button class="btn primary" id="startAgilityTrainingSession"> Start Training Session</button>
+                <div class="muted" style="margin-top:8px">Sessions drain stamina continuously. Hit the green zone for best results!</div>
+              </div>
+
+              <div class="training-game" id="agilityTrainingGame" style="display:none;">
+                <div class="timing-bar-container">
+                  <div class="timing-bar" id="agilityTimingBar">
+                    <div class="perfect-zone" id="agilityPerfectZone"></div>
+                    <div class="timing-cursor" id="agilityTimingCursor"></div>
+                  </div>
+                </div>
+
+                <div class="game-controls">
+                  <button class="btn primary large" id="agilityHitButton"> HIT!</button>
+                  <div class="session-info">
+                    <div class="stat"><span>Session Stamina</span><span id="agilitySessionStamina">100</span></div>
+                    <div class="stat"><span>Hits This Session</span><span id="agilitySessionHits">0</span></div>
+                    <div class="stat"><span>Session XP</span><span id="agilitySessionXP">0</span></div>
+                  </div>
+                </div>
+
+                <div class="muted" style="margin-top:8px">
+                  Perfect (Green): 15-25 XP | Good (Yellow): 8-12 XP | Poor (Red): 3-5 XP
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="agilityCoursesCard" style="display:none;">
+            <h4> Obstacle Courses</h4>
+            <div class="stat"><span>Courses Built</span><span id="obstacleCourseCount">0</span></div>
+            <div class="stat"><span>XP Bonus</span><span id="agilityXpMult">+0% XP</span></div>
+            <div class="stat"><span>Next Cost</span><span id="obstacleCourseCost">50 stone, 50 wood</span></div>
+            <button class="btn primary" id="buildObstacleCourse">Build Course</button>
+          </div>
+
+          <div class="card" id="agilityEffectsCard" style="display:none;">
+            <h4> Agility Effects</h4>
+            <p class="muted">Current bonuses from your agility stat:</p>
+            <div class="stat"><span>Current Agility</span><span id="currentAgilityStat">10</span></div>
+            <div class="stat"><span>Accuracy Bonus</span><span id="agilityAccuracyStat">+0</span></div>
+            <div class="stat"><span>Dodge Bonus</span><span id="agilityDodgeStat">+0</span></div>
+            <div class="stat"><span>Forge Speed</span><span id="agilityForgeSpeedStat">+0%</span></div>
+            <div class="muted" style="margin-top:8px">Higher agility improves accuracy, dodge, and forging speed</div>
+          </div>
+        </div>
+      </section>
+
       <section id="activity-mining" class="activity-content tab-content" style="display:none;">
         <h2> Mining</h2>
         <div class="cards">

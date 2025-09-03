@@ -4,6 +4,7 @@ export function ensureActivities(root) {
     root.activities = {
       cultivation: false,
       physique: false,
+      agility: false,
       mining: false,
       adventure: false,
       cooking: false,
