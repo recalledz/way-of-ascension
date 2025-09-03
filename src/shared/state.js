@@ -7,6 +7,7 @@ import { karmaState } from '../features/karma/state.js';
 import { miningState } from '../features/mining/state.js';
 import { physiqueState } from '../features/physique/state.js';
 import { forgingState } from '../features/forging/state.js';
+import { gatheringState } from '../features/gathering/state.js';
 
 export function loadSave(){
   try{
@@ -54,7 +55,7 @@ export const defaultState = () => {
   autoFillShieldFromQi: true,
   stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
-  wood:0, cores:0,
+  wood:0, spiritWood:0, cores:0,
   pills:{qi:0, body:0, ward:0},
   atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
   // Expanded Stat System
@@ -80,6 +81,7 @@ export const defaultState = () => {
     cultivation: false,
     physique: false,
     mining: false,
+    gathering: false,
     adventure: false,
     cooking: false,
     alchemy: false,
@@ -88,6 +90,7 @@ export const defaultState = () => {
   // Activity data containers
   physique: structuredClone(physiqueState),
   mining: structuredClone(miningState),
+  gathering: structuredClone(gatheringState),
   forging: structuredClone(forgingState),
   cooking: {
     level: 1,
@@ -195,7 +198,7 @@ recalculateBuildingBonuses(S);
 // single source of truth for all items.  These properties are not
 // serialized directly; instead their values are derived from the
 // corresponding entries in `S.inventory`.
-['stones', 'ore', 'herbs', 'wood'].forEach(key => {
+['stones', 'ore', 'herbs', 'wood', 'spiritWood'].forEach(key => {
   const initial = S[key] || 0;
   Object.defineProperty(S, key, {
     get() {
