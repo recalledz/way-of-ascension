@@ -34,8 +34,9 @@ export function recomputePlayerTotals(player) {
   player.stats = player.stats || {};
   const baseArmor = calcBaseArmor(player);
   player.stats.armor = armor + baseArmor;
-  player.stats.accuracy = ACCURACY_BASE + accuracy;
-  player.stats.dodge = DODGE_BASE + dodge;
+  const agi = player.stats.agility || 10;
+  player.stats.accuracy = ACCURACY_BASE + (agi - 10) + accuracy;
+  player.stats.dodge = DODGE_BASE + (agi - 10) + dodge;
   player.shield = player.shield || { current: 0, max: 0 };
   const mind = player.stats.mind || 0;
   const shieldMult = 1 + mind * 0.06;

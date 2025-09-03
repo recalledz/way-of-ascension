@@ -9,6 +9,7 @@ export * from '../features/karma/selectors.js';
 export * from '../features/loot/selectors.js';
 export * from '../features/mining/selectors.js';
 export * from '../features/physique/selectors.js';
+export * from '../features/agility/selectors.js';
 export * from '../features/proficiency/selectors.js';
 export * from '../features/progression/selectors.js';
 export * from '../features/sect/selectors.js';

@@ -6,6 +6,7 @@ import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 import { karmaState } from '../features/karma/state.js';
 import { miningState } from '../features/mining/state.js';
 import { physiqueState } from '../features/physique/state.js';
+import { agilityState } from '../features/agility/state.js';
 import { forgingState } from '../features/forging/state.js';
 import { gatheringState } from '../features/gathering/state.js';
 
@@ -80,6 +81,7 @@ export const defaultState = () => {
   activities: {
     cultivation: false,
     physique: false,
+    agility: false,
     mining: false,
     gathering: false,
     adventure: false,
@@ -89,6 +91,7 @@ export const defaultState = () => {
   },
   // Activity data containers
   physique: structuredClone(physiqueState),
+  agility: structuredClone(agilityState),
   mining: structuredClone(miningState),
   gathering: structuredClone(gatheringState),
   forging: structuredClone(forgingState),

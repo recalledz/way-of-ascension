@@ -391,6 +391,35 @@
         </div>
       </section>
 
+      <section id="activity-agility" class="activity-content tab-content" style="display:none;">
+        <h2> Agility Training</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Training Status</h4>
+            <div class="stat"><span>Agility Level</span><span id="agilityLevelActivity">1</span></div>
+            <div class="stat"><span>Experience</span><span><span id="agilityExpActivity">0</span>/<span id="agilityExpMaxActivity">100</span></span></div>
+            <div class="bar"><div class="fill" id="agilityFillActivity"></div></div>
+            <button class="btn primary" id="startAgilityActivity"> Start Training</button>
+          </div>
+
+          <div class="card" id="agilityObstacleCard">
+            <h4> Obstacle Courses</h4>
+            <div class="stat"><span>Courses Built</span><span id="agilityObstacleCount">0</span></div>
+            <div class="stat"><span>XP Bonus</span><span id="agilityXpBonus">0%</span></div>
+            <button class="btn" id="buildObstacleBtn"> Build Course</button>
+          </div>
+
+          <div class="card" id="agilityEffectsCard" style="display:none;">
+            <h4> Agility Effects</h4>
+            <p class="muted">Current bonuses from your agility stat:</p>
+            <div class="stat"><span>Current Agility</span><span id="currentAgilityStat">10</span></div>
+            <div class="stat"><span>Accuracy Bonus</span><span id="agilityAccuracyStat">+0</span></div>
+            <div class="stat"><span>Dodge Bonus</span><span id="agilityDodgeStat">+0</span></div>
+            <div class="stat"><span>Forge Speed</span><span id="agilityForgeStat">+0%</span></div>
+          </div>
+        </div>
+      </section>
+
       <section id="activity-mining" class="activity-content tab-content" style="display:none;">
         <h2> Mining</h2>
         <div class="cards">

@@ -18,6 +18,7 @@ export function mountActivityUI(root) {
 
   document.getElementById('cultivationSelector')?.addEventListener('click', () => handle('cultivation'));
   document.getElementById('physiqueSelector')?.addEventListener('click', () => handle('physique'));
+  document.getElementById('agilitySelector')?.addEventListener('click', () => handle('agility'));
   document.getElementById('miningSelector')?.addEventListener('click', () => handle('mining'));
   document.getElementById('gatheringSelector')?.addEventListener('click', () => handle('gathering'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
@@ -33,6 +34,7 @@ export function updateActivitySelectors(root) {
   root.physique ??= { level: 1, exp: 0, expMax: 100 };
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
+  root.agility ??= { level: 1, exp: 0, expMax: 100 };
 
   const selected = root.ui?.selectedActivity || 'cultivation';
 
@@ -77,6 +79,18 @@ export function updateActivitySelectors(root) {
     const expPct = (root.physique.exp / root.physique.expMax) * 100;
     physFill.style.width = `${expPct}%`;
     physInfo.textContent = root.activities?.physique ? 'Training...' : `Level ${root.physique.level}`;
+  }
+
+  // Agility
+  const agiSel = document.getElementById('agilitySelector');
+  const agiFill = document.getElementById('agilitySelectorFill');
+  const agiInfo = document.getElementById('agilityInfo');
+  agiSel?.classList.toggle('active', selected === 'agility');
+  agiSel?.classList.toggle('running', root.activities?.agility);
+  if (agiFill && agiInfo) {
+    const expPct = (root.agility.exp / root.agility.expMax) * 100;
+    agiFill.style.width = `${expPct}%`;
+    agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
   }
 
   // Mining
@@ -126,6 +140,7 @@ export function updateCurrentTaskDisplay(root) {
   const map = {
     cultivation: 'Cultivating',
     physique: 'Physique Training',
+    agility: 'Agility Training',
     mining: 'Mining',
     gathering: 'Gathering',
     forging: 'Forging',

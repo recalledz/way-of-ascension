@@ -2528,6 +2528,12 @@ main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
   box-shadow:0 0 8px rgba(239, 68, 68, 0.4);
 }
 
+/* Agility training bars */
+#agilityFillActivity{
+  background:linear-gradient(90deg, #3b82f6, #2563eb);
+  box-shadow:0 0 8px rgba(59, 130, 246, 0.4);
+}
+
 /* STYLE-GUIDE-UPDATE: Parchment stat text */
 .stat{display:flex; justify-content:space-between; font-size:13px; margin:8px 0; color:var(--ink); position:relative; z-index:1;}
 .row{display:flex; gap:10px; flex-wrap:wrap}
@@ -3892,6 +3898,10 @@ tr:last-child td {
 
 #physiqueProgressFill {
   background: linear-gradient(90deg, #ef4444, #dc2626) !important; /* Red for physique */
+}
+
+#agilityProgressFill {
+  background: linear-gradient(90deg, #3b82f6, #2563eb) !important; /* Blue for agility */
 }
 
 #miningProgressFill {

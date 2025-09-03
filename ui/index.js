@@ -73,6 +73,8 @@ import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
 import { calcKarmaGain } from '../src/features/karma/selectors.js';
 import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physique/mutators.js';
 import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
+import { tickAgilityTraining } from '../src/features/agility/mutators.js';
+import { mountAgilityUI, updateAgilityUI } from '../src/features/agility/ui/agilityDisplay.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../src/features/activity/mutators.js';
@@ -124,6 +126,7 @@ function initUI(){
   mountMiningUI(S);
   mountGatheringUI(S);
   mountForgingUI(S);
+  mountAgilityUI(S);
   setupAbilityUI();
 
   // Assign buttons
@@ -251,6 +254,9 @@ function updateAll(){
   setFill('physiqueProgressFill', S.physique.exp / S.physique.expMax);
   setText('physiqueProgressText', `${fmt(S.physique.exp)} / ${fmt(S.physique.expMax)} XP`);
   setText('physiqueLevel', `Level ${S.physique.level}`);
+  setFill('agilityProgressFill', S.agility.exp / S.agility.expMax);
+  setText('agilityProgressText', `${fmt(S.agility.exp)} / ${fmt(S.agility.expMax)} XP`);
+  setText('agilityLevel', `Level ${S.agility.level}`);
   const mindProg = mindXpProgress(S.mind.xp);
   setFill('mindProgressFill', mindProg.current / mindProg.next);
   setText('mindProgressText', `${fmt(mindProg.current)} / ${fmt(mindProg.next)} XP`);
@@ -274,6 +280,7 @@ function updateAll(){
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
+  updateAgilityUI(S);
 
   emit('RENDER');
 }
@@ -342,6 +349,17 @@ function updateSidebarActivities() {
     }
   }
 
+  // Update agility
+  if (S.agility) {
+    setText('agilityLevel', `Level ${S.agility.level}`);
+    const agilityFill = document.getElementById('agilityProgressFill');
+    if (agilityFill) {
+      const progressPct = Math.floor(S.agility.exp / S.agility.expMax * 100);
+      agilityFill.style.width = progressPct + '%';
+      setText('agilityProgressText', progressPct + '%');
+    }
+  }
+
   // Update adventure
   if (S.adventure) {
     const currentZone = ZONES[S.adventure.currentZone];
@@ -381,7 +399,7 @@ function updateActivityCards() {
 
 function updateActivityUI() {
   // Update activity status displays
-  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'cooking', 'alchemy'];
+  const activities = ['cultivation', 'physique', 'agility', 'adventure', 'mining', 'cooking', 'alchemy'];
 
   activities.forEach(activity => {
     const statusEl = document.getElementById(`${activity}Status`);
@@ -491,6 +509,9 @@ function tick(){
     }
     log(msg, 'good');
   }
+
+  // Agility training progression
+  tickAgilityTraining(S);
   
   // Auto meditation fallback for old saves
   if(isAutoMeditate() && Object.values(S.activities).every(a => !a)) {

@@ -274,6 +274,13 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       ├── physiqueDisplay.js
 │   │   │       └── trainingGame.js
+│   │   ├── agility/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   └── ui/
+│   │   │       └── agilityDisplay.js
 │   │   ├── talismans/
 │   │   │   └── data/
 │   │   │       └── talismans.js
@@ -360,6 +367,7 @@ way-of-ascension/
 ├── src/features/gathering/ui/
 │   └── gatheringDisplay.js
 ├── src/features/forging/index.js
+├── src/features/agility/index.js
 ├── src/features/physique/index.js
 └── style.css
 ```
@@ -1043,6 +1051,14 @@ Paths added:
 - `src/features/physique/selectors.js` – Accessors for physique levels, experience, stamina, and bonuses.
 - `src/features/physique/ui/physiqueDisplay.js` – Renders physique progress and bonuses in the UI.
  - `src/features/physique/ui/trainingGame.js` – UI for the physique training mini-game; logic and state updates live in `logic.js` and `mutators.js`.
+
+### Agility Feature (`src/features/agility/`)
+- `src/features/agility/state.js` – Tracks agility level, experience, and obstacle courses.
+- `src/features/agility/logic.js` – Calculates accuracy, dodge, and forging bonuses from agility.
+- `src/features/agility/mutators.js` – Manages agility experience, training ticks, and course construction.
+- `src/features/agility/selectors.js` – Accessors for agility level, experience, and courses.
+- `src/features/agility/ui/agilityDisplay.js` – UI for agility training and obstacle course upgrades.
+- `src/features/agility/index.js` – Agility feature descriptor.
 
 ### Alchemy Feature
 - `src/features/alchemy/index.js` – Registers alchemy hooks.

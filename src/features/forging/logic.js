@@ -5,7 +5,9 @@ export function getForgingTime(tier, state = S) {
   const baseMinutes = tier === 0 ? 1 : Math.pow(3, tier + 1);
   const level = state.forging?.level || 1;
   const reduction = Math.pow(0.95, Math.max(0, level - 1));
-  return baseMinutes * 60 * reduction; // seconds
+  const agility = state.stats?.agility || 10;
+  const speedMult = 1 + agility * 0.02;
+  return (baseMinutes * 60 * reduction) / speedMult; // seconds
 }
 
 export function startForging(itemId, element, state = S) {
