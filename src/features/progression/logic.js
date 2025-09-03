@@ -3,6 +3,7 @@ import { LAWS } from './data/laws.js';
 import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
+import { getEquippedWeapon } from '../inventory/selectors.js';
 import { karmaQiRegenBonus, karmaAtkBonus, karmaArmorBonus } from '../karma/logic.js';
 import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 import { getCookingSuccessBonus } from '../cooking/selectors.js';
@@ -167,7 +168,32 @@ export function getStatEffects(state = progressionState) {
 }
 
 export function calculatePlayerCombatAttack(state = progressionState) {
-  return calcAtk(state);
+  const weapon = getEquippedWeapon(state);
+  const physBase = weapon?.base?.phys || { min: 0, max: 0 };
+  const basePhys = (physBase.min + physBase.max) / 2;
+
+  const elems = {};
+  for (const [elem, range] of Object.entries(weapon?.base?.elems || {})) {
+    elems[elem] = (range.min + range.max) / 2;
+  }
+
+  const profMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
+  const lawMult = getLawBonuses(state).atk || 1;
+  const realm = REALMS[state.realm.tier] || { atk: 1 };
+  const stageMult = 1 + (state.realm.stage - 1) * 0.08;
+  const realmMult = (realm.atk || 1) * stageMult;
+  const buildingMult = 1 + (Number(getBuildingBonuses(state).atkBase) || 0) / 100;
+  const karmaMult = 1 + (Number(karmaAtkBonus(state)) || 0) / 100;
+
+  const totalMult = profMult * lawMult * realmMult * buildingMult * karmaMult;
+
+  const phys = basePhys * totalMult;
+  const scaledElems = {};
+  for (const [elem, val] of Object.entries(elems)) {
+    scaledElems[elem] = val * totalMult;
+  }
+
+  return { phys, elems: scaledElems };
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {

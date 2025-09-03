@@ -59,7 +59,14 @@ export function getStatEffects(state = progressionState) {
 }
 
 export function calculatePlayerCombatAttack(state = progressionState) {
-  return calcPlayerCombatAttack(state) * getTunable('combat.damageMult', 1);
+  const profile = calcPlayerCombatAttack(state);
+  const mult = getTunable('combat.damageMult', 1);
+  return {
+    phys: profile.phys * mult,
+    elems: Object.fromEntries(
+      Object.entries(profile.elems).map(([k, v]) => [k, v * mult])
+    ),
+  };
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
