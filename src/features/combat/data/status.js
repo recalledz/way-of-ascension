@@ -41,6 +41,7 @@ export const STATUSES = {
   interrupt: { // STATUS-REFORM
     element: null,
     duration: 0.1,
+    maxStacks: 1,
   },
 };
 

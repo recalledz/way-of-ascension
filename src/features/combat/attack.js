@@ -3,7 +3,7 @@ import { applyAilment, applyStatus } from './mutators.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 
 export function performAttack(attacker, target, options = {}, state) { // STATUS-REFORM
-  const { ability, isCrit = false, weapon, profile } = options;
+  const { ability, isCrit = false, weapon, profile, physDamage = 0 } = options;
 
   let attackElement;
   let attackIsPhysical = false;
@@ -23,28 +23,26 @@ export function performAttack(attacker, target, options = {}, state) { // STATUS
 
   if (ability && ability.status) { // STATUS-REFORM
     const { key, power } = ability.status;
-    const chance = isCrit ? 1 : power;
-    if (Math.random() < chance) {
-      console.log(`[status] ${key} applied ${isCrit ? '(crit)' : '(roll)'}`); // STATUS-REFORM
-      applyAilment(attackerCtx, target, key, power, now);
-    } else {
-      console.log(`[status] ${key} failed (roll)`); // STATUS-REFORM
-    }
+    const applied = applyAilment(attackerCtx, target, key, isCrit ? 1 : power, now);
+    console.log(`[status] ${key} ${applied ? 'applied' : 'failed'} ${isCrit ? '(crit)' : ''}`); // STATUS-REFORM
   } else if (attackElement && STATUSES_BY_ELEMENT[attackElement]) { // STATUS-REFORM
     const { key, power } = STATUSES_BY_ELEMENT[attackElement];
-    const chance = isCrit ? 1 : power;
-    if (Math.random() < chance) {
-      console.log(`[status] ${key} applied ${isCrit ? '(crit)' : '(roll)'}`); // STATUS-REFORM
-      applyAilment(attackerCtx, target, key, power, now);
-    } else {
-      console.log(`[status] ${key} failed (roll)`); // STATUS-REFORM
-    }
+    const applied = applyAilment(attackerCtx, target, key, isCrit ? 1 : power, now);
+    console.log(`[status] ${key} ${applied ? 'applied' : 'failed'} ${isCrit ? '(crit)' : ''}`); // STATUS-REFORM
   }
 
-  if (attackIsPhysical) { // STATUS-REFORM
-    // Stun accumulation is now handled by processAttack/onPhysicalHit.
-    // Keep only interrupt application here to avoid NaN when hpMax is missing.
-    applyStatus(target, 'interrupt', 0.05, state, { attackerStats, targetStats });
+  if (attackIsPhysical && physDamage > 0) { // STATUS-REFORM
+    const maxHp =
+      target?.stats?.hpMax ??
+      target?.hpMax ??
+      state?.adventure?.enemyMaxHP ??
+      0;
+    if (maxHp > 0 && !target.statuses?.interrupt) {
+      const chance = physDamage / maxHp;
+      if (chance >= 0.02 && Math.random() < chance) {
+        applyStatus(target, 'interrupt', 1, state, { attackerStats, targetStats });
+      }
+    }
   }
 }
 

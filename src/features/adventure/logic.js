@@ -44,6 +44,16 @@ import { updateFoodSlots } from '../cooking/ui/cookControls.js';
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
 const loggedResistTypes = new Set();
+const AILMENT_ICONS = {
+  poison: '☠️',
+  burn: '🔥',
+  chill: '❄️',
+  entomb: '🪨',
+  ionize: '⚡',
+  enfeeble: '💀',
+  stun: '💢',
+  interrupt: '🚫'
+};
 function logEnemyResists(enemy) {
   if (enemy && !loggedResistTypes.has(enemy.type)) {
     console.log('[resist]', enemy.type, enemy.resists);
@@ -159,6 +169,30 @@ export function ensureAdventure() {
   if (!S.adventure.unlockedAreas) S.adventure.unlockedAreas = { "0-0": true };
 }
 
+function renderAilments(entity, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const now = Date.now();
+  const pieces = [];
+  if (entity?.statuses) {
+    for (const [key, inst] of Object.entries(entity.statuses)) {
+      const dur = inst.duration ?? 0;
+      if (dur <= 0) continue;
+      const icon = AILMENT_ICONS[key] || '❔';
+      pieces.push(`<div class="ailment" title="${key}"><span class="icon">${icon}</span><span class="stack">${inst.stacks || 1}</span><span class="duration">${dur.toFixed(1)}s</span></div>`);
+    }
+  }
+  if (entity?.ailments) {
+    for (const [key, inst] of Object.entries(entity.ailments)) {
+      const icon = AILMENT_ICONS[key] || '❔';
+      let remaining = inst.expires;
+      if (remaining > 1e6) remaining = (remaining - now) / 1000;
+      pieces.push(`<div class="ailment" title="${key}"><span class="icon">${icon}</span><span class="stack">${inst.stacks || 1}</span><span class="duration">${remaining.toFixed(1)}s</span></div>`);
+    }
+  }
+  el.innerHTML = pieces.join('');
+}
+
 // MAP-UI-UPDATE: Area selection by ID with save persistence
 export function selectAreaById(zoneId, areaId, areaIndex) {
   const zone = getZoneById(zoneId);
@@ -251,6 +285,7 @@ export function updateBattleDisplay() {
   if (rateEl) rateEl.title = `Rate: ${playerAttackRate.toFixed(1)}/s`;
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
+  renderAilments(S, 'playerAilments');
 
   // Calculate physical mitigation against the strongest enemy in the current zone
   let mitPct = 0;
@@ -357,6 +392,8 @@ export function updateBattleDisplay() {
     if (enemyQiFill) enemyQiFill.style.width = '0%';
     const affixEl = document.getElementById('enemyAffixes');
     if (affixEl) affixEl.innerHTML = '';
+    const enemyAilEl = document.getElementById('enemyAilments');
+    if (enemyAilEl) enemyAilEl.innerHTML = '';
     const enemyStunFill = document.getElementById('enemyStunFill');
     if (enemyStunFill) {
       enemyStunFill.style.width = '0%';
@@ -572,7 +609,7 @@ export function updateAdventureCombat() {
           showFloatingText({ targetEl: enemyEl, result: isCrit ? 'crit' : 'hit', amount: dealt });
         }
         S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
-        performAttack(S, S.adventure.currentEnemy, { weapon, profile, isCrit }, S); // STATUS-REFORM
+        performAttack(S, S.adventure.currentEnemy, { weapon, profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -654,7 +691,7 @@ export function updateAdventureCombat() {
           if (playerEl) {
             showFloatingText({ targetEl: playerEl, result: isCrit ? 'crit' : 'hit', amount: taken });
           }
-          performAttack(S.adventure.currentEnemy, S, { profile, isCrit }, S); // STATUS-REFORM
+          performAttack(S.adventure.currentEnemy, S, { profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
           S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
           if (weapon.classKey === 'focus') {
             const pos = getCombatPositions();
@@ -697,6 +734,10 @@ export function updateAdventureCombat() {
         }
       }
     }
+  }
+  renderAilments(S, 'playerAilments');
+  if (S.adventure.currentEnemy) {
+    renderAilments(S.adventure.currentEnemy, 'enemyAilments');
   }
 }
 

@@ -147,14 +147,12 @@ function applyAbilityResult(abilityKey, res, state) {
       const compText = parts.length ? ` (${parts.join(', ')})` : '';
       logs?.push(`You used ${ability.displayName} for ${dealt} damage${compText}.`);
 
-      performAttack(state, atkTarget, { weapon, profile }, state);
+      performAttack(state, atkTarget, { weapon, profile, physDamage: components.phys }, state);
     }
 
     if (ability.status) {
       const { key, power } = ability.status;
-      if (Math.random() < power) {
-        applyAilment(attackerCtx, target, key, power, now);
-      }
+      applyAilment(attackerCtx, target, key, power, now);
     }
 
     if (res.stun) {
