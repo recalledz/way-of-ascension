@@ -1,9 +1,13 @@
 import { S } from '../../shared/state.js';
 import { initializeFight as baseInitializeFight, processAttack as baseProcessAttack } from './logic.js';
-import { applyStatus as baseApplyStatus } from './statusEngine.js';
+import { applyStatus as baseApplyStatus, applyAilment as baseApplyAilment } from './statusEngine.js';
 
 export function applyStatus(target, key, power, state = S, options) {
   return baseApplyStatus(target, key, power, state, options);
+}
+
+export function applyAilment(attacker, target, key, power, nowMs) {
+  return baseApplyAilment(attacker, target, key, power, nowMs);
 }
 
 export function initializeFight(enemy, state = S) {
