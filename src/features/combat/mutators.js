@@ -23,7 +23,6 @@ export function initializeFight(enemy, state = S) {
 }
 
 export function processAttack(profile, weapon, options = {}, state = S) {
-  let dealt = 0;
   const target = options.target || state.adventure?.currentEnemy;
   let currentHP;
 
@@ -37,13 +36,12 @@ export function processAttack(profile, weapon, options = {}, state = S) {
     currentHP = state.adventure.enemyHP;
   }
 
-  const { total } = baseProcessAttack(profile, weapon, {
+  const result = baseProcessAttack(profile, weapon, {
     ...options,
     target,
-    onDamage: (t) => (dealt = t),
   });
 
-  const newHP = Math.max(0, Math.round(currentHP - dealt));
+  const newHP = Math.max(0, Math.round(currentHP - result.total));
 
   if (target === state || target === S) {
     state.adventure.playerHP = newHP;
@@ -54,6 +52,6 @@ export function processAttack(profile, weapon, options = {}, state = S) {
     target.hp = newHP;
   }
 
-  return dealt;
+  return result;
 }
 

@@ -4,7 +4,7 @@ import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { processAttack, applyStatus, applyAilment } from '../combat/mutators.js';
-import { STATUSES_BY_ELEMENT } from '../combat/data/statusesByElement.js';
+import { performAttack } from '../combat/attack.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { getStatEffects } from '../progression/selectors.js';
@@ -132,21 +132,22 @@ function applyAbilityResult(abilityKey, res, state) {
           ? { phys: amount, elems: {} }
           : { phys: 0, elems: { [type]: amount } };
       const typeMults = { [type === 'physical' ? 'physical' : type]: treeMult };
-      const dealt = processAttack(
+      const { total: dealt, components } = processAttack(
         profile,
         weapon,
         { target: atkTarget, attacker: state, nowMs: now, typeMults, globalMult: mult },
         state
       );
       totalDealt += dealt;
-      logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
-
-      if (type && STATUSES_BY_ELEMENT[type]) {
-        const { key, power } = STATUSES_BY_ELEMENT[type];
-        if (Math.random() < power) {
-          applyAilment(attackerCtx, atkTarget, key, power, now);
-        }
+      const parts = [];
+      if (components.phys) parts.push(`${components.phys} physical`);
+      for (const [elem, val] of Object.entries(components.elems)) {
+        parts.push(`${val} ${elem}`);
       }
+      const compText = parts.length ? ` (${parts.join(', ')})` : '';
+      logs?.push(`You used ${ability.displayName} for ${dealt} damage${compText}.`);
+
+      performAttack(state, atkTarget, { weapon, profile }, state);
     }
 
     if (ability.status) {
