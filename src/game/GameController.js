@@ -9,6 +9,7 @@ import "../features/proficiency/index.js";
 import "../features/weaponGeneration/index.js";
 import "../features/sect/index.js";
 import "../features/alchemy/index.js";
+import "../features/combat/index.js";
 
 export function createGameController() {
   const state = {
