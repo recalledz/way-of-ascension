@@ -518,11 +518,13 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
-        let dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
+        const profMult = getWeaponProficiencyBonuses(S).damageMult;
+        const playerAttackBase = (Number(calculatePlayerCombatAttack(S)) || 0) / profMult;
+        let dmg = Math.max(1, Math.round(isCrit ? playerAttackBase * 2 : playerAttackBase));
         let attackType = 'physical';
+        let externalMult = profMult;
         if (S.lightningStep) {
-          dmg = Math.round(dmg * S.lightningStep.damageMult);
+          externalMult *= S.lightningStep.damageMult;
           attackType = 'metal';
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
@@ -530,8 +532,8 @@ export function updateAdventureCombat() {
           }
         }
         const dealt = processAttack(
-          dmg,
-          { attacker: S, target: S.adventure.currentEnemy, type: attackType, nowMs: now },
+          [{ amount: dmg, type: attackType, mult: externalMult }],
+          { attacker: S, target: S.adventure.currentEnemy, nowMs: now, weapon: weapon.key },
           S
         );
         gainProficiencyFromEnemy(weapon.classKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
@@ -604,8 +606,8 @@ export function updateAdventureCombat() {
           const baseDamage = Math.round(Number(S.adventure.currentEnemy.attack) || 5);
           const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
           const taken = processAttack(
-            enemyDamage,
-            { attacker: S.adventure.currentEnemy, target: S, type: 'physical', nowMs: now },
+            [{ amount: enemyDamage, type: 'physical' }],
+            { attacker: S.adventure.currentEnemy, target: S, nowMs: now },
             S
           );
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);

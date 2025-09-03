@@ -108,21 +108,26 @@ function applyAbilityResult(abilityKey, res, state) {
       const { type, target: atkTarget } = atk;
       let amount = atk.amount;
 
+      let mult = 1;
       if (mods?.damagePct) {
-        amount = Math.round(amount * (1 + mods.damagePct / 100));
+        mult *= 1 + mods.damagePct / 100;
       }
 
       if (isSpell) {
         if (weapon.classKey === 'focus') {
-          amount = Math.round(amount * getWeaponProficiencyBonuses(state).damageMult);
+          mult *= getWeaponProficiencyBonuses(state).damageMult;
         }
         const { spellPowerMult } = getStatEffects(state);
         const spellDamage = state.stats?.spellDamage || 0;
         const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
-        amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
+        mult *= spellPowerMult * (1 + spellDamage / 100) * treeMult;
       }
 
-      const dealt = processAttack(amount, { target: atkTarget, type, attacker: state, nowMs: now }, state);
+      const dealt = processAttack(
+        [{ amount, type, mult }],
+        { target: atkTarget, attacker: state, nowMs: now, weapon: weapon.key },
+        state
+      );
       totalDealt += dealt;
       logs?.push(`You used ${ability.displayName} for ${dealt} ${type === 'physical' ? 'Physical ' : ''}damage.`);
 
