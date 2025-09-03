@@ -238,13 +238,25 @@ export function updateBattleDisplay() {
     if (statuses.stunImmune) info.push('stunImmune active');
     playerStunBarEl.title = info.join('\n');
   }
-  const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
+  const playerAttackProfile = calculatePlayerCombatAttack(S);
+  let attackType = 'physical';
+  let playerAttack = Number(playerAttackProfile.phys) || 0;
+  if (S.lightningStep) {
+    attackType = 'metal';
+    playerAttack = Number(playerAttackProfile.elems?.metal) || 0;
+  } else if (playerAttack <= 0) {
+    const first = Object.entries(playerAttackProfile.elems || {})[0];
+    if (first) {
+      attackType = first[0];
+      playerAttack = Number(first[1]) || 0;
+    }
+  }
   let playerAttackRate = calculatePlayerAttackRate(S);
   if (S.lightningStep) {
     playerAttackRate *= S.lightningStep.attackSpeedMult;
   }
   const atkEl = document.getElementById('playerAttack');
-  if (atkEl) atkEl.title = `ATK: ${Math.round(playerAttack)}`;
+  if (atkEl) atkEl.title = `ATK (${attackType}): ${Math.round(playerAttack)}`;
   const rateEl = document.getElementById('playerAttackRate');
   if (rateEl) rateEl.title = `Rate: ${playerAttackRate.toFixed(1)}/s`;
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
@@ -518,29 +530,38 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const playerAttackBase = Number(calculatePlayerCombatAttack(S)) || 0;
-        let dmg = Math.max(1, Math.round(isCrit ? playerAttackBase * 2 : playerAttackBase));
+        const atkProfile = calculatePlayerCombatAttack(S);
         let attackType = 'physical';
+        let base = Number(atkProfile.phys) || 0;
+        if (base <= 0) {
+          const first = Object.entries(atkProfile.elems || {})[0];
+          if (first) {
+            attackType = first[0];
+            base = Number(first[1]) || 0;
+          }
+        }
         let externalMult = 1;
         if (S.lightningStep) {
           externalMult *= S.lightningStep.damageMult;
           attackType = 'metal';
+          base = Number(atkProfile.elems?.metal) || 0;
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
         }
+        const playerAttackBase = Math.max(1, Math.round(isCrit ? base * 2 : base));
         const bonusKey =
           attackType === 'physical' ? 'physicalDamagePct' : `${attackType}DamagePct`;
         const treeMult =
           1 + (S.astralTreeBonuses?.[bonusKey] || 0) / 100;
         const dealt = processAttack(
-          [{ amount: dmg, type: attackType, mult: externalMult }],
+          [{ amount: playerAttackBase, type: attackType, mult: externalMult }],
           {
             attacker: S,
             target: S.adventure.currentEnemy,
             nowMs: now,
-            weapon: weapon.key,
+            weapon: 'fist',
             treeMult,
           },
           S
@@ -1251,8 +1272,13 @@ export function updateActivityAdventure() {
     const equipped = getEquippedWeapon(S);
     setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   }
-  const baseAttack = Math.round(calculatePlayerCombatAttack(S));
-  setText('baseDamage', baseAttack);
+  const baseProfile = calculatePlayerCombatAttack(S);
+  let baseAttack = Number(baseProfile.phys) || 0;
+  if (baseAttack <= 0) {
+    const first = Object.values(baseProfile.elems || {})[0] || 0;
+    baseAttack = Number(first) || 0;
+  }
+  setText('baseDamage', Math.round(baseAttack));
   const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
   if (enemyData) {
     const enemyDodge = (enemyData.stats?.dodge ?? enemyData.dodge ?? 0) + DODGE_BASE;
