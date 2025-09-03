@@ -238,7 +238,8 @@ export function updateBattleDisplay() {
     if (statuses.stunImmune) info.push('stunImmune active');
     playerStunBarEl.title = info.join('\n');
   }
-  const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
+  const playerAttackProfile = calculatePlayerCombatAttack(S);
+  const playerAttack = Number(playerAttackProfile.phys) || 0;
   let playerAttackRate = calculatePlayerAttackRate(S);
   if (S.lightningStep) {
     playerAttackRate *= S.lightningStep.attackSpeedMult;
@@ -518,24 +519,26 @@ export function updateAdventureCombat() {
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const playerAttackBase = Number(calculatePlayerCombatAttack(S)) || 0;
-        let dmg = Math.max(1, Math.round(isCrit ? playerAttackBase * 2 : playerAttackBase));
+        const atkProfile = calculatePlayerCombatAttack(S);
         let attackType = 'physical';
+        let base = Number(atkProfile.phys) || 0;
         let externalMult = 1;
         if (S.lightningStep) {
           externalMult *= S.lightningStep.damageMult;
           attackType = 'metal';
+          base = Number(atkProfile.elems?.metal) || 0;
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
         }
+        const playerAttackBase = Math.max(1, Math.round(isCrit ? base * 2 : base));
         const bonusKey =
           attackType === 'physical' ? 'physicalDamagePct' : `${attackType}DamagePct`;
         const treeMult =
           1 + (S.astralTreeBonuses?.[bonusKey] || 0) / 100;
         const dealt = processAttack(
-          [{ amount: dmg, type: attackType, mult: externalMult }],
+          [{ amount: playerAttackBase, type: attackType, mult: externalMult }],
           {
             attacker: S,
             target: S.adventure.currentEnemy,
@@ -1251,7 +1254,7 @@ export function updateActivityAdventure() {
     const equipped = getEquippedWeapon(S);
     setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   }
-  const baseAttack = Math.round(calculatePlayerCombatAttack(S));
+  const baseAttack = Math.round(calculatePlayerCombatAttack(S).phys);
   setText('baseDamage', baseAttack);
   const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
   if (enemyData) {

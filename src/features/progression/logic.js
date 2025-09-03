@@ -4,6 +4,7 @@ import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
 import { karmaQiRegenBonus, karmaAtkBonus, karmaArmorBonus } from '../karma/logic.js';
+import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 import { getCookingSuccessBonus } from '../cooking/selectors.js';
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
@@ -167,7 +168,17 @@ export function getStatEffects(state = progressionState) {
 }
 
 export function calculatePlayerCombatAttack(state = progressionState) {
-  return calcAtk(state);
+  const weapon = getEquippedWeapon(state);
+  const base = calcAtk(state);
+  const physBase = weapon?.base?.phys || { min: 0, max: 0 };
+  const physAvg = (Number(physBase.min) + Number(physBase.max)) / 2;
+  const phys = base * physAvg;
+  const elems = {};
+  const baseElems = weapon?.base?.elems || {};
+  for (const [elem, mult] of Object.entries(baseElems)) {
+    elems[elem] = base * mult;
+  }
+  return { phys, elems };
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
