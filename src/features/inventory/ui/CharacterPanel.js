@@ -155,11 +155,22 @@ function weaponDetailsHTML(item) {
   const name = w.displayName || w.name;
   const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
 
-  const min = w.base?.phys?.min ?? 0;
-  const max = w.base?.phys?.max ?? 0;
+  const phys = w.base?.phys || { min: 0, max: 0 };
+  const elems = w.base?.elems || {};
   const speed = w.base ? (w.base.attackRate ?? w.base.rate) : 0;
-  const dps = (((min + max) / 2) * speed).toFixed(1);
-  const core = `<div class="tooltip-core"><div class="dps-row"><span class="icon">🔥</span><span class="value">${dps}</span></div><div class="stat-row"><span class="label">⚔ Damage</span><span class="value">${min}–${max}</span></div><div class="stat-row"><span class="label">⏱ Speed</span><span class="value">${speed.toFixed(1)}/s</span></div></div>`;
+  const dmgParts = [];
+  let avg = 0;
+  if ((phys.min ?? 0) > 0 || (phys.max ?? 0) > 0) {
+    dmgParts.push(`<span style="color:${ELEMENT_COLORS.physical}">${phys.min}–${phys.max}</span>`);
+    avg += (phys.min + phys.max) / 2;
+  }
+  for (const [el, range] of Object.entries(elems)) {
+    dmgParts.push(`<span style="color:${ELEMENT_COLORS[el] || ELEMENT_COLORS.physical}">${range.min}–${range.max}</span>`);
+    avg += (range.min + range.max) / 2;
+  }
+  const dps = (avg * speed).toFixed(1);
+  const dmgLine = dmgParts.join(', ');
+  const core = `<div class="tooltip-core"><div class="dps-row"><span class="icon">🔥</span><span class="value">${dps}</span></div><div class="stat-row"><span class="label">⚔ Damage</span><span class="value">${dmgLine}</span></div><div class="stat-row"><span class="label">⏱ Speed</span><span class="value">${speed.toFixed(1)}/s</span></div></div>`;
 
   const imbEl = item.imbuement?.element || 'physical';
   const imbTier = item.imbuement?.tier ?? 0;
