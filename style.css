@@ -4530,13 +4530,20 @@ html.reduce-motion .log-sheet{transition:none;}
   will-change:transform,opacity;
 }
 .fct-crit{
-  color:#ffd700;
   font-weight:700;
 }
 .fct-miss{
   color:#9ab;
   font-style:italic;
 }
+.fct-phys{color:#fff;}
+.fct-fire{color:#f44336;}
+.fct-water{color:#2196f3;}
+.fct-wood{color:#4caf50;}
+.fct-earth{color:#795548;}
+.fct-metal{color:#c0c0c0;}
+.fct-cold{color:#80d8ff;}
+.fct-lightning{color:#ffeb3b;}
 
 /* Astral Skill Tree overlay */
 .astral-skill-tree{

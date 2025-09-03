@@ -39,7 +39,7 @@ export function setFloatingTextEnabled(v) {
   enabled = v;
 }
 
-export function showFloatingText({ targetEl, result, amount = 0 }) {
+export function showFloatingText({ targetEl, result, amount = 0, element }) {
   if (!enabled || !targetEl) return;
 
   const rect = targetEl.getBoundingClientRect();
@@ -53,7 +53,8 @@ export function showFloatingText({ targetEl, result, amount = 0 }) {
   if (result === 'miss') text = 'Miss';
   else text = result === 'crit' ? `${amount}!` : String(amount);
   node.textContent = text;
-  node.className = `fct fct-${result}`;
+  const elemClass = element ? ` fct-${element}` : '';
+  node.className = `fct fct-${result}${elemClass}`;
   node.style.visibility = 'hidden';
   document.body.appendChild(node);
 

@@ -606,7 +606,24 @@ export function updateAdventureCombat() {
         S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}${compText}`);
         const enemyEl = document.querySelector('.combatant.enemy');
         if (enemyEl) {
-          showFloatingText({ targetEl: enemyEl, result: isCrit ? 'crit' : 'hit', amount: dealt });
+          if (components.phys) {
+            showFloatingText({
+              targetEl: enemyEl,
+              result: isCrit ? 'crit' : 'hit',
+              amount: components.phys,
+              element: 'phys',
+            });
+          }
+          for (const [elem, val] of Object.entries(components.elems)) {
+            if (val) {
+              showFloatingText({
+                targetEl: enemyEl,
+                result: isCrit ? 'crit' : 'hit',
+                amount: val,
+                element: elem,
+              });
+            }
+          }
         }
         S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
         performAttack(S, S.adventure.currentEnemy, { weapon, profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
@@ -689,7 +706,24 @@ export function updateAdventureCombat() {
           S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you${compText}`);
           const playerEl = document.querySelector('.combatant.player');
           if (playerEl) {
-            showFloatingText({ targetEl: playerEl, result: isCrit ? 'crit' : 'hit', amount: taken });
+            if (components.phys) {
+              showFloatingText({
+                targetEl: playerEl,
+                result: isCrit ? 'crit' : 'hit',
+                amount: components.phys,
+                element: 'phys',
+              });
+            }
+            for (const [elem, val] of Object.entries(components.elems)) {
+              if (val) {
+                showFloatingText({
+                  targetEl: playerEl,
+                  result: isCrit ? 'crit' : 'hit',
+                  amount: val,
+                  element: elem,
+                });
+              }
+            }
           }
           performAttack(S.adventure.currentEnemy, S, { profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
           S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
