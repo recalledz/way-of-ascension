@@ -44,3 +44,53 @@ export function hasAilment(target, key) {
 export function clearAilment(target, key) {
   if (target?.ailments) delete target.ailments[key];
 }
+
+export function tickAilments(entity, dtSec, state) {
+  if (!entity?.ailments) return;
+  const now = Date.now();
+  for (const key of Object.keys(entity.ailments)) {
+    const inst = entity.ailments[key];
+    const def = AILMENTS[key];
+    if (!def) {
+      delete entity.ailments[key];
+      continue;
+    }
+
+    if (inst.expires > 1e6) {
+      inst.expires = (inst.expires - now) / 1000;
+    } else {
+      inst.expires -= dtSec;
+    }
+
+    if (inst._lastStack !== inst.stacks) {
+      def.onApply?.({ target: entity, stack: inst.stacks });
+      inst._lastStack = inst.stacks;
+    }
+
+    if (def.tickRate > 0) {
+      const stat = def.scaleStat ? entity.stats?.[def.scaleStat] || 0 : 0;
+      const factor = def.scaleFactor ?? 0.1;
+      const dmgPerSec = def.tickRate * inst.stacks + stat * factor * inst.stacks;
+      dealAilmentDamage(entity, dmgPerSec * dtSec, state);
+    }
+
+    if (inst.expires <= 0) {
+      def.onExpire?.({ target: entity });
+      delete entity.ailments[key];
+    }
+  }
+}
+
+function dealAilmentDamage(target, dmg, state) {
+  const amount = Math.round(dmg);
+  if (amount <= 0) return;
+  if (target === state) {
+    state.hp = Math.max(0, (state.hp || 0) - amount);
+    if (state.adventure) state.adventure.playerHP = state.hp;
+  } else if (target === state.adventure?.currentEnemy) {
+    state.adventure.enemyHP = Math.max(0, (state.adventure.enemyHP || 0) - amount);
+    if (typeof target.hp === 'number') target.hp = Math.max(0, target.hp - amount);
+  } else if (typeof target.hp === 'number') {
+    target.hp = Math.max(0, target.hp - amount);
+  }
+}
