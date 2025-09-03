@@ -152,7 +152,7 @@ function applyAbilityResult(abilityKey, res, state) {
 
     if (ability.status) {
       const { key, power } = ability.status;
-      applyAilment(attackerCtx, target, key, power, now);
+      applyAilment(attackerCtx, target, key, power, now, state);
     }
 
     if (res.stun) {

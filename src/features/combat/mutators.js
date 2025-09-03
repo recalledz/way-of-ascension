@@ -6,8 +6,8 @@ export function applyStatus(target, key, power, state = S, options) {
   return baseApplyStatus(target, key, power, state, options);
 }
 
-export function applyAilment(attacker, target, key, power, nowMs) {
-  return baseApplyAilment(attacker, target, key, power, nowMs);
+export function applyAilment(attacker, target, key, power, nowMs, state = S) {
+  return baseApplyAilment(attacker, target, key, power, nowMs, state);
 }
 
 export function initializeFight(enemy, state = S) {

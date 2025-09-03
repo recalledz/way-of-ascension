@@ -25,7 +25,7 @@ export function applyStatus(target, key, power, state, options = {}) { // STATUS
   }
 }
 
-export function applyAilment(attacker, target, key, power, nowMs) {
+export function applyAilment(attacker, target, key, power, nowMs, state) {
   const def = AILMENTS[key];
   if (!def || !target) return false;
   const attackerStats = attacker?.stats || {};
@@ -41,6 +41,17 @@ export function applyAilment(attacker, target, key, power, nowMs) {
   current.stacks = Math.min(def.maxStacks ?? Infinity, current.stacks + 1);
   current.expires = nowMs + def.baseDurationSec * 1000;
   target.ailments[key] = current;
+
+  def.onApply?.({ target, stack: current.stacks });
+  current._lastStack = current.stacks;
+
+  if (state?.adventure) {
+    state.adventure.combatLog = state.adventure.combatLog || [];
+    const targetName = target === state ? 'You' : target.name || 'Enemy';
+    const stackText = current.stacks > 1 ? ` x${current.stacks}` : '';
+    state.adventure.combatLog.push(`${targetName} afflicted with ${key}${stackText}`);
+  }
+
   return true;
 }
 

@@ -23,11 +23,11 @@ export function performAttack(attacker, target, options = {}, state) { // STATUS
 
   if (ability && ability.status) { // STATUS-REFORM
     const { key, power } = ability.status;
-    const applied = applyAilment(attackerCtx, target, key, isCrit ? 1 : power, now);
+    const applied = applyAilment(attackerCtx, target, key, isCrit ? 1 : power, now, state);
     console.log(`[status] ${key} ${applied ? 'applied' : 'failed'} ${isCrit ? '(crit)' : ''}`); // STATUS-REFORM
   } else if (attackElement && STATUSES_BY_ELEMENT[attackElement]) { // STATUS-REFORM
     const { key, power } = STATUSES_BY_ELEMENT[attackElement];
-    const applied = applyAilment(attackerCtx, target, key, isCrit ? 1 : power, now);
+    const applied = applyAilment(attackerCtx, target, key, isCrit ? 1 : power, now, state);
     console.log(`[status] ${key} ${applied ? 'applied' : 'failed'} ${isCrit ? '(crit)' : ''}`); // STATUS-REFORM
   }
 
