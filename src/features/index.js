@@ -8,6 +8,7 @@ import { mountAlchemyUI } from "./alchemy/ui/alchemyDisplay.js";
 import { mountCookingUI } from "./cooking/ui/cookingDisplay.js";
 import { mountLawDisplay } from "./progression/ui/lawDisplay.js";
 import { mountMiningUI } from "./mining/ui/miningDisplay.js";
+import { mountGatheringUI } from "./gathering/ui/gatheringDisplay.js";
 import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
@@ -24,6 +25,7 @@ export function mountAllFeatureUIs(state) {
   mountAlchemyUI(state);
   mountCookingUI(state);
   mountMiningUI(state);
+  mountGatheringUI(state);
   mountForgingUI(state);
   mountPhysiqueUI(state);
   mountLawDisplay(state);

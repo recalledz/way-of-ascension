@@ -443,6 +443,42 @@
         </div>
       </section>
 
+      <section id="activity-gathering" class="activity-content tab-content" style="display:none;">
+        <h2> Gathering</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Gathering Status</h4>
+            <div class="stat"><span>Gathering Level</span><span id="gatheringLevelActivity">1</span></div>
+            <div class="stat"><span>Experience</span><span><span id="gatheringExpActivity">0</span>/<span id="gatheringExpMaxActivity">100</span></span></div>
+            <div class="bar"><div class="fill" id="gatheringFillActivity"></div></div>
+            <div class="stat"><span>Currently Gathering</span><span id="currentlyGathering">Nothing</span></div>
+            <button class="btn primary" id="startGatheringActivity"> Start Gathering</button>
+          </div>
+
+          <div class="card">
+            <h4>Resource Selection</h4>
+            <p class="muted">Select which resource to gather. Gathering is passive - resources are gained automatically over time.</p>
+            <div class="mining-resources" id="gatheringResourceSelection">
+              <div class="resource-option" data-resource="wood">
+                <input type="radio" name="gatheringResource" id="gatherWood" value="wood" checked>
+                <label for="gatherWood">
+                  <span class="resource-icon"></span>
+                  <span class="resource-name">Wood</span>
+                  <span class="resource-rate" id="woodRate">+2-4/sec</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="gatheringStatsCard" style="display:none;">
+            <h4> Gathering Progress</h4>
+            <div class="stat"><span>Wood Collected</span><span id="gatheredWood">0</span></div>
+            <div class="stat"><span>Gathering Rate</span><span id="currentGatheringRate">0/sec</span></div>
+            <div class="muted" style="margin-top:8px">Gathering grants experience over time</div>
+          </div>
+        </div>
+      </section>
+
       <section id="activity-forging" class="activity-content tab-content" style="display:none;">
         <h2>⚒️ Forging</h2>
         <div class="cards">
