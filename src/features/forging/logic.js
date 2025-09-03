@@ -1,11 +1,13 @@
 import { S } from '../../shared/state.js';
 import { log } from '../../shared/utils/dom.js';
+import { getAgilityEffects } from '../agility/logic.js';
 
 export function getForgingTime(tier, state = S) {
   const baseMinutes = tier === 0 ? 1 : Math.pow(3, tier + 1);
   const level = state.forging?.level || 1;
   const reduction = Math.pow(0.95, Math.max(0, level - 1));
-  return baseMinutes * 60 * reduction; // seconds
+  const { forgeSpeed } = getAgilityEffects(state);
+  return baseMinutes * 60 * reduction / forgeSpeed; // seconds
 }
 
 export function startForging(itemId, element, state = S) {

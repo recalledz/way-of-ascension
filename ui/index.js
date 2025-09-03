@@ -71,8 +71,10 @@ import { updateResourceDisplay } from '../src/features/inventory/ui/resourceDisp
 import { updateKarmaDisplay } from '../src/features/karma/ui/karmaHUD.js';
 import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
 import { calcKarmaGain } from '../src/features/karma/selectors.js';
-import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physique/mutators.js';
-import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
+import { tickPhysiqueTraining } from '../src/features/physique/mutators.js';
+import { mountTrainingGameUI as mountPhysiqueTrainingUI } from '../src/features/physique/ui/trainingGame.js';
+import { tickAgilityTraining } from '../src/features/agility/mutators.js';
+import { mountAgilityTrainingUI } from '../src/features/agility/ui/trainingGame.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../src/features/activity/mutators.js';
@@ -120,7 +122,8 @@ function initUI(){
   const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
   const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
   initializeWeaponChip({ key: mhKey, name: mhName });
-  mountTrainingGameUI(S);
+  mountPhysiqueTrainingUI(S);
+  mountAgilityTrainingUI(S);
   mountMiningUI(S);
   mountGatheringUI(S);
   mountForgingUI(S);
@@ -483,12 +486,19 @@ function tick(){
   advanceForging(S);
   
   // Physique training progression
-  const sessionEnd = tickPhysiqueTraining(S);
-  if(sessionEnd){
-    let msg = `Training session complete! ${sessionEnd.hits} hits for ${sessionEnd.xp} XP`;
-    if(sessionEnd.qiRecovered){
-      msg += ` and recovered ${sessionEnd.qiRecovered.toFixed(0)} Qi`;
+  const physSessionEnd = tickPhysiqueTraining(S);
+  if(physSessionEnd){
+    let msg = `Training session complete! ${physSessionEnd.hits} hits for ${physSessionEnd.xp} XP`;
+    if(physSessionEnd.qiRecovered){
+      msg += ` and recovered ${physSessionEnd.qiRecovered.toFixed(0)} Qi`;
     }
+    log(msg, 'good');
+  }
+
+  // Agility training progression
+  const agiSessionEnd = tickAgilityTraining(S);
+  if(agiSessionEnd){
+    const msg = `Agility session complete! ${agiSessionEnd.hits} hits for ${agiSessionEnd.xp} XP`;
     log(msg, 'good');
   }
   

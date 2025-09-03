@@ -10,6 +10,7 @@ import { mountLawDisplay } from "./progression/ui/lawDisplay.js";
 import { mountMiningUI } from "./mining/ui/miningDisplay.js";
 import { mountGatheringUI } from "./gathering/ui/gatheringDisplay.js";
 import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
+import { mountAgilityUI } from "./agility/ui/agilityDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
@@ -28,6 +29,7 @@ export function mountAllFeatureUIs(state) {
   mountGatheringUI(state);
   mountForgingUI(state);
   mountPhysiqueUI(state);
+  mountAgilityUI(state);
   mountLawDisplay(state);
   mountMindReadingUI(state);
   mountAstralTreeUI(state);
