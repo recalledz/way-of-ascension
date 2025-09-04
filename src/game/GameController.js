@@ -3,6 +3,8 @@ import { loadSave, saveDebounced } from "../shared/saveLoad.js";
 import { recalculateBuildingBonuses } from "../features/sect/mutators.js";
 import { initFeatureState, tickFeatures } from "../features/registry.js";
 import { ensureMindState, onTick as mindOnTick } from "../features/mind/index.js";
+import { sideLocationState } from "../features/sideLocations/state.js";
+import { initSideLocations } from "../features/sideLocations/logic.js";
 
 // Register feature hooks
 import "../features/proficiency/index.js";
@@ -15,13 +17,16 @@ export function createGameController() {
   const state = {
     app: { mode: "town", lastTick: performance.now() },
     ...initFeatureState(),
+    sideLocations: structuredClone(sideLocationState),
     // legacy root pieces remain attached to `state` until migrated
   };
 
   const hydrated = loadSave(state);
   Object.assign(state, hydrated);
+  state.sideLocations = { ...structuredClone(sideLocationState), ...state.sideLocations };
   ensureMindState(state);
   recalculateBuildingBonuses(state);
+  initSideLocations(state);
 
   let running = false;
   let acc = 0;

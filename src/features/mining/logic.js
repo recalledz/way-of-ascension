@@ -29,6 +29,10 @@ export function advanceMining(state = S) {
       break;
     case 'iron':
       state.iron = (state.iron || 0) + totalRate;
+      if (Math.random() < 0.02) {
+        state.oreDust = (state.oreDust || 0) + 1;
+        log?.('You found Ore Dust!', 'good');
+      }
       break;
     case 'ice':
       state.ice = (state.ice || 0) + totalRate;

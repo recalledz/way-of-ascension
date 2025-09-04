@@ -83,6 +83,7 @@ import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } fr
 import { meditate } from '../src/features/progression/mutators.js';
 import { tickInsight } from '../src/features/progression/insight.js';
 import { usePill, sellJunk } from '../src/features/inventory/mutators.js';
+import { initSideLocations } from '../src/features/sideLocations/logic.js';
 
 // Global variables
 const progressBars = {};
@@ -114,6 +115,7 @@ import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
 function initUI(){
   // Ensure Mind feature state exists for UI reads
   ensureMindState(S);
+  initSideLocations(S);
 
   // Render sidebar activities
   renderSidebarActivities();

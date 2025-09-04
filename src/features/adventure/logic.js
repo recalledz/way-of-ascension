@@ -16,7 +16,7 @@ import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
-import { on } from '../../shared/events.js';
+import { on, emit } from '../../shared/events.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
@@ -818,7 +818,9 @@ function defeatEnemy() {
       }
     }
   }
-  
+
+  emit('ADVENTURE:KILL', { zone: S.adventure.currentZone, area: S.adventure.currentArea });
+
   S.adventure.bestiary = S.adventure.bestiary || {};
   const enemyType = enemy.type || enemy.name;
   S.adventure.bestiary[enemyType] = (S.adventure.bestiary[enemyType] || 0) + 1;
