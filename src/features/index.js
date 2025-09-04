@@ -16,7 +16,6 @@ import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { featureFlags } from "../config.js";
 
-
 // Example placeholder for later:
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
 
@@ -38,3 +37,18 @@ export function mountAllFeatureUIs(state) {
   // mountWeaponGenUI?.(state);
 }
 
+// Diagnostics helpers -------------------------------------------------
+export const FEATURE_KEYS = Object.keys(featureFlags);
+
+export function debugFeatureVisibility(key, root) {
+  const flagAllowed = !!featureFlags[key];
+  const unlockAllowed = true;
+  const reason = flagAllowed ? 'flag=true' : 'flag=false';
+  return { flagAllowed, unlockAllowed, reason };
+}
+
+export function listFeatureVisibility(root) {
+  const out = {};
+  for (const key of FEATURE_KEYS) out[key] = debugFeatureVisibility(key, root);
+  return out;
+}
