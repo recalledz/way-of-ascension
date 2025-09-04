@@ -4,6 +4,7 @@ import { log } from '../../shared/utils/dom.js';
 export function getGatheringRate(resource, state = S) {
   const baseRates = {
     wood: 3,
+    herbs: 2,
   };
   const levelBonus = state.gathering?.level ? state.gathering.level * 0.1 : 0;
   return (baseRates[resource] || 1) * (1 + levelBonus);
@@ -27,6 +28,13 @@ export function advanceGathering(state = S) {
       if (Math.random() < 0.05) {
         state.spiritWood = (state.spiritWood || 0) + 1;
         log?.('You found Spirit Wood!', 'good');
+      }
+      break;
+    case 'herbs':
+      state.herbs = (state.herbs || 0) + totalRate;
+      if (Math.random() < 0.05) {
+        state.aromaticHerb = (state.aromaticHerb || 0) + 1;
+        log?.('You found an Aromatic Herb!', 'good');
       }
       break;
   }

@@ -9,6 +9,7 @@ import { physiqueState } from '../features/physique/state.js';
 import { forgingState } from '../features/forging/state.js';
 import { gatheringState } from '../features/gathering/state.js';
 import { agilityState } from '../features/agility/state.js';
+import { sideLocationState } from '../features/sideLocations/state.js';
 
 export function loadSave(){
   try{
@@ -56,7 +57,7 @@ export const defaultState = () => {
   autoFillShieldFromQi: true,
   stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
-  wood:0, spiritWood:0, cores:0,
+  wood:0, spiritWood:0, cores:0, iron:0, oreDust:0, herbs:0, aromaticHerb:0,
   pills:{qi:0, body:0, ward:0},
   atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
   // Expanded Stat System
@@ -160,6 +161,7 @@ export const defaultState = () => {
     }
   },
   sect: structuredClone(sectState),
+  sideLocations: structuredClone(sideLocationState),
   };
 };
 
@@ -196,13 +198,14 @@ S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
 S.physique = { ...structuredClone(physiqueState), ...S.physique };
 S.agility = { ...structuredClone(agilityState), ...S.agility };
+S.sideLocations = { ...structuredClone(sideLocationState), ...S.sideLocations };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the
 // single source of truth for all items.  These properties are not
 // serialized directly; instead their values are derived from the
 // corresponding entries in `S.inventory`.
-['stones', 'ore', 'herbs', 'wood', 'spiritWood'].forEach(key => {
+['stones', 'iron', 'oreDust', 'herbs', 'aromaticHerb', 'wood', 'spiritWood'].forEach(key => {
   const initial = S[key] || 0;
   Object.defineProperty(S, key, {
     get() {

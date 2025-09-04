@@ -9,7 +9,8 @@ export function updateActivityGathering(state = S) {
   setText('gatheringExpActivity', Math.floor(state.gathering.exp));
   setText('gatheringExpMaxActivity', state.gathering.expMax);
 
-  const current = state.activities.gathering ? 'Wood' : 'Nothing';
+  const resourceNames = { wood: 'Wood', herbs: 'Herbs' };
+  const current = state.activities.gathering ? (resourceNames[state.gathering.selectedResource] || 'Nothing') : 'Nothing';
   setText('currentlyGathering', current);
 
   const gatheringFillActivity = document.getElementById('gatheringFillActivity');
@@ -26,12 +27,16 @@ export function updateActivityGathering(state = S) {
   const selectedRadio = document.querySelector(`input[name="gatheringResource"][value="${state.gathering.selectedResource}"]`);
   if (selectedRadio) selectedRadio.checked = true;
 
+  const herbsOption = document.getElementById('herbsOption');
+  if (herbsOption) herbsOption.style.display = state.gathering.unlockedResources?.includes('herbs') ? 'block' : 'none';
+
   const gatheringStatsCard = document.getElementById('gatheringStatsCard');
   if (gatheringStatsCard) gatheringStatsCard.style.display = state.activities.gathering ? 'block' : 'none';
 
   if (state.activities.gathering) {
-    setText('gatheredWood', state.gathering.resourcesGained || 0);
-    const baseRate = getGatheringRate('wood', state);
+    setText('gatheredResource', state.gathering.resourcesGained || 0);
+    setText('gatheredResourceLabel', `${resourceNames[state.gathering.selectedResource] || 'Resource'} Collected`);
+    const baseRate = getGatheringRate(state.gathering.selectedResource, state);
     setText('currentGatheringRate', `${baseRate.toFixed(1)}/sec`);
   }
 
@@ -41,6 +46,11 @@ export function updateActivityGathering(state = S) {
 function updateGatheringRateDisplays(state = S) {
   const woodRate = getGatheringRate('wood', state);
   setText('woodRate', `+${woodRate.toFixed(1)}/sec`);
+  const herbsRateEl = document.getElementById('herbsRate');
+  if (herbsRateEl) {
+    const herbsRate = getGatheringRate('herbs', state);
+    setText('herbsRate', `+${herbsRate.toFixed(1)}/sec`);
+  }
 }
 
 export function updateGatheringSidebar(state = S) {
