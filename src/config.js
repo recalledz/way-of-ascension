@@ -1,10 +1,11 @@
 // Unified environment accessor for Node, Vite and browser builds
 const env = (typeof import.meta !== 'undefined' && import.meta.env) || process.env;
 
-// Determine Vercel environment with production-safe default
-const vercelEnv = (env?.VERCEL_ENV || env?.NODE_ENV || 'production').toLowerCase();
+// Determine Vercel environment with production-safe default and common aliases
+const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '') || 'production';
+const vercelEnv = String(rawEnv).toLowerCase();
 
-export const isProd = vercelEnv === 'production';
+export const isProd = ['production', 'prod', 'main'].includes(vercelEnv);
 export const isPreview = vercelEnv === 'preview';
 export const isDev = !isProd && !isPreview;
 
