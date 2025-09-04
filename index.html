@@ -534,12 +534,20 @@
                   <span class="resource-rate" id="woodRate">+2-4/sec</span>
                 </label>
               </div>
+              <div class="resource-option" data-resource="herbs" id="herbsOption" style="display:none;">
+                <input type="radio" name="gatheringResource" id="gatherHerbs" value="herbs">
+                <label for="gatherHerbs">
+                  <span class="resource-icon"></span>
+                  <span class="resource-name">Herbs</span>
+                  <span class="resource-rate" id="herbsRate">+1-2/sec</span>
+                </label>
+              </div>
             </div>
           </div>
 
           <div class="card" id="gatheringStatsCard" style="display:none;">
             <h4> Gathering Progress</h4>
-            <div class="stat"><span>Wood Collected</span><span id="gatheredWood">0</span></div>
+            <div class="stat"><span id="gatheredResourceLabel">Resources Collected</span><span id="gatheredResource">0</span></div>
             <div class="stat"><span>Gathering Rate</span><span id="currentGatheringRate">0/sec</span></div>
             <div class="muted" style="margin-top:8px">Gathering grants experience over time</div>
           </div>

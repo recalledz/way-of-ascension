@@ -52,6 +52,7 @@ way-of-ascension/
 │   ├── game-state-and-mechanics.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
+│   ├── side-location-discovery.md
 │   ├── project-structure.md
 │   └── ARCHITECTURE.md
 ├── node_modules/
@@ -359,6 +360,16 @@ way-of-ascension/
 ├── src/features/gathering/state.js
 ├── src/features/gathering/ui/
 │   └── gatheringDisplay.js
+├── src/features/sideLocations/index.js
+├── src/features/sideLocations/logic.js
+├── src/features/sideLocations/state.js
+├── src/features/agility/index.js
+├── src/features/agility/logic.js
+├── src/features/agility/mutators.js
+├── src/features/agility/selectors.js
+├── src/features/agility/state.js
+├── src/features/agility/ui/agilityDisplay.js
+├── src/features/agility/ui/trainingGame.js
 ├── src/features/forging/index.js
 ├── src/features/physique/index.js
 └── style.css
@@ -373,6 +384,7 @@ way-of-ascension/
 - `docs/To-dos/Palms-and-fists.md` – Concept notes for palm and fist weapon styles.
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
 - `To-dos/Balance.md` – Notes on planned balance adjustments.
+- `docs/side-location-discovery.md` – Design for discovering optional side locations during Adventure.
 
 ### Shared Modules (`src/shared/`)
 
@@ -1021,12 +1033,25 @@ Paths added:
 ### Gathering Feature (`src/features/gathering/`)
 - `src/features/gathering/index.js` – Gathering feature descriptor.
 - `src/features/gathering/state.js` – Tracks gathering level, experience, unlocked resources and yields.
-- `src/features/gathering/logic.js` – Handles wood gathering rates, resource gains and spirit wood chance.
+  - `src/features/gathering/logic.js` – Handles resource gathering rates with chances for Spirit Wood and Aromatic Herbs.
 - `src/features/gathering/mutators.js` – External wrappers to modify gathering state and listeners for `ACTIVITY:START`.
 - `src/features/gathering/selectors.js` – Provides accessors for gathering state and derived rates.
 - `src/features/gathering/migrations.js` – Save migrations for gathering slice (currently none).
-- `src/features/gathering/ui/gatheringDisplay.js` – Updates gathering activity and sidebar displays.
+  - `src/features/gathering/ui/gatheringDisplay.js` – Updates gathering activity and sidebar displays.
 
+### Agility Feature (`src/features/agility/`)
+- `src/features/agility/state.js` – Tracks agility training progress and level.
+- `src/features/agility/logic.js` – Calculates training effects.
+- `src/features/agility/mutators.js` – Starts and ends agility training sessions.
+- `src/features/agility/selectors.js` – Accessors for agility state and cursor position.
+- `src/features/agility/ui/agilityDisplay.js` – Shows agility stats and start/stop controls.
+- `src/features/agility/ui/trainingGame.js` – Mini-game UI for agility training.
+- `src/features/agility/index.js` – Agility feature descriptor.
+
+### Side Locations Feature (`src/features/sideLocations/`)
+- `src/features/sideLocations/state.js` – Tracks discovered nodes and discovery cooldown.
+- `src/features/sideLocations/logic.js` – Listens for adventure kills to unlock new resource nodes.
+- `src/features/sideLocations/index.js` – Side locations feature descriptor.
 
 ### Forging Feature (`src/features/forging/`)
 - `src/features/forging/state.js` – Tracks forging level, experience, and current forging job.
@@ -1147,3 +1172,5 @@ Paths added:
 - `src/features/progression/index.js` – Progression feature descriptor.
 - `src/features/sect/index.js` – Sect feature descriptor.
 - `src/features/weaponGeneration/index.js` – Weapon generation feature descriptor.
+- `src/features/agility/index.js` – Agility feature descriptor.
+- `src/features/sideLocations/index.js` – Side locations feature descriptor.
