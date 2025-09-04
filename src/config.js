@@ -2,11 +2,14 @@
 const env = (typeof import.meta !== 'undefined' && import.meta.env) || process.env;
 
 // Determine Vercel environment with production-safe default and common aliases
-const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '') || 'production';
-const vercelEnv = String(rawEnv).toLowerCase();
+const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '');
+const vercelEnv = String(rawEnv || '').toLowerCase();
+const envName = ['production', 'prod', 'main'].includes(vercelEnv)
+  ? 'production'
+  : vercelEnv || 'development';
 
-export const isProd = ['production', 'prod', 'main'].includes(vercelEnv);
-export const isPreview = vercelEnv === 'preview';
+export const isProd = envName === 'production';
+export const isPreview = envName === 'preview';
 export const isDev = !isProd && !isPreview;
 
 // Parse env values into booleans/numbers with prod-safe defaults
