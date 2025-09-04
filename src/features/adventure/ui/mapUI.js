@@ -1,7 +1,7 @@
 import { S } from '../../../shared/state.js';
 import { log } from '../../../shared/utils/dom.js';
 import { ZONES, isZoneUnlocked, isAreaUnlocked, getAreaById } from '../data/zones.js';
-import { selectAreaById, ensureAdventure, updateActivityAdventure } from '../logic.js';
+import { selectAreaById, ensureAdventure, updateActivityAdventure, startDungeon } from '../logic.js';
 import { updateAdventureProgressBar } from './progressBar.js';
 
 function getElementIcon(element) {
@@ -26,9 +26,9 @@ function selectAreaFromMap(zoneIndex, areaIndex, zoneId, areaId) {
   hideMapOverlay();
 }
 
-function updateMapContent() {
+function updateAreaContent() {
   ensureAdventure();
-  const mapContent = document.getElementById('mapContent');
+  const mapContent = document.getElementById('mapContentAreas');
   if (!mapContent) return;
 
   mapContent.innerHTML = '';
@@ -128,12 +128,62 @@ function updateMapContent() {
   });
 }
 
+function updateDungeonContent() {
+  ensureAdventure();
+  const container = document.getElementById('mapContentDungeons');
+  if (!container) return;
+  container.innerHTML = '';
+
+  ZONES.forEach(zone => {
+    const list = zone.dungeons?.filter(d => S.adventure.discoveredDungeons?.includes(d.id));
+    if (!list || list.length === 0) return;
+
+    const zoneHeader = document.createElement('h4');
+    zoneHeader.textContent = zone.name;
+    container.appendChild(zoneHeader);
+
+    list.forEach(d => {
+      const btn = document.createElement('button');
+      btn.className = 'btn dungeon-btn';
+      btn.textContent = `${getElementIcon(d.element)} ${d.name}`;
+      btn.onclick = () => {
+        startDungeon(zone.id, d.id);
+        updateActivityAdventure();
+        hideMapOverlay();
+      };
+      container.appendChild(btn);
+    });
+  });
+}
+
 export function showMapOverlay() {
   const overlay = document.getElementById('mapOverlay');
   if (!overlay) return;
 
   overlay.style.display = 'flex';
-  updateMapContent();
+  updateAreaContent();
+  updateDungeonContent();
+
+  const areaTab = document.getElementById('mapTabAreas');
+  const dungeonTab = document.getElementById('mapTabDungeons');
+  const areaContent = document.getElementById('mapContentAreas');
+  const dungeonContent = document.getElementById('mapContentDungeons');
+  function activate(tab) {
+    if (tab === 'areas') {
+      areaTab?.classList.add('active');
+      dungeonTab?.classList.remove('active');
+      areaContent.style.display = 'block';
+      dungeonContent.style.display = 'none';
+    } else {
+      dungeonTab?.classList.add('active');
+      areaTab?.classList.remove('active');
+      areaContent.style.display = 'none';
+      dungeonContent.style.display = 'block';
+    }
+  }
+  areaTab?.addEventListener('click', () => activate('areas'));
+  dungeonTab?.addEventListener('click', () => activate('dungeons'));
+  activate('areas');
 
   const backdrop = document.getElementById('mapOverlayBackdrop');
   const closeButton = document.getElementById('closeMapButton');

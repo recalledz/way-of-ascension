@@ -82,14 +82,42 @@ export const ZONES = [
         description: 'Stone guardians protect ancient secrets.',
         loot: { stones: 12, ore: 2 }
       },
-      { 
-        id: 'forest-heart', 
-        name: 'Forest Heart', 
-        enemy: 'Forest Spirit', 
+      {
+        id: 'forest-heart',
+        name: 'Forest Heart',
+        enemy: 'Forest Spirit',
         killReq: 40,
         description: 'The forest\'s guardian spirit awaits challengers.',
         loot: { stones: 15, wood: 6 },
         isBoss: true
+      }
+    ],
+    dungeons: [
+      {
+        id: 'flooded-grotto',
+        name: 'Flooded Grotto',
+        element: 'water',
+        discoverAtStage: 2,
+        floors: [
+          { enemy: 'River Frog' },
+          { enemy: 'Water Snake' },
+          { enemy: 'River Frog' },
+          { enemy: 'Water Snake' },
+          { boss: true, enemy: 'Water Snake' }
+        ]
+      },
+      {
+        id: 'stone-hollow',
+        name: 'Stone Hollow',
+        element: 'earth',
+        discoverAtStage: 7,
+        floors: [
+          { enemy: 'Stone Lizard' },
+          { enemy: 'Ruin Guardian' },
+          { enemy: 'Stone Lizard' },
+          { enemy: 'Ruin Guardian' },
+          { boss: true, enemy: 'Ruin Guardian' }
+        ]
       }
     ]
   },
@@ -285,6 +313,11 @@ export function getZoneById(zoneId) {
 export function getAreaById(zoneId, areaId) {
   const zone = getZoneById(zoneId);
   return zone ? zone.areas.find(area => area.id === areaId) : null;
+}
+
+export function getDungeonById(zoneId, dungeonId) {
+  const zone = getZoneById(zoneId);
+  return zone?.dungeons?.find(d => d.id === dungeonId) || null;
 }
 
 export function getNextArea(zoneId, areaId) {

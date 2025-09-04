@@ -2,7 +2,7 @@ import { S } from '../../../shared/state.js';
 import { setFill, setText, log } from '../../../shared/utils/dom.js';
 import { ZONES } from '../data/zones.js';
 import { startAdventure, startAdventureCombat, startBossCombat, progressToNextArea, retreatFromCombat, resetQiOnRetreat } from '../mutators.js';
-import { updateActivityAdventure } from '../logic.js';
+import { updateActivityAdventure, progressDungeonEncounter } from '../logic.js';
 import { clamp } from '../../progression/selectors.js';
 
 export function updateAdventureProgress(state = S) {
@@ -72,7 +72,13 @@ export function mountAdventureControls(root) {
     startBtn.classList.remove('primary'); startBtn.classList.add('warn');
   });
 
-  document.getElementById('progressButton')?.addEventListener('click', () => progressToNextArea());
+  document.getElementById('progressButton')?.addEventListener('click', () => {
+    if (root.adventure?.dungeonState) {
+      progressDungeonEncounter();
+    } else {
+      progressToNextArea();
+    }
+  });
   document.getElementById('challengeBossButton')?.addEventListener('click', () => {
     startAdventure();
     if (!root.activities?.adventure && typeof globalThis.startActivity === 'function') {
