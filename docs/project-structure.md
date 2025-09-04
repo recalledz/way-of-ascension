@@ -59,8 +59,10 @@ way-of-ascension/
 ├── scripts/
 │   ├── balance-validate.js
 │   ├── scan-codex-output.js
+│   ├── start.js
 │   └── validate-structure.js
 ├── src/
+│   ├── config.js
 │   ├── index.js
 │   ├── data/
 │   │   └── status.ts
@@ -859,6 +861,16 @@ function updateAll() {
 **Purpose**: A simple Node.js server to serve the game's static files for local development.
 **Dependencies**: `http`, `fs`, `path`
 **When to modify**: If server configuration, port, or file handling logic needs to change.
+
+### Start Script (`scripts/start.js`)
+
+**Purpose**: Loads environment variables from `.env` files and boots the local server.
+**When to modify**: Adjust startup or environment-loading behavior.
+
+### Config (`src/config.js`)
+
+**Purpose**: Centralized environment and feature flag configuration derived from Vercel/Vite envs.
+**When to modify**: Change feature flag handling or defaults.
 
 ### Changelog (`CHANGELOG.md`)
 **Purpose**: Tracks notable changes, additions, and fixes across versions.
