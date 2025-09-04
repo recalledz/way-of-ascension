@@ -1,17 +1,47 @@
-export const isProd = process.env.NODE_ENV === 'production';
+// Unified environment accessor for Node, Vite and browser builds
+const env = (typeof import.meta !== 'undefined' && import.meta.env) || process.env;
+
+// Determine Vercel environment with production-safe default
+const vercelEnv = (env?.VERCEL_ENV || env?.NODE_ENV || 'production').toLowerCase();
+
+export const isProd = vercelEnv === 'production';
+export const isPreview = vercelEnv === 'preview';
+export const isDev = !isProd && !isPreview;
+
+// Parse env values into booleans/numbers with prod-safe defaults
+function parseEnv(name, fallback = false) {
+  const val = env?.[name] ?? env?.[`VITE_${name}`];
+  if (val === undefined) return fallback;
+
+  if (val === 'true' || val === true) return true;
+  if (val === 'false' || val === false) return false;
+
+  const num = Number(val);
+  return Number.isNaN(num) ? fallback : num;
+}
 
 export const featureFlags = {
-  proficiency: process.env.FEATURE_PROFICIENCY !== 'false',
-  sect: process.env.FEATURE_SECT !== 'false',
-  karma: process.env.FEATURE_KARMA !== 'false',
-  alchemy: process.env.FEATURE_ALCHEMY !== 'false',
-  cooking: process.env.FEATURE_COOKING !== 'false',
-  mining: process.env.FEATURE_MINING !== 'false',
-  gathering: process.env.FEATURE_GATHERING !== 'false',
-  forging: process.env.FEATURE_FORGING !== 'false',
-  physique: process.env.FEATURE_PHYSIQUE !== 'false',
-  agility: process.env.FEATURE_AGILITY !== 'false',
-  law: process.env.FEATURE_LAW !== 'false',
-  mind: process.env.FEATURE_MIND !== 'false',
-  astralTree: process.env.FEATURE_ASTRAL_TREE !== 'false'
+  proficiency: parseEnv('FEATURE_PROFICIENCY'),
+  sect: parseEnv('FEATURE_SECT'),
+  karma: parseEnv('FEATURE_KARMA'),
+  alchemy: parseEnv('FEATURE_ALCHEMY'),
+  cooking: parseEnv('FEATURE_COOKING'),
+  mining: parseEnv('FEATURE_MINING'),
+  gathering: parseEnv('FEATURE_GATHERING'),
+  forging: parseEnv('FEATURE_FORGING'),
+  physique: parseEnv('FEATURE_PHYSIQUE'),
+  agility: parseEnv('FEATURE_AGILITY'),
+  law: parseEnv('FEATURE_LAW'),
+  mind: parseEnv('FEATURE_MIND'),
+  astralTree: parseEnv('FEATURE_ASTRAL_TREE')
 };
+
+// Print a summary of active flags in non-production environments
+if (!isProd) {
+  const active = Object.entries(featureFlags)
+    .filter(([, enabled]) => enabled)
+    .map(([name]) => name)
+    .join(', ') || 'none';
+  console.log(`[flags] active: ${active}`);
+}
+
