@@ -15,6 +15,9 @@ import { mountCatchingUI } from "./catching/ui/catchingDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
+import { mountTrainingGameUI as mountPhysiqueTrainingUI } from "./physique/ui/trainingGame.js";
+import { mountAgilityTrainingUI } from "./agility/ui/trainingGame.js";
+import { mountCultivationSidebar } from "./progression/ui/cultivationSidebar.js";
 import { featureFlags, devUnlockPreset } from "../config.js";
 import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
 import { advanceRealm, unlockAstralNode } from "./progression/mutators.js";
@@ -54,6 +57,7 @@ function applyDevUnlockPreset(state) {
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
   const vis = debugFeatureVisibility(state);
+  if (vis.cultivation?.visible) mountCultivationSidebar(state);
   if (vis.proficiency.visible) mountProficiencyUI(state);
   if (vis.sect.visible) mountSectUI(state);
   if (vis.karma.visible) mountKarmaUI(state);
@@ -62,8 +66,14 @@ export function mountAllFeatureUIs(state) {
   if (vis.mining.visible) mountMiningUI(state);
   if (vis.gathering.visible) mountGatheringUI(state);
   if (vis.forging.visible) mountForgingUI(state);
-  if (vis.physique.visible) mountPhysiqueUI(state);
-  if (vis.agility.visible) mountAgilityUI(state);
+  if (vis.physique.visible) {
+    mountPhysiqueUI(state);
+    mountPhysiqueTrainingUI(state);
+  }
+  if (vis.agility.visible) {
+    mountAgilityUI(state);
+    mountAgilityTrainingUI(state);
+  }
   if (vis.catching.visible) mountCatchingUI(state);
   if (vis.law.visible) mountLawDisplay(state);
   if (vis.mind.visible) mountMindReadingUI(state);

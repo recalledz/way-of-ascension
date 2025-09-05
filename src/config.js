@@ -77,6 +77,7 @@ for (const name of flagNames) {
 }
 
 export const featureFlags = {
+  cultivation: true,
   proficiency: flags.FEATURE_PROFICIENCY.parsedValue,
   sect: flags.FEATURE_SECT.parsedValue,
   karma: flags.FEATURE_KARMA.parsedValue,

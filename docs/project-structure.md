@@ -198,6 +198,7 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
+│   │   │       ├── cultivationSidebar.js
 │   │   │       ├── lawDisplay.js
 │   │   │       ├── lawsHUD.js
 │   │   │       ├── qiDisplay.js
@@ -711,6 +712,10 @@ function updateAll() {
 #### `src/features/progression/ui/qiOrb.js` - Qi Orb Visual Effects
 **Purpose**: Updates the Qi Orb's appearance when foundation approaches its maximum.
 **When to modify**: Change Qi Orb styling or foundation threshold behavior.
+
+#### `src/features/progression/ui/cultivationSidebar.js` - Cultivation Activity Tab
+**Purpose**: Injects the cultivation activity into the sidebar when the feature is visible.
+**When to modify**: Adjust cultivation tab layout or mounting logic.
 
 #### `components/progressBar.js` - Reusable Progress Bar Component
 **Purpose**: Provides reusable functions to create and update standardized progress bars throughout the UI.
