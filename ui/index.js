@@ -3,6 +3,8 @@
 
 // Way of Ascension — Modular JS
 
+import { configReport } from '../src/config.js';
+import { mountDiagnostics } from '../src/ui/diagnostics.js';
 import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
   clamp,
@@ -84,6 +86,19 @@ import { meditate } from '../src/features/progression/mutators.js';
 import { tickInsight } from '../src/features/progression/insight.js';
 import { usePill, sellJunk } from '../src/features/inventory/mutators.js';
 import { initSideLocations } from '../src/features/sideLocations/logic.js';
+
+const report = configReport();
+if (report.isProd) {
+  const active = Object.entries(report.flags)
+    .filter(([k, v]) => k.startsWith('FEATURE_') && v.parsedValue)
+    .map(([k]) => k)
+    .join(', ') || 'none';
+  console.log(`[Way of Ascension] Flags active (prod): ${active}`);
+} else {
+  console.groupCollapsed('[Way of Ascension] Flag Report');
+  console.table(report.flags);
+  console.groupEnd();
+}
 
 // Global variables
 const progressBars = {};
@@ -698,6 +713,7 @@ window.addEventListener('load', ()=>{
   mountSectUI(S);
   mountMindReadingUI(S);
   mountAstralTreeUI(S);
+  mountDiagnostics(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
