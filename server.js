@@ -1,10 +1,22 @@
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import { configReport } from './src/config.js';
 
 const PORT = 8081;
 
 const server = http.createServer((req, res) => {
+    if (req.url === '/env-dump') {
+        const report = configReport();
+        if (report.isProd) {
+            res.writeHead(404);
+            res.end('Not found');
+            return;
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(report));
+        return;
+    }
     let filePath = '.' + req.url;
     if (filePath === './') {
         filePath = './index.html';
