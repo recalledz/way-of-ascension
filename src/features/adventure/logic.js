@@ -20,7 +20,7 @@ import { on, emit } from '../../shared/events.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
-import { ZONES, getZoneById, getAreaById, isZoneUnlocked, isAreaUnlocked } from './data/zones.js'; // MAP-UI-UPDATE
+import { ZONES, getZoneById, getAreaById, getDungeonById, isZoneUnlocked, isAreaUnlocked } from './data/zones.js'; // MAP-UI-UPDATE
 import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
@@ -44,6 +44,7 @@ import { updateFoodSlots } from '../cooking/ui/cookControls.js';
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
 const loggedResistTypes = new Set();
+const DUNGEON_COOLDOWN_MS = 60 * 60 * 1000;
 const AILMENT_ICONS = {
   poison: '☠️',
   burn: '🔥',
@@ -161,12 +162,16 @@ export function ensureAdventure() {
       bestiary: {},
       inCombat: false,
       areaProgress: {}, // Track kills per area: { "0-0": { kills: 5, bossDefeated: true }, ... }
-      unlockedAreas: { "0-0": true } // Track unlocked areas
+      unlockedAreas: { "0-0": true }, // Track unlocked areas
+      discoveredDungeons: [],
+      dungeonCooldowns: {}
     };
   }
   // Ensure new properties exist for existing saves
   if (!S.adventure.areaProgress) S.adventure.areaProgress = {};
   if (!S.adventure.unlockedAreas) S.adventure.unlockedAreas = { "0-0": true };
+  if (!S.adventure.discoveredDungeons) S.adventure.discoveredDungeons = [];
+  if (!S.adventure.dungeonCooldowns) S.adventure.dungeonCooldowns = {};
 }
 
 function renderAilments(entity, id) {
@@ -791,6 +796,20 @@ function defeatEnemy() {
       S.adventure.areaProgress[areaKey] = { kills: 0, bossDefeated: false };
     }
     S.adventure.areaProgress[areaKey].kills = S.adventure.killsInCurrentArea;
+
+    const zoneObj = ZONES[S.adventure.currentZone];
+    const discoverable = zoneObj?.dungeons?.filter(d => d.discoverAtStage - 1 === S.adventure.currentArea);
+    if (discoverable) {
+      discoverable.forEach(d => {
+        if (!S.adventure.discoveredDungeons.includes(d.id)) {
+          const chance = Math.max(0, 0.10 - S.adventure.currentArea * 0.01);
+          if (Math.random() < chance) {
+            S.adventure.discoveredDungeons.push(d.id);
+            log?.(`You discovered the dungeon: ${d.name}!`, 'excellent');
+          }
+        }
+      });
+    }
   } else {
     // Mark boss as defeated for this area
     if (!S.adventure.areaProgress[areaKey]) {
@@ -890,8 +909,18 @@ function defeatEnemy() {
   if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   // zone and area already defined earlier in this function
 
+  if (S.adventure.dungeonState) {
+    const ds = S.adventure.dungeonState;
+    const dungeon = getDungeonById(ds.zoneId, ds.dungeonId);
+    ds.floor++;
+    if (!dungeon || ds.floor >= dungeon.floors.length) {
+      log(`Cleared ${dungeon?.name || 'dungeon'}!`, 'excellent');
+      delete S.adventure.dungeonState;
+    }
+  }
+
   // Continue combat even after reaching kill requirements
-  if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
+  if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss && !S.adventure.dungeonState) {
     startAdventureCombat();
   }
 
@@ -1043,6 +1072,70 @@ export function startAdventureCombat() {
   logEnemyResists(S.adventure.currentEnemy);
 }
 
+export function startDungeon(zoneId, dungeonId) {
+  ensureAdventure();
+  const dungeon = getDungeonById(zoneId, dungeonId);
+  if (!dungeon) return;
+  const last = S.adventure.dungeonCooldowns[dungeonId] || 0;
+  if (Date.now() - last < DUNGEON_COOLDOWN_MS) {
+    log('This dungeon is still recovering.', 'bad');
+    return;
+  }
+  S.adventure.dungeonState = { zoneId, dungeonId, floor: 0 };
+  S.adventure.dungeonCooldowns[dungeonId] = Date.now();
+  S.activities = S.activities || {};
+  S.activities.adventure = true;
+  startDungeonEncounter();
+  updateProgressButton();
+}
+
+function startDungeonEncounter() {
+  const ds = S.adventure.dungeonState;
+  if (!ds) return;
+  const dungeon = getDungeonById(ds.zoneId, ds.dungeonId);
+  const floor = dungeon?.floors[ds.floor];
+  if (!floor) return;
+  const enemyType = floor.enemy;
+  const base = ENEMY_DATA[enemyType];
+  if (!base) {
+    log(`Enemy data not found for ${enemyType}`, 'bad');
+    return;
+  }
+  const enemyData = { ...base, hp: base.hp * 2, attack: base.attack * 2, element: dungeon.element };
+  const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
+  const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
+  applyRandomAffixes(h);
+  S.adventure.inCombat = true;
+  S.adventure.isBossFight = !!floor.boss;
+  S.adventure.currentEnemy = {
+    ...enemyData,
+    type: enemyType,
+    attack: Math.round(h.eAtk),
+    armor: Math.round(h.eArmor),
+    regen: h.regen,
+    affixes: h.affixes,
+    hpMax: h.enemyMax,
+    hp: h.enemyHP
+  };
+  initStun(S.adventure.currentEnemy);
+  initStun(S);
+  S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
+  S.adventure.playerStunBar = S.stun.value;
+  S.adventure.enemyHP = h.enemyHP;
+  S.adventure.enemyMaxHP = h.enemyMax;
+  S.adventure.playerHP = Math.round(S.hp);
+  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
+  S.adventure.lastPlayerAttack = 0;
+  S.adventure.lastEnemyAttack = 0;
+  S.adventure.combatLog = [`Entering ${dungeon.name} - Floor ${ds.floor + 1}`];
+  logEnemyResists(S.adventure.currentEnemy);
+}
+
+export function progressDungeonEncounter() {
+  if (!S.adventure?.dungeonState || S.adventure.inCombat) return;
+  startDungeonEncounter();
+}
+
 export function progressToNextArea() {
   if (!S.adventure) return;
   const currentZone = ZONES[S.adventure.selectedZone || 0];
@@ -1152,10 +1245,10 @@ export function selectZone(zoneIndex) {
 
 export function retreatFromCombat() {
   if (!S.adventure) return;
-  if (S.adventure.isBossFight) {
+  if (S.adventure.isBossFight || S.adventure.dungeonState) {
     S.adventure.combatLog = S.adventure.combatLog || [];
-    S.adventure.combatLog.push('Retreat is impossible during a boss fight.');
-    log('Retreat is impossible during a boss fight.', 'bad');
+    S.adventure.combatLog.push('Retreat is impossible inside a dungeon.');
+    log('Retreat is impossible inside a dungeon.', 'bad');
     return;
   }
   if (S.adventure.inCombat) {
@@ -1177,6 +1270,16 @@ export function updateProgressButton() {
   const progressBtn = document.getElementById('progressButton');
   const bossBtn = document.getElementById('challengeBossButton');
   if (!progressBtn) return;
+
+  if (S.adventure.dungeonState) {
+    const ds = S.adventure.dungeonState;
+    const dungeon = getDungeonById(ds.zoneId, ds.dungeonId);
+    const isLast = ds.floor >= (dungeon?.floors.length || 1) - 1;
+    progressBtn.disabled = S.adventure.inCombat;
+    progressBtn.textContent = isLast ? 'Challenge Boss' : 'Next Encounter';
+    if (bossBtn) bossBtn.style.display = 'none';
+    return;
+    }
   const currentZone = ZONES[S.adventure.selectedZone || 0];
   if (!currentZone || !currentZone.areas) return;
   const currentArea = currentZone.areas[S.adventure.selectedArea || 0];

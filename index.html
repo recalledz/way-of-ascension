@@ -820,9 +820,14 @@
               <h3>🗺️ Adventure Map</h3>
               <button class="btn small ghost close-button" id="closeMapButton" aria-label="Close map">✕</button>
             </div>
-            <div class="map-content" id="mapContent">
+            <div class="map-tabs tab-bar">
+              <button class="map-tab-btn active" id="mapTabAreas">Areas</button>
+              <button class="map-tab-btn" id="mapTabDungeons">Dungeons</button>
+            </div>
+            <div class="map-content" id="mapContentAreas">
               <!-- Zone accordions will be populated by JavaScript -->
             </div>
+            <div class="map-content" id="mapContentDungeons" style="display:none;"></div>
           </div>
         </div>
       </section>
