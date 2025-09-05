@@ -1,4 +1,7 @@
-export function renderSidebarActivities() {
+import { debugFeatureVisibility } from "../features/index.js";
+
+export function renderSidebarActivities(state) {
+  const vis = debugFeatureVisibility(state);
   const sidebarActivities = [
     {
       id: 'cultivation',
@@ -143,9 +146,11 @@ export function renderSidebarActivities() {
   const levelingContainer = document.getElementById('levelingActivities');
   const managementContainer = document.getElementById('managementActivities');
 
-  sidebarActivities.forEach(act => {
-    const container = act.group === 'leveling' ? levelingContainer : managementContainer;
-    if (!container) return;
+  sidebarActivities
+    .filter(act => !vis[act.id] || vis[act.id].visible)
+    .forEach(act => {
+      const container = act.group === 'leveling' ? levelingContainer : managementContainer;
+      if (!container) return;
 
     const item = document.createElement('div');
     item.className = `activity-item ${act.group === 'leveling' ? 'leveling-tab' : 'management-tab'}`;

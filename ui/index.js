@@ -135,7 +135,7 @@ function initUI(){
   initSideLocations(S);
 
   // Render sidebar activities
-  renderSidebarActivities();
+  renderSidebarActivities(S);
 
   const mh = S.equipment?.mainhand;
   const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
