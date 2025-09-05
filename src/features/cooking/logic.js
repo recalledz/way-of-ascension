@@ -1,4 +1,5 @@
 import { log } from '../../shared/utils/dom.js';
+import { getCookingSpeedBonus } from './selectors.js';
 
 export function getFoodSlotData(state) {
   if (!state.foodSlots) {
@@ -7,9 +8,12 @@ export function getFoodSlotData(state) {
       slot2: null,
       slot3: null,
       lastUsed: 0,
+      baseCooldown: 5000,
       cooldown: 5000,
     };
   }
+  const speed = 1 + getCookingSpeedBonus(state);
+  state.foodSlots.cooldown = state.foodSlots.baseCooldown / speed;
   return {
     meat: state.meat || 0,
     cookedMeat: state.cookedMeat || 0,
@@ -55,6 +59,7 @@ export function equipFood(foodType, slotNumber, state) {
       slot2: null,
       slot3: null,
       lastUsed: 0,
+      baseCooldown: 5000,
       cooldown: 5000,
     };
   }

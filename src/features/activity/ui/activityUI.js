@@ -2,6 +2,7 @@
 import { selectActivity } from "../mutators.js";
 import { getActiveActivity } from "../selectors.js";
 import { fCap, qCap } from "../../progression/selectors.js";
+import { getBuildingLevel } from "../../sect/selectors.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -38,7 +39,18 @@ export function updateActivitySelectors(root) {
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
   root.catching ??= { level: 1, exp: 0, expMax: 100 };
 
-  const selected = root.ui?.selectedActivity || 'cultivation';
+  const kitchenBuilt = getBuildingLevel('kitchen', root) > 0;
+  const forgingBuilt = getBuildingLevel('forging_room', root) > 0;
+  let selected = root.ui?.selectedActivity || 'cultivation';
+  if ((selected === 'cooking' && !kitchenBuilt) || (selected === 'forging' && !forgingBuilt)) {
+    selected = 'cultivation';
+    root.ui.selectedActivity = selected;
+  }
+
+  const cookItem = document.querySelector('.activity-item[data-activity="cooking"]');
+  if (cookItem) cookItem.style.display = kitchenBuilt ? '' : 'none';
+  const forgeItem = document.querySelector('.activity-item[data-activity="forging"]');
+  if (forgeItem) forgeItem.style.display = forgingBuilt ? '' : 'none';
 
   // Generic highlight for dynamically rendered sidebar items
   document.querySelectorAll('.activity-item[data-activity]')
