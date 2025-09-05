@@ -5,7 +5,6 @@
 ❌ VERIFICATION FAILED - MUST fix before proceeding
 
 🚨 VIOLATIONS DETECTED:
-   • UI write violation: src/features/activity/ui/activityUI.js mutates root.* (use mutators)
    • UI state violation: src/features/adventure/ui/adventureDisplay.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/mapUI.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/progressBar.js imports S from shared/state.js
@@ -32,7 +31,6 @@
    • UI rule: src/features/combat/ui/floatingText.js uses Math.random() — move randomness to logic.js
    • UI timer: src/features/combat/ui/fx.js uses timers/RAF — prefer feature.tick and RENDER
    • UI timer: src/features/physique/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
-   • UI timer: src/features/progression/ui/astralTree.js uses timers/RAF — prefer feature.tick and RENDER
    • UI rule: src/features/progression/ui/realm.js uses Math.random() — move randomness to logic.js
    • UI timer: src/features/progression/ui/realm.js uses timers/RAF — prefer feature.tick and RENDER
 
