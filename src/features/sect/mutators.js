@@ -25,3 +25,10 @@ export function upgradeBuilding(state, key){
   recalculateBuildingBonuses(state);
   return true;
 }
+
+export function setBuildingLevel(state, key, level = 1){
+  const slice = state.sect || sectState;
+  if(level <= 0) return;
+  slice.buildings[key] = level;
+  recalculateBuildingBonuses(state);
+}

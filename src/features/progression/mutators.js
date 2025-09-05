@@ -6,6 +6,11 @@ import { log } from '../../shared/utils/dom.js';
 import { canLearnSkill } from './logic.js';
 import { clamp, fCap, foundationGainPerMeditate } from './selectors.js';
 
+export function setAstralAllocations(state = progressionState, ids = []) {
+  const arr = Array.isArray(ids) ? ids : Array.from(ids);
+  state.astralNodes = arr.map(Number);
+}
+
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;
   const oldRealm = state.realm.tier;
