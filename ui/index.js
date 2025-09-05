@@ -3,7 +3,7 @@
 
 // Way of Ascension — Modular JS
 
-import { configReport, isProd, featureFlags } from '../src/config.js';
+import { configReport } from '../src/config.js';
 import { mountDiagnostics } from '../src/ui/diagnostics.js';
 import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
@@ -14,8 +14,7 @@ import {
   foundationGainPerSec,
   powerMult,
   calculatePlayerCombatAttack,
-  calculatePlayerAttackRate,
-  mortalStage
+  calculatePlayerAttackRate
 } from '../src/features/progression/selectors.js';
 import { refillShieldFromQi } from '../src/features/combat/logic.js';
 import {
@@ -30,7 +29,7 @@ import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
 import { fmt } from '../src/shared/utils/number.js';
 import { emit } from '../src/shared/events.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
-import { renderSidebarActivities } from '../src/ui/sidebar.js';
+import { mountAllFeatureUIs } from '../src/features/index.js';
 import { initializeWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
 import { WEAPONS } from '../src/features/weaponGeneration/data/weapons.js';
 import {
@@ -56,17 +55,10 @@ import { advanceMining } from '../src/features/mining/logic.js';
 import { advanceGathering } from '../src/features/gathering/logic.js';
 import { advanceForging } from '../src/features/forging/logic.js';
 import { advanceCatching } from '../src/features/catching/logic.js';
-import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
-import { mountGatheringUI } from '../src/features/gathering/ui/gatheringDisplay.js';
-import { mountForgingUI } from '../src/features/forging/ui/forgingDisplay.js';
-import { mountCatchingUI, updateCatchingUI } from '../src/features/catching/ui/catchingDisplay.js';
-import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
-import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
-import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
-import { mountAstralTreeUI } from '../src/features/progression/ui/astralTree.js';
+import { updateCatchingUI } from '../src/features/catching/ui/catchingDisplay.js';
 import { ensureMindState, xpProgress as mindXpProgress, onTick as mindOnTick } from '../src/features/mind/index.js';
 import { renderMindMainTab, setupMindTabs } from '../src/features/mind/ui/mindMainTab.js';
-import { renderMindReadingTab, mountMindReadingUI } from '../src/features/mind/ui/mindReadingTab.js';
+import { renderMindReadingTab } from '../src/features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../src/features/mind/ui/mindPuzzlesTab.js';
 import { renderMindStatsTab } from '../src/features/mind/ui/mindStatsTab.js';
 import { updateQiAndFoundation } from '../src/features/progression/ui/qiDisplay.js';
@@ -135,8 +127,7 @@ function initUI(){
   ensureMindState(S);
   initSideLocations(S);
 
-  // Render sidebar activities
-  renderSidebarActivities(S);
+  mountAllFeatureUIs(S);
 
   const mh = S.equipment?.mainhand;
   const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
@@ -144,10 +135,6 @@ function initUI(){
   initializeWeaponChip({ key: mhKey, name: mhName });
   mountPhysiqueTrainingUI(S);
   mountAgilityTrainingUI(S);
-  mountMiningUI(S);
-  mountGatheringUI(S);
-  mountCatchingUI(S);
-  mountForgingUI(S);
   setupAbilityUI();
 
   // Assign buttons
@@ -718,21 +705,6 @@ window.addEventListener('load', ()=>{
   setupEquipmentTab(); // EQUIP-CHAR-UI
   // Ensure derived stats like Qi shield are initialized based on equipped gear
   recomputePlayerTotals(S);
-  mountAlchemyUI(S);
-  mountKarmaUI(S);
-  mountSectUI(S);
-  mountMindReadingUI(S);
-  const btn = document.getElementById('openAstralTree');
-  const mini = document.getElementById('astralInsightMini');
-  const astralUnlocked = featureFlags.astralTree && (!isProd || mortalStage(S) >= 2);
-  if (astralUnlocked) {
-    if (btn) btn.style.display = '';
-    if (mini) mini.style.display = '';
-    mountAstralTreeUI(S);
-  } else {
-    if (btn) btn.style.display = 'none';
-    if (mini) mini.style.display = 'none';
-  }
   mountDiagnostics(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
