@@ -2,6 +2,7 @@
 import { selectActivity } from "../mutators.js";
 import { getActiveActivity } from "../selectors.js";
 import { fCap, qCap } from "../../progression/selectors.js";
+import { fmt } from "../../../shared/utils/number.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -86,12 +87,14 @@ export function updateActivitySelectors(root) {
   const agiSel = document.getElementById('agilitySelector');
   const agiFill = document.getElementById('agilitySelectorFill');
   const agiInfo = document.getElementById('agilityInfo');
+  const agiText = document.getElementById('agilityProgressText');
   agiSel?.classList.toggle('active', selected === 'agility');
   agiSel?.classList.toggle('running', root.activities?.agility);
   if (agiFill && agiInfo) {
-    const expPct = (root.agility.exp / root.agility.expMax) * 100;
-    agiFill.style.width = `${expPct}%`;
+    const expFrac = root.agility.exp / root.agility.expMax;
+    agiFill.style.width = `${expFrac * 100}%`;
     agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
+    if (agiText) agiText.textContent = `${fmt(root.agility.exp)} / ${fmt(root.agility.expMax)} XP`;
   }
 
   // Mining

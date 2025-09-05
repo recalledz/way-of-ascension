@@ -1,5 +1,7 @@
 import { ZONES } from '../../adventure/data/zones.js';
 import { startCatch } from '../mutators.js';
+import { setText } from '../../../shared/utils/dom.js';
+import { fmt } from '../../../shared/utils/number.js';
 
 function renderCaughtCreatures(state){
   const container = document.getElementById('caughtCreatures');
@@ -99,5 +101,13 @@ export function updateCatchingUI(state){
   if(progressFill){
     const pct = (root.currentCatch?.progress ?? 0) * 100;
     progressFill.style.width = `${pct}%`;
+  }
+  const levelEl = document.getElementById('catchingLevel');
+  if (levelEl) levelEl.textContent = `Level ${root.level}`;
+  const xpFill = document.getElementById('catchingProgressFill');
+  if (xpFill) {
+    const frac = root.exp / root.expMax;
+    xpFill.style.width = `${frac * 100}%`;
+    setText('catchingProgressText', `${fmt(root.exp)} / ${fmt(root.expMax)} XP`);
   }
 }
