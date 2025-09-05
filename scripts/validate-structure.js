@@ -88,7 +88,7 @@ class StructureValidator {
   }
 
   scanCurrentStructure() {
-    const ignoreDirs = ['node_modules', '.git', 'browser-tools-mcp', '.vscode', '.idea'];
+    const ignoreDirs = ['node_modules', '.git', '.vscode', '.idea'];
     const importantExtensions = ['.js', '.md', '.html', '.css', '.json'];
 
     const scanDir = (dirPath, relativePath = '') => {

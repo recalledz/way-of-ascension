@@ -1,83 +1,126 @@
 /** @typedef {{min:number,max:number,rate:number}} BaseDps */
-/** @typedef {{physique:number,agility:number,mind:number}} Scales */
 /** @typedef {{
- *  key:string, displayName:string, slot:'mainhand',
- *  base: BaseDps, scales: Scales,
+ *  key:string, displayName:string, classKey:string, slot:'mainhand',
+ *  base: BaseDps,
  *  tags: ('physical')[]|[],        // only 'physical' or []
- *  signatureAbilityKey?: string    // e.g., 'powerSlash' for swords
+ *  signatureAbilityKey?: string,   // e.g., 'powerSlash' for swords
+ *  implicitStats?: Record<string, number>
  * }} WeaponTypeDef */
 
 /** @type {Record<string, WeaponTypeDef>} */
 export const WEAPON_TYPES = {
-  sword: {
-    key: 'sword',
-    displayName: 'Sword',
+  straightSword: {
+    key: 'straightSword',
+    displayName: 'Straight Sword',
+    classKey: 'sword',
     slot: 'mainhand',
-    base: { min: 4, max: 6, rate: 1.0 },
-    scales: { physique: 0.5, agility: 0.4, mind: 0.1 },
+      base: { min: 4, max: 6, rate: 1.0 },
     tags: ['physical'],
     signatureAbilityKey: 'powerSlash',
+    implicitStats: { accuracy: 5 },
+  },
+  crudeDagger: {
+    key: 'crudeDagger',
+    displayName: 'Crude Dagger',
+    classKey: 'dagger',
+    slot: 'mainhand',
+      base: { min: 2, max: 4, rate: 1.4 },
+    tags: ['physical'],
+    implicitStats: { criticalChance: 0.02 },
+  },
+  crudeRapier: {
+    key: 'crudeRapier',
+    displayName: 'Crude Rapier',
+    classKey: 'sword',
+    slot: 'mainhand',
+      base: { min: 3, max: 5, rate: 1.3 },
+    tags: ['physical'],
+    implicitStats: { accuracy: 7 },
+  },
+  crudeHammer: {
+    key: 'crudeHammer',
+    displayName: 'Crude Hammer',
+    classKey: 'hammer',
+    slot: 'mainhand',
+      base: { min: 7, max: 11, rate: 0.75 },
+    tags: ['physical'],
+    implicitStats: { stunBuildMult: 0.2 },
+  },
+  crudeBludgeon: {
+    key: 'crudeBludgeon',
+    displayName: 'Crude Bludgeon',
+    classKey: 'bludgeon',
+    slot: 'mainhand',
+      base: { min: 5, max: 8, rate: 0.85 },
+    tags: ['physical'],
+    implicitStats: { damageTransferPct: 0.1 },
+  },
+  crudeAxe: {
+    key: 'crudeAxe',
+    displayName: 'Crude Axe',
+    classKey: 'axe',
+    slot: 'mainhand',
+      base: { min: 6, max: 10, rate: 0.85 },
+    tags: ['physical'],
+    implicitStats: { physDamagePct: 0.1 },
   },
   spear: {
     key: 'spear',
     displayName: 'Spear',
+    classKey: 'spear',
     slot: 'mainhand',
-    base: { min: 5, max: 7, rate: 0.9 },
-    scales: { physique: 0.45, agility: 0.45, mind: 0.1 },
+      base: { min: 5, max: 7, rate: 0.95 },
     tags: ['physical'],
-    signatureAbilityKey: 'piercingThrust', // stub for later
+    signatureAbilityKey: 'piercingThrust',
+    implicitStats: { accuracy: 3 },
   },
-  hammer: {
-    key: 'hammer',
-    displayName: 'Hammer',
+  dimFocus: {
+    key: 'dimFocus',
+    displayName: 'Dim Focus',
+    classKey: 'focus',
     slot: 'mainhand',
-    base: { min: 7, max: 10, rate: 0.7 },
-    scales: { physique: 0.7, agility: 0.2, mind: 0.1 },
-    tags: ['physical'],
-    signatureAbilityKey: 'crushingBlow', // stub for later
-  },
-  nunchaku: {
-    key: 'nunchaku',
-    displayName: 'Nunchaku',
-    slot: 'mainhand',
-    base: { min: 2, max: 4, rate: 1.6 },
-    scales: { physique: 0.3, agility: 0.6, mind: 0.1 },
-    tags: ['physical'],
-    signatureAbilityKey: 'flurryStrike', // stub for later
-  },
-  chakram: {
-    key: 'chakram',
-    displayName: 'Chakram',
-    slot: 'mainhand',
-    base: { min: 3, max: 5, rate: 1.2 },
-    scales: { physique: 0.25, agility: 0.65, mind: 0.1 },
-    tags: ['physical'],
-    signatureAbilityKey: 'ricochetBlade', // stub for later
-  },
-  wand: {
-    key: 'wand',
-    displayName: 'Wand',
-    slot: 'mainhand',
-    base: { min: 2, max: 3, rate: 1.0 },
-    scales: { physique: 0.1, agility: 0.2, mind: 0.7 },
-    tags: [], // not physical for now
-  },
-  focus: {
-    key: 'focus',
-    displayName: 'Focus',
-    slot: 'mainhand',
-    base: { min: 1, max: 3, rate: 1.1 },
-    scales: { physique: 0.05, agility: 0.15, mind: 0.8 },
+      base: { min: 1, max: 3, rate: 1.1 },
     tags: [],
-    signatureAbilityKey: 'mindSpike', // stub for later
+    signatureAbilityKey: 'mindSpike',
+    implicitStats: { qiCostPct: -0.05 },
   },
-  scepter: {
-    key: 'scepter',
-    displayName: 'Scepter',
+  starFocus: {
+    key: 'starFocus',
+    displayName: 'Star Focus',
+    classKey: 'focus',
     slot: 'mainhand',
-    base: { min: 3, max: 5, rate: 0.95 },
-    scales: { physique: 0.1, agility: 0.2, mind: 0.7 },
+      base: { min: 2, max: 4, rate: 1.15 },
     tags: [],
-    signatureAbilityKey: 'wardBreak', // stub for later
+    signatureAbilityKey: 'mindSpike',
+    implicitStats: { qiConversionPct: 0.05 },
+  },
+  crudeKnuckles: {
+    key: 'crudeKnuckles',
+    displayName: 'Crude Knuckles',
+    classKey: 'fist',
+    slot: 'mainhand',
+      base: { min: 1, max: 3, rate: 1.2 },
+    tags: ['physical'],
+    implicitStats: { comboDamagePct: 0.1 },
+  },
+  crudeNunchaku: {
+    key: 'crudeNunchaku',
+    displayName: 'Crude Nunchaku',
+    classKey: 'nunchaku',
+    slot: 'mainhand',
+      base: { min: 1, max: 3, rate: 1.5 },
+    tags: ['physical'],
+    signatureAbilityKey: 'flurryStrike',
+    implicitStats: { ailmentChancePct: 0.1 },
+  },
+  tameNunchaku: {
+    key: 'tameNunchaku',
+    displayName: 'Tame Nunchaku',
+    classKey: 'nunchaku',
+    slot: 'mainhand',
+      base: { min: 2, max: 4, rate: 1.6 },
+    tags: ['physical'],
+    signatureAbilityKey: 'flurryStrike',
+    implicitStats: { repeatBasicChancePct: 0.1 },
   },
 };

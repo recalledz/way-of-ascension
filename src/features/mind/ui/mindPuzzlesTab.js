@@ -1,7 +1,7 @@
 // src/features/mind/ui/mindPuzzlesTab.js
 
-import { solvePuzzle } from '../mutators.js';
 import { save } from '../../../shared/state.js';
+import { startSequenceMemoryTest } from '../puzzles/sequenceMemory.js';
 
 /**
  * Render the Mind Puzzles tab UI.
@@ -34,21 +34,29 @@ export function renderMindPuzzlesTab(rootEl, S) {
     diffSelect.appendChild(opt);
   }
 
-  const solveBtn = document.createElement('button');
-  solveBtn.className = 'btn primary';
-  solveBtn.textContent = 'Solve';
+  const startBtn = document.createElement('button');
+  startBtn.className = 'btn primary';
+  startBtn.textContent = 'Start Memory Test';
 
-  solveBtn.addEventListener('click', () => {
+  startBtn.addEventListener('click', () => {
     const idx = parseInt(diffSelect.value, 10) || 0;
-    solvePuzzle(S, idx);
-    save?.();
-    renderMindPuzzlesTab(rootEl, S);
+    const configs = [
+      { length: 3, delay: 800 },
+      { length: 4, delay: 700 },
+      { length: 5, delay: 600 },
+      { length: 6, delay: 500 },
+      { length: 7, delay: 400 },
+    ];
+    startSequenceMemoryTest(S, configs[idx] || configs[0]).then(() => {
+      save?.();
+      renderMindPuzzlesTab(rootEl, S);
+    });
   });
 
   const row = document.createElement('div');
   row.className = 'row';
   row.appendChild(diffSelect);
-  row.appendChild(solveBtn);
+  row.appendChild(startBtn);
 
   nextCard.appendChild(row);
   rootEl.appendChild(nextCard);

@@ -1,7 +1,9 @@
 // src/features/mind/mutators.js
 
 import { getManual } from './data/manuals.js';
-import { getTalisman } from './data/talismans.js';
+import { getTalismanRecipe } from './data/talismans.js';
+import { getTalisman as getTalismanItem } from '../talismans/data/talismans.js';
+import { addToInventory } from '../inventory/mutators.js';
 import {
   calcFromProficiency,
   calcFromManual,
@@ -52,13 +54,15 @@ export function debugLevelManual(S) {
 }
 
 export function craftTalisman(S, talismanId) {
-  const t = getTalisman(talismanId);
-  if (!t) return false;
+  const recipe = getTalismanRecipe(talismanId);
+  if (!recipe) return false;
   // assume resource checks done elsewhere for now
-  const add = calcFromCraft(t);
+  const add = calcFromCraft(recipe);
   S.mind.fromCrafting += add;
   S.mind.xp += applyPuzzleMultiplier(add, S.mind.multiplier);
   S.mind.level = levelForXp(S.mind.xp);
+  const item = getTalismanItem(talismanId);
+  if (item) addToInventory(item, S);
   return true;
 }
 

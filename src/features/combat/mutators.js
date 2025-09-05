@@ -1,9 +1,13 @@
 import { S } from '../../shared/state.js';
 import { initializeFight as baseInitializeFight, processAttack as baseProcessAttack } from './logic.js';
-import { applyStatus as baseApplyStatus } from './statusEngine.js';
+import { applyStatus as baseApplyStatus, applyAilment as baseApplyAilment } from './statusEngine.js';
 
 export function applyStatus(target, key, power, state = S, options) {
   return baseApplyStatus(target, key, power, state, options);
+}
+
+export function applyAilment(attacker, target, key, power, nowMs, state = S) {
+  return baseApplyAilment(attacker, target, key, power, nowMs, state);
 }
 
 export function initializeFight(enemy, state = S) {
@@ -18,8 +22,7 @@ export function initializeFight(enemy, state = S) {
   return { enemyHP, enemyMax, atk, def };
 }
 
-export function processAttack(damage, options = {}, state = S) {
-  let dealt = 0;
+export function processAttack(profile, weapon, options = {}, state = S) {
   const target = options.target || state.adventure?.currentEnemy;
   let currentHP;
 
@@ -33,11 +36,12 @@ export function processAttack(damage, options = {}, state = S) {
     currentHP = state.adventure.enemyHP;
   }
 
-  const newHP = baseProcessAttack(currentHP, damage, {
+  const result = baseProcessAttack(profile, weapon, {
     ...options,
     target,
-    onDamage: d => (dealt = d),
   });
+
+  const newHP = Math.max(0, Math.round(currentHP - result.total));
 
   if (target === state || target === S) {
     state.adventure.playerHP = newHP;
@@ -48,6 +52,6 @@ export function processAttack(damage, options = {}, state = S) {
     target.hp = newHP;
   }
 
-  return dealt;
+  return result;
 }
 

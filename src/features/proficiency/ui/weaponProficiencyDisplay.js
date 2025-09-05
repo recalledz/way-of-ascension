@@ -2,19 +2,19 @@ import { S } from "../../../shared/state.js";
 import { on } from "../../../shared/events.js";
 import { getEquippedWeapon } from "../../inventory/selectors.js";
 import { getProficiency } from "../selectors.js";
-import { WEAPON_TYPES } from "../../weaponGeneration/data/weaponTypes.js";
+import { WEAPON_CLASSES } from "../../weaponGeneration/data/weaponClasses.js";
 import { WEAPON_ICONS } from "../../weaponGeneration/data/weaponIcons.js";
 import { setText, setFill } from "../../../shared/utils/dom.js";
 
 export function updateWeaponProficiencyDisplay(state = S) {
   const weapon = getEquippedWeapon(state);
-  const { value } = getProficiency(weapon.proficiencyKey, state);
+  const { value } = getProficiency(weapon.classKey, state);
   const level = Math.floor(value / 100);
   const progress = value % 100;
-  const type = WEAPON_TYPES[weapon.proficiencyKey];
-  let label = type?.displayName || weapon.proficiencyKey;
+  const cls = WEAPON_CLASSES[weapon.classKey];
+  let label = cls?.displayName || weapon.classKey;
   if (!label.endsWith('s')) label += 's';
-  const icon = WEAPON_ICONS[weapon.proficiencyKey];
+  const icon = WEAPON_ICONS[weapon.classKey];
   const labelEl = document.getElementById('weaponLabel');
   if (labelEl) {
     const text = `${label} Level`;
@@ -24,8 +24,9 @@ export function updateWeaponProficiencyDisplay(state = S) {
   setText('weaponExp', progress.toFixed(0));
   setText('weaponExpMax', '100');
   setFill('weaponExpFill', progress / 100);
-  const bonus = 1 + level * 0.01;
-  setText('weaponBonus', bonus.toFixed(2));
+  const damageMult = 1 + level * 0.02;
+  const speedMult = 1 + level * 0.01;
+  setText('weaponBonus', `DMG x${damageMult.toFixed(2)}, SPD x${speedMult.toFixed(2)}`);
 }
 
 export function mountProficiencyUI(state) {

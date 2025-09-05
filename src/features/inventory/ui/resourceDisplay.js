@@ -9,6 +9,7 @@ export function updateResourceDisplay(state = S) {
   setText('herbVal', fmt(state.herbs));
   setText('oreVal', fmt(state.ore));
   setText('woodVal', fmt(state.wood));
+  setText('spiritWoodVal', fmt(state.spiritWood));
   setText('coreVal', fmt(state.cores));
   setText('pillQi', state.pills.qi);
   setText('pillBody', state.pills.body);

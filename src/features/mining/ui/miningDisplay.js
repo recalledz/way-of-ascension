@@ -26,8 +26,8 @@ export function updateActivityMining(state = S) {
 
   const ironOption = document.getElementById('ironOption');
   const iceOption = document.getElementById('iceOption');
-  if (ironOption) ironOption.style.display = state.mining.level >= 3 ? 'block' : 'none';
-  if (iceOption) iceOption.style.display = state.mining.level >= 15 ? 'block' : 'none';
+  if (ironOption) ironOption.style.display = state.mining.unlockedResources?.includes('iron') ? 'block' : 'none';
+  if (iceOption) iceOption.style.display = state.mining.unlockedResources?.includes('ice') ? 'block' : 'none';
 
   const selectedRadio = document.querySelector(`input[name="miningResource"][value="${state.mining.selectedResource}"]`);
   if (selectedRadio) selectedRadio.checked = true;

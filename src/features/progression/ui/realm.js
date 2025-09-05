@@ -40,7 +40,7 @@ export function updateRealmUI() {
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   updateCurrentRealmHeader();
-  
+
   // Update foundation text (inline above Qi bar)
   const prevFoundation = parseInt(document.getElementById('foundValSilhouette').textContent) || 0;
   const currentFoundation = Math.floor(S.foundation);
@@ -67,16 +67,18 @@ export function updateActivityCultivation() {
   
   // Update qi display below silhouette
   setText('qiValSilhouette', Math.floor(S.qi));
-  setText('qiCapSilhouette', qCap(S));
+  const cap = qCap(S);
+  setText('qiCapSilhouette', cap);
   setText('qiRegenActivity', qiRegenPerSec(S).toFixed(1));
   setText('foundationRate', foundationGainPerSec(S).toFixed(1));
+  setText('astralInsightMini', `Insight: ${Math.round(S.astralPoints || 0)}`);
   setText('btChanceActivity', (breakthroughChance(S) * 100).toFixed(1) + '%');
   setText('powerMultActivity', powerMult(S).toFixed(1) + 'x');
 
   // Update qi fill bar in silhouette
   const qiFillSilhouette = document.getElementById('qiFillSilhouette');
   if (qiFillSilhouette) {
-    qiFillSilhouette.style.width = (S.qi / qCap(S) * 100) + '%';
+    qiFillSilhouette.style.width = (S.qi / cap * 100) + '%';
   }
 
   const startBtn = document.getElementById('startCultivationActivity');
@@ -104,26 +106,24 @@ export function updateActivityCultivation() {
 
   const statsCard = document.getElementById('cultivationStatsCard');
   if (statsCard) {
-    statsCard.style.display = S.activities.cultivation ? 'block' : 'none';
+    statsCard.style.display = 'block';
   }
 
-  if (S.activities.cultivation) {
-    if (!S.cultivation) {
-      S.cultivation = {
-        talent: 1.0,
-        comprehension: 1.0,
-        foundationMult: 1.0,
-        pillMult: 1.0,
-        buildingMult: 1.0
-      };
-    }
-
-    setText('cultivationTalent', (S.cultivation.talent || 1.0).toFixed(1) + 'x');
-    setText('cultivationComprehension', (S.cultivation.comprehension || 1.0).toFixed(1) + 'x');
-    setText('cultivationFoundationMult', (S.cultivation.foundationMult || 1.0).toFixed(1) + 'x');
-    setText('cultivationPillMult', (S.cultivation.pillMult || 1.0).toFixed(1) + 'x');
-    setText('cultivationBuildingMult', (S.cultivation.buildingMult || 1.0).toFixed(1) + 'x');
+  if (!S.cultivation) {
+    S.cultivation = {
+      talent: 1.0,
+      comprehension: 1.0,
+      foundationMult: 1.0,
+      pillMult: 1.0,
+      buildingMult: 1.0
+    };
   }
+
+  setText('cultivationTalent', (S.cultivation.talent || 1.0).toFixed(1) + 'x');
+  setText('cultivationComprehension', (S.cultivation.comprehension || 1.0).toFixed(1) + 'x');
+  setText('cultivationFoundationMult', (S.cultivation.foundationMult || 1.0).toFixed(1) + 'x');
+  setText('cultivationPillMult', (S.cultivation.pillMult || 1.0).toFixed(1) + 'x');
+  setText('cultivationBuildingMult', (S.cultivation.buildingMult || 1.0).toFixed(1) + 'x');
 
   updateCultivationProgressionTree();
   setupCultivationTabs();

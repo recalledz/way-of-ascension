@@ -9,7 +9,7 @@ export const ENEMY_DATA = {
     accuracy: 50,
     attackRate: 1.2,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { stones: 2, herbs: 1 } 
+    loot: { stones: 2, wood: 1 }
   },
   'Wild Boar': { 
     name: 'Wild Boar',
@@ -27,7 +27,7 @@ export const ENEMY_DATA = {
     accuracy: 50,
     attackRate: 1.1,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { stones: 3, herbs: 1 } 
+    loot: { stones: 3, wood: 1 }
   },
   'Honey Bee': { 
     name: 'Honey Bee',
@@ -36,7 +36,7 @@ export const ENEMY_DATA = {
     accuracy: 50,
     attackRate: 1.5,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { herbs: 2 },
+    loot: { wood: 2 },
     drops: { honey: 0.3 }
   },
 
@@ -49,7 +49,7 @@ export const ENEMY_DATA = {
     accuracy: 55,
     attackRate: 1.0,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { herbs: 3, wood: 1 } 
+    loot: { wood: 4 }
   },
   'Stone Lizard': { 
     name: 'Stone Lizard',
@@ -67,7 +67,7 @@ export const ENEMY_DATA = {
     accuracy: 55,
     attackRate: 1.2,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { herbs: 2, venom: 1 } 
+    loot: { wood: 2, venom: 1 }
   },
   'Grass Wolf': { 
     name: 'Grass Wolf',
@@ -98,7 +98,7 @@ export const ENEMY_DATA = {
     accuracy: 60,
     attackRate: 0.9,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { herbs: 5, ancientRelic: 2, spiritEssence: 1 } 
+    loot: { wood: 5, ancientRelic: 2, spiritEssence: 1 }
   },
 
   // === DARK FOREST ===

@@ -2,6 +2,7 @@
 import { LOOT_TABLES } from './data/lootTables.js';
 import { rollWeaponDropForZone } from '../weaponGeneration/selectors.js';
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
+import { rollRingDropForZone } from '../accessories/selectors.js';
 import { addToInventory } from '../inventory/mutators.js';
 import { ZONES } from '../adventure/data/zoneIds.js';
 
@@ -26,23 +27,35 @@ export function rollLoot(key, rng = Math.random) {
 
 export function onEnemyDefeated(state) {
   const zoneKey = state.world?.zoneKey ?? ZONES.STARTING;
+  const zoneStage = (state.world?.stage ?? state.adventure?.currentArea ?? 0) + 1;
+  const log = (state.log = state.log || []);
+  const earlyZones = new Set([ZONES.STARTING]);
+  const isEarlyZone = earlyZones.has(zoneKey);
 
-  const weaponDrop = rollWeaponDropForZone(zoneKey);
-  if (weaponDrop) {
+  const weaponDrop = rollWeaponDropForZone(zoneKey, zoneStage);
+  if (weaponDrop && weaponDrop.type !== 'talisman') {
     addToInventory(weaponDrop, state);
-    state.log = state.log || [];
-    state.log.push(`You found: ${weaponDrop.name}.`);
+    log.push(`You found: ${weaponDrop.name}.`);
   }
 
-  const gearDrop = rollGearDropForZone(zoneKey);
-  if (gearDrop) {
-    addToInventory(gearDrop, state);
-    state.log = state.log || [];
-    state.log.push(`You found: ${gearDrop.name}.`);
+  if (isEarlyZone) {
+    const gearDrop = rollGearDropForZone(zoneKey, zoneStage);
+    if (gearDrop && gearDrop.type !== 'talisman') {
+      addToInventory(gearDrop, state);
+      log.push(`You found: ${gearDrop.name}.`);
+    }
+  }
+
+  if (state.adventure?.isBossFight) {
+    const ringDrop = rollRingDropForZone(zoneKey);
+    if (ringDrop && ringDrop.type !== 'talisman') {
+      addToInventory(ringDrop, state);
+      log.push(`You found: ${ringDrop.name}.`);
+    }
   }
 
   // … add other rewards (xp, coins) as you already do
 }
 
-// Re-export weapon drop helper for any callers that previously imported it from this module.
-export { rollWeaponDropForZone, rollGearDropForZone };
+// Re-export drop helpers for any callers that previously imported them from this module.
+export { rollWeaponDropForZone, rollGearDropForZone, rollRingDropForZone };

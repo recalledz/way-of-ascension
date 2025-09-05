@@ -1,18 +1,75 @@
 import { S, save } from '../../../shared/state.js';
 import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
 import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
-import { equipItem, unequip, removeFromInventory } from '../mutators.js';
+import { equipItem, unequip, removeFromInventory, moveToJunk } from '../mutators.js';
 import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
+import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
+import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
 let slotFilter = null;
 
+const ELEMENT_BG_COLORS = {
+  metal: 'rgba(153, 153, 153, 0.2)',
+  earth: 'rgba(181, 139, 0, 0.2)',
+  wood: 'rgba(46, 139, 87, 0.2)',
+  water: 'rgba(30, 144, 255, 0.2)',
+  fire: 'rgba(255, 69, 0, 0.2)'
+};
+
+const QUALITY_STARS = {
+  basic: '',
+  refined: '★',
+  superior: '★★'
+};
+
+const RARITY_COLORS = {
+  magic: '#3b82f6',
+  rare: '#fbbf24',
+};
+
+const ELEMENT_ICONS = {
+  physical: '⚪',
+  metal: '⚙',
+  earth: '⛰',
+  wood: '🌿',
+  water: '💧',
+  fire: '🔥'
+};
+
+const ELEMENT_COLORS = {
+  physical: '#ffffff',
+  metal: '#999999',
+  earth: '#b58b00',
+  wood: '#2e8b57',
+  water: '#1e90ff',
+  fire: '#ff4500'
+};
+
+const IMPLICIT_STAT_LABELS = {
+  accuracy: 'Accuracy',
+  criticalChance: 'Critical Chance',
+  attackSpeed: 'Attack Speed',
+  stunBuildMult: 'Stun Strength',
+  stunDurationMult: 'Stun Duration',
+  mind: 'Mind',
+  qiCostPct: 'Qi Cost Reduction',
+  qiConversionPct: 'Qi Conversion',
+  comboDamagePct: 'Combo Multiplier',
+  ailmentChancePct: 'Ailment Chance',
+  repeatBasicChancePct: 'Repeat Attack Chance',
+  damageTransferPct: 'Damage Transfer',
+  physDamagePct: 'Physical Damage',
+};
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
   renderInventory();
+  renderMaterials();
+  renderJunk();
   renderStats();
   renderAbilitySlots();
 }
@@ -35,7 +92,8 @@ function renderStats() {
     { id: 'criticalChance', stat: 'criticalChance', format: v => `${(v * 100).toFixed(1)}%` },
     { id: 'attackSpeed', stat: 'attackSpeed', format: v => v.toFixed(2) },
     { id: 'cooldownReduction', stat: 'cooldownReduction', format: v => `${Math.round(v * 100)}%` },
-    { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) }
+    { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) },
+    { id: 'coin', value: () => S.coin || 0 }
   ];
   defs.forEach(d => {
     const el = document.getElementById(`stat-${d.id}`);
@@ -50,6 +108,11 @@ function renderEquipment() {
     { key: 'mainhand', label: 'Weapon' },
     { key: 'head', label: 'Head' },
     { key: 'body', label: 'Body' },
+    { key: 'foot', label: 'Feet' },
+    { key: 'ring1', label: 'Ring 1' },
+    { key: 'ring2', label: 'Ring 2' },
+    { key: 'talisman1', label: 'Talisman 1' },
+    { key: 'talisman2', label: 'Talisman 2' },
     { key: 'food', label: 'Food' }
   ];
   slots.forEach(s => {
@@ -57,12 +120,22 @@ function renderEquipment() {
     if (!el) return;
     const item = S.equipment[s.key];
     const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
-    const iconKey = item?.key ? WEAPONS[item.key]?.proficiencyKey : null;
-    const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
-    const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${name}` : name;
+    const icon = item?.type === 'weapon'
+      ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+      : GEAR_ICONS[item?.slot || item?.type];
+    const stars = QUALITY_STARS[item?.quality] || '';
+    const rarity = item?.rarity;
+    const rarityColor = RARITY_COLORS[rarity] || '';
+    const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+    const displayName = rarityPrefix + name;
+    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+    const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
+    const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
     el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory(); };
+    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
     el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
+    const element = item?.element || item?.imbuement?.element;
+    el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;
@@ -72,58 +145,185 @@ function renderEquipment() {
   if (dodgeEl) dodgeEl.textContent = S.stats?.dodge || 0;
 }
 
-function weaponDetailsText(item) {
+function weaponDetailsHTML(item) {
   const w = WEAPONS[item.key] || item;
   if (!w) return '';
-  const baseRate = w.base ? (w.base.attackRate ?? w.base.rate) : null;
-  const base = w.base ? `${w.base.min}-${w.base.max} (${baseRate}/s)` : 'n/a';
-  const scales = Object.entries(w.scales || {})
-    .map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`)
-    .join(', ');
-  const reqs = w.reqs ? `Realm ${w.reqs.realmMin}, Proficiency ${w.reqs.proficiencyMin}` : 'None';
-  const quality = w.quality ?? 'normal';
-  const affixes = w.affixes && w.affixes.length ? w.affixes.join(', ') : 'None';
-  return `${w.displayName || w.name}\nQuality: ${quality}\nAffixes: ${affixes}\nBase: ${base}\nScales: ${scales}\nTags: ${(w.tags || []).join(', ')}\nReqs: ${reqs}`;
+  const iconKey = WEAPONS[item.key]?.proficiencyKey;
+  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+  const stars = QUALITY_STARS[item.quality] || '';
+  const rarityColor = RARITY_COLORS[item.rarity] || '';
+  const name = w.displayName || w.name;
+  const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
+
+  const phys = w.base?.phys || { min: 0, max: 0 };
+  const elems = w.base?.elems || {};
+  const speed = w.base ? (w.base.attackRate ?? w.base.rate) : 0;
+  const dmgParts = [];
+  let avg = 0;
+  if ((phys.min ?? 0) > 0 || (phys.max ?? 0) > 0) {
+    dmgParts.push(`<span style="color:${ELEMENT_COLORS.physical}">${phys.min}–${phys.max}</span>`);
+    avg += (phys.min + phys.max) / 2;
+  }
+  for (const [el, range] of Object.entries(elems)) {
+    dmgParts.push(`<span style="color:${ELEMENT_COLORS[el] || ELEMENT_COLORS.physical}">${range.min}–${range.max}</span>`);
+    avg += (range.min + range.max) / 2;
+  }
+  const dps = (avg * speed).toFixed(1);
+  const dmgLine = dmgParts.join(', ');
+  const core = `<div class="tooltip-core"><div class="dps-row"><span class="icon">🔥</span><span class="value">${dps}</span></div><div class="stat-row"><span class="label">⚔ Damage</span><span class="value">${dmgLine}</span></div><div class="stat-row"><span class="label">⏱ Speed</span><span class="value">${speed.toFixed(1)}/s</span></div></div>`;
+
+  const imbEl = item.imbuement?.element || 'physical';
+  const imbTier = item.imbuement?.tier ?? 0;
+  const imbIcon = ELEMENT_ICONS[imbEl] || ELEMENT_ICONS.physical;
+  const imbColor = ELEMENT_COLORS[imbEl] || ELEMENT_COLORS.physical;
+  const imbue = `<div class="tooltip-imbue"><span class="element-icon" style="color:${imbColor}">${imbIcon}</span> — T${imbTier}</div>`;
+
+  const pctStats = new Set(['criticalChance','attackSpeed','stunBuildMult','stunDurationMult','qiCostPct','qiConversionPct','comboDamagePct','ailmentChancePct','repeatBasicChancePct','damageTransferPct','physDamagePct']);
+  const implicitLines = w.stats
+    ? Object.entries(w.stats).map(([k,v]) => {
+        const label = IMPLICIT_STAT_LABELS[k] || k;
+        const val = pctStats.has(k) ? `${v >= 0 ? '+' : ''}${(v*100).toFixed(0)}%` : v;
+        return `<div class="stat-row"><span class="label">${label}</span><span class="value">${val}</span></div>`;
+      }).join('')
+    : '';
+  const implicitHtml = implicitLines ? `<div class="tooltip-implicit">${implicitLines}</div>` : '';
+
+  const mods = (w.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
+  const modsHtml = mods.length ? `<div class="tooltip-mods">${mods.map(m => `<span class="mod-chip">${m}</span>`).join('')}</div>` : '';
+
+  const reqRealm = w.reqs?.realmMin ?? 0;
+  const reqProf = w.reqs?.proficiencyMin ?? 0;
+  const tags = (w.tags || []).join(', ');
+  const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
+
+  return header + core + imbue + implicitHtml + modsHtml + footer;
 }
 
-function showDetails(item) {
+function gearDetailsHTML(item) {
+  const stars = QUALITY_STARS[item.quality] || '';
+  const rarityColor = RARITY_COLORS[item.rarity] || '';
+  const name = item.name || item.key;
+  const icon = GEAR_ICONS[item.slot || item.type];
+  const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
+
+  const coreLines = [];
+  if (item.protection?.armor) coreLines.push({ label: 'Armor', value: item.protection.armor });
+  if (item.protection?.dodge) coreLines.push({ label: 'Dodge', value: item.protection.dodge });
+  if (item.protection?.qiShield) coreLines.push({ label: 'Qi Shield', value: item.protection.qiShield });
+  if (item.offense?.accuracy) coreLines.push({ label: 'Accuracy', value: item.offense.accuracy });
+  const core = coreLines.length ? `<div class="tooltip-core">${coreLines.map(l => `<div class="stat-row"><span class="label">${l.label}</span><span class="value">${l.value}</span></div>`).join('')}</div>` : '';
+
+  const imbEl = item.imbuement?.element || 'physical';
+  const imbTier = item.imbuement?.tier ?? 0;
+  const imbIcon = ELEMENT_ICONS[imbEl] || ELEMENT_ICONS.physical;
+  const imbColor = ELEMENT_COLORS[imbEl] || ELEMENT_COLORS.physical;
+  const imbue = `<div class="tooltip-imbue"><span class="element-icon" style="color:${imbColor}">${imbIcon}</span> — T${imbTier}</div>`;
+
+  const mods = (item.modifiers || []).map(k => MODIFIERS[k]?.desc || k);
+  const modsHtml = mods.length ? `<div class="tooltip-mods">${mods.map(m => `<span class="mod-chip">${m}</span>`).join('')}</div>` : '';
+
+  const tags = (item.tags || []).join(', ');
+  const reqRealm = item.reqs?.realmMin ?? 0;
+  const reqProf = item.reqs?.proficiencyMin ?? 0;
+  const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
+
+  return header + core + imbue + modsHtml + footer;
+}
+
+let currentTooltip = null;
+
+function hideItemTooltip() {
+  if (currentTooltip) {
+    currentTooltip.remove();
+    currentTooltip = null;
+  }
+}
+
+function showItemTooltip(anchor, html) {
+  hideItemTooltip();
+  const tooltip = document.createElement('div');
+  tooltip.className = 'item-tooltip';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'tooltip-close';
+  closeBtn.textContent = '✖';
+  closeBtn.onclick = hideItemTooltip;
+  tooltip.appendChild(closeBtn);
+
+  const content = document.createElement('div');
+  content.className = 'tooltip-content';
+  content.innerHTML = html;
+  tooltip.appendChild(content);
+
+  document.body.appendChild(tooltip);
+  const rect = anchor.getBoundingClientRect();
+  const tRect = tooltip.getBoundingClientRect();
+  let left = rect.right + 8;
+  let top = rect.top + rect.height / 2 - tRect.height / 2;
+  if (left + tRect.width > window.innerWidth - 8) left = rect.left - tRect.width - 8;
+  if (left < 8) left = 8;
+  if (top < 8) top = 8;
+  if (top + tRect.height > window.innerHeight - 8) top = window.innerHeight - tRect.height - 8;
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+  currentTooltip = tooltip;
+}
+
+function showDetails(item, evt) {
+  let html = '';
   if (item.type === 'weapon') {
-    const text = weaponDetailsText(item);
-    if (text) window.alert(text);
+    html = weaponDetailsHTML(item);
+  } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
+    html = gearDetailsHTML(item);
   } else {
-    window.alert(item.name || item.key);
+    html = item.name || item.key;
+  }
+  if (html && evt?.target) {
+    evt.stopPropagation();
+    showItemTooltip(evt.target, html);
   }
 }
 
 function createInventoryRow(item) {
   const row = document.createElement('div');
   row.className = 'inventory-row';
-  const iconKey = item.type === 'weapon' ? WEAPONS[item.key]?.proficiencyKey : null;
-  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
-  const displayName = item.name || item.key;
-  const nameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+  const element = item.element || item.imbuement?.element;
+  if (element) {
+    row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
+  }
+  const icon = item.type === 'weapon'
+    ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+    : GEAR_ICONS[item.slot || item.type];
+  const rarity = item.rarity;
+  const rarityColor = RARITY_COLORS[rarity] || '';
+  const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+  const displayName = rarityPrefix + (item.name || item.key);
+  const stars = QUALITY_STARS[item?.quality] || '';
+  const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+  const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
+  const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
   row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
   const act = document.createElement('div');
   act.className = 'inv-actions';
-  if (['weapon', 'armor', 'food'].includes(item.type)) {
+  if (['weapon', 'armor', 'food', 'foot', 'ring', 'talisman'].includes(item.type)) {
     const equipBtn = document.createElement('button');
     equipBtn.className = 'btn small';
     equipBtn.textContent = 'Equip';
-    equipBtn.onclick = () => { equipItem(item); slotFilter = null; renderEquipmentPanel(); };
+    equipBtn.onclick = () => { equipItem(item, slotFilter); slotFilter = null; renderEquipmentPanel(); };
     act.appendChild(equipBtn);
-    const useBtn = document.createElement('button');
-    useBtn.className = 'btn small';
-    useBtn.textContent = item.type === 'food' ? 'Eat' : 'Use';
-    useBtn.onclick = () => {
-      if (item.type === 'food') {
+    if (item.type === 'food') {
+      const useBtn = document.createElement('button');
+      useBtn.className = 'btn small';
+      useBtn.textContent = 'Eat';
+      useBtn.onclick = () => {
         const heal = item.key === 'cookedMeat' ? 40 : 20;
         S.hp = Math.min(S.hpMax, (S.hp || 0) + heal);
         item.qty = (item.qty || 1) - 1;
         if (item.qty <= 0) removeFromInventory(item.id);
-      }
-      renderEquipmentPanel();
-    };
-    act.appendChild(useBtn);
+        renderEquipmentPanel();
+      };
+      act.appendChild(useBtn);
+    }
     const scrapBtn = document.createElement('button');
     scrapBtn.className = 'btn small warn';
     scrapBtn.textContent = 'Scrap';
@@ -136,10 +336,15 @@ function createInventoryRow(item) {
       renderEquipmentPanel();
     };
     act.appendChild(scrapBtn);
+    const junkBtn = document.createElement('button');
+    junkBtn.className = 'btn small';
+    junkBtn.textContent = 'Junk';
+    junkBtn.onclick = () => { moveToJunk(item.id); renderEquipmentPanel(); };
+    act.appendChild(junkBtn);
     const detailsBtn = document.createElement('button');
     detailsBtn.className = 'btn small';
     detailsBtn.textContent = 'Details';
-    detailsBtn.onclick = () => showDetails(item);
+    detailsBtn.onclick = (e) => showDetails(item, e);
     act.appendChild(detailsBtn);
   }
   row.appendChild(act);
@@ -152,22 +357,63 @@ function canEquipToSlot(item, slot) {
     case 'mainhand': return item.type === 'weapon';
     case 'head':
     case 'body': return item.type === 'armor' && item.slot === slot;
+    case 'foot': return item.type === 'foot';
+    case 'ring1':
+    case 'ring2': return item.type === 'ring';
+    case 'talisman1':
+    case 'talisman2': return item.type === 'talisman';
     case 'food': return item.type === 'food';
   }
   return false;
 }
 
-function renderInventory() {
+function renderInventory({ dismissTooltip = false } = {}) {
+  if (dismissTooltip) hideItemTooltip();
   const list = document.getElementById('inventoryList');
   if (!list) return;
   list.innerHTML = '';
-  const items = (S.inventory || []).filter(it => currentFilter === 'all' || it.type === currentFilter);
+  const items = (S.inventory || []).filter(it => it.type !== 'material' && (currentFilter === 'all' || it.type === currentFilter));
   items.forEach(it => list.appendChild(createInventoryRow(it)));
   const filterBtns = document.querySelectorAll('#inventoryFilters button');
   filterBtns.forEach(btn => {
     btn.classList.toggle('active', btn.dataset.filter === currentFilter);
-    btn.onclick = () => { currentFilter = btn.dataset.filter; slotFilter = null; renderInventory(); };
+    btn.onclick = () => { currentFilter = btn.dataset.filter; slotFilter = null; renderInventory({ dismissTooltip: true }); };
   });
+}
+
+function renderMaterials() {
+  const list = document.getElementById('materialsList');
+  if (!list) return;
+  list.innerHTML = '';
+  const mats = (S.inventory || []).filter(it => it.type === 'material');
+  mats.forEach(it => {
+    const row = createInventoryRow(it);
+    row.classList.remove('muted');
+    list.appendChild(row);
+  });
+}
+
+function createJunkRow(item) {
+  const row = createInventoryRow(item);
+  row.classList.remove('muted');
+  const act = row.querySelector('.inv-actions');
+  if (act) {
+    act.innerHTML = '';
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'btn small';
+    detailsBtn.textContent = 'Details';
+    detailsBtn.onclick = (e) => showDetails(item, e);
+    act.appendChild(detailsBtn);
+  }
+  return row;
+}
+
+function renderJunk() {
+  const list = document.getElementById('junkList');
+  if (!list) return;
+  list.innerHTML = '';
+  const items = S.junk || [];
+  items.forEach(it => list.appendChild(createJunkRow(it)));
 }
 
 export function setupEquipmentTab() {

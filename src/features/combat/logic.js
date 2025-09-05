@@ -1,6 +1,7 @@
 import { initHp } from '../../shared/utils/hp.js';
-import { WEAPONS, WEAPON_CONFIG, WEAPON_FLAGS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
+import { WEAPONS, WEAPON_CONFIG } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { onPhysicalHit } from '../../engine/combat/stun.js';
+import { MODIFIERS } from '../gearGeneration/data/modifiers.js';
 
 /** Tunables */
 export const ARMOR_K = 10;           // how "strong" armor is vs damage size
@@ -61,12 +62,67 @@ export function initializeFight(enemy) {
   return { enemyHP, enemyMax, atk, armor };
 }
 
-export function applyWeaponDamage(base, weapon = 'fist') {
-  if (!WEAPON_FLAGS[weapon] || weapon === 'fist') return base;
-  const config = WEAPON_CONFIG[weapon];
-  const modified = Math.round(base * (config.damageMultiplier ?? 1));
-  console.log('[weapon]', 'damage', { weapon, base, modified });
-  return modified;
+export function applyWeaponDamage(profile = {}, weapon = WEAPONS.fist, attacker = {}, typeMults = {}) {
+  const result = {
+    phys: Number(profile.phys) || 0,
+    elems: { ...(profile.elems || {}) },
+  };
+
+  const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
+  const config = WEAPON_CONFIG[w.key] || {};
+  const baseMult = config.damageMultiplier ?? 1;
+
+  result.phys *= baseMult;
+  for (const k in result.elems) {
+    result.elems[k] *= baseMult;
+  }
+
+  for (const key of w.modifiers || []) {
+    const mod = MODIFIERS[key];
+    if (!mod) continue;
+    if (mod.lane === 'damage' && typeof mod.value === 'number') {
+      result.phys *= 1 + mod.value;
+      for (const k in result.elems) result.elems[k] *= 1 + mod.value;
+    } else if (mod.lane === 'physPct' && typeof mod.value === 'number') {
+      result.phys *= 1 + mod.value;
+    } else if (mod.lane === 'physFlat' && mod.range) {
+      const avg = (mod.range.min + mod.range.max) / 2;
+      result.phys += avg;
+    } else if (mod.element && mod.lane.endsWith('Pct') && typeof mod.value === 'number') {
+      const elem = mod.element;
+      result.elems[elem] = (result.elems[elem] || 0) * (1 + mod.value);
+    } else if (mod.element && mod.lane.endsWith('Flat') && mod.range) {
+      const elem = mod.element;
+      const avg = (mod.range.min + mod.range.max) / 2;
+      result.elems[elem] = (result.elems[elem] || 0) + avg;
+    }
+  }
+
+  const getMult = key =>
+    (typeMults && typeMults[key]) ||
+    attacker?.stats?.[`${key}DamageMult`] ||
+    attacker?.[`${key}DamageMult`] ||
+    1;
+
+  result.phys *= getMult('physical');
+  for (const k in result.elems) {
+    result.elems[k] *= getMult(k);
+  }
+
+  const classMult =
+    attacker?.stats?.[`${w.classKey}DamageMult`] ||
+    attacker?.[`${w.classKey}DamageMult`] ||
+    1;
+  const typeMult =
+    attacker?.stats?.[`${w.typeKey}DamageMult`] ||
+    attacker?.[`${w.typeKey}DamageMult`] ||
+    1;
+
+  const weaponMult = classMult * typeMult;
+  result.phys *= weaponMult;
+  for (const k in result.elems) result.elems[k] *= weaponMult;
+
+  return result;
 }
 
 export function applyResists(damage, element, target) {
@@ -76,24 +132,69 @@ export function applyResists(damage, element, target) {
   return dmg * (1 - resist);
 }
 
-export function processAttack(currentHP, damage, options = {}) {
-  let cur = Number(currentHP);
-  let dmg = Number(damage);
-  if (!Number.isFinite(cur)) cur = 0;
-  if (!Number.isFinite(dmg)) dmg = 0;
-  const { element, target, type, onDamage, attacker, nowMs } = options;
-  let adjusted = applyResists(dmg, element, target);
-  if (type === 'physical') {
-    const armor = Number(target?.stats?.armor ?? target?.armor ?? 0) || 0;
-    adjusted = applyArmor(adjusted, armor);
+export function processAttack(profile, weapon, options = {}) {
+  const {
+    target,
+    onDamage,
+    attacker,
+    nowMs,
+    typeMults = {},
+    globalMult = 1,
+    treeMult = 1,
+    proficiencyMult = 1,
+    manualMult = 1,
+    tempMult = 1,
+  } = options;
+
+  const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
+  const scaled = applyWeaponDamage(profile, w, attacker, typeMults);
+
+  const stats = w?.stats || {};
+  if (typeof stats.physDamagePct === 'number') {
+    scaled.phys *= 1 + stats.physDamagePct;
   }
-  adjusted = routeDamageThroughQiShield(adjusted, target);
-  let final = Math.max(0, Math.round(adjusted));
-  if (!Number.isFinite(final)) final = 0;
-  if (type === 'physical' && final > 0) {
-    onPhysicalHit(attacker, target, final, nowMs || Date.now());
+  if (typeof stats.damageTransferPct === 'number') {
+    const elem = stats.damageTransferElement;
+    if (elem) {
+      const transferred = scaled.phys * stats.damageTransferPct;
+      scaled.phys -= transferred;
+      scaled.elems[elem] = (scaled.elems[elem] || 0) + transferred;
+    }
   }
-  if (typeof onDamage === 'function') onDamage(final);
-  return Math.max(0, Math.round(cur - final));
+
+  const baseDamageMult = 1 + ((attacker?.stats?.damagePct || 0) / 100);
+  const physDamageMult = 1 + ((attacker?.stats?.physDamagePct || 0) / 100);
+  scaled.phys *= baseDamageMult * physDamageMult;
+  for (const elem in scaled.elems) {
+    scaled.elems[elem] *= baseDamageMult;
+  }
+
+  const components = { phys: 0, elems: {} };
+
+  if (scaled.phys > 0) {
+    let amt = applyArmor(scaled.phys, Number(target?.stats?.armor ?? target?.armor ?? 0) || 0);
+    amt = routeDamageThroughQiShield(amt, target);
+    components.phys = Math.max(0, Math.round(amt));
+    if (components.phys > 0) {
+      onPhysicalHit(attacker, target, components.phys, nowMs || Date.now());
+    }
+  }
+
+  for (const [elem, val] of Object.entries(scaled.elems)) {
+    let amt = applyResists(val, elem, target);
+    amt = routeDamageThroughQiShield(amt, target);
+    components.elems[elem] = Math.max(0, Math.round(amt));
+  }
+
+  let total = components.phys;
+  for (const v of Object.values(components.elems)) total += v;
+
+  total = Math.round(
+    total * globalMult * treeMult * proficiencyMult * manualMult * tempMult
+  );
+
+  if (typeof onDamage === 'function') onDamage(total, components);
+
+  return { total, components };
 }
 

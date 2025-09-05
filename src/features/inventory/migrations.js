@@ -1,3 +1,6 @@
+import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { GEAR_BASES } from '../gearGeneration/data/gearBases.js';
+
 export const migrations = [
   save => {
     if(!save.inventory){
@@ -32,7 +35,7 @@ export const migrations = [
       }
     }
     if (!save.equipment || typeof save.equipment !== 'object') {
-      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null };
+      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, foot: null, ring1: null, ring2: null, talisman1: null, talisman2: null, food: null };
     } else {
       if (!save.equipment.mainhand) save.equipment.mainhand = { key: 'fist', type: 'weapon' };
       if (typeof save.equipment.head === 'undefined') save.equipment.head = null;
@@ -46,6 +49,11 @@ export const migrations = [
       } else if (typeof save.equipment.torso !== 'undefined') {
         delete save.equipment.torso;
       }
+      if (typeof save.equipment.foot === 'undefined') save.equipment.foot = null;
+      if (typeof save.equipment.ring1 === 'undefined') save.equipment.ring1 = null;
+      if (typeof save.equipment.ring2 === 'undefined') save.equipment.ring2 = null;
+      if (typeof save.equipment.talisman1 === 'undefined') save.equipment.talisman1 = null;
+      if (typeof save.equipment.talisman2 === 'undefined') save.equipment.talisman2 = null;
       if (typeof save.equipment.food === 'undefined') save.equipment.food = null;
     }
     if (!Array.isArray(save.sessionLoot)) save.sessionLoot = [];
@@ -61,6 +69,45 @@ export const migrations = [
     const equippedPalm = typeof save.equipment?.mainhand === 'object' && save.equipment.mainhand?.key === 'palmWraps';
     if (!hasPalmWraps && !equippedPalm) {
       save.inventory.push({ id: Date.now() + Math.random(), key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' });
+    }
+  },
+  save => {
+    if (typeof save.coin === 'undefined') save.coin = 0;
+    if (!Array.isArray(save.junk)) save.junk = [];
+  },
+  save => {
+    if (!Array.isArray(save.inventory)) save.inventory = [];
+    save.inventory.forEach(it => {
+      if (it && typeof it === 'object' && !it.name && it.key) {
+        it.name =
+          WEAPONS[it.key]?.displayName ||
+          GEAR_BASES[it.key]?.displayName ||
+          it.key;
+      }
+    });
+    if (save.equipment && typeof save.equipment === 'object') {
+      Object.values(save.equipment).forEach(it => {
+        if (it && typeof it === 'object' && !it.name && it.key) {
+          it.name =
+            WEAPONS[it.key]?.displayName ||
+            GEAR_BASES[it.key]?.displayName ||
+            it.key;
+        }
+      });
+    }
+    const hasPalmWraps = save.inventory.some(it =>
+      typeof it === 'string' ? it === 'palmWraps' : it.key === 'palmWraps'
+    );
+    const equippedPalm =
+      typeof save.equipment?.mainhand === 'object' &&
+      save.equipment.mainhand?.key === 'palmWraps';
+    if (!hasPalmWraps && !equippedPalm) {
+      save.inventory.push({
+        id: Date.now() + Math.random(),
+        key: 'palmWraps',
+        name: 'Palm Wraps',
+        type: 'weapon'
+      });
     }
   }
 ];

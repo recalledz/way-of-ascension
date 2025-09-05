@@ -21,32 +21,12 @@ way-of-ascension/
 │   └── rules/
 │       └── way-of-ascension.md
 ├── astral-tree-prototype/
-│   ├── astral_tree.json
-│   └── astral_tree_bulder.html
-├── browser-tools-mcp/
-│   ├── browser-tools-mcp/
-│   │   ├── README.md
-│   │   ├── mcp-server.ts
-│   │   ├── package-lock.json
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   ├── browser-tools-server/
-│   │   ├── lighthouse/
-│   │   ├── README.md
-│   │   ├── browser-connector.ts
-│   │   ├── package.json
-│   │   ├── server.ts
-│   │   └── tsconfig.json
-│   ├── chrome-extension/
-│   │   ├── background.js
-│   │   ├── devtools.html
-│   │   ├── devtools.js
-│   │   ├── manifest.json
-│   │   ├── panel.html
-│   │   └── panel.js
-│   └── docs/
-│       ├── mcp-docs.md
-│       └── mcp.md
+│   ├── astral-tree-v3.0.html
+│   ├── astral-tree-v4.html
+│   ├── template-tree/
+│   │   ├── astral_tree-base-structure.json
+│   │   └── astral_tree_pentagon.json
+│   └── workoround-tree.html
 ├── docs/
 │   ├── To-dos/
 │   │   ├── Balance.md
@@ -72,14 +52,18 @@ way-of-ascension/
 │   ├── game-state-and-mechanics.md
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
+│   ├── side-location-discovery.md
 │   ├── project-structure.md
 │   └── ARCHITECTURE.md
 ├── node_modules/
 ├── scripts/
 │   ├── balance-validate.js
 │   ├── scan-codex-output.js
+│   ├── scan-env-usage.js
+│   ├── start.js
 │   └── validate-structure.js
 ├── src/
+│   ├── config.js
 │   ├── index.js
 │   ├── data/
 │   │   └── status.ts
@@ -115,6 +99,11 @@ way-of-ascension/
 │   │   │   ├── ui.js
 │   │   │   ├── selectors.js
 │   │   │   └── state.js
+│   │   ├── accessories/
+│   │   │   ├── data/
+│   │   │   │   └── rings.js
+│   │   │   ├── logic.js
+│   │   │   └── selectors.js
 │   │   ├── affixes/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
@@ -128,8 +117,10 @@ way-of-ascension/
 │   │   │   ├── attack.js
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
+│   │   │   │   ├── ailments.js
 │   │   │   │   ├── status.js
-│   │   │   │   └── statusesByElement.js
+│   │   │   │   ├── statusesByElement.js
+│   │   │   │   └── ailments.js
 │   │   │   ├── hit.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -169,10 +160,12 @@ way-of-ascension/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── lootTables.js
 │   │   │   │   ├── lootTables.gear.js
-│   │   │   │   └── lootTables.weapons.js
+│   │   │   │   ├── lootTables.weapons.js
+│   │   │   │   └── lootTables.rings.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
+│   │   │   ├── qualityWeights.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
 │   │   │   ├── index.js
@@ -196,6 +189,7 @@ way-of-ascension/
 │   │   │   │   ├── astral_tree.json
 │   │   │   │   ├── laws.js
 │   │   │   │   └── realms.js
+│   │   │   ├── insight.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
 │   │   │   ├── mutators.js
@@ -252,6 +246,8 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── puzzles/
+│   │   │   │   └── sequenceMemory.js
 │   │   │   └── ui/
 │   │   │       ├── mindMainTab.js
 │   │   │       ├── mindPuzzlesTab.js
@@ -265,6 +261,14 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   └── ui/
 │   │   │       └── miningDisplay.js
+│   │   ├── forging/
+│   │   │   ├── logic.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   ├── state.js
+│   │   │   ├── migrations.js
+│   │   │   └── ui/
+│   │   │       └── forgingDisplay.js
 │   │   ├── physique/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -274,10 +278,16 @@ way-of-ascension/
 │   │   │   └── ui/
 │   │   │       ├── physiqueDisplay.js
 │   │   │       └── trainingGame.js
+│   │   ├── talismans/
+│   │   │   └── data/
+│   │   │       └── talismans.js
 │   │   ├── gearGeneration/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
-│   │   │   │   └── bodyBases.js
+│   │   │   │   ├── gearBases.js
+│   │   │   │   ├── gearIcons.js
+│   │   │   │   └── modifiers.js
+│   │   │   ├── imbuement.js
 │   │   │   ├── logic.js
 │   │   │   └── selectors.js
 │   │   └── weaponGeneration/
@@ -285,6 +295,7 @@ way-of-ascension/
 │   │       │   ├── _balance.contract.js
 │   │       │   ├── materials.stub.js
 │   │       │   ├── weaponIcons.js
+│   │       │   ├── weaponClasses.js
 │   │       │   ├── weaponTypes.js
 │   │       │   └── weapons.js
 │   │       ├── index.js
@@ -311,6 +322,7 @@ way-of-ascension/
 │   │       └── stats.js
 │   └── ui/
 │       ├── app.js
+│       ├── diagnostics.js
 │       ├── dev/
 │       │   ├── balanceTuner.js
 │       │   └── devQuickMenu.js
@@ -344,6 +356,25 @@ way-of-ascension/
 ├── src/features/combat/index.js
 ├── src/features/karma/index.js
 ├── src/features/mining/index.js
+├── src/features/gathering/index.js
+├── src/features/gathering/logic.js
+├── src/features/gathering/migrations.js
+├── src/features/gathering/mutators.js
+├── src/features/gathering/selectors.js
+├── src/features/gathering/state.js
+├── src/features/gathering/ui/
+│   └── gatheringDisplay.js
+├── src/features/sideLocations/index.js
+├── src/features/sideLocations/logic.js
+├── src/features/sideLocations/state.js
+├── src/features/agility/index.js
+├── src/features/agility/logic.js
+├── src/features/agility/mutators.js
+├── src/features/agility/selectors.js
+├── src/features/agility/state.js
+├── src/features/agility/ui/agilityDisplay.js
+├── src/features/agility/ui/trainingGame.js
+├── src/features/forging/index.js
 ├── src/features/physique/index.js
 └── style.css
 ```
@@ -357,6 +388,7 @@ way-of-ascension/
 - `docs/To-dos/Palms-and-fists.md` – Concept notes for palm and fist weapon styles.
 - `parameters-and-formulas.md` – Base stats, cultivation stats, activity starting stats, damage formulas, and skill XP scaling reference.
 - `To-dos/Balance.md` – Notes on planned balance adjustments.
+- `docs/side-location-discovery.md` – Design for discovering optional side locations during Adventure.
 
 ### Shared Modules (`src/shared/`)
 
@@ -536,9 +568,18 @@ export function runMigrations(save) {
 **Key Functions**: `rollLoot()`, `toLootTableKey()`, `onEnemyDefeated()`.
 **When to modify**: Adjust loot algorithms or add new drop behaviors.
 
+#### `src/features/loot/qualityWeights.js` - Quality Weight Helper
+**Purpose**: Rolls a weapon or gear quality based on weighted chances.
+**Key Functions**: `rollQualityKey()`, `rollRarity()`.
+**When to modify**: Adjust default quality or rarity probabilities or introduce zone-specific distributions.
+
 #### `src/features/loot/data/lootTables.gear.js` - Gear Loot Tables
 **Purpose**: Defines starter zone body gear drops and their weights.
 **When to modify**: Add or rebalance gear drops for zones.
+
+#### `src/features/loot/data/lootTables.rings.js` - Ring Loot Tables
+**Purpose**: Defines ring drops and weights for each zone.
+**When to modify**: Adjust ring availability or balance drop rates.
 
 #### `src/features/inventory/mutators.js` - Inventory Management
 **Purpose**: Adds, removes, and equips items in the player's inventory and equipment slots.
@@ -625,6 +666,10 @@ export const ZONES = [
 **Purpose**: Maps weapon type keys to Iconify icon names for UI display.
 **When to modify**: Add or update icons when introducing new weapon types.
 
+#### `weaponClasses.js` - Weapon Classes
+**Purpose**: Defines high-level weapon classes (e.g., swords, spears) used for shared effects and proficiency.
+**When to modify**: Add or rename weapon classes.
+
 ### User Interface (`ui/`)
 
 #### `index.js` - Main UI Controller
@@ -679,6 +724,10 @@ function updateAll() {
 **Purpose**: Placeholder root for composing high-level UI modules.
 **When to modify**: Implement global UI bootstrap or layout logic.
 
+#### `src/ui/diagnostics.js` - Diagnostics Overlay
+**Purpose**: Displays runtime environment flag report and feature visibility inspector. Includes HUD dot and keyboard shortcut.
+**When to modify**: Update when adding new diagnostics fields or UI.
+
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
@@ -717,7 +766,7 @@ function updateAll() {
 **Purpose**: Read-only helpers to derive proficiency data and bonuses.
 **Key Functions**:
 - `getProficiency(key, state)` – get stored proficiency and bonus.
-- `getWeaponProficiencyBonuses(state)` – compute damage and speed bonuses for the equipped weapon.
+- `getWeaponProficiencyBonuses(state)` – compute damage and speed multipliers for the equipped weapon.
 
 #### `src/features/proficiency/ui/weaponProficiencyDisplay.js` - Proficiency HUD
 **Purpose**: Updates HUD elements showing weapon proficiency levels and progress.
@@ -741,6 +790,10 @@ function updateAll() {
 **Purpose**: Core formulas for cultivation and combat stats.
 **Key Functions**: `fCap(state)`, `calcAtk(state)`, `breakthroughChance(state)`.
 
+#### `src/features/progression/insight.js` - Insight Gain Tick
+**Purpose**: Computes Insight accumulation each tick based on Foundation gain and current activity.
+**Key Functions**: `tickInsight(state, dtSec)`.
+
 #### `src/features/progression/data/realms.js` - Cultivation Realms
 **Purpose**: Define realm tiers and their properties.
 
@@ -763,12 +816,24 @@ function updateAll() {
 **Purpose**: Stores node coordinates and edge connections for the astral skill tree. Used by the UI to render the graph and compute adjacency.
 **Key Functions**: n/a
 
-#### `astral-tree-prototype/astral_tree.json` - Prototype Tree Data
-**Purpose**: Original exported node/edge layout used for building the astral tree.
+#### `astral-tree-prototype/astral-tree-v3.0.html` - Prototype Tree v3
+**Purpose**: Legacy prototype of the astral skill tree layout (version 3.0) used for early design tests.
 **Key Functions**: n/a
 
-#### `astral-tree-prototype/astral_tree_bulder.html` - Prototype Tree Builder
-**Purpose**: Standalone editor (using vis-network) for tweaking and exporting astral tree layouts.
+#### `astral-tree-prototype/astral-tree-v4.html` - Prototype Tree v4
+**Purpose**: Updated prototype of the astral skill tree layout (version 4) for layout experimentation.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/template-tree/astral_tree-base-structure.json` - Base Structure Template
+**Purpose**: JSON template describing a minimal base structure for astral tree layouts.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/template-tree/astral_tree_pentagon.json` - Pentagon Template
+**Purpose**: JSON template providing a pentagon-style layout for astral tree experimentation.
+**Key Functions**: n/a
+
+#### `astral-tree-prototype/workoround-tree.html` - Workaround Tree Prototype
+**Purpose**: Experimental HTML prototype exploring alternate tree rendering workarounds.
 **Key Functions**: n/a
 
 ### UI Effects (`src/features/combat/ui/`)
@@ -802,6 +867,21 @@ function updateAll() {
 **Purpose**: A simple Node.js server to serve the game's static files for local development.
 **Dependencies**: `http`, `fs`, `path`
 **When to modify**: If server configuration, port, or file handling logic needs to change.
+
+### Start Script (`scripts/start.js`)
+
+**Purpose**: Loads environment variables from `.env` files and boots the local server.
+**When to modify**: Adjust startup or environment-loading behavior.
+
+### Env Usage Scan (`scripts/scan-env-usage.js`)
+
+**Purpose**: Prints any direct `process.env` or `import.meta.env` references outside `src/config.js`.
+**When to modify**: Update scanning patterns or ignore rules.
+
+### Config (`src/config.js`)
+
+**Purpose**: Centralized environment and feature flag configuration derived from Vercel/Vite envs.
+**When to modify**: Change feature flag handling or defaults.
 
 ### Changelog (`CHANGELOG.md`)
 **Purpose**: Tracks notable changes, additions, and fixes across versions.
@@ -933,7 +1013,12 @@ Paths added:
 - `src/features/combat/statusEngine.js` – Internal status effect stacking and duration handler.
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
+- `src/features/combat/data/ailments.js` – Ailment definitions and their effects.
 - `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
+
+#### `src/features/combat/data/ailments.js` - Ailment Definitions
+**Purpose**: Enumerates poison, burn, chill and other ailments with durations, stack limits and effect callbacks.
+**When to modify**: Add new ailments or adjust existing damage-over-time and debuff behaviour.
 
 ### Karma Feature (`src/features/karma/`)
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.
@@ -950,12 +1035,16 @@ Paths added:
 - `src/features/mind/selectors.js` – Accessors for current mind stats and progress.
 - `src/features/mind/index.js` – Bundles mind exports and event listeners.
 - `src/features/mind/data/manuals.js` – Manual definitions with requirements, timers and max levels.
-- `src/features/mind/data/talismans.js` – Talisman definitions and their bonuses.
+- `src/features/mind/data/talismans.js` – Crafting recipes for talismans.
 - `src/features/mind/data/_balance.contract.js` – Balance snapshot for mind-related data.
 - `src/features/mind/ui/mindMainTab.js` – Renders summary view for the Mind feature.
 - `src/features/mind/ui/mindPuzzlesTab.js` – Displays puzzle progress and multiplier info.
 - `src/features/mind/ui/mindReadingTab.js` – Lists manuals and controls reading actions.
 - `src/features/mind/ui/mindStatsTab.js` – Shows cumulative manual bonuses.
+- `src/features/mind/puzzles/sequenceMemory.js` – Implements the sequence memory puzzle used for mind training.
+
+### Talismans Feature (`src/features/talismans/`)
+- `src/features/talismans/data/talismans.js` – Definitions for equipable talismans with utility bonuses.
 
 ### Mining Feature (`src/features/mining/`)
 - `src/features/mining/state.js` – Tracks mining level, experience, unlocked resources and yields.
@@ -964,6 +1053,36 @@ Paths added:
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
 
+### Gathering Feature (`src/features/gathering/`)
+- `src/features/gathering/index.js` – Gathering feature descriptor.
+- `src/features/gathering/state.js` – Tracks gathering level, experience, unlocked resources and yields.
+  - `src/features/gathering/logic.js` – Handles resource gathering rates with chances for Spirit Wood and Aromatic Herbs.
+- `src/features/gathering/mutators.js` – External wrappers to modify gathering state and listeners for `ACTIVITY:START`.
+- `src/features/gathering/selectors.js` – Provides accessors for gathering state and derived rates.
+- `src/features/gathering/migrations.js` – Save migrations for gathering slice (currently none).
+  - `src/features/gathering/ui/gatheringDisplay.js` – Updates gathering activity and sidebar displays.
+
+### Agility Feature (`src/features/agility/`)
+- `src/features/agility/state.js` – Tracks agility training progress and level.
+- `src/features/agility/logic.js` – Calculates training effects.
+- `src/features/agility/mutators.js` – Starts and ends agility training sessions.
+- `src/features/agility/selectors.js` – Accessors for agility state and cursor position.
+- `src/features/agility/ui/agilityDisplay.js` – Shows agility stats and start/stop controls.
+- `src/features/agility/ui/trainingGame.js` – Mini-game UI for agility training.
+- `src/features/agility/index.js` – Agility feature descriptor.
+
+### Side Locations Feature (`src/features/sideLocations/`)
+- `src/features/sideLocations/state.js` – Tracks discovered nodes and discovery cooldown.
+- `src/features/sideLocations/logic.js` – Listens for adventure kills to unlock new resource nodes.
+- `src/features/sideLocations/index.js` – Side locations feature descriptor.
+
+### Forging Feature (`src/features/forging/`)
+- `src/features/forging/state.js` – Tracks forging level, experience, and current forging job.
+- `src/features/forging/logic.js` – Calculates tier times, costs, and applies forging results.
+- `src/features/forging/mutators.js` – Starts forging jobs and advances progress each tick.
+- `src/features/forging/migrations.js` – Ensures forging state exists in saves and initializes defaults.
+- `src/features/forging/selectors.js` – Helpers to read forging state.
+- `src/features/forging/ui/forgingDisplay.js` – Renders forging panel and sidebar info.
 
 ### Physique Feature (`src/features/physique/`)
 - `src/features/physique/state.js` – Tracks physique training progress and stamina.
@@ -991,10 +1110,13 @@ Paths added:
 - `src/features/cooking/ui/cookingDisplay.js` – Sidebar display for cooking progress.
 
 ### Gear Generation Feature (`src/features/gearGeneration/`)
-- `src/features/gearGeneration/logic.js` – Generates body gear from base definitions and materials.
+- `src/features/gearGeneration/logic.js` – Generates gear from base definitions and materials.
 - `src/features/gearGeneration/selectors.js` – Rolls zone gear drops using gear loot tables.
-- `src/features/gearGeneration/data/bodyBases.js` – Base body armor definitions (iron cuirass, leather tunic, cotton robe).
+- `src/features/gearGeneration/imbuement.js` – Defines imbuement tiers, multipliers, and zone element themes.
+- `src/features/gearGeneration/data/gearBases.js` – Base armor definitions (body, head, feet).
+- `src/features/gearGeneration/data/gearIcons.js` – Icon mappings for gear slots.
 - `src/features/gearGeneration/data/_balance.contract.js` – Balance contract placeholder for gear generation.
+- `src/features/gearGeneration/data/modifiers.js` – Modifier definitions used by gear and weapon generation.
 
 ### Weapon Generation Feature (`src/features/weaponGeneration/`)
 - `src/features/weaponGeneration/index.js` – Registers weapon generation hooks.
@@ -1002,6 +1124,12 @@ Paths added:
 - `src/features/weaponGeneration/logic.js` – Generates weapons from base types and materials.
 - `src/features/weaponGeneration/mutators.js` – Writes generated weapons into state.
 - `src/features/weaponGeneration/selectors.js` – Helpers to roll and access generated weapons.
+- `src/features/weaponGeneration/data/weaponClasses.js` – Lists shared weapon classes used for proficiency.
+
+### Accessories Feature (`src/features/accessories/`)
+- `src/features/accessories/data/rings.js` – Base ring definitions and stats.
+- `src/features/accessories/logic.js` – Generates rings and applies minor modifiers.
+- `src/features/accessories/selectors.js` – Rolls ring drops using ring loot tables.
 
 ### Core Data (`src/data/`)
 - `src/data/status.ts` – Global status effect definitions.
@@ -1067,3 +1195,5 @@ Paths added:
 - `src/features/progression/index.js` – Progression feature descriptor.
 - `src/features/sect/index.js` – Sect feature descriptor.
 - `src/features/weaponGeneration/index.js` – Weapon generation feature descriptor.
+- `src/features/agility/index.js` – Agility feature descriptor.
+- `src/features/sideLocations/index.js` – Side locations feature descriptor.

@@ -1,0 +1,18 @@
+export const agilityState = {
+  level: 1,
+  exp: 0,
+  expMax: 100,
+  stamina: 100,
+  maxStamina: 100,
+  trainingSession: false,
+  timingActive: false,
+  sessionStamina: 0,
+  sessionHits: 0,
+  sessionXP: 0,
+  cursorPosition: 0,
+  cursorDirection: 1,
+  cursorSpeed: 0,
+  perfectHits: 0,
+  hitStreak: 0,
+  obstacleCourses: 0,
+};

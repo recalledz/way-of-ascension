@@ -8,26 +8,45 @@ import { mountAlchemyUI } from "./alchemy/ui/alchemyDisplay.js";
 import { mountCookingUI } from "./cooking/ui/cookingDisplay.js";
 import { mountLawDisplay } from "./progression/ui/lawDisplay.js";
 import { mountMiningUI } from "./mining/ui/miningDisplay.js";
+import { mountGatheringUI } from "./gathering/ui/gatheringDisplay.js";
 import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
+import { mountAgilityUI } from "./agility/ui/agilityDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
+import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
+import { featureFlags } from "../config.js";
 
 
 // Example placeholder for later:
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
 
 export function mountAllFeatureUIs(state) {
-  mountProficiencyUI(state);
-  mountSectUI(state);
-  mountKarmaUI(state);
-  mountAlchemyUI(state);
-  mountCookingUI(state);
-  mountMiningUI(state);
-  mountPhysiqueUI(state);
-  mountLawDisplay(state);
-  mountMindReadingUI(state);
-  mountAstralTreeUI(state);
+  if (featureFlags.proficiency) mountProficiencyUI(state);
+  if (featureFlags.sect) mountSectUI(state);
+  if (featureFlags.karma) mountKarmaUI(state);
+  if (featureFlags.alchemy) mountAlchemyUI(state);
+  if (featureFlags.cooking) mountCookingUI(state);
+  if (featureFlags.mining) mountMiningUI(state);
+  if (featureFlags.gathering) mountGatheringUI(state);
+  if (featureFlags.forging) mountForgingUI(state);
+  if (featureFlags.physique) mountPhysiqueUI(state);
+  if (featureFlags.agility) mountAgilityUI(state);
+  if (featureFlags.law) mountLawDisplay(state);
+  if (featureFlags.mind) mountMindReadingUI(state);
+  if (featureFlags.astralTree) mountAstralTreeUI(state);
 
   // mountWeaponGenUI?.(state);
+}
+
+export function debugFeatureVisibility(/* state */) {
+  const result = {};
+  for (const [key, value] of Object.entries(featureFlags)) {
+    result[key] = {
+      flagAllowed: !!value,
+      unlockAllowed: true,
+      reason: value ? 'flag=true' : 'flag=false'
+    };
+  }
+  return result;
 }
 

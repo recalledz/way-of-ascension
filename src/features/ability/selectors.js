@@ -3,6 +3,7 @@ import { ABILITIES } from './data/abilities.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { resolveAbilityHit } from './logic.js';
 import { getStatEffects } from '../progression/selectors.js';
+import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 
 export function getAbilityCooldowns(state = S) {
   return state.abilityCooldowns || {};
@@ -21,7 +22,7 @@ export function getAbilitySlots(state = S) {
     const abilityKey = abilityKeys[i];
     if (abilityKey) {
       const def = ABILITIES[abilityKey];
-      const meetsReq = def && (!def.requiresWeaponType || def.requiresWeaponType === weapon.typeKey);
+      const meetsReq = def && (!def.requiresWeaponClass || def.requiresWeaponClass === weapon.classKey);
       if (meetsReq) {
         const cooldown = state.abilityCooldowns?.[abilityKey] || 0;
         slots.push({
@@ -43,15 +44,19 @@ export function getAbilityDamage(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
   if (!ability) return null;
   const res = resolveAbilityHit(abilityKey, state);
-  const attack = res?.attack;
-  if (!attack) return null;
-  let amount = attack.amount;
+  const attacks = res?.attacks || (res?.attack ? [res.attack] : []);
+  if (!attacks.length) return null;
+  let amount = attacks.reduce((sum, a) => sum + a.amount, 0);
   const mods = state.abilityMods?.[abilityKey] || {};
   if (mods.damagePct) amount = Math.round(amount * (1 + mods.damagePct / 100));
   if (ability.tags?.includes('spell')) {
+    if (getEquippedWeapon(state).classKey === 'focus') {
+      amount = Math.round(amount * getWeaponProficiencyBonuses(state).damageMult);
+    }
     const { spellPowerMult } = getStatEffects(state);
     const spellDamage = state.stats?.spellDamage || 0;
-    amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100));
+    const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+    amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
   }
   return amount;
 }

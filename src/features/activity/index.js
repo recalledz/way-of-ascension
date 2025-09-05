@@ -3,6 +3,7 @@ export const ActivityFeature = {
   initialState: () => ({
     cultivation: false,
     physique: false,
+    agility: false,
     mining: false,
     adventure: false,
     cooking: false,

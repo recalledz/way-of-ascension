@@ -1,5 +1,5 @@
 import { physiqueState } from './state.js';
-import { stepTrainingCursor, evaluateTrainingHit } from './logic.js';
+import { stepTrainingCursor, evaluateTrainingHit, getPhysiqueEffects } from './logic.js';
 
 function slice(state){
   return state.physique || state;
@@ -12,9 +12,18 @@ export function addPhysiqueExp(amount, state = physiqueState){
     p.exp -= p.expMax;
     p.level++;
     p.expMax = Math.floor(p.expMax * 1.4);
-    p.maxStamina += 10;
     if(state.stats){
       state.stats.physique = (state.stats.physique || 10) + 1;
+      p.maxStamina = (state.stats.physique || 10) * 10;
+      p.stamina = Math.min(p.stamina || 0, p.maxStamina);
+      state.hpMax = (state.hpMax || 0) + 3;
+      state.hp = Math.min(state.hpMax, (state.hp || 0) + 3);
+      if(state.adventure){
+        state.adventure.playerHP = state.hp;
+      }
+    }else{
+      p.maxStamina += 10;
+      p.stamina = Math.min(p.stamina || 0, p.maxStamina);
     }
   }
   return p.exp;
@@ -65,19 +74,34 @@ export function endTrainingSession(state = physiqueState){
   p.trainingSession = false;
   p.timingActive = false;
   const summary = { hits: p.sessionHits, xp: Math.floor(p.sessionXP) };
+  const performance = p.sessionHits ? (p.perfectHits || 0) / p.sessionHits : 0;
+  if(state.qi !== undefined && state.qiMax){
+    const chance = performance;
+    const recoverPct = performance * 0.2; // up to 20% of max qi
+    if(Math.random() < chance){
+      const recovered = state.qiMax * recoverPct;
+      state.qi = Math.min(state.qiMax, (state.qi || 0) + recovered);
+      summary.qiRecovered = recovered;
+    }else{
+      summary.qiRecovered = 0;
+    }
+  }
   p.sessionStamina = 0;
   p.sessionHits = 0;
   p.sessionXP = 0;
   p.hitStreak = 0;
+  p.perfectHits = 0;
   p.cursorSpeed = 0;
   return summary;
 }
 
-export function moveTrainingCursor(state = physiqueState){
+// Move the training cursor based on elapsed time (in seconds)
+export function moveTrainingCursor(state = physiqueState, dt = 1){
   const p = slice(state);
   if(!p.timingActive || !p.trainingSession) return;
   if(!p.cursorSpeed) p.cursorSpeed = 5;
-  const { position, direction } = stepTrainingCursor(p.cursorPosition, p.cursorDirection, p.cursorSpeed);
+  const speed = p.cursorSpeed * 3 * dt; // Scale movement by delta time
+  const { position, direction } = stepTrainingCursor(p.cursorPosition, p.cursorDirection, speed);
   p.cursorPosition = position;
   p.cursorDirection = direction;
 }
@@ -103,11 +127,9 @@ export function tickPhysiqueTraining(state = physiqueState){
     if(p.sessionStamina <= 0 || p.stamina <= 0){
       return endTrainingSession(state);
     }
-    if(p.timingActive){
-      moveTrainingCursor(state);
-    }
   }else{
-    regenPhysiqueStamina(1, state);
+    const { staminaRegen } = getPhysiqueEffects(state);
+    regenPhysiqueStamina(staminaRegen, state);
     const passiveRate = (2 + (p.level * 0.2)) / 3;
     addPhysiqueExp(passiveRate, state);
     p.passiveXpGained = (p.passiveXpGained || 0) + passiveRate;

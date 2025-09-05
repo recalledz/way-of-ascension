@@ -23,6 +23,17 @@ export function renderSidebarActivities() {
       cost: {}
     },
     {
+      id: 'agility',
+      label: 'Agility',
+      icon: '<iconify-icon icon="mdi:run-fast" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'agilityInfo',
+      initialLevel: 'Level 1',
+      progressFillId: 'agilitySelectorFill',
+      progressTextId: 'agilityProgressText',
+      cost: {}
+    },
+    {
       id: 'mining',
       label: 'Mining',
       icon: '<iconify-icon icon="hugeicons:mining-02" class="ui-icon" width="20"></iconify-icon>',
@@ -32,6 +43,28 @@ export function renderSidebarActivities() {
       progressFillId: 'miningProgressFill',
       progressTextId: 'miningProgressText',
       cost: {}
+    },
+    {
+      id: 'gathering',
+      label: 'Gathering',
+      icon: '<iconify-icon icon="mdi:axe" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'gatheringLevel',
+      initialLevel: 'Level 1',
+      progressFillId: 'gatheringProgressFill',
+      progressTextId: 'gatheringProgressText',
+      cost: {},
+    },
+    {
+      id: 'forging',
+      label: 'Forging',
+      icon: '<iconify-icon icon="mdi:anvil" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'forgingLevelSidebar',
+      initialLevel: 'Level 1',
+      progressFillId: 'forgingProgressFillSidebar',
+      progressTextId: 'forgingProgressTextSidebar',
+      cost: {},
     },
     {
       id: 'cooking',

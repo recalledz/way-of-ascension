@@ -18,7 +18,9 @@ export function mountActivityUI(root) {
 
   document.getElementById('cultivationSelector')?.addEventListener('click', () => handle('cultivation'));
   document.getElementById('physiqueSelector')?.addEventListener('click', () => handle('physique'));
+  document.getElementById('agilitySelector')?.addEventListener('click', () => handle('agility'));
   document.getElementById('miningSelector')?.addEventListener('click', () => handle('mining'));
+  document.getElementById('gatheringSelector')?.addEventListener('click', () => handle('gathering'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
   document.getElementById('sectSelector')?.addEventListener('click', () => handle('sect'));
 
@@ -30,7 +32,9 @@ export function mountActivityUI(root) {
 export function updateActivitySelectors(root) {
   // Ensure minimal slices exist for UI reads
   root.physique ??= { level: 1, exp: 0, expMax: 100 };
+  root.agility  ??= { level: 1, exp: 0, expMax: 100 };
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
+  root.gathering ??= { level: 1, exp: 0, expMax: 100 };
 
   const selected = root.ui?.selectedActivity || 'cultivation';
 
@@ -77,6 +81,17 @@ export function updateActivitySelectors(root) {
     physInfo.textContent = root.activities?.physique ? 'Training...' : `Level ${root.physique.level}`;
   }
 
+  const agiSel = document.getElementById('agilitySelector');
+  const agiFill = document.getElementById('agilitySelectorFill');
+  const agiInfo = document.getElementById('agilityInfo');
+  agiSel?.classList.toggle('active', selected === 'agility');
+  agiSel?.classList.toggle('running', root.activities?.agility);
+  if (agiFill && agiInfo) {
+    const expPct = (root.agility.exp / root.agility.expMax) * 100;
+    agiFill.style.width = `${expPct}%`;
+    agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
+  }
+
   // Mining
   const miningSel = document.getElementById('miningSelector');
   const miningFill = document.getElementById('miningSelectorFill');
@@ -87,6 +102,18 @@ export function updateActivitySelectors(root) {
     const expPct = (root.mining.exp / root.mining.expMax) * 100;
     miningFill.style.width = `${expPct}%`;
     miningInfo.textContent = root.activities?.mining ? 'Mining...' : `Level ${root.mining.level}`;
+  }
+
+  // Gathering
+  const gatheringSel = document.getElementById('gatheringSelector');
+  const gatheringFill = document.getElementById('gatheringSelectorFill');
+  const gatheringInfo = document.getElementById('gatheringInfo');
+  gatheringSel?.classList.toggle('active', selected === 'gathering');
+  gatheringSel?.classList.toggle('running', root.activities?.gathering);
+  if (gatheringFill && gatheringInfo) {
+    const expPct = (root.gathering.exp / root.gathering.expMax) * 100;
+    gatheringFill.style.width = `${expPct}%`;
+    gatheringInfo.textContent = root.activities?.gathering ? 'Gathering...' : `Level ${root.gathering.level}`;
   }
 
   // Adventure
@@ -113,6 +140,9 @@ export function updateCurrentTaskDisplay(root) {
     cultivation: 'Cultivating',
     physique: 'Physique Training',
     mining: 'Mining',
+    gathering: 'Gathering',
+    forging: 'Forging',
+    agility: 'Agility Training',
     adventure: 'Adventuring',
     cooking: 'Cooking',
     alchemy: 'Brewing'

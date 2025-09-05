@@ -4,6 +4,7 @@ import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getAbilitySlots, getAbilityDamage } from '../ability/selectors.js';
+import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
@@ -15,7 +16,7 @@ import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
-import { on } from '../../shared/events.js';
+import { on, emit } from '../../shared/events.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
 import { AFFIXES } from '../affixes/data/affixes.js';
 import { gainProficiency, gainProficiencyFromEnemy } from '../proficiency/mutators.js';
@@ -43,6 +44,16 @@ import { updateFoodSlots } from '../cooking/ui/cookControls.js';
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
 const loggedResistTypes = new Set();
+const AILMENT_ICONS = {
+  poison: '☠️',
+  burn: '🔥',
+  chill: '❄️',
+  entomb: '🪨',
+  ionize: '⚡',
+  enfeeble: '💀',
+  stun: '💢',
+  interrupt: '🚫'
+};
 function logEnemyResists(enemy) {
   if (enemy && !loggedResistTypes.has(enemy.type)) {
     console.log('[resist]', enemy.type, enemy.resists);
@@ -100,6 +111,32 @@ on('ABILITY:FX', ({ abilityKey }) => {
   }
 });
 
+function showCastBar(castTimeMs) {
+  const bar = document.getElementById('playerCastBar');
+  const fill = document.getElementById('playerCastFill');
+  const enemyBar = document.getElementById('enemyCastBar');
+  if (enemyBar) enemyBar.style.display = 'none';
+  if (!bar || !fill) return;
+  bar.style.display = 'block';
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  void fill.offsetWidth;
+  fill.style.transition = `width ${castTimeMs}ms linear`;
+  fill.style.width = '100%';
+}
+
+function hideCastBar() {
+  const bar = document.getElementById('playerCastBar');
+  const fill = document.getElementById('playerCastFill');
+  if (!bar || !fill) return;
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  bar.style.display = 'none';
+}
+
+on('CAST:START', ({ castTimeMs }) => showCastBar(castTimeMs));
+on('CAST:END', hideCastBar);
+
 // Subtle red-and-break visual on death
 function triggerDeathBreak(target) {
   const sel = target === 'enemy' ? '.combatant.enemy' : '.combatant.player';
@@ -130,6 +167,30 @@ export function ensureAdventure() {
   // Ensure new properties exist for existing saves
   if (!S.adventure.areaProgress) S.adventure.areaProgress = {};
   if (!S.adventure.unlockedAreas) S.adventure.unlockedAreas = { "0-0": true };
+}
+
+function renderAilments(entity, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const now = Date.now();
+  const pieces = [];
+  if (entity?.statuses) {
+    for (const [key, inst] of Object.entries(entity.statuses)) {
+      const dur = inst.duration ?? 0;
+      if (dur <= 0) continue;
+      const icon = AILMENT_ICONS[key] || '❔';
+      pieces.push(`<div class="ailment" title="${key}"><span class="icon">${icon}</span><span class="stack">${inst.stacks || 1}</span><span class="duration">${dur.toFixed(1)}s</span></div>`);
+    }
+  }
+  if (entity?.ailments) {
+    for (const [key, inst] of Object.entries(entity.ailments)) {
+      const icon = AILMENT_ICONS[key] || '❔';
+      let remaining = inst.expires;
+      if (remaining > 1e6) remaining = (remaining - now) / 1000;
+      pieces.push(`<div class="ailment" title="${key}"><span class="icon">${icon}</span><span class="stack">${inst.stacks || 1}</span><span class="duration">${remaining.toFixed(1)}s</span></div>`);
+    }
+  }
+  el.innerHTML = pieces.join('');
 }
 
 // MAP-UI-UPDATE: Area selection by ID with save persistence
@@ -172,6 +233,7 @@ export function updateBattleDisplay() {
   const shieldMax = S.shield?.max || 0;
   const shieldCur = S.shield?.current || 0;
   const shieldFrac = shieldMax ? shieldCur / shieldMax : 0;
+  setText('playerName', 'You');
   setText('playerHealthText', `${Math.round(playerHP)}/${Math.round(playerMaxHP)}`);
   setFill('playerHealthFill', hpFrac);
   setFill('advHpMaskRect', hpFrac);
@@ -186,17 +248,44 @@ export function updateBattleDisplay() {
     const playerQiPct = playerMaxQi ? (playerQi / playerMaxQi) * 100 : 0;
     playerQiFill.style.width = `${playerQiPct}%`;
   }
-  const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
+  const playerStunFill = document.getElementById('playerStunFill');
+  const playerStunBarEl = document.getElementById('playerStunBar');
+  const playerStunGauge = S.adventure.playerStunBar || 0;
+  if (playerStunFill) {
+    const pct = playerStunGauge / STUN_THRESHOLD;
+    playerStunFill.style.width = `${pct * 100}%`;
+    const hue = 39 * (1 - pct);
+    playerStunFill.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+  }
+  if (playerStunBarEl) {
+    const show = S.adventure.inCombat && playerStunGauge > 1;
+    playerStunBarEl.style.display = show ? 'block' : 'none';
+    playerStunBarEl.classList.toggle('stun-flash', playerStunGauge >= STUN_THRESHOLD * 0.9 && playerStunGauge < STUN_THRESHOLD);
+    playerStunBarEl.classList.toggle('stun-shake', playerStunGauge >= STUN_THRESHOLD);
+    const statuses = S.statuses || {};
+    const info = [
+      `Gauge: ${Math.round(playerStunGauge)}`,
+      `Threshold: ${STUN_THRESHOLD}`,
+      `Decay: ${DECAY_PER_SECOND}/s`
+    ];
+    if (statuses.stunWeakened) info.push('stunWeakened active');
+    if (statuses.stunImmune) info.push('stunImmune active');
+    playerStunBarEl.title = info.join('\n');
+  }
+  const atkProfile = calculatePlayerCombatAttack(S);
+  const playerPhysAtk = atkProfile.phys;
+  const totalAtk = atkProfile.phys + Object.values(atkProfile.elems).reduce((a, b) => a + b, 0);
   let playerAttackRate = calculatePlayerAttackRate(S);
   if (S.lightningStep) {
     playerAttackRate *= S.lightningStep.attackSpeedMult;
   }
   const atkEl = document.getElementById('playerAttack');
-  if (atkEl) atkEl.title = `ATK: ${Math.round(playerAttack)}`;
+  if (atkEl) atkEl.title = `ATK: ${Math.round(totalAtk)}`;
   const rateEl = document.getElementById('playerAttackRate');
   if (rateEl) rateEl.title = `Rate: ${playerAttackRate.toFixed(1)}/s`;
   setText('combatAttackRate', `${playerAttackRate.toFixed(1)}/s`);
   setText('qiShield', `${S.shield?.current || 0}/${S.shield?.max || 0}`);
+  renderAilments(S, 'playerAilments');
 
   // Calculate physical mitigation against the strongest enemy in the current zone
   let mitPct = 0;
@@ -228,8 +317,8 @@ export function updateBattleDisplay() {
     if (enemyMitEl) {
       let eMitPct = 0;
       const eArmor = enemy.armor || 0;
-      if (eArmor > 0 && playerAttack > 0) {
-        eMitPct = Math.min(ARMOR_CAP, eArmor / (eArmor + ARMOR_K * playerAttack));
+      if (eArmor > 0 && playerPhysAtk > 0) {
+        eMitPct = Math.min(ARMOR_CAP, eArmor / (eArmor + ARMOR_K * playerPhysAtk));
       }
       enemyMitEl.title = `Mit: ${Math.round(eMitPct * 100)}%`;
     }
@@ -273,6 +362,8 @@ export function updateBattleDisplay() {
       stunFill.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
     }
     if (stunBarEl) {
+      const show = stunGauge > 1;
+      stunBarEl.style.display = show ? 'block' : 'none';
       stunBarEl.classList.toggle('stun-flash', stunGauge >= STUN_THRESHOLD * 0.9 && stunGauge < STUN_THRESHOLD);
       stunBarEl.classList.toggle('stun-shake', stunGauge >= STUN_THRESHOLD);
       const statuses = enemy.statuses || {};
@@ -285,7 +376,6 @@ export function updateBattleDisplay() {
       if (statuses.stunImmune) info.push('stunImmune active');
       stunBarEl.title = info.join('\n');
     }
-    setText('enemyStunText', `${Math.round(stunGauge)}/${STUN_THRESHOLD}`);
   } else {
     setText('enemyName', 'Select an area to begin');
     setText('enemyHealthText', '--/--');
@@ -302,16 +392,18 @@ export function updateBattleDisplay() {
     if (enemyQiFill) enemyQiFill.style.width = '0%';
     const affixEl = document.getElementById('enemyAffixes');
     if (affixEl) affixEl.innerHTML = '';
+    const enemyAilEl = document.getElementById('enemyAilments');
+    if (enemyAilEl) enemyAilEl.innerHTML = '';
     const enemyStunFill = document.getElementById('enemyStunFill');
     if (enemyStunFill) {
       enemyStunFill.style.width = '0%';
       enemyStunFill.style.backgroundColor = 'hsl(39, 100%, 50%)';
     }
-    setText('enemyStunText', `0/${STUN_THRESHOLD}`);
     const enemyStunBar = document.getElementById('enemyStunBar');
     if (enemyStunBar) {
       enemyStunBar.classList.remove('stun-flash', 'stun-shake');
       enemyStunBar.title = `Gauge: 0\nThreshold: ${STUN_THRESHOLD}\nDecay: ${DECAY_PER_SECOND}/s`;
+      enemyStunBar.style.display = 'none';
     }
   }
   const combatLog = document.getElementById('combatLog');
@@ -322,62 +414,92 @@ export function updateBattleDisplay() {
   }
 }
 
+let lastAbilityHTML = '';
 export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
   const slots = getAbilitySlots(S);
+  const weapon = getEquippedWeapon(S);
   const iconMap = {
     'pointy-sword': '🗡️',
     'game-icons:mighty-force': '💥',
     'game-icons:fireball': '🔥',
   };
-  bar.innerHTML = '';
+  let html = '';
+  const slotData = [];
   slots.forEach((slot, i) => {
-    const card = document.createElement('div');
-    card.className = 'ability-card';
-    card.dataset.slot = i + 1;
     if (slot.abilityKey) {
       const def = ABILITIES[slot.abilityKey];
       const dmg = getAbilityDamage(slot.abilityKey, S);
+      const mods = S.abilityMods?.[slot.abilityKey] || {};
+      const isSpell = def.tags?.includes('spell');
+      const speedMult =
+        isSpell && weapon.classKey === 'focus'
+          ? getWeaponProficiencyBonuses(S).speedMult
+          : 1;
+      const castTimeMs = Math.round(
+        def.castTimeMs *
+          (1 + (mods.castTimePct || 0) / 100) /
+          (1 + (S.astralTreeBonuses?.castSpeedPct || 0) / 100) /
+          speedMult
+      );
       const dmgLine = dmg !== null ? `<div class="ability-damage">${dmg}</div>` : '';
-      card.innerHTML = `
+      const castLine = castTimeMs > 0 ? `<div class="ability-cast-time">${(castTimeMs / 1000).toFixed(2)}s</div>` : '';
+      const cooldownMs = Math.round(
+        def.cooldownMs *
+          (1 + (mods.cooldownPct || 0) / 100) *
+          (1 + (S.astralTreeBonuses?.cooldownPct || 0) / 100) /
+          speedMult
+      );
+      const cdSec = cooldownMs / 1000;
+      const ctSec = castTimeMs / 1000;
+      let title = `${def.displayName} — Cost ${def.costQi} Qi`;
+      if (castTimeMs > 0) title += `, Cast ${ctSec}s`;
+      title += `, CD ${cdSec}s`;
+      let content = `
         <div class="ability-title">
           <div class="ability-name">${def.displayName}</div>
           ${dmgLine}
+          ${castLine}
         </div>
         <div class="ability-icon">${iconMap[def.icon] || def.icon}</div>
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
-      const cdSec = (def.cooldownMs || 0) / 1000;
-      card.title = `${def.displayName} — Cost ${def.costQi} Qi, CD ${cdSec}s`;
       if (slot.cooldownRemainingMs > 0) {
-        const overlay = document.createElement('div');
-        overlay.className = 'cooldown-overlay';
-        overlay.textContent = Math.ceil(slot.cooldownRemainingMs / 1000);
-        card.appendChild(overlay);
-        card.classList.add('cooling');
+        content += `<div class="cooldown-overlay">${Math.ceil(slot.cooldownRemainingMs / 1000)}</div>`;
       }
-      if (slot.insufficientQi) card.classList.add('insufficient');
+      const classes = ['ability-card'];
+      if (slot.cooldownRemainingMs > 0) classes.push('cooling');
+      if (slot.insufficientQi) classes.push('insufficient');
+      html += `<div class="${classes.join(' ')}" data-slot="${i + 1}" title="${title}">${content}</div>`;
+      slotData.push({ abilityKey: slot.abilityKey });
+    } else {
+      html += `<div class="ability-card empty" data-slot="${i + 1}">
+        <div class="ability-name">—</div>
+        <div class="ability-icon"></div>
+        <div class="qi-badge"></div>
+        <div class="keybind">[${i + 1}]</div>
+      </div>`;
+      slotData.push({ abilityKey: null });
+    }
+  });
+  if (html === lastAbilityHTML) return;
+  lastAbilityHTML = html;
+  bar.innerHTML = html;
+  Array.from(bar.children).forEach((card, i) => {
+    const data = slotData[i];
+    if (data.abilityKey) {
       card.addEventListener('click', () => {
-        if (tryCastAbility(slot.abilityKey)) {
-          S.qi -= ABILITIES[slot.abilityKey].costQi;
+        if (tryCastAbility(data.abilityKey)) {
+          S.qi -= ABILITIES[data.abilityKey].costQi;
           flashAbilityCard(i + 1);
           updateAbilityBar();
         } else {
           shakeAbilityCard(i + 1);
         }
       });
-    } else {
-      card.classList.add('empty');
-      card.innerHTML = `
-        <div class="ability-name">—</div>
-        <div class="ability-icon"></div>
-        <div class="qi-badge"></div>
-        <div class="keybind">[${i + 1}]</div>
-      `;
     }
-    bar.appendChild(card);
   });
 }
 
@@ -417,6 +539,7 @@ export function updateAdventureCombat() {
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
     tickStunDecay(S, deltaTime, now); // STATUS-REFORM
+    S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
     if (S.adventure.currentEnemy) {
       tickStunDecay(S.adventure.currentEnemy, deltaTime, now); // STATUS-REFORM
       S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
@@ -427,38 +550,83 @@ export function updateAdventureCombat() {
     if (regen) {
       S.adventure.enemyHP = Math.min(S.adventure.enemyMaxHP, S.adventure.enemyHP + regen * S.adventure.enemyMaxHP);
     }
-    if (now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
+    if (!S.currentCast && now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       S.adventure.lastPlayerAttack = now;
       const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
       const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
         const critChance = S.stats?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
-        const playerAttack = Number(calculatePlayerCombatAttack(S)) || 0;
-        let dmg = Math.max(1, Math.round(isCrit ? playerAttack * 2 : playerAttack));
-        let attackType = 'physical';
+        const critMult = isCrit ? 2 : 1;
+        const profile = {
+          phys: S.adventure.playerAtkProfile?.phys || 0,
+          elems: { ...(S.adventure.playerAtkProfile?.elems || {}) },
+        };
+        let externalMult = 1;
         if (S.lightningStep) {
-          dmg = Math.round(dmg * S.lightningStep.damageMult);
-          attackType = 'metal';
+          externalMult *= S.lightningStep.damageMult;
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
         }
-        const dealt = processAttack(
-          dmg,
-          { attacker: S, target: S.adventure.currentEnemy, type: attackType, nowMs: now },
+        if (S.lightningStep) {
+          profile.elems.metal = (profile.elems.metal || 0) + profile.phys;
+          profile.phys = 0;
+        }
+        const typeMults = {};
+        if (profile.phys > 0) {
+          typeMults.physical =
+            1 + (S.astralTreeBonuses?.physicalDamagePct || 0) / 100;
+        }
+        for (const elem of Object.keys(profile.elems)) {
+          const key = `${elem}DamagePct`;
+          typeMults[elem] = 1 + (S.astralTreeBonuses?.[key] || 0) / 100;
+        }
+        const { total: dealt, components } = processAttack(
+          profile,
+          weapon,
+          {
+            attacker: S,
+            target: S.adventure.currentEnemy,
+            nowMs: now,
+            typeMults,
+            globalMult: externalMult * critMult,
+          },
           S
         );
-        gainProficiencyFromEnemy(weapon.proficiencyKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
+        gainProficiencyFromEnemy(weapon.classKey, S.adventure.enemyMaxHP, S); // WEAPONS-INTEGRATION
         S.adventure.combatLog = S.adventure.combatLog || [];
-        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}`);
+        const parts = [];
+        if (components.phys) parts.push(`${components.phys} physical`);
+        for (const [elem, val] of Object.entries(components.elems)) {
+          parts.push(`${val} ${elem}`);
+        }
+        const compText = parts.length ? ` (${parts.join(', ')})` : '';
+        S.adventure.combatLog.push(`You deal ${dealt} damage to ${S.adventure.currentEnemy.name}${compText}`);
         const enemyEl = document.querySelector('.combatant.enemy');
         if (enemyEl) {
-          showFloatingText({ targetEl: enemyEl, result: isCrit ? 'crit' : 'hit', amount: dealt });
+          if (components.phys) {
+            showFloatingText({
+              targetEl: enemyEl,
+              result: isCrit ? 'crit' : 'hit',
+              amount: components.phys,
+              element: 'phys',
+            });
+          }
+          for (const [elem, val] of Object.entries(components.elems)) {
+            if (val) {
+              showFloatingText({
+                targetEl: enemyEl,
+                result: isCrit ? 'crit' : 'hit',
+                amount: val,
+                element: elem,
+              });
+            }
+          }
         }
-          S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
-          performAttack(S, S.adventure.currentEnemy, { weapon }, S); // STATUS-REFORM
+        S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
+        performAttack(S, S.adventure.currentEnemy, { weapon, profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -519,18 +687,47 @@ export function updateAdventureCombat() {
           const isCrit = Math.random() < critChance;
           const baseDamage = Math.round(Number(S.adventure.currentEnemy.attack) || 5);
           const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
-          const taken = processAttack(
-            enemyDamage,
-            { attacker: S.adventure.currentEnemy, target: S, type: 'physical', nowMs: now },
+          const profile = {
+            phys: enemyDamage,
+            elems: { ...(S.adventure.currentEnemy.attackElems || {}) },
+          };
+          const { total: taken, components } = processAttack(
+            profile,
+            undefined,
+            { attacker: S.adventure.currentEnemy, target: S, nowMs: now },
             S
           );
-          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you`);
+          const parts = [];
+          if (components.phys) parts.push(`${components.phys} physical`);
+          for (const [elem, val] of Object.entries(components.elems)) {
+            parts.push(`${val} ${elem}`);
+          }
+          const compText = parts.length ? ` (${parts.join(', ')})` : '';
+          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you${compText}`);
           const playerEl = document.querySelector('.combatant.player');
           if (playerEl) {
-            showFloatingText({ targetEl: playerEl, result: isCrit ? 'crit' : 'hit', amount: taken });
+            if (components.phys) {
+              showFloatingText({
+                targetEl: playerEl,
+                result: isCrit ? 'crit' : 'hit',
+                amount: components.phys,
+                element: 'phys',
+              });
+            }
+            for (const [elem, val] of Object.entries(components.elems)) {
+              if (val) {
+                showFloatingText({
+                  targetEl: playerEl,
+                  result: isCrit ? 'crit' : 'hit',
+                  amount: val,
+                  element: elem,
+                });
+              }
+            }
           }
-          performAttack(S.adventure.currentEnemy, S, {}, S); // STATUS-REFORM
-          if (weapon.typeKey === 'focus') {
+          performAttack(S.adventure.currentEnemy, S, { profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
+          S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
+          if (weapon.classKey === 'focus') {
             const pos = getCombatPositions();
             if (pos) {
               setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -571,6 +768,10 @@ export function updateAdventureCombat() {
         }
       }
     }
+  }
+  renderAilments(S, 'playerAilments');
+  if (S.adventure.currentEnemy) {
+    renderAilments(S.adventure.currentEnemy, 'enemyAilments');
   }
 }
 
@@ -617,7 +818,9 @@ function defeatEnemy() {
       }
     }
   }
-  
+
+  emit('ADVENTURE:KILL', { zone: S.adventure.currentZone, area: S.adventure.currentArea });
+
   S.adventure.bestiary = S.adventure.bestiary || {};
   const enemyType = enemy.type || enemy.name;
   S.adventure.bestiary[enemyType] = (S.adventure.bestiary[enemyType] || 0) + 1;
@@ -628,13 +831,14 @@ function defeatEnemy() {
   const area = zone?.areas?.[S.adventure.currentArea];
   const lootEntries = enemy.loot ? Object.entries(enemy.loot) : [];
   lootEntries.forEach(([item, qty]) => {
-    addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty, source: area?.name });
+    addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'material', qty, source: area?.name });
   });
 
   if (enemy.drops) {
+    const dropMult = 1 + (S.gearBonuses?.dropRateMult || 0);
     Object.entries(enemy.drops).forEach(([item, chance]) => {
-      if (Math.random() < chance) {
-        addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'mat', qty: 1, source: area?.name });
+      if (Math.random() < Math.min(1, chance * dropMult)) {
+        addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'material', qty: 1, source: area?.name });
         lootEntries.push([item, 1]);
       }
     });
@@ -644,11 +848,11 @@ function defeatEnemy() {
     const tableKey = toLootTableKey(area?.id || zone?.id);
     const drop = rollLoot(tableKey);
     if (drop) {
-      addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'mat', qty: 1, source: area?.name });
+      addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'material', qty: 1, source: area?.name });
       lootEntries.push([drop, 1]);
     }
 
-    const gear = rollGearDropForZone(ZONE_IDS.STARTING);
+    const gear = rollGearDropForZone(ZONE_IDS.STARTING, (S.adventure.currentArea ?? 0) + 1);
     if (gear) {
       addToInventory(gear, S);
       lootEntries.push([gear.name, 1]);
@@ -659,7 +863,7 @@ function defeatEnemy() {
   if (isBoss) {
     const bonusXP = Math.max(1, Math.round(enemy.hp / 10));
     const weapon = getEquippedWeapon(S);
-    gainProficiency(weapon.proficiencyKey, bonusXP, S);
+    gainProficiency(weapon.classKey, bonusXP, S);
     S.adventure.combatLog.push(`💀 Boss defeated! Bonus XP: ${bonusXP}`);
   }
   
@@ -686,11 +890,9 @@ function defeatEnemy() {
   if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
   // zone and area already defined earlier in this function
 
+  // Continue combat even after reaching kill requirements
   if (S.activities.adventure && S.adventure.playerHP > 0 && !isBoss) {
-    const killReq = area?.killReq ?? Infinity;
-    if (S.adventure.killsInCurrentArea < killReq) {
-      startAdventureCombat();
-    }
+    startAdventureCombat();
   }
 
   updateActivityAdventure();
@@ -749,6 +951,10 @@ export function generateBossEnemy() {
 
 export function startBossCombat() {
   if (!S.adventure) return;
+  // Retreat from current enemy if still in combat
+  if (S.adventure.inCombat) {
+    retreatFromCombat();
+  }
   const bossInfo = generateBossEnemy();
   if (!bossInfo) {
     log('Failed to generate boss enemy!', 'bad');
@@ -776,10 +982,13 @@ export function startBossCombat() {
     hp: h.enemyHP
   };
   initStun(S.adventure.currentEnemy);
+  initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
+  S.adventure.playerStunBar = S.stun.value;
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
+  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
@@ -820,10 +1029,13 @@ export function startAdventureCombat() {
     hp: h.enemyHP
   };
   initStun(S.adventure.currentEnemy);
+  initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
+  S.adventure.playerStunBar = S.stun.value;
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
+  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
@@ -940,6 +1152,12 @@ export function selectZone(zoneIndex) {
 
 export function retreatFromCombat() {
   if (!S.adventure) return;
+  if (S.adventure.isBossFight) {
+    S.adventure.combatLog = S.adventure.combatLog || [];
+    S.adventure.combatLog.push('Retreat is impossible during a boss fight.');
+    log('Retreat is impossible during a boss fight.', 'bad');
+    return;
+  }
   if (S.adventure.inCombat) {
     S.hp = S.adventure.playerHP;
     S.adventure.inCombat = false;
@@ -981,9 +1199,10 @@ export function updateProgressButton() {
   
   // Show boss button when area is cleared but boss not defeated
   if (bossBtn) {
-    if (isAreaCleared && !isBossDefeated) {
+    const isBossFight = S.adventure.isBossFight;
+    if (isAreaCleared && !isBossDefeated && !isBossFight) {
       bossBtn.style.display = 'inline-block';
-      bossBtn.disabled = S.adventure.inCombat;
+      bossBtn.disabled = false;
     } else {
       bossBtn.style.display = 'none';
     }
@@ -1141,7 +1360,10 @@ export function updateActivityAdventure() {
     const equipped = getEquippedWeapon(S);
     setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
   }
-  const baseAttack = Math.round(calculatePlayerCombatAttack(S));
+  const atkPreview = calculatePlayerCombatAttack(S);
+  const baseAttack = Math.round(
+    atkPreview.phys + Object.values(atkPreview.elems).reduce((a, b) => a + b, 0)
+  );
   setText('baseDamage', baseAttack);
   const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
   if (enemyData) {

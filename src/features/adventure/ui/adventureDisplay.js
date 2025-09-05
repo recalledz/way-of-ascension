@@ -1,5 +1,5 @@
 import { S } from '../../../shared/state.js';
-import { setFill, setText } from '../../../shared/utils/dom.js';
+import { setFill, setText, log } from '../../../shared/utils/dom.js';
 import { ZONES } from '../data/zones.js';
 import { startAdventure, startAdventureCombat, startBossCombat, progressToNextArea, retreatFromCombat, resetQiOnRetreat } from '../mutators.js';
 import { updateActivityAdventure } from '../logic.js';
@@ -27,6 +27,10 @@ export function mountAdventureControls(root) {
   function startRetreatCountdown() {
     const btn = document.getElementById('startBattleButton');
     if (!root.adventure || !root.adventure.inCombat || !btn) return;
+    if (root.adventure.isBossFight) {
+      log('You cannot retreat from a boss fight!', 'bad');
+      return;
+    }
     let remaining = 5;
     btn.disabled = true;
     btn.textContent = `Retreating (${remaining})`;

@@ -1,18 +1,25 @@
 // WEAPONS-INTEGRATION: add weapons to loot tables
 export const LOOT_TABLES = {
   peacefulLands: [
-    { item: 'ironSword', weight: 10 },   // ~10% chance
-    { item: 'herbs', weight: 90 },
+    { item: 'ironStraightSword', weight: 8 },
+    { item: 'crudeDagger', weight: 6 },
+    { item: 'crudeRapier', weight: 4 },
+    { item: 'wood', weight: 82 },
   ],
   forestEdge: [
-    { item: 'bronzeHammer', weight: 3 },
-    { item: 'ironSword', weight: 8 },
-    { item: 'ore', weight: 89 },
+    { item: 'crudeHammer', weight: 5 },
+    { item: 'crudeBludgeon', weight: 5 },
+    { item: 'crudeAxe', weight: 5 },
+    { item: 'ore', weight: 85 },
   ],
   meadowPath: [
-    { item: 'elderWand', weight: 2 },
-    { item: 'bronzeHammer', weight: 3 },
-    { item: 'herbs', weight: 95 },
+    { item: 'bronzeSpear', weight: 5 },
+    { item: 'dimFocus', weight: 3 },
+    { item: 'starFocus', weight: 2 },
+    { item: 'crudeKnuckles', weight: 3 },
+    { item: 'crudeNunchaku', weight: 1 },
+    { item: 'tameNunchaku', weight: 1 },
+    { item: 'wood', weight: 85 },
   ],
   // existing zones…
 };

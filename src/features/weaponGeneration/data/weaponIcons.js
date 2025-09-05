@@ -1,12 +1,12 @@
 export const WEAPON_ICONS = {
   sword: 'ph:sword-light',
+  dagger: 'game-icons:plain-dagger',
   hammer: 'akar-icons:hammer',
+  bludgeon: 'game-icons:club',
+  axe: 'mdi:axe',
   spear: 'mdi:spear',
-  fist: 'game-icons:fist',
-  nunchaku: 'game-icons:nunchaku',
-  palm: 'ph:hand-palm-thin',
-  wand: 'fluent:wand-16-regular',
   focus: 'ri:focus-line',
-  chakram: 'game-icons:chakram',
-  scepter: 'game-icons:winged-scepter',
+  fist: 'game-icons:fist',
+  palm: 'ph:hand-palm-thin',
+  nunchaku: 'game-icons:nunchaku',
 };

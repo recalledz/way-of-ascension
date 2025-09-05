@@ -6,6 +6,10 @@ import { recalculateBuildingBonuses } from '../features/sect/mutators.js';
 import { karmaState } from '../features/karma/state.js';
 import { miningState } from '../features/mining/state.js';
 import { physiqueState } from '../features/physique/state.js';
+import { forgingState } from '../features/forging/state.js';
+import { gatheringState } from '../features/gathering/state.js';
+import { agilityState } from '../features/agility/state.js';
+import { sideLocationState } from '../features/sideLocations/state.js';
 
 export function loadSave(){
   try{
@@ -19,24 +23,7 @@ export function loadSave(){
 
 export const defaultState = () => {
   const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-  return {
-  ver: SAVE_VERSION,
-  time:0,
-  qi: 100, qiMax: 100, qiRegenPerSec: 1,
-  qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
-  qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
-  foundation: 0,
-  astralPoints: 50,
-  ...initHp(100),
-  shield: { current: 0, max: 0 },
-  autoFillShieldFromQi: true,
-  stunBar: 0, // STATUS-REFORM player stun accumulation
-  realm: { tier: 0, stage: 1 },
-  wood:0, cores:0,
-  pills:{qi:0, body:0, ward:0},
-  atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
-  // Expanded Stat System
-  stats: {
+  const stats = {
     physique: 10,        // Physical power
     mind: 10,            // Spell power, alchemy, learning speed
     agility: 10,         // Weapon handling, dodge
@@ -54,7 +41,27 @@ export const defaultState = () => {
     stunResist: 0,              // Resistance to stun effects
     ccResist: 0,                // Resistance to crowd control duration
     stunBuildTakenReduction: 0  // Reduction to stun build taken
-  },
+  };
+  const baseHP = 100 + stats.physique * 3;
+  return {
+  ver: SAVE_VERSION,
+  time:0,
+  qi: 100, qiMax: 100, qiRegenPerSec: 1,
+  qiCapMult: 0, // Qi capacity multiplier from buildings/bonuses
+  qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
+  foundation: 0,
+  astralPoints: 50,
+  coin: 0,
+  ...initHp(baseHP),
+  shield: { current: 0, max: 0 },
+  autoFillShieldFromQi: true,
+  stunBar: 0, // STATUS-REFORM player stun accumulation
+  realm: { tier: 0, stage: 1 },
+  wood:0, spiritWood:0, cores:0, iron:0, oreDust:0, herbs:0, aromaticHerb:0,
+  pills:{qi:0, body:0, ward:0},
+  atkBase:5, armorBase:2, tempAtk:0, tempArmor:0,
+  // Expanded Stat System
+  stats,
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
@@ -75,14 +82,20 @@ export const defaultState = () => {
   activities: {
     cultivation: false,
     physique: false,
+    agility: false,
     mining: false,
+    gathering: false,
     adventure: false,
     cooking: false,
-    alchemy: false
+    alchemy: false,
+    forging: false
   },
   // Activity data containers
   physique: structuredClone(physiqueState),
+  agility: structuredClone(agilityState),
   mining: structuredClone(miningState),
+  gathering: structuredClone(gatheringState),
+  forging: structuredClone(forgingState),
   cooking: {
     level: 1,
     exp: 0,
@@ -100,7 +113,7 @@ export const defaultState = () => {
     killsInCurrentArea: 0,
     bestiary: {},
     inCombat: false,
-    playerHP: 100,
+    playerHP: baseHP,
     enemyHP,
     enemyMaxHP,
     currentEnemy: null,
@@ -126,6 +139,8 @@ export const defaultState = () => {
 
   equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null }, // EQUIP-CHAR-UI
   inventory: [{ id: 'palmWraps', key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' }],
+  junk: [],
+  gearBonuses: {},
   sessionLoot: [], // EQUIP-CHAR-UI
   flags: { weaponsEnabled: true },
   cultivation: {
@@ -146,6 +161,7 @@ export const defaultState = () => {
     }
   },
   sect: structuredClone(sectState),
+  sideLocations: structuredClone(sideLocationState),
   };
 };
 
@@ -181,13 +197,15 @@ export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
 S.physique = { ...structuredClone(physiqueState), ...S.physique };
+S.agility = { ...structuredClone(agilityState), ...S.agility };
+S.sideLocations = { ...structuredClone(sideLocationState), ...S.sideLocations };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the
 // single source of truth for all items.  These properties are not
 // serialized directly; instead their values are derived from the
 // corresponding entries in `S.inventory`.
-['stones', 'ore', 'herbs'].forEach(key => {
+['stones', 'iron', 'oreDust', 'herbs', 'aromaticHerb', 'wood', 'spiritWood'].forEach(key => {
   const initial = S[key] || 0;
   Object.defineProperty(S, key, {
     get() {

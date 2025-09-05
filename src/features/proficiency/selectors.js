@@ -13,7 +13,7 @@ export function getWeaponProficiencyBonuses(state = proficiencyState) {
   const equipped = state.flags?.weaponsEnabled ? state.equipment?.mainhand : 'fist';
   const key = typeof equipped === 'string' ? equipped : equipped?.key;
   const weapon = WEAPONS[key] || WEAPONS.fist;
-  const { value } = getProficiency(weapon.proficiencyKey, state);
+  const { value } = getProficiency(weapon.classKey, state);
   const level = Math.floor(value / 100);
-  return { damage: level, speed: level * 0.01 };
+  return { damageMult: 1 + level * 0.02, speedMult: 1 + level * 0.01 };
 }

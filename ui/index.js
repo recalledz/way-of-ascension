@@ -3,6 +3,8 @@
 
 // Way of Ascension — Modular JS
 
+import { configReport } from '../src/config.js';
+import { mountDiagnostics } from '../src/ui/diagnostics.js';
 import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
   clamp,
@@ -48,8 +50,13 @@ import { ZONES } from '../src/features/adventure/data/zones.js'; // MAP-UI-UPDAT
 import { setReduceMotion } from '../src/features/combat/ui/index.js';
 import { tickAbilityCooldowns } from '../src/features/ability/mutators.js';
 import { setupAbilityUI } from '../src/features/ability/ui.js';
+import { recomputePlayerTotals } from '../src/features/inventory/logic.js';
 import { advanceMining } from '../src/features/mining/logic.js';
+import { advanceGathering } from '../src/features/gathering/logic.js';
+import { advanceForging } from '../src/features/forging/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
+import { mountGatheringUI } from '../src/features/gathering/ui/gatheringDisplay.js';
+import { mountForgingUI } from '../src/features/forging/ui/forgingDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
@@ -66,18 +73,39 @@ import { updateResourceDisplay } from '../src/features/inventory/ui/resourceDisp
 import { updateKarmaDisplay } from '../src/features/karma/ui/karmaHUD.js';
 import { updateLawsUI } from '../src/features/progression/ui/lawsHUD.js';
 import { calcKarmaGain } from '../src/features/karma/selectors.js';
-import { tickPhysiqueTraining, endTrainingSession } from '../src/features/physique/mutators.js';
-import { mountTrainingGameUI } from '../src/features/physique/ui/trainingGame.js';
+import { tickPhysiqueTraining } from '../src/features/physique/mutators.js';
+import { mountTrainingGameUI as mountPhysiqueTrainingUI } from '../src/features/physique/ui/trainingGame.js';
+import { tickAgilityTraining } from '../src/features/agility/mutators.js';
+import { mountAgilityTrainingUI } from '../src/features/agility/ui/trainingGame.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../src/features/activity/mutators.js';
 import { getSelectedActivity } from '../src/features/activity/selectors.js';
 import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } from '../src/features/activity/ui/activityUI.js';
 import { meditate } from '../src/features/progression/mutators.js';
-import { usePill } from '../src/features/inventory/mutators.js';
+import { tickInsight } from '../src/features/progression/insight.js';
+import { usePill, sellJunk } from '../src/features/inventory/mutators.js';
+import { initSideLocations } from '../src/features/sideLocations/logic.js';
+
+const report = configReport();
+if (report.isProd) {
+  const active = Object.entries(report.flags)
+    .filter(([k, v]) => k.startsWith('FEATURE_') && v.parsedValue)
+    .map(([k]) => k)
+    .join(', ') || 'none';
+  console.log(`[Way of Ascension] Flags active (prod): ${active}`);
+} else {
+  console.groupCollapsed('[Way of Ascension] Flag Report');
+  console.table(report.flags);
+  console.groupEnd();
+}
 
 // Global variables
 const progressBars = {};
+
+// Track last known equipment/inventory state to avoid unnecessary re-renders
+let lastInventorySnapshot = JSON.stringify(S.inventory || []);
+let lastEquipmentSnapshot = JSON.stringify(S.equipment || {});
 
 // Activity Management System (delegates to feature)
 function selectActivity(activityType) { selectActivityMut(S, activityType); }
@@ -102,6 +130,7 @@ import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
 function initUI(){
   // Ensure Mind feature state exists for UI reads
   ensureMindState(S);
+  initSideLocations(S);
 
   // Render sidebar activities
   renderSidebarActivities();
@@ -110,8 +139,11 @@ function initUI(){
   const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
   const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
   initializeWeaponChip({ key: mhKey, name: mhName });
-  mountTrainingGameUI(S);
+  mountPhysiqueTrainingUI(S);
+  mountAgilityTrainingUI(S);
   mountMiningUI(S);
+  mountGatheringUI(S);
+  mountForgingUI(S);
   setupAbilityUI();
 
   // Assign buttons
@@ -161,7 +193,20 @@ function initUI(){
   if (saveBtn) saveBtn.addEventListener('click', save);
   
   const resetBtn = qs('#resetBtn');
-  if (resetBtn) resetBtn.addEventListener('click', ()=>{ if(confirm('Hard reset?')){ setState(defaultState()); save(); location.reload(); }});
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (confirm('Hard reset?')) {
+        // Wipe all persisted data so no stray keys survive a reset.
+        // This covers older save slots and any feature-specific flags.
+        try {
+          localStorage.clear();
+        } catch {}
+        setState(defaultState());
+        save();
+        location.reload();
+      }
+    });
+  }
   const exportBtn = qs('#exportBtn');
   if (exportBtn) {
     exportBtn.addEventListener('click', ()=>{
@@ -263,9 +308,16 @@ function updateActivityContent() {
     case 'adventure':
       updateActivityAdventure();
       break;
-    case 'character':
-      renderEquipmentPanel(); // EQUIP-CHAR-UI
+    case 'character': {
+      const invState = JSON.stringify(S.inventory || []);
+      const equipState = JSON.stringify(S.equipment || {});
+      if (invState !== lastInventorySnapshot || equipState !== lastEquipmentSnapshot) {
+        renderEquipmentPanel(); // EQUIP-CHAR-UI
+        lastInventorySnapshot = invState;
+        lastEquipmentSnapshot = equipState;
+      }
       break;
+    }
     case 'cooking':
       updateActivityCooking();
       break;
@@ -447,11 +499,24 @@ function tick(){
   
   // Passive mining progression
   advanceMining(S);
+  advanceGathering(S);
+  advanceForging(S);
   
   // Physique training progression
-  const sessionEnd = tickPhysiqueTraining(S);
-  if(sessionEnd){
-    log(`Training session complete! ${sessionEnd.hits} hits for ${sessionEnd.xp} XP`, 'good');
+  const physSessionEnd = tickPhysiqueTraining(S);
+  if(physSessionEnd){
+    let msg = `Training session complete! ${physSessionEnd.hits} hits for ${physSessionEnd.xp} XP`;
+    if(physSessionEnd.qiRecovered){
+      msg += ` and recovered ${physSessionEnd.qiRecovered.toFixed(0)} Qi`;
+    }
+    log(msg, 'good');
+  }
+
+  // Agility training progression
+  const agiSessionEnd = tickAgilityTraining(S);
+  if(agiSessionEnd){
+    const msg = `Agility session complete! ${agiSessionEnd.hits} hits for ${agiSessionEnd.xp} XP`;
+    log(msg, 'good');
   }
   
   // Auto meditation fallback for old saves
@@ -460,6 +525,9 @@ function tick(){
     S.foundation = clamp(S.foundation + gain, 0, fCap(S));
   }
   if(isAutoAdventure() && !S.activities.adventure){ startActivity('adventure'); }
+
+  // Insight gain
+  tickInsight(S, 1);
 
   // Breakthrough progress
   updateBreakthrough();
@@ -570,17 +638,17 @@ function setupLogSheet() {
   const sheet = qs('#logSheet');
   const toggle = qs('#logToggle');
   if (!sheet || !toggle) return;
-  const mq = window.matchMedia('(max-width: 768px)');
+
   function setHeight() {
-    if (!mq.matches) {
-      document.documentElement.style.setProperty('--bottom-log-h', '0px');
-      return;
-    }
     const h = sheet.getAttribute('data-open') === 'true'
-      ? sheet.getBoundingClientRect().height
-      : toggle.getBoundingClientRect().height;
-    document.documentElement.style.setProperty('--bottom-log-h', h + 'px');
+      ? sheet.offsetHeight
+      : toggle.offsetHeight;
+    document.documentElement.style.setProperty('--log-h', `${h}px`);
   }
+
+  const ro = new ResizeObserver(setHeight);
+  ro.observe(sheet);
+  ro.observe(toggle);
   function close() {
     sheet.setAttribute('data-open', 'false');
     toggle.setAttribute('aria-expanded', 'false');
@@ -605,7 +673,7 @@ function setupLogSheet() {
     sheet.getAttribute('data-open') === 'true' ? close() : open();
   });
   window.addEventListener('resize', setHeight);
-  mq.addEventListener('change', setHeight);
+  window.addEventListener('orientationchange', setHeight);
   setHeight();
 }
 
@@ -638,11 +706,14 @@ window.addEventListener('load', ()=>{
   setupAdventureTabs();
   setupMindTabs();
   setupEquipmentTab(); // EQUIP-CHAR-UI
+  // Ensure derived stats like Qi shield are initialized based on equipped gear
+  recomputePlayerTotals(S);
   mountAlchemyUI(S);
   mountKarmaUI(S);
   mountSectUI(S);
   mountMindReadingUI(S);
   mountAstralTreeUI(S);
+  mountDiagnostics(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
@@ -652,6 +723,18 @@ window.addEventListener('load', ()=>{
   tick();
   log('Welcome, cultivator.');
   setInterval(tick, 1000);
+  setInterval(() => {
+    const junk = S.junk || [];
+    const total = junk.reduce((sum, it) => sum + (it.qty || 1), 0);
+    if (junk.length === 0) {
+      alert('A travelling merchant stops by, but you have no junk to sell.');
+      return;
+    }
+    if (confirm(`A travelling merchant arrives! Sell all junk for ${total} coin?`)) {
+      sellJunk(S);
+      renderEquipmentPanel();
+    }
+  }, 3600000);
 });
 
 // CHANGELOG: Added weapon HUD integration.
