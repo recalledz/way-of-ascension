@@ -9,6 +9,7 @@ import { physiqueState } from '../features/physique/state.js';
 import { forgingState } from '../features/forging/state.js';
 import { gatheringState } from '../features/gathering/state.js';
 import { agilityState } from '../features/agility/state.js';
+import { catchingState } from '../features/catching/state.js';
 import { sideLocationState } from '../features/sideLocations/state.js';
 
 export function loadSave(){
@@ -96,6 +97,7 @@ export const defaultState = () => {
   mining: structuredClone(miningState),
   gathering: structuredClone(gatheringState),
   forging: structuredClone(forgingState),
+  catching: structuredClone(catchingState),
   cooking: {
     level: 1,
     exp: 0,
@@ -198,6 +200,7 @@ S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
 S.physique = { ...structuredClone(physiqueState), ...S.physique };
 S.agility = { ...structuredClone(agilityState), ...S.agility };
+S.catching = { ...structuredClone(catchingState), ...S.catching };
 S.sideLocations = { ...structuredClone(sideLocationState), ...S.sideLocations };
 recalculateBuildingBonuses(S);
 

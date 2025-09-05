@@ -66,7 +66,8 @@ const flagNames = [
   'FEATURE_AGILITY',
   'FEATURE_LAW',
   'FEATURE_MIND',
-  'FEATURE_ASTRAL_TREE'
+  'FEATURE_ASTRAL_TREE',
+  'FEATURE_CATCHING'
 ];
 
 const flags = {};
@@ -74,6 +75,7 @@ for (const name of flagNames) {
   const fallback = name.startsWith('FEATURE_') ? false : undefined;
   flags[name] = readFlag(name, fallback);
 }
+flags.FEATURE_CATCHING = readFlag('FEATURE_CATCHING', true);
 
 export const featureFlags = {
   proficiency: flags.FEATURE_PROFICIENCY.parsedValue,
@@ -88,7 +90,8 @@ export const featureFlags = {
   agility: flags.FEATURE_AGILITY.parsedValue,
   law: flags.FEATURE_LAW.parsedValue,
   mind: flags.FEATURE_MIND.parsedValue,
-  astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue
+  astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue,
+  catching: flags.FEATURE_CATCHING.parsedValue
 };
 
 export function configReport() {

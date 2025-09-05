@@ -12,6 +12,7 @@ import { mountGatheringUI } from "./gathering/ui/gatheringDisplay.js";
 import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
 import { mountAgilityUI } from "./agility/ui/agilityDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
+import { mountCatchingUI } from "./catching/ui/catchingDisplay.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { featureFlags } from "../config.js";
@@ -33,6 +34,7 @@ export function mountAllFeatureUIs(state) {
   if (featureFlags.agility) mountAgilityUI(state);
   if (featureFlags.law) mountLawDisplay(state);
   if (featureFlags.mind) mountMindReadingUI(state);
+  if (featureFlags.catching) mountCatchingUI(state);
   if (featureFlags.astralTree) mountAstralTreeUI(state);
 
   // mountWeaponGenUI?.(state);

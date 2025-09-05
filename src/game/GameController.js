@@ -12,6 +12,7 @@ import "../features/weaponGeneration/index.js";
 import "../features/sect/index.js";
 import "../features/alchemy/index.js";
 import "../features/combat/index.js";
+import "../features/catching/index.js";
 
 export function createGameController() {
   const state = {

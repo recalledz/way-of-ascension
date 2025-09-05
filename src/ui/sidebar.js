@@ -34,6 +34,15 @@ export function renderSidebarActivities() {
       cost: {}
     },
     {
+      id: 'catching',
+      label: 'Catching',
+      icon: '<iconify-icon icon="mdi:butterfly-net" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'catchingInfo',
+      initialLevel: 'Critters',
+      cost: {},
+    },
+    {
       id: 'mining',
       label: 'Mining',
       icon: '<iconify-icon icon="hugeicons:mining-02" class="ui-icon" width="20"></iconify-icon>',

@@ -25,6 +25,7 @@ way-of-ascension/
 │   ├── astral-tree-v4.html
 │   ├── template-tree/
 │   │   ├── astral_tree-base-structure.json
+│   │   ├── astral_tree_v2.0.json
 │   │   └── astral_tree_pentagon.json
 │   └── workoround-tree.html
 ├── docs/
@@ -356,6 +357,11 @@ way-of-ascension/
 ├── src/features/combat/index.js
 ├── src/features/karma/index.js
 ├── src/features/mining/index.js
+├── src/features/catching/index.js
+├── src/features/catching/logic.js
+├── src/features/catching/state.js
+├── src/features/catching/ui/
+│   └── catchingDisplay.js
 ├── src/features/gathering/index.js
 ├── src/features/gathering/logic.js
 ├── src/features/gathering/migrations.js
@@ -829,6 +835,7 @@ function updateAll() {
 **Key Functions**: n/a
 
 #### `astral-tree-prototype/template-tree/astral_tree_pentagon.json` - Pentagon Template
+#### `astral-tree-prototype/template-tree/astral_tree_v2.0.json` - Alternate v2 tree template
 **Purpose**: JSON template providing a pentagon-style layout for astral tree experimentation.
 **Key Functions**: n/a
 
@@ -1052,6 +1059,12 @@ Paths added:
 - `src/features/mining/mutators.js` – External wrappers to modify mining state and listeners for `ACTIVITY:START` to apply default values.
 - `src/features/mining/selectors.js` – Provides accessors for mining state and derived rates.
 - `src/features/mining/ui/miningDisplay.js` – Updates mining activity and sidebar displays.
+
+### Catching Feature (`src/features/catching/`)
+- `src/features/catching/state.js` – Tracks unlocked locations, available critters, and captured creatures.
+- `src/features/catching/logic.js` – Handles catch attempts, feeding, taming, and hunger decay.
+- `src/features/catching/ui/catchingDisplay.js` – Renders catching interface, creature list, and sub-tab logic.
+- `src/features/catching/index.js` – Registers catching feature and tick handler.
 
 ### Gathering Feature (`src/features/gathering/`)
 - `src/features/gathering/index.js` – Gathering feature descriptor.

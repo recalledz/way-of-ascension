@@ -456,6 +456,42 @@
             <div class="muted" style="margin-top:8px">Higher agility improves accuracy, dodge, and forging speed</div>
           </div>
         </div>
+      
+      <section id="activity-catching" class="activity-content tab-content" style="display:none;">
+        <div class="catching-header">
+          <div class="catching-tabs tab-bar">
+            <button class="catching-tab-btn active" data-tab="catch">Catching & Taming</button>
+            <button class="catching-tab-btn" data-tab="expeditions">Expeditions</button>
+            <button class="catching-tab-btn" data-tab="grazing">Grazing</button>
+            <button class="catching-tab-btn" data-tab="training">Training</button>
+          </div>
+        </div>
+
+        <div id="catchSubTab" class="catching-tab-content tab-content active">
+          <div class="cards">
+            <div class="card">
+              <h4>Catch Critters</h4>
+              <label>Location:
+                <select id="catchingLocation"></select>
+              </label>
+              <div id="catchingAvailableCritters"></div>
+            </div>
+            <div class="card">
+              <h4>Your Creatures</h4>
+              <div id="catchingCaptured"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="expeditionsSubTab" class="catching-tab-content tab-content" style="display:none;">
+          <p class="muted">Expeditions coming soon...</p>
+        </div>
+        <div id="grazingSubTab" class="catching-tab-content tab-content" style="display:none;">
+          <p class="muted">Grazing coming soon...</p>
+        </div>
+        <div id="trainingSubTab" class="catching-tab-content tab-content" style="display:none;">
+          <p class="muted">Training coming soon...</p>
+        </div>
       </section>
 
       <section id="activity-mining" class="activity-content tab-content" style="display:none;">
