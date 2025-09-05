@@ -9,15 +9,10 @@ import {
   fCap,
   foundationGainPerSec,
   powerMult,
-  breakthroughChance,
-  mortalStage
+  breakthroughChance
 } from '../selectors.js';
 import { advanceRealm } from '../mutators.js';
 import { qs, setText, log } from '../../../shared/utils/dom.js';
-import { isProd } from '../../../config.js';
-import { mountAstralTreeUI } from './astralTree.js';
-
-let pendingAstralUnlock = false;
 
 export function getRealmName(tier) {
   return REALMS[tier].name;
@@ -390,21 +385,6 @@ function showBreakthroughResult(success, info = {}) {
 function hideBreakthroughResult() {
   const overlay = document.getElementById('breakthroughResultOverlay');
   if (overlay) overlay.style.display = 'none';
-  if (pendingAstralUnlock) {
-    pendingAstralUnlock = false;
-    showAstralTreeUnlockOverlay();
-  }
-}
-
-function showAstralTreeUnlockOverlay() {
-  const overlay = document.getElementById('astralTreeUnlockOverlay');
-  if (!overlay) return;
-  overlay.style.display = 'flex';
-}
-
-function hideAstralTreeUnlockOverlay() {
-  const overlay = document.getElementById('astralTreeUnlockOverlay');
-  if (overlay) overlay.style.display = 'none';
 }
 
 export function setupProgressToggle() {
@@ -476,14 +456,6 @@ export function updateBreakthrough() {
       const info = advanceRealm(S);
       log('Breakthrough succeeded! Realm advanced.', 'good');
       showBreakthroughResult(true, info);
-      if (isProd && info.type === 'stage' && mortalStage(S) === 2) {
-        const btn = document.getElementById('openAstralTree');
-        const mini = document.getElementById('astralInsightMini');
-        if (btn) btn.style.display = '';
-        if (mini) mini.style.display = '';
-        mountAstralTreeUI(S);
-        pendingAstralUnlock = true;
-      }
     } else {
       S.qi = 0;
       S.foundation = Math.max(0, S.foundation - Math.ceil(fCap(S) * 0.25));
@@ -508,11 +480,5 @@ export function initRealmUI(){
   const backdrop = overlay?.querySelector('.modal-backdrop');
   if (closeBtn) closeBtn.addEventListener('click', hideBreakthroughResult);
   if (backdrop) backdrop.addEventListener('click', hideBreakthroughResult);
-
-  const closeAstralBtn = qs('#closeAstralTreeUnlockBtn');
-  const astralOverlay = qs('#astralTreeUnlockOverlay');
-  const astralBackdrop = astralOverlay?.querySelector('.modal-backdrop');
-  if (closeAstralBtn) closeAstralBtn.addEventListener('click', hideAstralTreeUnlockOverlay);
-  if (astralBackdrop) astralBackdrop.addEventListener('click', hideAstralTreeUnlockOverlay);
 }
 
