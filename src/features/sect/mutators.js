@@ -1,6 +1,8 @@
 import { sectState } from './state.js';
 import { calculateBonuses, getBuildingCost } from './logic.js';
 import { SECT_BUILDINGS } from './data/buildings.js';
+import { mountAllFeatureUIs } from '../index.js';
+import { renderSidebarActivities } from '../../ui/sidebar.js';
 
 export function recalculateBuildingBonuses(state = sectState){
   const slice = state.sect || state;
@@ -23,5 +25,16 @@ export function upgradeBuilding(state, key){
   }
   slice.buildings[key] = level + 1;
   recalculateBuildingBonuses(state);
+  mountAllFeatureUIs(state);
+  renderSidebarActivities();
   return true;
+}
+
+export function setBuildingLevel(state, key, level = 1){
+  const slice = state.sect || sectState;
+  if(level <= 0) return;
+  slice.buildings[key] = level;
+  recalculateBuildingBonuses(state);
+  mountAllFeatureUIs(state);
+  renderSidebarActivities();
 }

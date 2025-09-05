@@ -36,7 +36,8 @@ function readFlag(name, fallback) {
   const order = [
     { prefix: 'VITE_', source: 'VITE', provider: hasImportMeta ? import.meta.env : undefined },
     { prefix: 'NEXT_PUBLIC_', source: 'NEXT_PUBLIC', provider: typeof process !== 'undefined' ? process.env : undefined },
-    { prefix: 'REACT_APP_', source: 'REACT_APP', provider: typeof process !== 'undefined' ? process.env : undefined }
+    { prefix: 'REACT_APP_', source: 'REACT_APP', provider: typeof process !== 'undefined' ? process.env : undefined },
+    { prefix: '', source: 'ENV', provider: env }
   ];
 
   for (const { prefix, source, provider } of order) {
@@ -92,6 +93,8 @@ export const featureFlags = {
   mind: flags.FEATURE_MIND.parsedValue,
   astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue
 };
+
+export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;
 
 export function configReport() {
   const missingKeys = Object.entries(flags)

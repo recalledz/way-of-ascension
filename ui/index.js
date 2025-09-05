@@ -3,7 +3,7 @@
 
 // Way of Ascension — Modular JS
 
-import { configReport } from '../src/config.js';
+import { configReport, devUnlockPreset } from '../src/config.js';
 import { mountDiagnostics } from '../src/ui/diagnostics.js';
 import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
@@ -84,10 +84,13 @@ import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/sele
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../src/features/activity/mutators.js';
 import { getSelectedActivity } from '../src/features/activity/selectors.js';
 import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } from '../src/features/activity/ui/activityUI.js';
-import { meditate } from '../src/features/progression/mutators.js';
+import { meditate, advanceRealm, setAstralAllocations } from '../src/features/progression/mutators.js';
 import { tickInsight } from '../src/features/progression/insight.js';
 import { usePill, sellJunk } from '../src/features/inventory/mutators.js';
 import { initSideLocations } from '../src/features/sideLocations/logic.js';
+import { setBuildingLevel } from '../src/features/sect/mutators.js';
+import { selectProgress } from '../src/shared/selectors.js';
+import { isFeatureVisible } from '../src/features/index.js';
 
 const report = configReport();
 if (report.isProd) {
@@ -108,6 +111,15 @@ const progressBars = {};
 // Track last known equipment/inventory state to avoid unnecessary re-renders
 let lastInventorySnapshot = JSON.stringify(S.inventory || []);
 let lastEquipmentSnapshot = JSON.stringify(S.equipment || {});
+
+function applyDevUnlocks() {
+  if (devUnlockPreset !== 'all') return;
+  while (selectProgress.mortalStage(S) < 5) advanceRealm(S);
+  while (!selectProgress.isQiRefiningReached(S)) advanceRealm(S);
+  setBuildingLevel(S, 'alchemy', 1);
+  setBuildingLevel(S, 'kitchen', 1);
+  setAstralAllocations(S, [4054, 4060, 4061, 4062]);
+}
 
 // Activity Management System (delegates to feature)
 function selectActivity(activityType) { selectActivityMut(S, activityType); }
@@ -133,6 +145,7 @@ function initUI(){
   // Ensure Mind feature state exists for UI reads
   ensureMindState(S);
   initSideLocations(S);
+  applyDevUnlocks();
 
   // Render sidebar activities
   renderSidebarActivities();
@@ -141,12 +154,12 @@ function initUI(){
   const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
   const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
   initializeWeaponChip({ key: mhKey, name: mhName });
-  mountPhysiqueTrainingUI(S);
-  mountAgilityTrainingUI(S);
-  mountMiningUI(S);
-  mountGatheringUI(S);
-  mountCatchingUI(S);
-  mountForgingUI(S);
+  if (isFeatureVisible('physique', S).visible) mountPhysiqueTrainingUI(S);
+  if (isFeatureVisible('agility', S).visible) mountAgilityTrainingUI(S);
+  if (isFeatureVisible('mining', S).visible) mountMiningUI(S);
+  if (isFeatureVisible('gathering', S).visible) mountGatheringUI(S);
+  if (isFeatureVisible('catching', S).visible) mountCatchingUI(S);
+  if (isFeatureVisible('forging', S).visible) mountForgingUI(S);
   setupAbilityUI();
 
   // Assign buttons
@@ -717,14 +730,14 @@ window.addEventListener('load', ()=>{
   setupEquipmentTab(); // EQUIP-CHAR-UI
   // Ensure derived stats like Qi shield are initialized based on equipped gear
   recomputePlayerTotals(S);
-  mountAlchemyUI(S);
-  mountKarmaUI(S);
-  mountSectUI(S);
-  mountMindReadingUI(S);
-  mountAstralTreeUI(S);
+  if (isFeatureVisible('alchemy', S).visible) mountAlchemyUI(S);
+  if (isFeatureVisible('karma', S).visible) mountKarmaUI(S);
+  if (isFeatureVisible('sect', S).visible) mountSectUI(S);
+  if (isFeatureVisible('mind', S).visible) mountMindReadingUI(S);
+  if (isFeatureVisible('astralTree', S).visible) mountAstralTreeUI(S);
   mountDiagnostics(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
-  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+  if (isFeatureVisible('mind', S).visible) renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
   selectActivity('cultivation'); // Start with cultivation selected

@@ -1,3 +1,6 @@
+import { isFeatureVisible } from '../features/index.js';
+import { S } from '../shared/state.js';
+
 export function renderSidebarActivities() {
   const sidebarActivities = [
     {
@@ -140,12 +143,29 @@ export function renderSidebarActivities() {
     }
   ];
 
+  const featureMap = {
+    physique: 'physique',
+    agility: 'agility',
+    catching: 'catching',
+    mining: 'mining',
+    gathering: 'gathering',
+    forging: 'forging',
+    cooking: 'cooking',
+    alchemy: 'alchemy',
+    mind: 'mind',
+    adventure: 'adventure',
+    sect: 'sect',
+  };
+
   const levelingContainer = document.getElementById('levelingActivities');
   const managementContainer = document.getElementById('managementActivities');
 
   sidebarActivities.forEach(act => {
+    const featureKey = featureMap[act.id];
+    if (featureKey && !isFeatureVisible(featureKey, S).visible) return;
     const container = act.group === 'leveling' ? levelingContainer : managementContainer;
     if (!container) return;
+    if (container.querySelector(`[data-activity="${act.id}"]`)) return;
 
     const item = document.createElement('div');
     item.className = `activity-item ${act.group === 'leveling' ? 'leveling-tab' : 'management-tab'}`;

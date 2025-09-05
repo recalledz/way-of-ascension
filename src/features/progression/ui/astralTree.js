@@ -1,5 +1,6 @@
 import { S, save } from '../../../shared/state.js';
 import { recomputePlayerTotals } from '../../inventory/logic.js';
+import { setAstralAllocations } from '../mutators.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
@@ -190,6 +191,7 @@ function loadAllocations() {
 
 function saveAllocations(set) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+  setAstralAllocations(S, set);
   save();
 }
 
@@ -468,6 +470,7 @@ async function buildTree() {
   });
 
   const allocated = loadAllocations();
+  setAstralAllocations(S, allocated);
   S.astralTreeBonuses = {};
   allocated.forEach(id => applyEffects(id, manifest));
   renderAstralTreeTotals();

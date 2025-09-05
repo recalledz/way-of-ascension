@@ -5,6 +5,15 @@ import { LAWS } from './data/laws.js';
 import { log } from '../../shared/utils/dom.js';
 import { canLearnSkill } from './logic.js';
 import { clamp, fCap, foundationGainPerMeditate } from './selectors.js';
+import { mountAllFeatureUIs } from '../index.js';
+import { renderSidebarActivities } from '../../ui/sidebar.js';
+
+export function setAstralAllocations(state = progressionState, ids = []) {
+  const arr = Array.isArray(ids) ? ids : Array.from(ids);
+  state.astralNodes = arr.map(Number);
+  mountAllFeatureUIs(state);
+  renderSidebarActivities();
+}
 
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;
@@ -87,6 +96,8 @@ export function advanceRealm(state = progressionState) {
 
   checkLawUnlocks(state);
   awardLawPoints(state);
+  mountAllFeatureUIs(state);
+  renderSidebarActivities();
   return result;
 }
 
