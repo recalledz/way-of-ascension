@@ -11,7 +11,8 @@
     "start": "node scripts/start.js",
     "enforce-ai": "node .windsurf/ai-enforcement.js",
     "lint:balance": "node scripts/balance-validate.js",
-    "scan-output": "node scripts/scan-codex-output.js"
+    "scan-output": "node scripts/scan-codex-output.js",
+    "scan-env": "node scripts/scan-env-usage.js"
   },
   "repository": {
     "type": "git",
