@@ -59,6 +59,7 @@ way-of-ascension/
 ├── scripts/
 │   ├── balance-validate.js
 │   ├── scan-codex-output.js
+│   ├── scan-env-usage.js
 │   ├── start.js
 │   └── validate-structure.js
 ├── src/
@@ -321,6 +322,7 @@ way-of-ascension/
 │   │       └── stats.js
 │   └── ui/
 │       ├── app.js
+│       ├── diagnostics.js
 │       ├── dev/
 │       │   ├── balanceTuner.js
 │       │   └── devQuickMenu.js
@@ -722,6 +724,10 @@ function updateAll() {
 **Purpose**: Placeholder root for composing high-level UI modules.
 **When to modify**: Implement global UI bootstrap or layout logic.
 
+#### `src/ui/diagnostics.js` - Diagnostics Overlay
+**Purpose**: Displays runtime environment flag report and feature visibility inspector. Includes HUD dot and keyboard shortcut.
+**When to modify**: Update when adding new diagnostics fields or UI.
+
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
@@ -866,6 +872,11 @@ function updateAll() {
 
 **Purpose**: Loads environment variables from `.env` files and boots the local server.
 **When to modify**: Adjust startup or environment-loading behavior.
+
+### Env Usage Scan (`scripts/scan-env-usage.js`)
+
+**Purpose**: Prints any direct `process.env` or `import.meta.env` references outside `src/config.js`.
+**When to modify**: Update scanning patterns or ignore rules.
 
 ### Config (`src/config.js`)
 

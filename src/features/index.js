@@ -38,3 +38,15 @@ export function mountAllFeatureUIs(state) {
   // mountWeaponGenUI?.(state);
 }
 
+export function debugFeatureVisibility(/* state */) {
+  const result = {};
+  for (const [key, value] of Object.entries(featureFlags)) {
+    result[key] = {
+      flagAllowed: !!value,
+      unlockAllowed: true,
+      reason: value ? 'flag=true' : 'flag=false'
+    };
+  }
+  return result;
+}
+
