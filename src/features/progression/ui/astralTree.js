@@ -182,14 +182,19 @@ function buildManifest(nodes) {
 function loadAllocations() {
   try {
     const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    return new Set(arr);
+    const set = new Set(arr);
+    S.astralUnlockedNodes = set;
+    return set;
   } catch {
-    return new Set();
+    const empty = new Set();
+    S.astralUnlockedNodes = empty;
+    return empty;
   }
 }
 
 function saveAllocations(set) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+  S.astralUnlockedNodes = set;
   save();
 }
 

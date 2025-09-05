@@ -1,4 +1,5 @@
 import { progressionState } from './state.js';
+import { REALMS } from './data/realms.js';
 import { getTunable } from '../../shared/tunables.js';
 import {
   getLawBonuses as calcLawBonuses,
@@ -75,4 +76,33 @@ export function calculatePlayerAttackRate(state = progressionState) {
 
 export function breakthroughChance(state = progressionState) {
   return calcBreakthroughChance(state);
+}
+
+export function mortalStage(state = progressionState) {
+  const slice = state.progression || state;
+  const realm = slice.realm || {};
+  if ((realm.tier ?? 0) > 0) return REALMS[0]?.stages || 0;
+  return realm.stage || 0;
+}
+
+export function isQiRefiningReached(state = progressionState) {
+  const slice = state.progression || state;
+  return (slice.realm?.tier ?? 0) >= 1;
+}
+
+export function isNodeUnlocked(id, state = progressionState) {
+  const slice = state.progression || state;
+  let set = slice.astralUnlockedNodes;
+  if (!set) {
+    try {
+      const arr = JSON.parse(localStorage.getItem('astralTreeAllocated') || '[]');
+      set = new Set(arr);
+    } catch {
+      set = new Set();
+    }
+    slice.astralUnlockedNodes = set;
+  }
+  if (set instanceof Set) return set.has(id);
+  if (Array.isArray(set)) return set.includes(id);
+  return false;
 }
