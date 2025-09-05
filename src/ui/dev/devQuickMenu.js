@@ -8,6 +8,8 @@ import { rollWeaponDropForZone } from '../../features/weaponGeneration/selectors
 import { rollGearDropForZone } from '../../features/gearGeneration/selectors.js';
 import { addToInventory } from '../../features/inventory/mutators.js';
 import { ZONES as ZONE_IDS } from '../../features/adventure/data/zoneIds.js';
+import { qCap } from '../../features/progression/selectors.js';
+import { updateQiAndFoundation } from '../../features/progression/ui/qiDisplay.js';
 
 let mounted = false;
 
@@ -127,6 +129,17 @@ export function mountDevQuickMenu() {
   });
   astralWrap.append(astralBtn);
   panel.appendChild(row("Astral", astralWrap));
+
+  // Qi helpers
+  const qiWrap = el("div");
+  qiWrap.style.display = "flex";
+  qiWrap.style.gap = "6px";
+  const qiBtn = smallBtn("Max", () => {
+    S.qi = qCap(S);
+    updateQiAndFoundation();
+  });
+  qiWrap.append(qiBtn);
+  panel.appendChild(row("Qi", qiWrap));
 
   // Loot generators
   const lootWrap = el("div");
