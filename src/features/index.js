@@ -15,38 +15,86 @@ import { mountCatchingUI } from "./catching/ui/catchingDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
-import { featureFlags } from "../config.js";
+import { featureFlags, devUnlockPreset } from "../config.js";
+import { selectProgress, selectAstral, selectSect } from "../shared/selectors/index.js";
+import { advanceRealm } from "./progression/mutators.js";
+import { upgradeBuilding } from "./sect/mutators.js";
+import { unlockAstralNode } from "./progression/astral.js";
 
 
 // Example placeholder for later:
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
 
-export function mountAllFeatureUIs(state) {
-  if (featureFlags.proficiency) mountProficiencyUI(state);
-  if (featureFlags.sect) mountSectUI(state);
-  if (featureFlags.karma) mountKarmaUI(state);
-  if (featureFlags.alchemy) mountAlchemyUI(state);
-  if (featureFlags.cooking) mountCookingUI(state);
-  if (featureFlags.mining) mountMiningUI(state);
-  if (featureFlags.gathering) mountGatheringUI(state);
-  if (featureFlags.forging) mountForgingUI(state);
-  if (featureFlags.physique) mountPhysiqueUI(state);
-  if (featureFlags.agility) mountAgilityUI(state);
-  if (featureFlags.catching) mountCatchingUI(state);
-  if (featureFlags.law) mountLawDisplay(state);
-  if (featureFlags.mind) mountMindReadingUI(state);
-  if (featureFlags.astralTree) mountAstralTreeUI(state);
+const unlockRules = {
+  adventure: (root) => selectProgress.mortalStage(root) >= 5,
+  proficiency: (root) => selectProgress.mortalStage(root) >= 5,
+  sect: (root) => selectProgress.mortalStage(root) >= 3,
+  alchemy: (root) => selectSect.isBuildingBuilt('alchemy', root),
+  cooking: (root) => selectSect.isBuildingBuilt('kitchen', root),
+  mining: () => selectAstral.isNodeUnlocked(4060),
+  physique: () => selectAstral.isNodeUnlocked(4060),
+  gathering: () => selectAstral.isNodeUnlocked(4061),
+  mind: () => selectAstral.isNodeUnlocked(4061),
+  catching: () => selectAstral.isNodeUnlocked(4062),
+  agility: () => selectAstral.isNodeUnlocked(4062),
+  law: (root) => selectProgress.isQiRefiningReached(root),
+  astralTree: (root) => selectProgress.mortalStage(root) >= 2,
+  forging: () => true,
+  karma: () => true,
+};
 
-  // mountWeaponGenUI?.(state);
+const featureMounts = {
+  proficiency: mountProficiencyUI,
+  sect: mountSectUI,
+  karma: mountKarmaUI,
+  alchemy: mountAlchemyUI,
+  cooking: mountCookingUI,
+  mining: mountMiningUI,
+  gathering: mountGatheringUI,
+  forging: mountForgingUI,
+  physique: mountPhysiqueUI,
+  agility: mountAgilityUI,
+  catching: mountCatchingUI,
+  law: mountLawDisplay,
+  mind: mountMindReadingUI,
+  astralTree: mountAstralTreeUI,
+};
+
+function applyDevUnlockPreset(state) {
+  if (devUnlockPreset !== 'all') return;
+  for (let i = 0; i < 10; i++) advanceRealm(state);
+  state.stones = (state.stones || 0) + 1000;
+  state.wood = (state.wood || 0) + 1000;
+  state.ore = (state.ore || 0) + 1000;
+  state.herbs = (state.herbs || 0) + 1000;
+  upgradeBuilding(state, 'kitchen');
+  upgradeBuilding(state, 'alchemy_lab');
+  unlockAstralNode(4060);
+  unlockAstralNode(4061);
+  unlockAstralNode(4062);
 }
 
-export function debugFeatureVisibility(/* state */) {
+export function mountAllFeatureUIs(state) {
+  applyDevUnlockPreset(state);
+  for (const [key, flag] of Object.entries(featureFlags)) {
+    const unlock = unlockRules[key] || (() => true);
+    if (flag && unlock(state)) {
+      featureMounts[key]?.(state);
+    }
+  }
+}
+
+export function debugFeatureVisibility(state) {
   const result = {};
-  for (const [key, value] of Object.entries(featureFlags)) {
+  for (const [key, flag] of Object.entries(featureFlags)) {
+    const unlock = unlockRules[key] || (() => true);
+    const flagAllowed = !!flag;
+    const unlockAllowed = unlock(state);
     result[key] = {
-      flagAllowed: !!value,
-      unlockAllowed: true,
-      reason: value ? 'flag=true' : 'flag=false'
+      flagAllowed,
+      unlockAllowed,
+      visible: flagAllowed && unlockAllowed,
+      reason: !flagAllowed ? 'flag=false' : unlockAllowed ? 'visible' : 'unlock=false'
     };
   }
   return result;

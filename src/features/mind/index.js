@@ -1,6 +1,20 @@
 // src/features/mind/index.js
 
-export { defaultMindState, ensureMindState } from './state.js';
+import { defaultMindState, ensureMindState } from './state.js';
+import { featureFlags } from '../../config.js';
+import { selectAstral } from '../../shared/selectors/index.js';
+
+export const MindFeature = {
+  key: 'mind',
+  initialState: () => ({ ...defaultMindState, _v: 0 }),
+  nav: {
+    visible() {
+      return featureFlags.mind && selectAstral.isNodeUnlocked(4061);
+    },
+  },
+};
+
+export { defaultMindState, ensureMindState };
 
 export {
   calcFromProficiency,

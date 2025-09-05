@@ -54,6 +54,7 @@ const flagNames = [
   'DEV_UNLOCK_PRESET',
   'DISCOVERY_RATE_MULT',
   'TIMERS_SPEED_MULT',
+  'FEATURE_ADVENTURE',
   'FEATURE_PROFICIENCY',
   'FEATURE_SECT',
   'FEATURE_KARMA',
@@ -77,6 +78,7 @@ for (const name of flagNames) {
 }
 
 export const featureFlags = {
+  adventure: flags.FEATURE_ADVENTURE.parsedValue,
   proficiency: flags.FEATURE_PROFICIENCY.parsedValue,
   sect: flags.FEATURE_SECT.parsedValue,
   karma: flags.FEATURE_KARMA.parsedValue,
@@ -92,6 +94,8 @@ export const featureFlags = {
   mind: flags.FEATURE_MIND.parsedValue,
   astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue
 };
+
+export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;
 
 export function configReport() {
   const missingKeys = Object.entries(flags)
