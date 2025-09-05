@@ -3,7 +3,6 @@
 import { REALMS } from '../data/realms.js';
 import { LAWS } from '../data/laws.js';
 import { S } from '../../../shared/state.js';
-import { isProd } from '../../../config.js';
 import {
   qCap,
   qiRegenPerSec,
@@ -14,8 +13,6 @@ import {
 } from '../selectors.js';
 import { advanceRealm } from '../mutators.js';
 import { qs, setText, log } from '../../../shared/utils/dom.js';
-
-let pendingAstralUnlock = false;
 
 export function getRealmName(tier) {
   return REALMS[tier].name;
@@ -383,36 +380,11 @@ function showBreakthroughResult(success, info = {}) {
   }
 
   overlay.style.display = 'flex';
-
-  if (
-    success &&
-    isProd &&
-    S.realm.tier === 0 &&
-    S.realm.stage === 2 &&
-    !localStorage.getItem('astral-tree-unlock-shown')
-  ) {
-    pendingAstralUnlock = true;
-  }
 }
 
 function hideBreakthroughResult() {
   const overlay = document.getElementById('breakthroughResultOverlay');
   if (overlay) overlay.style.display = 'none';
-  if (pendingAstralUnlock) {
-    pendingAstralUnlock = false;
-    showAstralUnlockOverlay();
-  }
-}
-
-function showAstralUnlockOverlay() {
-  const overlay = document.getElementById('astralTreeUnlockOverlay');
-  if (overlay) overlay.style.display = 'flex';
-}
-
-function hideAstralUnlockOverlay() {
-  const overlay = document.getElementById('astralTreeUnlockOverlay');
-  if (overlay) overlay.style.display = 'none';
-  localStorage.setItem('astral-tree-unlock-shown', '1');
 }
 
 export function setupProgressToggle() {
@@ -508,11 +480,5 @@ export function initRealmUI(){
   const backdrop = overlay?.querySelector('.modal-backdrop');
   if (closeBtn) closeBtn.addEventListener('click', hideBreakthroughResult);
   if (backdrop) backdrop.addEventListener('click', hideBreakthroughResult);
-
-  const astralClose = qs('#closeAstralUnlockBtn');
-  const astralOverlay = qs('#astralTreeUnlockOverlay');
-  const astralBackdrop = astralOverlay?.querySelector('.modal-backdrop');
-  if (astralClose) astralClose.addEventListener('click', hideAstralUnlockOverlay);
-  if (astralBackdrop) astralBackdrop.addEventListener('click', hideAstralUnlockOverlay);
 }
 

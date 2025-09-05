@@ -109,13 +109,6 @@ const progressBars = {};
 let lastInventorySnapshot = JSON.stringify(S.inventory || []);
 let lastEquipmentSnapshot = JSON.stringify(S.equipment || {});
 
-function updateAstralTreeButton() {
-  const btn = document.getElementById('openAstralTree');
-  if (!btn) return;
-  const unlocked = S.realm.tier > 0 || S.realm.stage >= 2;
-  btn.style.display = report.isProd && !unlocked ? 'none' : '';
-}
-
 // Activity Management System (delegates to feature)
 function selectActivity(activityType) { selectActivityMut(S, activityType); }
 function startActivity(activityName)  { startActivityMut(S, activityName); }
@@ -155,8 +148,6 @@ function initUI(){
   mountCatchingUI(S);
   mountForgingUI(S);
   setupAbilityUI();
-
-  updateAstralTreeButton();
 
   // Assign buttons
   // Buttons (with safe null checks)
@@ -310,7 +301,6 @@ function updateAll(){
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
 
   emit('RENDER');
-  updateAstralTreeButton();
 }
 
 
