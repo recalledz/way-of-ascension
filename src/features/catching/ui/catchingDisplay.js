@@ -1,21 +1,5 @@
 import { ZONES } from '../../adventure/data/zones.js';
-
-const iconMap = {
-  'Forest Rabbit': 'mdi:rabbit',
-  'Wild Boar': 'mdi:pig',
-  'River Frog': 'mdi:frog',
-  'Honey Bee': 'mdi:bee',
-  'Tree Sprite': 'mdi:pine-tree',
-  'Stone Lizard': 'mdi:lizard',
-  'Water Snake': 'mdi:snake',
-  'Grass Wolf': 'mdi:wolf',
-  'Ruin Guardian': 'mdi:shield',
-  'Forest Spirit': 'mdi:tree',
-};
-
-function getIcon(name){
-  return iconMap[name] || 'mdi:help-circle';
-}
+import { startCatch } from '../mutators.js';
 
 function renderCaughtCreatures(state){
   const container = document.getElementById('caughtCreatures');
@@ -59,6 +43,8 @@ function renderCaughtCreatures(state){
 
 export function mountCatchingUI(state){
   const select = document.getElementById('catchingLocation');
+  const chanceEl = document.getElementById('catchChance');
+  const netsEl = document.getElementById('catchingNets');
   if(select){
     ZONES.forEach((zone, zi) => {
       if(zi < (state.adventure?.zonesUnlocked || 1)){
@@ -70,30 +56,24 @@ export function mountCatchingUI(state){
         });
       }
     });
+
+    const updateChance = () => {
+      const [zi, ai] = select.value.split('-').map(Number);
+      const stage = (ai ?? 0) + 1;
+      const chance = Math.pow(0.5, stage);
+      if(chanceEl) chanceEl.textContent = `${Math.floor(chance * 100)}%`;
+    };
+    select.addEventListener('change', updateChance);
+    updateChance();
   }
+
+  if(netsEl) netsEl.textContent = state.catching?.nets ?? 0;
 
   document.getElementById('catchCritterBtn')?.addEventListener('click', () => {
     if(!select) return;
     const [zi, ai] = select.value.split('-').map(Number);
-    const zone = ZONES[zi];
-    const area = zone?.areas?.[ai];
-    if(!area) return;
-    const stage = ai + 1;
-    const chance = Math.pow(0.5, stage);
-    if(Math.random() < chance){
-      state.catching.creatures.push({
-        id: `${area.id}-${Date.now()}`,
-        name: area.enemy,
-        icon: getIcon(area.enemy),
-        hunger: 1,
-        tameProgress: 0,
-        lastFed: Date.now(),
-        lastTameAttempt: 0,
-        tamed: false
-      });
-      renderCaughtCreatures(state);
-    } else {
-      console.log('Catch failed');
+    if(startCatch(state, zi, ai) && netsEl){
+      netsEl.textContent = state.catching.nets;
     }
   });
 
@@ -112,4 +92,12 @@ export function mountCatchingUI(state){
 
 export function updateCatchingUI(state){
   renderCaughtCreatures(state);
+  const root = state.catching || state;
+  const netsEl = document.getElementById('catchingNets');
+  if(netsEl) netsEl.textContent = root.nets ?? 0;
+  const progressFill = document.getElementById('catchProgressFill');
+  if(progressFill){
+    const pct = (root.currentCatch?.progress ?? 0) * 100;
+    progressFill.style.width = `${pct}%`;
+  }
 }
