@@ -1,0 +1,3539 @@
+{
+  "nodes": [
+    {
+      "id": 6,
+      "label": "Qi per sec 0.5+",
+      "group": "Hub",
+      "type": "basic",
+      "x": 428.95304485189627,
+      "y": -3313.0470130921976,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 7,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 538.952294781789,
+      "y": -3032.6868416951447,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 8,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1005.4467024886405,
+      "y": -2731.525602738125,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 9,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 914.2149104264154,
+      "y": -2532.830904564603,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 10,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1008.966094971393,
+      "y": -2251.693548406935,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 11,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1049.520603569436,
+      "y": -2113.4642757025936,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 12,
+      "label": "max Qi shield 10%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 87.32303987693385,
+      "y": -1713.2369441965063,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 13,
+      "label": "ailment chance % 10",
+      "group": "Wood",
+      "type": "basic",
+      "x": 812.4556267810357,
+      "y": -1838.9075749648498,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 15,
+      "label": "max Qi shield 10%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 558.0673033306314,
+      "y": -1309.7369253627003,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 16,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1068.1255426475109,
+      "y": -1120.436654615497,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 17,
+      "label": "qi shield conversion 15%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 664.8695822376994,
+      "y": -1490.9462491465413,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 24,
+      "label": " Accuracy +50",
+      "group": "Wood",
+      "type": "basic",
+      "x": -15.865962331902306,
+      "y": -2349.7709597433104,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 25,
+      "label": "Accuracy +5% \nAccuracy +50",
+      "group": "Wood",
+      "type": "basic",
+      "x": 106.52366374319462,
+      "y": -2439.5378017700823,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 26,
+      "label": "Accuracy +5% \nAccuracy +50",
+      "group": "Wood",
+      "type": "basic",
+      "x": 44.82305258400743,
+      "y": -2718.5455089692414,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 27,
+      "label": "Accuracy +5% \nAccuracy +50",
+      "group": "Wood",
+      "type": "basic",
+      "x": -198.15836140466573,
+      "y": -2792.164114038623,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 28,
+      "label": "Deal 10% excess accuracy as wood damage",
+      "group": "Wood",
+      "type": "notable",
+      "x": -68.79597129447149,
+      "y": -3006.56346709548,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#22c55e",
+      "size": 40
+    },
+    {
+      "id": 29,
+      "label": "ability qi cost reduction 10%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 834.4092246141392,
+      "y": -2341.1748258401535,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 30,
+      "label": "ability qi cost reduction 10%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 444.3038228025789,
+      "y": -2404.891193262041,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 31,
+      "label": "Spell Damage +20%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 613.3123025729811,
+      "y": -2638.415754554074,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 32,
+      "label": "Spell Damage +20%\nability qi cost reduction 5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 375.55923057358575,
+      "y": -2767.6296267648086,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 33,
+      "label": "While HP is full: +20% Damage (spells & attacks)",
+      "group": "Wood",
+      "type": "notable",
+      "x": 528.1865024376638,
+      "y": -2923.6351453002953,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#22c55e",
+      "size": 40
+    },
+    {
+      "id": 34,
+      "label": "ailment chance +% 10\npoison chance +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 842.85913393995,
+      "y": -1979.3895317327442,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 35,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1088.042541191246,
+      "y": -1963.32414008969,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 36,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1127.3045531458756,
+      "y": -1716.1713646303099,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 37,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1129.9822438105439,
+      "y": -1427.3222171974257,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 38,
+      "label": "while focus are equipped, reduce all spell quick cost by 20%",
+      "group": "Wood",
+      "type": "notable",
+      "x": 869.0739874729113,
+      "y": -1612.977493919785,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#22c55e",
+      "size": 40
+    },
+    {
+      "id": 39,
+      "label": "mind attribute +5%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1116.737952939845,
+      "y": -1285.2602984460154,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 40,
+      "label": "15% increased focus spell damage ",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1129.1554319738157,
+      "y": -1202.1104360258573,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 41,
+      "label": "15% increased focus Qi conversion ",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1260.91714363207,
+      "y": -1194.3028867467574,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 42,
+      "label": "15% increased focus spell damage \n15% Qi Conversion",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1302.1115281902464,
+      "y": -1366.7973835770024,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 43,
+      "label": "cast a random ability on bar while focus is equipped on basic attack\n-30% basic attack speed",
+      "group": "Wood",
+      "type": "basic",
+      "x": 1336.0448150980937,
+      "y": -1616.7903687969729,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 51,
+      "label": "Qi per sec 0.5+",
+      "group": "Hub",
+      "type": "basic",
+      "x": 222.74425949151347,
+      "y": -2159.857638161407,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 52,
+      "label": "recover 3% Qi shield max per second while enemy is inflicted with any ailment",
+      "group": "Wood",
+      "type": "notable",
+      "x": 499.4560320304039,
+      "y": -2144.2837851556187,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#22c55e",
+      "size": 40
+    },
+    {
+      "id": 53,
+      "label": "qi shield conversion 15%",
+      "group": "Wood",
+      "type": "basic",
+      "x": 472.5874997698187,
+      "y": -1557.4387469010362,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#22c55e",
+      "size": 14
+    },
+    {
+      "id": 1006,
+      "label": "Breakthrough chance 5%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -327.6087006045583,
+      "y": 237.9034372021207,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 1007,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -443.17272010334256,
+      "y": 366.26993359929037,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1008,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -681.712202882542,
+      "y": 603.3288190168846,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1009,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -842.6305936409032,
+      "y": 719.8279048373299,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1010,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -985.7560476072783,
+      "y": 1025.7572797857504,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1011,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1128.7334642651829,
+      "y": 1064.8878597286573,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1012,
+      "label": "HP 8%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1567.332026435713,
+      "y": 308.4092907898662,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1013,
+      "label": "15%+ fire damage",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1569.4882163344,
+      "y": 857.8078416686069,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1015,
+      "label": "Armor 20%+\nHP 8%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2004.900902110523,
+      "y": 862.7594423308267,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1016,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2318.683243227812,
+      "y": 1053.5777838695349,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1017,
+      "label": "Armor 40%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2096.0860436718444,
+      "y": 660.2231531807721,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1024,
+      "label": "HP 8%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -623.1367848801285,
+      "y": 164.0647521893754,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1025,
+      "label": "HP 8%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -760.505352130432,
+      "y": 289.8696675607505,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1026,
+      "label": "HP 8%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -935.5758136789527,
+      "y": 232.6129343917334,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1027,
+      "label": "HP 8%+\nall elements resist +10%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -929.9831987345007,
+      "y": 613.649314095933,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1028,
+      "label": "50+ HP\n20% + Hp",
+      "group": "Fire",
+      "type": "notable",
+      "x": -751.4065615363912,
+      "y": 391.60565927324996,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#ef4444",
+      "size": 40
+    },
+    {
+      "id": 1029,
+      "label": "+8% physical damage",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1016.2277875568399,
+      "y": 768.6134676337149,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1030,
+      "label": "+8% physical damage",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1163.221851025689,
+      "y": 429.0560112338527,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1031,
+      "label": "+8% physical damage\n+8% fire damage",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1398.2683525298746,
+      "y": 638.0309508952952,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1032,
+      "label": "+8% physical damage\n+8% fire damage",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1225.351090500032,
+      "y": 568.0297934550767,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1033,
+      "label": "Deal (100% − Breakthrough%) as bonus Physical Damage",
+      "group": "Fire",
+      "type": "notable",
+      "x": -1195.7742898276663,
+      "y": 677.8120344066226,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#ef4444",
+      "size": 40
+    },
+    {
+      "id": 1034,
+      "label": "burn chance +5%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1468.5835887769217,
+      "y": 753.772901853846,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1035,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1286.8857017900423,
+      "y": 1162.5757795096,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1036,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1531.565181823457,
+      "y": 1182.6992369533912,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1037,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -1829.13507885016,
+      "y": 1321.399080653622,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1038,
+      "label": "attacks Always hit, never crit",
+      "group": "Fire",
+      "type": "notable",
+      "x": -1721.7511493385541,
+      "y": 1536.853603166587,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#ef4444",
+      "size": 40
+    },
+    {
+      "id": 1039,
+      "label": "Physique attribute 5%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2048.7401477959993,
+      "y": 991.5145034571169,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1040,
+      "label": "Physical Damage +8%\nHammer damage +8%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2127.228795530343,
+      "y": 1250.4899147528877,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1041,
+      "label": "Stun strength 20%\nHammer damage +8%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2453.7016354193606,
+      "y": 1280.4544815861454,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1042,
+      "label": "Stun strength 10%\nHammer damage +20%",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2514.388372747701,
+      "y": 1083.7892465116552,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 1043,
+      "label": "while hammer is equipped, + 30% hp and HP regen",
+      "group": "Fire",
+      "type": "notable",
+      "x": -2514.3082323543417,
+      "y": 998.2972517765786,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#ef4444",
+      "size": 40
+    },
+    {
+      "id": 1052,
+      "label": "deal 200% of stunning hit as fire damage to all enemies",
+      "group": "Fire",
+      "type": "notable",
+      "x": -1414.5810843394343,
+      "y": 1092.616081905566,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#ef4444",
+      "size": 40
+    },
+    {
+      "id": 1053,
+      "label": "Armor 40%+",
+      "group": "Fire",
+      "type": "basic",
+      "x": -2189.8281884400044,
+      "y": 774.386767868381,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#ef4444",
+      "size": 14
+    },
+    {
+      "id": 2006,
+      "label": "max Qi 10%",
+      "group": "Water",
+      "type": "basic",
+      "x": -448.359113774168,
+      "y": -1375.706994316605,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 2007,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -613.8444079857977,
+      "y": -1425.1803952477153,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2008,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -930.2087994445533,
+      "y": -1539.248672244132,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2009,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1153.1037386249384,
+      "y": -1687.0283937480383,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2010,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1388.738799616038,
+      "y": -1867.2840955488994,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2011,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1499.591894215993,
+      "y": -1959.2818749656512,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2012,
+      "label": "10% Hp\n15% mas Qi shield",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1042.8803072088797,
+      "y": -2465.858153815582,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2013,
+      "label": "Crit Chance +10% \nCrit Damage +20%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1260.411539837551,
+      "y": -2443.922729701818,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2015,
+      "label": "10% Hp\n15% mas Qi shield",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1540.9325919454375,
+      "y": -2900.448675650441,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2016,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -2069.735872274699,
+      "y": -2772.538196357249,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2017,
+      "label": "%5 chance to avoid stun while has Qi shield\n10% Hp",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1652.8848614282817,
+      "y": -2725.9416862269763,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2024,
+      "label": "qi shield conversion 10%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -508.165525516533,
+      "y": -1674.391096863933,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2025,
+      "label": "qi shield conversion 10%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -680.671840199986,
+      "y": -1744.666066763134,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2026,
+      "label": "qi shield conversion 10%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -703.8877530129189,
+      "y": -1927.3926969850645,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2027,
+      "label": "qi shield conversion 10%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1045.8361607790687,
+      "y": -1759.1925589762195,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2028,
+      "label": "30% ailment resistance while have QI shield",
+      "group": "Earth",
+      "type": "notable",
+      "x": -768.7149843667762,
+      "y": -1692.8837844145755,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#eab308",
+      "size": 40
+    },
+    {
+      "id": 2029,
+      "label": "spell damage 20%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1193.9708031904713,
+      "y": -1890.5741700092926,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2030,
+      "label": "spell damage 20%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -834.8123601939533,
+      "y": -2055.64146787388,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2031,
+      "label": "spell damage 20%\nailment chance 20%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1060.738530453735,
+      "y": -2304.5538331588286,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2032,
+      "label": "ailment chance 20%",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1027.1852795873363,
+      "y": -2115.41319935346,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2033,
+      "label": "ailments transfer to next encounter on defeating enemy",
+      "group": "Earth",
+      "type": "notable",
+      "x": -1156.5563455342292,
+      "y": -2045.3551712926835,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#eab308",
+      "size": 40
+    },
+    {
+      "id": 2034,
+      "label": "Crit Chance +5% \n",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1403.0753235284208,
+      "y": -2185.930394887381,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2035,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1615.4126033340638,
+      "y": -2062.294317609185,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2036,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1786.0391191550264,
+      "y": -2245.358765547059,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2037,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1949.6133137242311,
+      "y": -2483.4437984051447,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2038,
+      "label": "ability qi cost reduction 20%",
+      "group": "Earth",
+      "type": "notable",
+      "x": -1629.4991948866634,
+      "y": -2475.200563551807,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#eab308",
+      "size": 40
+    },
+    {
+      "id": 2039,
+      "label": "mind attribute 3%+",
+      "group": "Earth",
+      "type": "basic",
+      "x": -2017.984890706072,
+      "y": -2608.6728983021585,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2040,
+      "label": "increased 8%+ spell damage while wielding a wand",
+      "group": "Earth",
+      "type": "basic",
+      "x": -2156.4831142921926,
+      "y": -2537.312951108449,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2041,
+      "label": "increased 8%+ spell crit chance while wielding a wand",
+      "group": "Earth",
+      "type": "basic",
+      "x": -2291.920495760412,
+      "y": -2724.082101936503,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2042,
+      "label": "increased 8%+ spell crit chance and 20 % Crit damage while wielding a wand",
+      "group": "Earth",
+      "type": "basic",
+      "x": -2377.106015939022,
+      "y": -2693.7435595868865,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 2043,
+      "label": "30% spell damage if crit in the last 4 seconds",
+      "group": "Earth",
+      "type": "notable",
+      "x": -2286.5002046324694,
+      "y": -2531.6954588344206,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#eab308",
+      "size": 40
+    },
+    {
+      "id": 2051,
+      "label": "max Qi 10%",
+      "group": "Water",
+      "type": "basic",
+      "x": -303.05032069133154,
+      "y": -1811.0210816751576,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 2052,
+      "label": "Crit Chance +20% \nCrit Damage +50%",
+      "group": "Earth",
+      "type": "notable",
+      "x": -1426.3049600500538,
+      "y": -2303.465002501789,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#eab308",
+      "size": 40
+    },
+    {
+      "id": 2053,
+      "label": "%5 chance to avoid stun while has Qi shield",
+      "group": "Earth",
+      "type": "basic",
+      "x": -1526.0143349409652,
+      "y": -2649.1571206631143,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#eab308",
+      "size": 14
+    },
+    {
+      "id": 3006,
+      "label": "comprehension 10%",
+      "group": "Hub",
+      "type": "basic",
+      "x": -1238.1881471736956,
+      "y": -51.323440752265626,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 3007,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1670.9566328257206,
+      "y": 14.496272488767403,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3008,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1975.274276888539,
+      "y": 367.15673663988446,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3009,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2394.4302280307916,
+      "y": -125.80288463660266,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3010,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2594.7277023408155,
+      "y": -273.54959727900575,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3011,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2435.5726329651175,
+      "y": -1087.6388571130879,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3012,
+      "label": "HP 20 %+",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1825.5517503693027,
+      "y": -782.5494885716364,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3013,
+      "label": "palm damage +12%\nattack speed 20%+",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1904.7002417885067,
+      "y": -986.3545824875254,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3015,
+      "label": "ionized chance 7%+\nmetal damage 10%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1539.5094180767308,
+      "y": -1378.4561793686298,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3016,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -3011.053955810421,
+      "y": -1111.704659717513,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3017,
+      "label": "ionized chance 7%+\nmetal damage 10%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1737.5509547845024,
+      "y": -1439.8202546767789,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3024,
+      "label": "Attack Speed +5%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1516.1652483471455,
+      "y": -57.132135699784286,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3025,
+      "label": "Attack Speed +5%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1908.3211470412948,
+      "y": -171.22562560556298,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3026,
+      "label": "Attack Speed +5%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1705.3126645012085,
+      "y": -308.9107945652748,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3027,
+      "label": "Attack Speed +5%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2067.9706423149382,
+      "y": -231.2209656911701,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3028,
+      "label": "apply a random ailment on stunning hit",
+      "group": "Metal",
+      "type": "notable",
+      "x": -1852.175192218123,
+      "y": -407.0000999710456,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#a3a3a3",
+      "size": 40
+    },
+    {
+      "id": 3029,
+      "label": "ailment resist +8%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2244.4515778278396,
+      "y": -320.67518898722466,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3030,
+      "label": "10% counter chance",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2060.7471931812374,
+      "y": -587.8174692469768,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3031,
+      "label": "stun strength +10%\n15% max HP",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2125.512339041828,
+      "y": -772.9334337941966,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3032,
+      "label": "10% counter chance\nstun strength +10%\n15% max HP",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2212.2274964715784,
+      "y": -535.4632721511575,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3033,
+      "label": "all physical damage is converted to 150%+ metal damage. Deal no non-metal damage.",
+      "group": "Metal",
+      "type": "notable",
+      "x": -2348.280044414622,
+      "y": -421.8007797937908,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#a3a3a3",
+      "size": 40
+    },
+    {
+      "id": 3034,
+      "label": "palm damage +12%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2191.3937237749847,
+      "y": -1055.0557279399059,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3035,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2367.1752639266447,
+      "y": -1226.735226255545,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3036,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2236.239201878181,
+      "y": -1439.999727884956,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3037,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -2433.778932822907,
+      "y": -1673.3748612146733,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3038,
+      "label": "every physique point grants +2 base damage to palms",
+      "group": "Metal",
+      "type": "notable",
+      "x": -2719.35323121353,
+      "y": -1852.0811368875081,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#a3a3a3",
+      "size": 40
+    },
+    {
+      "id": 3039,
+      "label": "3% attribute physique",
+      "group": "Metal",
+      "type": "basic",
+      "x": -3155.18567417562,
+      "y": -1018.1309039892403,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3040,
+      "label": "10 % palm stun strength",
+      "group": "Metal",
+      "type": "basic",
+      "x": -3260.893917435985,
+      "y": -1132.5851188823908,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3041,
+      "label": "10 % palm stun strength\n12 % palm damage",
+      "group": "Metal",
+      "type": "basic",
+      "x": -3117.0036890978604,
+      "y": -1312.922586394835,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3042,
+      "label": "10 % palm stun strength\n12 % palm damag",
+      "group": "Metal",
+      "type": "basic",
+      "x": -3168.9594293668733,
+      "y": -1386.9334035305685,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 3043,
+      "label": "Palm stun strength +15% if haven't applied a stun in 10 seconds.",
+      "group": "Metal",
+      "type": "notable",
+      "x": -3300.9786383449828,
+      "y": -1256.396326572356,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#a3a3a3",
+      "size": 40
+    },
+    {
+      "id": 3051,
+      "label": "comprehension 10%",
+      "group": "Hub",
+      "type": "basic",
+      "x": -501.3348670174898,
+      "y": -233.69398587786722,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 3052,
+      "label": "Next Palm stun strength and damage +30% if basic attacked twice in a row in less than 1 second.",
+      "group": "Metal",
+      "type": "notable",
+      "x": -2084.309501315578,
+      "y": -1108.7862527862562,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#a3a3a3",
+      "size": 40
+    },
+    {
+      "id": 3053,
+      "label": "ionized chance 7%+\nmetal damage 10%",
+      "group": "Metal",
+      "type": "basic",
+      "x": -1777.7235882735026,
+      "y": -1297.0681635587907,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#a3a3a3",
+      "size": 14
+    },
+    {
+      "id": 4006,
+      "label": "Foundation Gain +5%",
+      "group": "Hub",
+      "type": "basic",
+      "x": 644.1838150774275,
+      "y": 32.51161644679642,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4007,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 824.1339387883996,
+      "y": -88.72740189971744,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4008,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 1144.4974960674579,
+      "y": -245.74976444799137,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4009,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 1513.8389734212114,
+      "y": -342.497213264657,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4010,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 1887.7305270683164,
+      "y": -346.05862522827806,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4011,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 2096.4112055627083,
+      "y": -332.97403303630614,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4012,
+      "label": "Foundation Gain +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1181.0238930195967,
+      "y": 524.0230722752073,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4013,
+      "label": "Dodge +40\n",
+      "group": "Water",
+      "type": "basic",
+      "x": 2119.6860434586647,
+      "y": 89.48204630150681,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4015,
+      "label": "Dodge +1% \nQi shield +3%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1758.4503708202628,
+      "y": 650.6860958461482,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4016,
+      "label": "Agility attribute +%10",
+      "group": "Water",
+      "type": "basic",
+      "x": 2817.4836044929307,
+      "y": 232.77839778746696,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4017,
+      "label": "Dodge +1% \nQi shield +3%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1704.4743490087592,
+      "y": 1110.342619666149,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4024,
+      "label": "Dodge +30",
+      "group": "Water",
+      "type": "basic",
+      "x": 908.5483187088128,
+      "y": 252.6548836013546,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4025,
+      "label": "Dodge +30\nDodge +2%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1082.8838398647483,
+      "y": 127.98705800771513,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4026,
+      "label": "Attack Speed +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1190.8384980283404,
+      "y": 41.312810789138986,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4027,
+      "label": "Attack Speed +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1394.6126556752738,
+      "y": 7.660066657496827,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4028,
+      "label": "+10 Dodge per each agility point",
+      "group": "Water",
+      "type": "notable",
+      "x": 1468.860302576559,
+      "y": -187.1768156925673,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#3b82f6",
+      "size": 40
+    },
+    {
+      "id": 4029,
+      "label": "cold damage +10% \nchill chance +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1591.5814254151944,
+      "y": 27.866593997495784,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4030,
+      "label": "cold damage +10% \nchill chance +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1546.5203513819667,
+      "y": 277.6633960097857,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4031,
+      "label": "cold damage +20%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1746.7089372578575,
+      "y": -13.034339034411996,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4032,
+      "label": "cold damage +15% \nchill chance +10%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1664.8524116411656,
+      "y": 281.96519319560093,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4033,
+      "label": "Cold penetrates 10% resistances",
+      "group": "Water",
+      "type": "notable",
+      "x": 1790.0264376138239,
+      "y": 191.49159540993512,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#3b82f6",
+      "size": 40
+    },
+    {
+      "id": 4034,
+      "label": "Dodge +20\nHP +5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 1933.770393336544,
+      "y": 145.62359053240303,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4035,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 2331.024373633609,
+      "y": -366.44211607610595,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4036,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 2573.329974857473,
+      "y": -351.43342337996876,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4037,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 2541.811208696696,
+      "y": -112.55135960013125,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4038,
+      "label": "After Ability: +30% Attack Speed for 4s",
+      "group": "Water",
+      "type": "notable",
+      "x": 2324.0207861999274,
+      "y": 255.37021637718357,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#3b82f6",
+      "size": 40
+    },
+    {
+      "id": 4039,
+      "label": "Agility attribute +%5",
+      "group": "Water",
+      "type": "basic",
+      "x": 2609.403541234692,
+      "y": 155.75205534249324,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4040,
+      "label": "counter chance 2%",
+      "group": "Water",
+      "type": "basic",
+      "x": 2750.612441844587,
+      "y": -8.849927551386259,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4041,
+      "label": "counter chance 2%",
+      "group": "Water",
+      "type": "basic",
+      "x": 2861.6420340359164,
+      "y": 87.21007058957562,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4042,
+      "label": "counter chance 5%",
+      "group": "Water",
+      "type": "basic",
+      "x": 2917.7934592249617,
+      "y": 221.73199745792516,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4043,
+      "label": "half of dodge is converted to counter ",
+      "group": "Water",
+      "type": "notable",
+      "x": 3045.3525727480774,
+      "y": 304.98558194136297,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#3b82f6",
+      "size": 40
+    },
+    {
+      "id": 4051,
+      "label": "Foundation Gain +5%",
+      "group": "Hub",
+      "type": "basic",
+      "x": 670.5905646740787,
+      "y": 622.7592123586046,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4052,
+      "label": "Deal 20% basic attack damage on dodging and recover 2% max health",
+      "group": "Water",
+      "type": "notable",
+      "x": 2001.9263519784422,
+      "y": 251.72666015837223,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#3b82f6",
+      "size": 40
+    },
+    {
+      "id": 4053,
+      "label": "Dodge +1% \nQi shield +3%",
+      "group": "Water",
+      "type": "basic",
+      "x": 2303.986475867603,
+      "y": 449.98037497355136,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#3b82f6",
+      "size": 14
+    },
+    {
+      "id": 4054,
+      "label": "max Qi +50",
+      "group": "Hub",
+      "type": "basic",
+      "x": 47.128309398824264,
+      "y": -277.87780829796054,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4055,
+      "label": "Foundation Gain +5%",
+      "group": "Hub",
+      "type": "basic",
+      "x": 273.0817609658886,
+      "y": -174.85374440608246,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4056,
+      "label": "comprehension 10%",
+      "group": "Hub",
+      "type": "basic",
+      "x": -176.14863010634718,
+      "y": -224.6606465623338,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4057,
+      "label": "Qi per sec 0.5+",
+      "group": "Hub",
+      "type": "basic",
+      "x": 101.43436059954772,
+      "y": -518.6016516121272,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4058,
+      "label": "Breakthrough chance 5%",
+      "group": "Hub",
+      "type": "basic",
+      "x": -347.3846143840135,
+      "y": -91.95221913638538,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4059,
+      "label": "max Qi 10%",
+      "group": "Hub",
+      "type": "basic",
+      "x": 75.00555840592926,
+      "y": -1076.9195312171626,
+      "fixed": true,
+      "shape": "dot",
+      "color": "#7dd3fc",
+      "size": 14
+    },
+    {
+      "id": 4060,
+      "label": "unlock physique tab and mining",
+      "group": "Hub",
+      "type": "notable",
+      "x": -330.49163776327885,
+      "y": -181.93610098139683,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#7dd3fc",
+      "size": 40
+    },
+    {
+      "id": 4061,
+      "label": "B",
+      "group": "Hub",
+      "type": "notable",
+      "x": 180.40677531377574,
+      "y": -891.7070858805173,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#7dd3fc",
+      "size": 40
+    },
+    {
+      "id": 4062,
+      "label": "unlock agility and forge tab",
+      "group": "Hub",
+      "type": "notable",
+      "x": 490.5407956922057,
+      "y": -60.46384586251412,
+      "fixed": true,
+      "shape": "diamond",
+      "color": "#7dd3fc",
+      "size": 40
+    }
+  ],
+  "edges": [
+    {
+      "id": "elhoe55z67sd",
+      "from": 1039,
+      "to": 1015,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "57b573ea-c1d2-4f86-8dde-af88daf27f69",
+      "from": 6,
+      "to": 7,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "48ecfd74-1dd5-4be3-a2a9-e70bb934faeb",
+      "from": 7,
+      "to": 8,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1b6fb49c-ac2d-4ce7-9bd6-b51cb8fb5e95",
+      "from": 8,
+      "to": 9,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "60c97d63-eb99-4f6f-b56c-6646b4ed4eb5",
+      "from": 9,
+      "to": 10,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "575b01c5-d924-4459-a02c-7333e5084340",
+      "from": 10,
+      "to": 11,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "emqc5xs9bkd",
+      "from": 4061,
+      "to": 16,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "5f6baf5c-26ca-40f9-89ca-e06776df783d",
+      "from": 15,
+      "to": 16,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ddc71808-2820-4715-b89b-799c99b0f59b",
+      "from": 24,
+      "to": 25,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1f32359b-5b06-4506-bd00-1bbba1693533",
+      "from": 25,
+      "to": 26,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "addb1730-71ea-4496-a731-bf3e8dd498b7",
+      "from": 26,
+      "to": 27,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e6alihvifk5",
+      "from": 4057,
+      "to": 4061,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "39bf749e-df47-48b9-9525-4d3a316c81a4",
+      "from": 27,
+      "to": 28,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ba735f7b-846e-4dbf-b65c-94ef58919b3f",
+      "from": 29,
+      "to": 30,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "980fa4d0-40a6-4bf0-8631-07963119d779",
+      "from": 30,
+      "to": 31,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "cfd700e9-208f-47e0-9a06-75f3817ca993",
+      "from": 31,
+      "to": 32,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4d18eaed-eaf2-469b-a35b-c84ca6f82003",
+      "from": 10,
+      "to": 29,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "fe9232fa-fb94-413b-8eff-3300931a46bf",
+      "from": 31,
+      "to": 10,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1d2d575a-b6b5-4ec4-9c90-de1d2fe77646",
+      "from": 32,
+      "to": 33,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "93368be0-eb6e-4c7f-acf4-105900980bc4",
+      "from": 34,
+      "to": 35,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "90ec8da7-71cb-46ce-b970-444e85eced98",
+      "from": 35,
+      "to": 36,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e1d5c58a-1c8f-400d-9d40-f516b4826183",
+      "from": 36,
+      "to": 37,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "6e2f73e6-5bc9-4249-9737-a8b48b29bf0b",
+      "from": 13,
+      "to": 34,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c506c6fa-15cc-4732-9c98-cf3302b80dc2",
+      "from": 36,
+      "to": 13,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "f6f5c6b7-b1a6-4cc2-9797-4e28e0473eb7",
+      "from": 37,
+      "to": 38,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c500f70e-f404-4bc0-b646-eb51445887aa",
+      "from": 39,
+      "to": 40,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "b7123995-fc0b-47e7-9389-aa61ceb5df95",
+      "from": 40,
+      "to": 41,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "291b602d-a4d2-4431-88f6-4f0b574c6c61",
+      "from": 41,
+      "to": 42,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "5f26e7ac-4835-4b5c-b7ee-56c5406a4fc7",
+      "from": 16,
+      "to": 39,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8cfc4e80-20dc-4e0a-90ed-9c98cc8c0163",
+      "from": 41,
+      "to": 16,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1f3a9e46-61bb-4822-af0b-7a54e3d3c557",
+      "from": 42,
+      "to": 43,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "442bb349-0e9a-46bf-948b-7258ade55ec9",
+      "from": 11,
+      "to": 35,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eawdgykj1rqd",
+      "from": 4061,
+      "to": 4059,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e94a0e7b-1a84-4a65-9f21-187ce31bf30a",
+      "from": 13,
+      "to": 52,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "f7ced6c4-d120-45eb-beb1-ead385561f67",
+      "from": 37,
+      "to": 39,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ea0f37a8-d88b-4b35-9be5-86a1bb580192",
+      "from": 15,
+      "to": 53,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0f0183d8-9cbb-4580-ba5e-1a1a28a56333",
+      "from": 15,
+      "to": 17,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "71c4c92b-62a0-4f71-af0c-1c5deb01fce5",
+      "from": 12,
+      "to": 51,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "53ab1eb7-011c-4535-b9c9-d104dbd13e03",
+      "from": 12,
+      "to": 15,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ab2c8d4f-5f43-41cf-8528-d35bcdf5fe95",
+      "from": 1006,
+      "to": 1007,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8fc13872-9f12-4da4-b45d-484f40bdaac9",
+      "from": 1007,
+      "to": 1008,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "be26e8c4-3aa6-440c-a604-ae492dae299d",
+      "from": 1008,
+      "to": 1009,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "2439164b-f8b5-48fd-95a6-5a74a9703a4b",
+      "from": 1009,
+      "to": 1010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4c059c83-0e40-418e-ad56-b33f4c424355",
+      "from": 1010,
+      "to": 1011,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eh8ibn021exj",
+      "from": 4057,
+      "to": 4054,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eupepl5b25gr",
+      "from": 4056,
+      "to": 4054,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7620b0f6-3fb3-4f1f-9daa-579461824bb7",
+      "from": 1024,
+      "to": 1025,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "75b8980b-0723-42a6-8ced-14ccd64caa74",
+      "from": 1025,
+      "to": 1026,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0c91a12f-c21f-40b5-aef5-62fd4fee7e80",
+      "from": 1026,
+      "to": 1027,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "a04f24a8-71d9-48f5-87e3-0867e5751ae3",
+      "from": 1007,
+      "to": 1024,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4521092d-051c-4999-b1a4-42e132a9011a",
+      "from": 1027,
+      "to": 1028,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "643bce5f-a341-4048-a67f-f598ab39e77c",
+      "from": 1029,
+      "to": 1030,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "25d84fb1-12d8-4358-ac60-7fdee472f0de",
+      "from": 1030,
+      "to": 1031,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7293e342-59dc-46cc-92d8-56cf7150d3c0",
+      "from": 1031,
+      "to": 1032,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1bf7b05f-3e9c-4223-8b6a-54bdea28f99c",
+      "from": 1010,
+      "to": 1029,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "340bdc79-058c-4147-b7f6-9933cc45202b",
+      "from": 1031,
+      "to": 1010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4816017e-a13a-4fe3-a785-55fa0e2de2ec",
+      "from": 1032,
+      "to": 1033,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "94f821fc-909e-4ef9-9891-6499fcc50fb1",
+      "from": 1034,
+      "to": 1035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "da9fd9e4-d8b9-4c63-a97a-e27a1639a332",
+      "from": 1035,
+      "to": 1036,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0b4b788f-3d45-4448-92c7-29adaa2dcc06",
+      "from": 1036,
+      "to": 1037,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "459a0d09-14a1-47b6-b9c4-37185d75fa95",
+      "from": 1013,
+      "to": 1034,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d6676b72-3868-42e2-89fd-96c007f212d2",
+      "from": 1036,
+      "to": 1013,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "9c58e706-4851-40dc-a06d-c1c21d9fdd24",
+      "from": 1037,
+      "to": 1038,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "bd765de5-2154-448a-9085-1f07b13268c7",
+      "from": 1039,
+      "to": 1040,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "097c6ba5-9def-4edb-bf4e-ce2d54b23060",
+      "from": 1040,
+      "to": 1041,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7c509bed-845d-455b-bd95-fdf661d44289",
+      "from": 1041,
+      "to": 1042,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "47a9910b-a2c5-4323-a37b-6534b0e66439",
+      "from": 1016,
+      "to": 1039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "5d8b760d-b170-46a7-8436-539a6c90fae6",
+      "from": 1041,
+      "to": 1016,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "96598bfa-596e-4e17-907d-64680e6aab9f",
+      "from": 1042,
+      "to": 1043,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "323cf6c5-3fa7-4bb9-87ce-34ed351e1494",
+      "from": 1011,
+      "to": 1035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "epme16u5bc1",
+      "from": 4058,
+      "to": 4060,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "3b6ad4ed-3bbf-4969-9662-e6ccc0821945",
+      "from": 1013,
+      "to": 1052,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "enlfyarqypyj",
+      "from": 4054,
+      "to": 4055,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "02d700bb-2fd0-4250-b388-6ae07e134f10",
+      "from": 1015,
+      "to": 1053,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d2ffb1f8-2cd0-4e72-bf9f-65f53972ff36",
+      "from": 1015,
+      "to": 1017,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c4016cfd-b2b9-4c5d-8bbe-98f5f9e8b83e",
+      "from": 1012,
+      "to": 1015,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "635fbd59-16c7-44f5-974f-1b91a8df056b",
+      "from": 2006,
+      "to": 2007,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "3db9db95-96a7-4ffb-afd7-968154d4c487",
+      "from": 2007,
+      "to": 2008,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "63762446-178a-4e29-99b3-1c4c7e5f42d7",
+      "from": 2008,
+      "to": 2009,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "96ebdf89-bdfc-408f-bdc9-1c603105dad9",
+      "from": 2009,
+      "to": 2010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "030edf6c-c87e-4bb1-9206-81575aa721ca",
+      "from": 2010,
+      "to": 2011,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c217ba8c-b074-4df0-84d1-32a295e4bf58",
+      "from": 2011,
+      "to": 2012,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "dfdbefba-b546-425c-b288-71f7c0519b30",
+      "from": 2015,
+      "to": 2016,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "215971c3-d4de-4739-a55d-8e02533b811e",
+      "from": 2024,
+      "to": 2025,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "03a9635a-d93d-46f9-9747-907096395a0c",
+      "from": 2025,
+      "to": 2026,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7082f9c3-5739-4d85-b9e8-37ef245126eb",
+      "from": 2026,
+      "to": 2027,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "32c6025e-ab7d-40b1-a6a3-357049a26304",
+      "from": 2007,
+      "to": 2024,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ac283ff3-e9a2-401c-ae38-edec91284f5a",
+      "from": 2027,
+      "to": 2028,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "99d5d8f8-0f53-449b-a90c-880ecf1d2818",
+      "from": 2029,
+      "to": 2030,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "9c77db01-1938-460c-89b1-53132c1dfe06",
+      "from": 2030,
+      "to": 2031,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "b81dbea7-d6ed-4112-9ea3-f2343ecf2061",
+      "from": 2031,
+      "to": 2032,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "049decc2-9877-4d2e-83c7-5584b49dc9bc",
+      "from": 2010,
+      "to": 2029,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "5ece82fd-d004-4a19-bced-b461dcf56aa9",
+      "from": 2031,
+      "to": 2010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "944a8973-33bb-4dc3-8cdb-9f9639ddcbcf",
+      "from": 2032,
+      "to": 2033,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4ab70d70-e62e-45c3-9268-4b0ca3447e15",
+      "from": 2034,
+      "to": 2035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8374e6f3-0f7b-428b-8be8-ce11cf5b0ab5",
+      "from": 2035,
+      "to": 2036,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7d7cbdee-ac2c-41f6-b9ea-e7333c653899",
+      "from": 2036,
+      "to": 2037,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4ce4682b-b829-4a73-b3e7-483721908f15",
+      "from": 2013,
+      "to": 2034,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7908f54c-c0e5-40c5-b343-44673f81f080",
+      "from": 2036,
+      "to": 2013,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e8f9b2e5-749c-4122-bfd1-a4adb1bc78c6",
+      "from": 2037,
+      "to": 2038,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1af195a8-8ac4-464a-969f-6da783553e0f",
+      "from": 2039,
+      "to": 2040,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "f4091fbe-281d-4ef9-bdde-9f74cd66f8c1",
+      "from": 2040,
+      "to": 2041,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0212df7d-0ba0-4e97-b64f-86c6ba51d007",
+      "from": 2041,
+      "to": 2042,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8a569e9c-2a49-4e81-a9fa-b38c25685cea",
+      "from": 2016,
+      "to": 2039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "08d6f31d-b4f6-4b18-88ea-ea86b2b0f79b",
+      "from": 2041,
+      "to": 2016,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "fcced7c0-eb78-4f98-9b02-4ac6d6ca6301",
+      "from": 2042,
+      "to": 2043,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "9944a28d-87d6-4293-89ab-6eb4c573a160",
+      "from": 2011,
+      "to": 2035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e9b43d91-7f08-4e82-8583-c0b9efe99e3e",
+      "from": 2006,
+      "to": 2051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "6ccc11f9-6756-4b2c-bff1-58e164b7d3ec",
+      "from": 2013,
+      "to": 2052,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "09e0532d-face-4359-9eef-cab78e45cf4a",
+      "from": 2037,
+      "to": 2039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7c37fd80-9415-40cc-b194-593d51fe5ca2",
+      "from": 2015,
+      "to": 2053,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8449683c-deea-46fd-8681-2687d7d616b2",
+      "from": 2015,
+      "to": 2017,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e088e0f3-1242-43e6-91e8-e0c9f2f90a8b",
+      "from": 2012,
+      "to": 2051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "22270989-1315-4810-8c00-f0ae2315e3b6",
+      "from": 2012,
+      "to": 2015,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "be80df28-dd9c-4af8-987e-15684a20f50e",
+      "from": 3006,
+      "to": 3007,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "5e305733-a405-46aa-8a6c-038e052e4f2d",
+      "from": 3007,
+      "to": 3008,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "f5ac03d4-74f2-42ce-87ea-25a89b2eefa2",
+      "from": 3008,
+      "to": 3009,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7c19c5fe-6c6e-45d8-8cf1-7e4083c4a73e",
+      "from": 3009,
+      "to": 3010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "634db9b5-ab77-4fc4-bae8-924d62abe2d8",
+      "from": 3010,
+      "to": 3011,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e26o3sbnbo87",
+      "from": 4058,
+      "to": 1006,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8c51631d-2e5a-445d-8764-60ee7da060c2",
+      "from": 3024,
+      "to": 3025,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1ee8c16e-75d1-48ac-8afc-b326a75697e7",
+      "from": 3025,
+      "to": 3026,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7c874193-6190-44f9-b266-5f03a1ddbb8f",
+      "from": 3026,
+      "to": 3027,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "9b8968df-a90b-4fdb-b373-619a3b9acbb0",
+      "from": 3007,
+      "to": 3024,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ad46b219-8e11-496c-92e4-8284b71a8340",
+      "from": 3027,
+      "to": 3028,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0d8e0105-76dc-4eeb-9ac6-68077c250a74",
+      "from": 3029,
+      "to": 3030,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "195b0628-9968-4428-b395-36d5b4fcbe2f",
+      "from": 3030,
+      "to": 3031,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d3faf8b6-97c8-45d7-b093-6b51f2896ecb",
+      "from": 3031,
+      "to": 3032,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "dfd7ca8a-73bf-4065-9ca8-9b05c2c08cb2",
+      "from": 3010,
+      "to": 3029,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "b574421c-9969-428f-b88a-75d242971a6e",
+      "from": 3031,
+      "to": 3010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4e0e880e-787c-4ae1-98b1-377d6710d1d4",
+      "from": 3032,
+      "to": 3033,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d4904cff-f4b7-49b8-9a1a-9fcae7a0d3a8",
+      "from": 3034,
+      "to": 3035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7e410e14-37c2-4486-b9f7-aaf15af44586",
+      "from": 3035,
+      "to": 3036,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "df5c45cb-6dd6-4a66-abc6-6dc46b6c1f64",
+      "from": 3036,
+      "to": 3037,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "9b6d267b-3a4e-4a5f-a810-f172db7a0e78",
+      "from": 3013,
+      "to": 3034,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d82a0e7d-300f-43a3-b661-343523116d35",
+      "from": 3036,
+      "to": 3013,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "85b7c859-cf09-42bd-b491-fef992bbacf4",
+      "from": 3037,
+      "to": 3038,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "827e3a67-074c-496f-a304-8b0564a09a47",
+      "from": 3039,
+      "to": 3040,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "282fdd97-737b-4333-86d3-8245f5315b77",
+      "from": 3040,
+      "to": 3041,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "b21db77f-507a-45d0-97b6-5cb367c0faee",
+      "from": 3041,
+      "to": 3042,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4ef342e3-0315-4d0c-a5c5-7bce8a85f34b",
+      "from": 3016,
+      "to": 3039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ac9dad88-71a5-4fcf-a2cc-e6e91a54b46e",
+      "from": 3041,
+      "to": 3016,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "971424c9-e46f-4eb6-a84f-cef54e218e5d",
+      "from": 3042,
+      "to": 3043,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eb558e70-303e-4988-90e1-9e7deb58a07f",
+      "from": 3011,
+      "to": 3035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "dc5ca624-0cc3-4809-98ce-3480ed20491a",
+      "from": 3006,
+      "to": 3051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4bc53def-0547-480d-9c69-059449d4b295",
+      "from": 3013,
+      "to": 3052,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "868d0492-48da-444b-9dc3-c9be79ef98ba",
+      "from": 3037,
+      "to": 3039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8e1e1f33-6c07-4437-84ce-6fd86059f020",
+      "from": 3015,
+      "to": 3053,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0a0e07de-e0b4-4bc8-8da6-402696d21c92",
+      "from": 3015,
+      "to": 3017,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "3be9ecf0-f9d1-4f40-a073-7570881a5de9",
+      "from": 3012,
+      "to": 3051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "500742a9-4b3c-463e-91cb-beca71962d9e",
+      "from": 3012,
+      "to": 3015,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "8c07e59a-a119-4b66-ba58-e1cc617bb5e7",
+      "from": 4006,
+      "to": 4007,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c049ffe2-afb5-45ce-832b-46a2257d6209",
+      "from": 4007,
+      "to": 4008,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d62e4c41-1b47-4b60-8627-5db9a7eaeb4c",
+      "from": 4008,
+      "to": 4009,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "331b5835-4b3d-4adb-9f08-1fccccb2f592",
+      "from": 4009,
+      "to": 4010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c36af6aa-a595-4f9e-a917-05dd0a7863b4",
+      "from": 4010,
+      "to": 4011,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "egopbdvvl0zk",
+      "from": 24,
+      "to": 51,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e57bdcngc7cy",
+      "from": 1012,
+      "to": 4058,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "7ac4585b-7c99-4f09-b809-6ed0a691af80",
+      "from": 4024,
+      "to": 4025,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "36a7582f-6856-446b-a964-e8b3b9a8d986",
+      "from": 4025,
+      "to": 4026,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "1d4e4cae-1ff9-4ede-843d-b31419a1f925",
+      "from": 4026,
+      "to": 4027,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "dc267b3a-7182-4e06-87e8-f4091131cc70",
+      "from": 4007,
+      "to": 4024,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "6e1e8a7d-7a96-4b52-b60f-ac63827780a5",
+      "from": 4027,
+      "to": 4028,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e8706a4a-3bbf-48dc-b2e4-7cbf7e359a59",
+      "from": 4029,
+      "to": 4030,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e5c760bf-29be-4c45-a348-d0e994c2afae",
+      "from": 4030,
+      "to": 4031,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "b2872cd6-07dc-4e44-ae0d-8d7fc8ac29ff",
+      "from": 4031,
+      "to": 4032,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0daceda5-3f61-42b1-95d6-2906bdc759b0",
+      "from": 4010,
+      "to": 4029,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d60b116f-ed38-4199-a498-464bcb517c47",
+      "from": 4031,
+      "to": 4010,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ac7245d9-a039-4929-a69e-6bd1bf630395",
+      "from": 4032,
+      "to": 4033,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "00041243-9c29-4191-8458-09f1306c011d",
+      "from": 4034,
+      "to": 4035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "71c855ea-8c90-4794-afe7-7493cfd9b801",
+      "from": 4035,
+      "to": 4036,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "3e53e00a-bbb2-4a27-a78f-11f73b9712b5",
+      "from": 4036,
+      "to": 4037,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "93f59008-f802-4aff-afe9-6775a79bd8f9",
+      "from": 4013,
+      "to": 4034,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "6487aebc-9fc2-4be0-90d3-bd188255aa99",
+      "from": 4036,
+      "to": 4013,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "d13b85fc-6201-440b-a930-60c0d8bf7af9",
+      "from": 4037,
+      "to": 4038,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "4bd8f2ec-1429-472e-8209-2afbee4bafa1",
+      "from": 4039,
+      "to": 4040,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "3054dac5-d2d7-430a-824a-c560e1e2552e",
+      "from": 4040,
+      "to": 4041,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "6543d103-6ee9-48e4-983a-6707a37895d1",
+      "from": 4041,
+      "to": 4042,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ec77eb85-493a-4423-b4ca-1e234c7f0f33",
+      "from": 4016,
+      "to": 4039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "a992d590-0c1d-471f-800a-9ee8b6dfe438",
+      "from": 4041,
+      "to": 4016,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "0f082756-5f9c-4001-aae9-c458862ba0c4",
+      "from": 4042,
+      "to": 4043,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "47d2d3d8-2fb7-4c7e-a84a-3d3e704f70e7",
+      "from": 4011,
+      "to": 4035,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "413ff7d8-948d-4071-ba8c-16ffc01a381a",
+      "from": 4006,
+      "to": 4051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "17608e2b-7435-4ea6-821d-606d0d980ff0",
+      "from": 4013,
+      "to": 4052,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "c5dbc62f-95c5-40b4-8ffa-9eeda681385d",
+      "from": 4037,
+      "to": 4039,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ea2f816d-b550-4cca-8998-b188f802b706",
+      "from": 4015,
+      "to": 4053,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "b88473be-09c6-4972-ac88-92cc8d467e5e",
+      "from": 4015,
+      "to": 4017,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "3c10efb7-3db6-445f-86cf-5b3b77f33cf7",
+      "from": 4012,
+      "to": 4051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "2a55e0bb-f214-4435-9992-93ab680b3b49",
+      "from": 4012,
+      "to": 4015,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eajavsbqbz1v",
+      "from": 31,
+      "to": 32,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "exgbx465m48",
+      "from": 29,
+      "to": 30,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e3hme71e4mo6",
+      "from": 29,
+      "to": 30,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eq4yvrzfglnr",
+      "from": 26,
+      "to": 27,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e0pqoi4x07yjd",
+      "from": 4060,
+      "to": 4056,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "ethy13hn4cq",
+      "from": 4060,
+      "to": 3051,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "eh17qnxft18l",
+      "from": 2006,
+      "to": 4059,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "erm5rz6wqli",
+      "from": 24,
+      "to": 25,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e8kefxlhshjk",
+      "from": 4055,
+      "to": 4062,
+      "width": 1.5,
+      "smooth": false
+    },
+    {
+      "id": "e5nvieeeoj2c",
+      "from": 4006,
+      "to": 4062,
+      "width": 1.5,
+      "smooth": false
+    }
+  ],
+  "settings": {
+    "grid": false,
+    "gridSize": 30
+  }
+}
