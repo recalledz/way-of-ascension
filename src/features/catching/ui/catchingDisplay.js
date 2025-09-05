@@ -1,21 +1,7 @@
 import { ZONES } from '../../adventure/data/zones.js';
-
-const iconMap = {
-  'Forest Rabbit': 'mdi:rabbit',
-  'Wild Boar': 'mdi:pig',
-  'River Frog': 'mdi:frog',
-  'Honey Bee': 'mdi:bee',
-  'Tree Sprite': 'mdi:pine-tree',
-  'Stone Lizard': 'mdi:lizard',
-  'Water Snake': 'mdi:snake',
-  'Grass Wolf': 'mdi:wolf',
-  'Ruin Guardian': 'mdi:shield',
-  'Forest Spirit': 'mdi:tree',
-};
-
-function getIcon(name){
-  return iconMap[name] || 'mdi:help-circle';
-}
+import { startActivity } from '../../activity/mutators.js';
+import { attemptTame } from '../logic.js';
+import { getIcon } from '../data.js';
 
 function renderCaughtCreatures(state){
   const container = document.getElementById('caughtCreatures');
@@ -45,13 +31,7 @@ function renderCaughtCreatures(state){
       renderCaughtCreatures(state);
     });
     div.querySelector('.tame')?.addEventListener('click', () => {
-      const now = Date.now();
-      if(now - (creature.lastTameAttempt || 0) < 3600 * 1000) return;
-      creature.lastTameAttempt = now;
-      if(Math.random() < (creature.tameProgress || 0) / 100){
-        creature.tamed = true;
-        creature.tameProgress = 100;
-      }
+      attemptTame(creature);
       renderCaughtCreatures(state);
     });
   });
@@ -59,6 +39,9 @@ function renderCaughtCreatures(state){
 
 export function mountCatchingUI(state){
   const select = document.getElementById('catchingLocation');
+  const netsEl = document.getElementById('catchingNets');
+  const chanceEl = document.getElementById('catchChance');
+  const progressFill = document.getElementById('catchingProgressFill');
   if(select){
     ZONES.forEach((zone, zi) => {
       if(zi < (state.adventure?.zonesUnlocked || 1)){
@@ -72,29 +55,33 @@ export function mountCatchingUI(state){
     });
   }
 
+  const updateChance = () => {
+    if(!select || !chanceEl) return;
+    const [zi, ai] = select.value.split('-').map(Number);
+    const stage = (ai ?? 0) + 1;
+    const chance = Math.pow(0.5, stage);
+    chanceEl.textContent = `Chance: ${(chance * 100).toFixed(1)}%`;
+  };
+
+  select?.addEventListener('change', updateChance);
+  updateChance();
+
   document.getElementById('catchCritterBtn')?.addEventListener('click', () => {
-    if(!select) return;
+    if(!select || state.catching.currentAttempt) return;
+    if((state.catching.nets || 0) <= 0) return;
     const [zi, ai] = select.value.split('-').map(Number);
     const zone = ZONES[zi];
     const area = zone?.areas?.[ai];
     if(!area) return;
     const stage = ai + 1;
-    const chance = Math.pow(0.5, stage);
-    if(Math.random() < chance){
-      state.catching.creatures.push({
-        id: `${area.id}-${Date.now()}`,
-        name: area.enemy,
-        icon: getIcon(area.enemy),
-        hunger: 1,
-        tameProgress: 0,
-        lastFed: Date.now(),
-        lastTameAttempt: 0,
-        tamed: false
-      });
-      renderCaughtCreatures(state);
-    } else {
-      console.log('Catch failed');
-    }
+    const baseMinutes = 10 + 5 * stage;
+    const agi = state.agility?.level || 0;
+    const duration = baseMinutes * 60000 * Math.max(0, 1 - 0.04 * agi);
+    state.catching.nets--;
+    state.catching.currentAttempt = { zi, ai, stage, start: Date.now(), duration };
+    startActivity(state, 'catching');
+    if(netsEl) netsEl.textContent = state.catching.nets;
+    if(progressFill) progressFill.style.width = '0%';
   });
 
   document.querySelectorAll('#activity-catching .catching-subtab').forEach(btn => {
@@ -108,8 +95,22 @@ export function mountCatchingUI(state){
   });
 
   renderCaughtCreatures(state);
+  if(netsEl) netsEl.textContent = state.catching.nets ?? 0;
+  updateChance();
 }
 
 export function updateCatchingUI(state){
+  const netsEl = document.getElementById('catchingNets');
+  const progressFill = document.getElementById('catchingProgressFill');
   renderCaughtCreatures(state);
+  if(netsEl) netsEl.textContent = state.catching.nets ?? 0;
+  const attempt = state.catching.currentAttempt;
+  if(progressFill){
+    if(attempt){
+      const pct = Math.min(100, ((Date.now() - attempt.start) / attempt.duration) * 100);
+      progressFill.style.width = `${pct}%`;
+    } else {
+      progressFill.style.width = '0%';
+    }
+  }
 }
