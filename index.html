@@ -147,8 +147,8 @@
           <div class="cultivation-layout">
           <div class="cultivation-visualization-container">
               <div class="cultivation-visualization" id="cultivationVisualization">
-                <button id="openAstralTree" class="astral-tree-btn" aria-label="Astral Tree"></button>
-                <div id="astralInsightMini" class="astral-insight-mini"></div>
+                <button id="openAstralTree" class="astral-tree-btn" aria-label="Astral Tree" style="display:none;"></button>
+                <div id="astralInsightMini" class="astral-insight-mini" style="display:none;"></div>
 
                 <!-- Misty fog layers behind silhouette -->
                 <div class="misty-fog">
@@ -1157,6 +1157,18 @@
           <button class="btn small ghost" id="closeBreakthroughResultBtn">×</button>
         </div>
         <div id="breakthroughResultBody"></div>
+      </div>
+    </div>
+    <div class="modal-overlay" id="astralTreeUnlockOverlay" style="display: none;">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content card" id="astralTreeUnlockCard">
+        <div class="card-header">
+          <h4>Astral Tree Unlocked!</h4>
+          <button class="btn small ghost" id="closeAstralTreeUnlockBtn">×</button>
+        </div>
+        <div class="card-body" style="text-align:center;">
+          <img src="assets/icons/astral-tree-available.svg" alt="Astral Tree Unlocked" />
+        </div>
       </div>
     </div>
   </main>
