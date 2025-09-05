@@ -245,7 +245,11 @@ export function mountAstralTreeUI() {
     document.documentElement.style.overflowY = prevDocOverflowY || '';
   });
 
-  buildTree().catch(err => console.error('Failed to build Astral Tree', err));
+  buildTree()
+    .then(fn => {
+      if (fn) setInterval(fn, 1000);
+    })
+    .catch(err => console.error('Failed to build Astral Tree', err));
 }
 
 async function buildTree() {
@@ -561,8 +565,18 @@ async function buildTree() {
       e.el.classList.toggle('active', active);
     });
   }
+  const openBtn = document.getElementById('openAstralTree');
+  function updateAstralButton() {
+    if (!openBtn) return;
+    const canPurchase = nodes.some(n =>
+      isAllocatable(n.id, allocated, adj, manifest)
+    );
+    openBtn.classList.toggle('can-purchase', canPurchase);
+  }
 
   refreshClasses();
+  updateAstralButton();
+  return updateAstralButton;
 }
 
 function isAllocatable(id, allocated, adj, manifest) {
