@@ -64,6 +64,7 @@ const flagNames = [
   'FEATURE_FORGING',
   'FEATURE_PHYSIQUE',
   'FEATURE_AGILITY',
+  'FEATURE_CATCHING',
   'FEATURE_LAW',
   'FEATURE_MIND',
   'FEATURE_ASTRAL_TREE'
@@ -86,6 +87,7 @@ export const featureFlags = {
   forging: flags.FEATURE_FORGING.parsedValue,
   physique: flags.FEATURE_PHYSIQUE.parsedValue,
   agility: flags.FEATURE_AGILITY.parsedValue,
+  catching: flags.FEATURE_CATCHING.parsedValue,
   law: flags.FEATURE_LAW.parsedValue,
   mind: flags.FEATURE_MIND.parsedValue,
   astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue

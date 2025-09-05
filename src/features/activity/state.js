@@ -11,6 +11,7 @@ export function ensureActivities(root) {
       alchemy: false,
       sect: false,
       forging: false,
+      catching: false,
     };
   }
 }

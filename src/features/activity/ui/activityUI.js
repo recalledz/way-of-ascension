@@ -23,6 +23,7 @@ export function mountActivityUI(root) {
   document.getElementById('gatheringSelector')?.addEventListener('click', () => handle('gathering'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
   document.getElementById('sectSelector')?.addEventListener('click', () => handle('sect'));
+  document.getElementById('catchingSelector')?.addEventListener('click', () => handle('catching'));
 
   // Initial paint
   updateActivitySelectors(root);
@@ -35,6 +36,7 @@ export function updateActivitySelectors(root) {
   root.agility  ??= { level: 1, exp: 0, expMax: 100 };
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
+  root.catching ??= { level: 1, exp: 0, expMax: 100 };
 
   const selected = root.ui?.selectedActivity || 'cultivation';
 
@@ -116,6 +118,18 @@ export function updateActivitySelectors(root) {
     gatheringInfo.textContent = root.activities?.gathering ? 'Gathering...' : `Level ${root.gathering.level}`;
   }
 
+  // Catching
+  const catchSel = document.getElementById('catchingSelector');
+  const catchFill = document.getElementById('catchingProgressFill');
+  const catchInfo = document.getElementById('catchingLevel');
+  catchSel?.classList.toggle('active', selected === 'catching');
+  catchSel?.classList.toggle('running', root.activities?.catching);
+  if (catchFill && catchInfo) {
+    const expPct = (root.catching.exp / root.catching.expMax) * 100;
+    catchFill.style.width = `${expPct}%`;
+    catchInfo.textContent = root.activities?.catching ? 'Catching...' : `Level ${root.catching.level}`;
+  }
+
   // Adventure
   const advSel = document.getElementById('adventureSelector');
   const advInfo = document.getElementById('adventureInfo');
@@ -144,6 +158,7 @@ export function updateCurrentTaskDisplay(root) {
     forging: 'Forging',
     agility: 'Agility Training',
     adventure: 'Adventuring',
+    catching: 'Catching',
     cooking: 'Cooking',
     alchemy: 'Brewing'
   };

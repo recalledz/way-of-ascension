@@ -12,6 +12,7 @@
    • UI state violation: src/features/cooking/ui/cookControls.js imports S from shared/state.js
    • UI state violation: src/features/cooking/ui/cookingDisplay.js imports S from shared/state.js
    • UI state violation: src/features/forging/ui/forgingDisplay.js imports S from shared/state.js
+   • UI state violation: src/features/gathering/ui/gatheringDisplay.js imports S from shared/state.js
    • UI state violation: src/features/inventory/ui/resourceDisplay.js imports S from shared/state.js
    • UI state violation: src/features/karma/ui/karmaHUD.js imports S from shared/state.js
    • UI state violation: src/features/loot/ui/lootTab.js imports S from shared/state.js
@@ -25,6 +26,8 @@
 
 ⚠️  WARNINGS:
    • UI timer: src/features/adventure/ui/adventureDisplay.js uses timers/RAF — prefer feature.tick and RENDER
+   • UI timer: src/features/agility/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
+   • UI rule: src/features/catching/ui/catchingDisplay.js uses Math.random() — move randomness to logic.js
    • UI rule: src/features/combat/ui/floatingText.js uses Math.random() — move randomness to logic.js
    • UI timer: src/features/combat/ui/fx.js uses timers/RAF — prefer feature.tick and RENDER
    • UI timer: src/features/physique/ui/trainingGame.js uses timers/RAF — prefer feature.tick and RENDER
