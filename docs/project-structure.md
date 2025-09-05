@@ -25,6 +25,7 @@ way-of-ascension/
 │   ├── astral-tree-v4.html
 │   ├── template-tree/
 │   │   ├── astral_tree-base-structure.json
+│   │   ├── astral_tree_v2.0.json
 │   │   └── astral_tree_pentagon.json
 │   └── workoround-tree.html
 ├── docs/
@@ -338,6 +339,7 @@ way-of-ascension/
 ├── package-lock.json
 ├── package.json
 ├── server.js
+├── astral-tree-prototype/template-tree/astral_tree_v2.0.json
 ├── src/features/ability/index.js
 ├── src/features/activity/index.js
 ├── src/features/activity/mutators.js
@@ -374,6 +376,10 @@ way-of-ascension/
 ├── src/features/agility/state.js
 ├── src/features/agility/ui/agilityDisplay.js
 ├── src/features/agility/ui/trainingGame.js
+├── src/features/catching/index.js
+├── src/features/catching/logic.js
+├── src/features/catching/state.js
+├── src/features/catching/ui/catchingDisplay.js
 ├── src/features/forging/index.js
 ├── src/features/physique/index.js
 └── style.css
@@ -828,6 +834,10 @@ function updateAll() {
 **Purpose**: JSON template describing a minimal base structure for astral tree layouts.
 **Key Functions**: n/a
 
+#### `astral-tree-prototype/template-tree/astral_tree_v2.0.json` - Revised Tree Template
+**Purpose**: Updated astral tree structure example for version 2.0 layouts.
+**Key Functions**: n/a
+
 #### `astral-tree-prototype/template-tree/astral_tree_pentagon.json` - Pentagon Template
 **Purpose**: JSON template providing a pentagon-style layout for astral tree experimentation.
 **Key Functions**: n/a
@@ -1070,6 +1080,12 @@ Paths added:
 - `src/features/agility/ui/agilityDisplay.js` – Shows agility stats and start/stop controls.
 - `src/features/agility/ui/trainingGame.js` – Mini-game UI for agility training.
 - `src/features/agility/index.js` – Agility feature descriptor.
+
+### Catching Feature (`src/features/catching/`)
+- `src/features/catching/state.js` – Tracks captured creatures, hunger, and taming progress.
+- `src/features/catching/logic.js` – Implements catch chances, feeding, taming, and hunger decay.
+- `src/features/catching/ui/catchingDisplay.js` – UI for catching, feeding, and taming creatures.
+- `src/features/catching/index.js` – Catching feature descriptor and tick hook registration.
 
 ### Side Locations Feature (`src/features/sideLocations/`)
 - `src/features/sideLocations/state.js` – Tracks discovered nodes and discovery cooldown.

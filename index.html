@@ -451,9 +451,42 @@
             <p class="muted">Current bonuses from your agility stat:</p>
             <div class="stat"><span>Current Agility</span><span id="currentAgilityStat">10</span></div>
             <div class="stat"><span>Accuracy Bonus</span><span id="agilityAccuracyStat">+0</span></div>
-            <div class="stat"><span>Dodge Bonus</span><span id="agilityDodgeStat">+0</span></div>
-            <div class="stat"><span>Forge Speed</span><span id="agilityForgeSpeedStat">+0%</span></div>
-            <div class="muted" style="margin-top:8px">Higher agility improves accuracy, dodge, and forging speed</div>
+          <div class="stat"><span>Dodge Bonus</span><span id="agilityDodgeStat">+0</span></div>
+          <div class="stat"><span>Forge Speed</span><span id="agilityForgeSpeedStat">+0%</span></div>
+          <div class="muted" style="margin-top:8px">Higher agility improves accuracy, dodge, and forging speed</div>
+        </div>
+      </div>
+      </section>
+
+      <section id="activity-catching" class="activity-content tab-content" style="display:none;">
+        <h2>🪤 Catching</h2>
+        <div class="cards">
+          <div class="card">
+            <div class="catching-tabs tab-bar">
+              <button class="catching-tab-btn active" data-tab="catchingMain">Catching & Taming</button>
+              <button class="catching-tab-btn" data-tab="expeditions">Expeditions</button>
+              <button class="catching-tab-btn" data-tab="grazing">Grazing</button>
+              <button class="catching-tab-btn" data-tab="training">Training</button>
+            </div>
+
+            <div id="catchingMainTab" class="catching-tab-content tab-content active">
+              <div class="stat"><span>Location</span>
+                <select id="catchLocation"></select>
+              </div>
+              <button class="btn primary" id="attemptCatchBtn">Catch Critter</button>
+              <div class="muted" id="catchResult"></div>
+              <div class="caught-creatures" id="caughtCreatures"></div>
+            </div>
+
+            <div id="expeditionsTab" class="catching-tab-content tab-content" style="display:none;">
+              <div class="muted">Expeditions coming soon...</div>
+            </div>
+            <div id="grazingTab" class="catching-tab-content tab-content" style="display:none;">
+              <div class="muted">Grazing coming soon...</div>
+            </div>
+            <div id="trainingTab" class="catching-tab-content tab-content" style="display:none;">
+              <div class="muted">Training coming soon...</div>
+            </div>
           </div>
         </div>
       </section>

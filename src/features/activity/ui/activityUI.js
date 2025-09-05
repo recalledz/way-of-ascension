@@ -35,6 +35,7 @@ export function updateActivitySelectors(root) {
   root.agility  ??= { level: 1, exp: 0, expMax: 100 };
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
+  root.catching ??= { creatures: [] };
 
   const selected = root.ui?.selectedActivity || 'cultivation';
 
@@ -92,6 +93,16 @@ export function updateActivitySelectors(root) {
     agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
   }
 
+  const catchFill = document.getElementById('catchingProgressFill');
+  const catchInfo = document.getElementById('catchingLevel');
+  if (catchFill && catchInfo) {
+    const tamed = root.catching?.creatures?.filter(c=>c.tamed).length || 0;
+    const total = root.catching?.creatures?.length || 0;
+    const pct = total ? (tamed/total*100) : 0;
+    catchFill.style.width = `${pct}%`;
+    catchInfo.textContent = root.activities?.catching ? 'Catching...' : `${tamed} Tamed`;
+  }
+
   // Mining
   const miningSel = document.getElementById('miningSelector');
   const miningFill = document.getElementById('miningSelectorFill');
@@ -143,6 +154,7 @@ export function updateCurrentTaskDisplay(root) {
     gathering: 'Gathering',
     forging: 'Forging',
     agility: 'Agility Training',
+    catching: 'Catching',
     adventure: 'Adventuring',
     cooking: 'Cooking',
     alchemy: 'Brewing'

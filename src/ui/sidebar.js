@@ -34,6 +34,17 @@ export function renderSidebarActivities() {
       cost: {}
     },
     {
+      id: 'catching',
+      label: 'Catching',
+      icon: '<iconify-icon icon="mdi:net" class="ui-icon" width="20"></iconify-icon>',
+      group: 'leveling',
+      levelId: 'catchingLevel',
+      initialLevel: '0 Tamed',
+      progressFillId: 'catchingProgressFill',
+      progressTextId: 'catchingProgressText',
+      cost: {},
+    },
+    {
       id: 'mining',
       label: 'Mining',
       icon: '<iconify-icon icon="hugeicons:mining-02" class="ui-icon" width="20"></iconify-icon>',

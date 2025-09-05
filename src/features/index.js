@@ -11,6 +11,7 @@ import { mountMiningUI } from "./mining/ui/miningDisplay.js";
 import { mountGatheringUI } from "./gathering/ui/gatheringDisplay.js";
 import { mountPhysiqueUI } from "./physique/ui/physiqueDisplay.js";
 import { mountAgilityUI } from "./agility/ui/agilityDisplay.js";
+import { mountCatchingUI } from "./catching/ui/catchingDisplay.js";
 import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
@@ -30,7 +31,10 @@ export function mountAllFeatureUIs(state) {
   if (featureFlags.gathering) mountGatheringUI(state);
   if (featureFlags.forging) mountForgingUI(state);
   if (featureFlags.physique) mountPhysiqueUI(state);
-  if (featureFlags.agility) mountAgilityUI(state);
+  if (featureFlags.agility) {
+    mountAgilityUI(state);
+    mountCatchingUI(state);
+  }
   if (featureFlags.law) mountLawDisplay(state);
   if (featureFlags.mind) mountMindReadingUI(state);
   if (featureFlags.astralTree) mountAstralTreeUI(state);
