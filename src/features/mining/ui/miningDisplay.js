@@ -1,5 +1,6 @@
 import { S } from '../../../shared/state.js';
 import { setText, log } from '../../../shared/utils/dom.js';
+import { fmt } from '../../../shared/utils/number.js';
 import { on } from '../../../shared/events.js';
 import { getMiningRate } from '../logic.js';
 
@@ -60,7 +61,7 @@ export function updateMiningSidebar(state = S) {
   if (miningFill) {
     const progressPct = Math.floor(state.mining.exp / state.mining.expMax * 100);
     miningFill.style.width = progressPct + '%';
-    setText('miningProgressText', progressPct + '%');
+    setText('miningProgressText', `${fmt(state.mining.exp)} / ${fmt(state.mining.expMax)} XP`);
   }
 }
 

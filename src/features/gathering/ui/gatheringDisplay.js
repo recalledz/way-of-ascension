@@ -1,5 +1,6 @@
 import { S } from '../../../shared/state.js';
 import { setText, log } from '../../../shared/utils/dom.js';
+import { fmt } from '../../../shared/utils/number.js';
 import { on } from '../../../shared/events.js';
 import { getGatheringRate } from '../logic.js';
 
@@ -60,7 +61,7 @@ export function updateGatheringSidebar(state = S) {
   if (fill) {
     const progressPct = Math.floor(state.gathering.exp / state.gathering.expMax * 100);
     fill.style.width = progressPct + '%';
-    setText('gatheringProgressText', progressPct + '%');
+    setText('gatheringProgressText', `${fmt(state.gathering.exp)} / ${fmt(state.gathering.expMax)} XP`);
   }
 }
 

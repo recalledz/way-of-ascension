@@ -2,6 +2,8 @@
 import { selectActivity } from "../mutators.js";
 import { getActiveActivity } from "../selectors.js";
 import { fCap, qCap } from "../../progression/selectors.js";
+import { setText } from "../../../shared/utils/dom.js";
+import { fmt } from "../../../shared/utils/number.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -92,6 +94,7 @@ export function updateActivitySelectors(root) {
     const expPct = (root.agility.exp / root.agility.expMax) * 100;
     agiFill.style.width = `${expPct}%`;
     agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
+    setText('agilityProgressText', `${fmt(root.agility.exp)} / ${fmt(root.agility.expMax)} XP`);
   }
 
   // Mining
@@ -128,6 +131,7 @@ export function updateActivitySelectors(root) {
     const expPct = (root.catching.exp / root.catching.expMax) * 100;
     catchFill.style.width = `${expPct}%`;
     catchInfo.textContent = root.activities?.catching ? 'Catching...' : `Level ${root.catching.level}`;
+    setText('catchingProgressText', `${fmt(root.catching.exp)} / ${fmt(root.catching.expMax)} XP`);
   }
 
   // Adventure
