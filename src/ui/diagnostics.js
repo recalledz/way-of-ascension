@@ -74,7 +74,7 @@ export function mountDiagnostics(state) {
     table2.style.marginTop = "20px";
     table2.border = "1";
     const h2 = table2.insertRow();
-    ["featureKey", "flag", "unlockReason"].forEach((h) => {
+    ["featureKey", "flagAllowed", "unlockAllowed", "visible", "reason"].forEach((h) => {
       const th = h2.insertCell();
       th.textContent = h;
     });
@@ -82,6 +82,8 @@ export function mountDiagnostics(state) {
       const row = table2.insertRow();
       row.insertCell().textContent = k;
       row.insertCell().textContent = String(v.flagAllowed);
+      row.insertCell().textContent = String(v.unlockAllowed);
+      row.insertCell().textContent = String(v.visible);
       row.insertCell().textContent = v.reason;
     }
     container.appendChild(table2);

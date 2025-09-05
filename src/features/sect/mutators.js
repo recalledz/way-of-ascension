@@ -25,3 +25,11 @@ export function upgradeBuilding(state, key){
   recalculateBuildingBonuses(state);
   return true;
 }
+
+export function forceBuild(state, key){
+  const slice = state.sect || sectState;
+  if ((slice.buildings[key] || 0) > 0) return true;
+  slice.buildings[key] = 1;
+  recalculateBuildingBonuses(state);
+  return true;
+}

@@ -155,3 +155,8 @@ export function meditate(root) {
   root.foundation = clamp(root.foundation + gain, 0, fCap(root));
   return gain;
 }
+
+export function unlockAstralNode(id, state = progressionState) {
+  state.astralUnlockedNodes = state.astralUnlockedNodes || new Set();
+  state.astralUnlockedNodes.add(id);
+}

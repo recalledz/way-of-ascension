@@ -11,3 +11,7 @@ export function getBuildingLevel(key, state = sectState){
 export function getBuildingBonuses(state = sectState){
   return slice(state).bonuses || {};
 }
+
+export function isBuildingBuilt(key, state = sectState){
+  return getBuildingLevel(key, state) > 0;
+}
