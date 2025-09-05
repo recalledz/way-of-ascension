@@ -30,9 +30,11 @@ export function canUpgrade(buildings, resources, progression, key){
 
 export function calculateBonuses(buildings){
   const bonuses = {
-    qiRegenMult: 0, qiCapMult: 0, herbYield: 0, oreYield: 0, woodYield: 0,
-    alchemySlots: 0, alchemySuccess: 0, atkBase: 0, armorBase: 0,
-    disciples: 0, lawPoints: 0, breakthroughBonus: 0, foundationMult: 0
+    cookingSuccess: 0,
+    cookingSpeed: 0,
+    alchemySlots: 0,
+    alchemySuccess: 0,
+    imbuementSpeed: 0
   };
   for(const [key, level] of Object.entries(buildings)){
     const b = SECT_BUILDINGS[key];
@@ -41,18 +43,10 @@ export function calculateBonuses(buildings){
       const eff = b.effects[i];
       if(!eff) continue;
       for(const [k,v] of Object.entries(eff)){
-        if(k === 'desc' || k === 'alchemyUnlock') continue;
+        if(k === 'desc' || k.endsWith('Unlock')) continue;
         bonuses[k] = (bonuses[k] || 0) + v;
       }
     }
   }
   return bonuses;
-}
-
-export function disciplesFromBuildings(buildings){
-  return calculateBonuses(buildings).disciples || 0;
-}
-
-export function lawPointsFromBuildings(buildings){
-  return calculateBonuses(buildings).lawPoints || 0;
 }

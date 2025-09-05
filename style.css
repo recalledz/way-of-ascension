@@ -4903,3 +4903,7 @@ html.reduce-motion .log-sheet{transition:none;}
 .creature-header{display:flex;align-items:center;gap:4px}
 .creature-actions{margin-top:4px;display:flex;gap:4px}
 .creature-list .bar{height:6px;margin:4px 0}
+#buildingsContainer{display:flex;flex-wrap:wrap;gap:1rem}
+.building-card{border:1px solid #374151;background:var(--secondary-bg);padding:12px;border-radius:6px;width:100%;box-sizing:border-box}
+@media(min-width:768px){.building-card{width:40%}}
+.building-card .materials{margin:8px 0;color:#6b7280;font-size:.9rem}
