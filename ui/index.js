@@ -54,9 +54,11 @@ import { recomputePlayerTotals } from '../src/features/inventory/logic.js';
 import { advanceMining } from '../src/features/mining/logic.js';
 import { advanceGathering } from '../src/features/gathering/logic.js';
 import { advanceForging } from '../src/features/forging/logic.js';
+import { advanceCatching } from '../src/features/catching/logic.js';
 import { mountMiningUI } from '../src/features/mining/ui/miningDisplay.js';
 import { mountGatheringUI } from '../src/features/gathering/ui/gatheringDisplay.js';
 import { mountForgingUI } from '../src/features/forging/ui/forgingDisplay.js';
+import { mountCatchingUI, updateCatchingUI } from '../src/features/catching/ui/catchingDisplay.js';
 import { mountAlchemyUI } from '../src/features/alchemy/ui/alchemyDisplay.js';
 import { mountKarmaUI } from '../src/features/karma/ui/karmaDisplay.js';
 import { mountSectUI } from '../src/features/sect/ui/sectScreen.js';
@@ -143,6 +145,7 @@ function initUI(){
   mountAgilityTrainingUI(S);
   mountMiningUI(S);
   mountGatheringUI(S);
+  mountCatchingUI(S);
   mountForgingUI(S);
   setupAbilityUI();
 
@@ -282,8 +285,10 @@ function updateAll(){
 
   // activity UI refresh:
   updateActivitySelectors(S);
-  
+
   updateResourceDisplay();
+
+  updateCatchingUI(S);
 
   // Disciples
 
@@ -334,6 +339,9 @@ function updateActivityContent() {
       }
       break;
     }
+    case 'catching':
+      updateCatchingUI(S);
+      break;
   }
 }
 globalThis.updateActivityContent = updateActivityContent;
@@ -501,6 +509,7 @@ function tick(){
   advanceMining(S);
   advanceGathering(S);
   advanceForging(S);
+  advanceCatching(S);
   
   // Physique training progression
   const physSessionEnd = tickPhysiqueTraining(S);

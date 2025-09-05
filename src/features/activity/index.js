@@ -8,6 +8,8 @@ export const ActivityFeature = {
     adventure: false,
     cooking: false,
     sect: false,
+    forging: false,
+    catching: false,
     _v: 0,
   }),
 };

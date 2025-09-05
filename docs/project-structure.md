@@ -25,6 +25,7 @@ way-of-ascension/
 │   ├── astral-tree-v4.html
 │   ├── template-tree/
 │   │   ├── astral_tree-base-structure.json
+│   │   ├── astral_tree-v2.0.json
 │   │   └── astral_tree_pentagon.json
 │   └── workoround-tree.html
 ├── docs/
@@ -374,6 +375,11 @@ way-of-ascension/
 ├── src/features/agility/state.js
 ├── src/features/agility/ui/agilityDisplay.js
 ├── src/features/agility/ui/trainingGame.js
+├── src/features/catching/
+│   ├── logic.js
+│   ├── state.js
+│   └── ui/
+│       └── catchingDisplay.js
 ├── src/features/forging/index.js
 ├── src/features/physique/index.js
 └── style.css
@@ -832,6 +838,10 @@ function updateAll() {
 **Purpose**: JSON template providing a pentagon-style layout for astral tree experimentation.
 **Key Functions**: n/a
 
+#### `astral-tree-prototype/template-tree/astral_tree-v2.0.json` - v2 Template
+**Purpose**: JSON template for an earlier v2 astral tree layout used in experimentation.
+**Key Functions**: n/a
+
 #### `astral-tree-prototype/workoround-tree.html` - Workaround Tree Prototype
 **Purpose**: Experimental HTML prototype exploring alternate tree rendering workarounds.
 **Key Functions**: n/a
@@ -1070,6 +1080,11 @@ Paths added:
 - `src/features/agility/ui/agilityDisplay.js` – Shows agility stats and start/stop controls.
 - `src/features/agility/ui/trainingGame.js` – Mini-game UI for agility training.
 - `src/features/agility/index.js` – Agility feature descriptor.
+
+### Catching Feature (`src/features/catching/`)
+- `src/features/catching/state.js` – Tracks caught creatures, hunger, and taming progress.
+- `src/features/catching/logic.js` – Handles hunger decay over time for captured creatures.
+- `src/features/catching/ui/catchingDisplay.js` – UI for selecting locations, catching, and taming creatures.
 
 ### Side Locations Feature (`src/features/sideLocations/`)
 - `src/features/sideLocations/state.js` – Tracks discovered nodes and discovery cooldown.
