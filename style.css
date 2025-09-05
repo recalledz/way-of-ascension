@@ -722,6 +722,10 @@ html.reduce-motion .rune-ring .orbit {
       transparent calc(var(--fill-height, 0%) + 1%)
     );
   transition: all 2.5s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: none;
+}
+
+.foundation-fill.filling {
   animation: auroraShimmer 6s ease-in-out infinite;
 }
 
@@ -753,13 +757,17 @@ html.reduce-motion .rune-ring .orbit {
       black calc(var(--fill-height, 0%) + 2%), 
       transparent calc(var(--fill-height, 0%) + 4%)
     );
-  -webkit-mask: 
-    linear-gradient(0deg, 
-      black 0%, 
-      black calc(var(--fill-height, 0%) - 3%), 
-      black calc(var(--fill-height, 0%) + 2%), 
+  -webkit-mask:
+    linear-gradient(0deg,
+      black 0%,
+      black calc(var(--fill-height, 0%) - 3%),
+      black calc(var(--fill-height, 0%) + 2%),
       transparent calc(var(--fill-height, 0%) + 4%)
     );
+  animation: none;
+}
+
+.foundation-fill.filling::before {
   animation: liquidShimmer 3s ease-in-out infinite;
 }
 
@@ -784,12 +792,16 @@ html.reduce-motion .rune-ring .orbit {
       black calc(var(--fill-height, 0%) - 1%), 
       transparent calc(var(--fill-height, 0%) + 2%)
     );
-  -webkit-mask: 
-    linear-gradient(0deg, 
-      black 0%, 
-      black calc(var(--fill-height, 0%) - 1%), 
+  -webkit-mask:
+    linear-gradient(0deg,
+      black 0%,
+      black calc(var(--fill-height, 0%) - 1%),
       transparent calc(var(--fill-height, 0%) + 2%)
     );
+  animation: none;
+}
+
+.foundation-fill.filling::after {
   animation: liquidFlow 4s ease-in-out infinite reverse;
 }
 

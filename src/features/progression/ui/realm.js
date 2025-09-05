@@ -37,6 +37,30 @@ export function updateRealmUI() {
   }
 }
 
+let fillAnimFrame = null;
+function animateFoundationFill(el, target) {
+  const start = parseFloat(el.dataset.currentFill || '0');
+  const duration = 600;
+  const startTime = performance.now();
+
+  el.classList.add('filling');
+  if (fillAnimFrame) cancelAnimationFrame(fillAnimFrame);
+
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const value = start + (target - start) * progress;
+    el.style.setProperty('--fill-height', `${value}%`);
+    el.dataset.currentFill = value;
+    if (progress < 1) {
+      fillAnimFrame = requestAnimationFrame(step);
+    } else {
+      el.classList.remove('filling');
+    }
+  }
+
+  fillAnimFrame = requestAnimationFrame(step);
+}
+
 export function updateActivityCultivation() {
   setText('realmNameActivity', `${REALMS[S.realm.tier].name} ${S.realm.stage}`);
   updateCurrentRealmHeader();
@@ -267,7 +291,7 @@ export function updateCultivationVisualization() {
 
   // Update foundation fill as liquid filling the silhouette
   const foundationPercent = Math.max(0, Math.min(100, (S.foundation / fCap(S)) * 100));
-  foundationFill.style.setProperty('--fill-height', `${foundationPercent}%`);
+  animateFoundationFill(foundationFill, foundationPercent);
   foundationFill.style.opacity = '1'; // Always visible when element exists
 
   // Update realm-based styling
