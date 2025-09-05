@@ -4661,14 +4661,28 @@ html.reduce-motion .log-sheet{transition:none;}
   z-index:5;
   width:48px;
   height:48px;
-  background:url(assets/icons/astral-tree.svg) no-repeat center/contain;
+  -webkit-mask:url(assets/icons/astral-tree.svg) no-repeat center/contain;
+  mask:url(assets/icons/astral-tree.svg) no-repeat center/contain;
+  background:#ffeb3b;
   border:none;
   padding:0;
   cursor:pointer;
+  filter:drop-shadow(0 0 2px rgba(255,235,59,0.7));
+  animation:astral-tree-pulse 3s ease-in-out infinite;
 }
 
 .astral-tree-btn.can-purchase{
-  background-image:url(assets/icons/astral-tree-available.svg);
+  animation:astral-tree-shine 1.5s ease-in-out infinite;
+}
+
+@keyframes astral-tree-pulse{
+  0%,100%{background:#ffeb3b;filter:drop-shadow(0 0 2px rgba(255,235,59,0.7));}
+  50%{background:#fff176;filter:drop-shadow(0 0 6px rgba(255,241,118,0.9));}
+}
+
+@keyframes astral-tree-shine{
+  0%,100%{background:#fff176;filter:drop-shadow(0 0 6px rgba(255,241,118,0.9));}
+  50%{background:#ffff8d;filter:drop-shadow(0 0 12px rgba(255,255,141,1));}
 }
 
 .astral-skill-tree svg{
