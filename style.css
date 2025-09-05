@@ -721,8 +721,8 @@ html.reduce-motion .rune-ring .orbit {
       black var(--fill-height, 0%), 
       transparent calc(var(--fill-height, 0%) + 1%)
     );
-  transition: all 2.5s cubic-bezier(0.23, 1, 0.32, 1);
   animation: auroraShimmer 6s ease-in-out infinite;
+  animation-play-state: paused;
 }
 
 .foundation-fill::before {
@@ -761,6 +761,7 @@ html.reduce-motion .rune-ring .orbit {
       transparent calc(var(--fill-height, 0%) + 4%)
     );
   animation: liquidShimmer 3s ease-in-out infinite;
+  animation-play-state: paused;
 }
 
 .foundation-fill::after {
@@ -791,6 +792,13 @@ html.reduce-motion .rune-ring .orbit {
       transparent calc(var(--fill-height, 0%) + 2%)
     );
   animation: liquidFlow 4s ease-in-out infinite reverse;
+  animation-play-state: paused;
+}
+
+.foundation-fill.filling,
+.foundation-fill.filling::before,
+.foundation-fill.filling::after {
+  animation-play-state: running;
 }
 
  

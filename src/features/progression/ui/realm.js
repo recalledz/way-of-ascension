@@ -258,17 +258,42 @@ export function updateCurrentRealmHeader() {
   }
 }
 
+let fillAnimation;
+
+function animateFoundationFill(targetPercent) {
+  const foundationFill = document.getElementById('foundationFill');
+  if (!foundationFill) return;
+  const start = parseFloat(foundationFill.style.getPropertyValue('--fill-height')) || 0;
+  const startTime = performance.now();
+  const duration = 1000;
+  foundationFill.classList.add('filling');
+  foundationFill.style.opacity = '1';
+
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const value = start + (targetPercent - start) * progress;
+    foundationFill.style.setProperty('--fill-height', `${value}%`);
+    if (progress < 1) {
+      fillAnimation = requestAnimationFrame(step);
+    } else {
+      foundationFill.classList.remove('filling');
+    }
+  }
+
+  cancelAnimationFrame(fillAnimation);
+  fillAnimation = requestAnimationFrame(step);
+}
+
 export function updateCultivationVisualization() {
   const foundationFill = document.getElementById('foundationFill');
   const yinYangContainer = document.getElementById('yinYangContainer');
   const cultivationViz = document.getElementById('cultivationVisualization');
-  
+
   if (!foundationFill || !yinYangContainer || !cultivationViz) return;
 
   // Update foundation fill as liquid filling the silhouette
   const foundationPercent = Math.max(0, Math.min(100, (S.foundation / fCap(S)) * 100));
-  foundationFill.style.setProperty('--fill-height', `${foundationPercent}%`);
-  foundationFill.style.opacity = '1'; // Always visible when element exists
+  animateFoundationFill(foundationPercent);
 
   // Update realm-based styling
   const realmClasses = [
