@@ -16,37 +16,60 @@ import { mountMindReadingUI } from "./mind/ui/mindReadingTab.js";
 import { mountAstralTreeUI } from "./progression/ui/astralTree.js";
 import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { featureFlags } from "../config.js";
+import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
 
 
 // Example placeholder for later:
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
 
+const unlockFns = {
+  astralTree: (s) => selectProgress.mortalStage(s) >= 2,
+  mining: (s) => selectAstral.isNodeUnlocked(4060, s),
+  physique: (s) => selectAstral.isNodeUnlocked(4060, s),
+  gathering: (s) => selectAstral.isNodeUnlocked(4061, s),
+  mind: (s) => selectAstral.isNodeUnlocked(4061, s),
+  catching: (s) => selectAstral.isNodeUnlocked(4062, s),
+  agility: (s) => selectAstral.isNodeUnlocked(4062, s),
+  alchemy: (s) => selectSect.isBuildingBuilt('alchemy', s),
+  cooking: (s) => selectSect.isBuildingBuilt('kitchen', s),
+  law: (s) => selectProgress.isQiRefiningReached(s),
+  sect: (s) => selectProgress.mortalStage(s) >= 3,
+  adventure: (s) => selectProgress.mortalStage(s) >= 5,
+  proficiency: (s) => selectProgress.mortalStage(s) >= 5,
+};
+
+export function isFeatureVisible(key, state) {
+  const flagAllowed = !!featureFlags[key];
+  const unlockAllowed = unlockFns[key] ? unlockFns[key](state) : true;
+  return { flagAllowed, unlockAllowed, visible: flagAllowed && unlockAllowed };
+}
+
 export function mountAllFeatureUIs(state) {
-  if (featureFlags.proficiency) mountProficiencyUI(state);
-  if (featureFlags.sect) mountSectUI(state);
-  if (featureFlags.karma) mountKarmaUI(state);
-  if (featureFlags.alchemy) mountAlchemyUI(state);
-  if (featureFlags.cooking) mountCookingUI(state);
-  if (featureFlags.mining) mountMiningUI(state);
-  if (featureFlags.gathering) mountGatheringUI(state);
-  if (featureFlags.forging) mountForgingUI(state);
-  if (featureFlags.physique) mountPhysiqueUI(state);
-  if (featureFlags.agility) mountAgilityUI(state);
-  if (featureFlags.catching) mountCatchingUI(state);
-  if (featureFlags.law) mountLawDisplay(state);
-  if (featureFlags.mind) mountMindReadingUI(state);
-  if (featureFlags.astralTree) mountAstralTreeUI(state);
+  if (isFeatureVisible('proficiency', state).visible) mountProficiencyUI(state);
+  if (isFeatureVisible('sect', state).visible) mountSectUI(state);
+  if (isFeatureVisible('karma', state).visible) mountKarmaUI(state);
+  if (isFeatureVisible('alchemy', state).visible) mountAlchemyUI(state);
+  if (isFeatureVisible('cooking', state).visible) mountCookingUI(state);
+  if (isFeatureVisible('mining', state).visible) mountMiningUI(state);
+  if (isFeatureVisible('gathering', state).visible) mountGatheringUI(state);
+  if (isFeatureVisible('forging', state).visible) mountForgingUI(state);
+  if (isFeatureVisible('physique', state).visible) mountPhysiqueUI(state);
+  if (isFeatureVisible('agility', state).visible) mountAgilityUI(state);
+  if (isFeatureVisible('catching', state).visible) mountCatchingUI(state);
+  if (isFeatureVisible('law', state).visible) mountLawDisplay(state);
+  if (isFeatureVisible('mind', state).visible) mountMindReadingUI(state);
+  if (isFeatureVisible('astralTree', state).visible) mountAstralTreeUI(state);
 
   // mountWeaponGenUI?.(state);
 }
 
-export function debugFeatureVisibility(/* state */) {
+export function debugFeatureVisibility(state) {
   const result = {};
-  for (const [key, value] of Object.entries(featureFlags)) {
+  for (const key of Object.keys(featureFlags)) {
+    const info = isFeatureVisible(key, state);
     result[key] = {
-      flagAllowed: !!value,
-      unlockAllowed: true,
-      reason: value ? 'flag=true' : 'flag=false'
+      ...info,
+      reason: !info.flagAllowed ? 'flag=false' : !info.unlockAllowed ? 'unlock=false' : 'ok',
     };
   }
   return result;

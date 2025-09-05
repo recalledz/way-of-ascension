@@ -93,6 +93,8 @@ export const featureFlags = {
   astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue
 };
 
+export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;
+
 export function configReport() {
   const missingKeys = Object.entries(flags)
     .filter(([, v]) => v.source === 'default')

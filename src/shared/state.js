@@ -52,6 +52,7 @@ export const defaultState = () => {
   qiRegenMult: 0, // Qi regeneration multiplier from buildings/bonuses
   foundation: 0,
   astralPoints: 50,
+  astralNodes: [],
   coin: 0,
   ...initHp(baseHP),
   shield: { current: 0, max: 0 },
