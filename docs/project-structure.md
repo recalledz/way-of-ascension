@@ -376,7 +376,10 @@ way-of-ascension/
 ├── src/features/agility/ui/agilityDisplay.js
 ├── src/features/agility/ui/trainingGame.js
 ├── src/features/catching/
+│   ├── data/
+│   │   └── icons.js
 │   ├── logic.js
+│   ├── mutators.js
 │   ├── state.js
 │   └── ui/
 │       └── catchingDisplay.js
@@ -1083,7 +1086,9 @@ Paths added:
 
 ### Catching Feature (`src/features/catching/`)
 - `src/features/catching/state.js` – Tracks caught creatures, hunger, and taming progress.
-- `src/features/catching/logic.js` – Handles hunger decay over time for captured creatures.
+- `src/features/catching/logic.js` – Handles hunger decay and catch timers.
+- `src/features/catching/mutators.js` – Starts catch attempts, consuming nets and scheduling completion.
+- `src/features/catching/data/icons.js` – Maps creature names to icon identifiers.
 - `src/features/catching/ui/catchingDisplay.js` – UI for selecting locations, catching, and taming creatures.
 
 ### Side Locations Feature (`src/features/sideLocations/`)
