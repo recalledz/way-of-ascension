@@ -72,6 +72,13 @@ export function updateActivityCultivation() {
   setText('qiRegenActivity', qiRegenPerSec(S).toFixed(1));
   setText('foundationRate', foundationGainPerSec(S).toFixed(1));
   setText('astralInsightMini', `Insight: ${Math.round(S.astralPoints || 0)}`);
+  const astralIcon = document.getElementById('astralTreeIcon');
+  if (astralIcon) {
+    const src = (S.astralPoints || 0) > 0 ? 'assets/astral-tree-available.svg' : 'assets/astral-tree-normal.svg';
+    if (astralIcon.getAttribute('src') !== src) {
+      astralIcon.setAttribute('src', src);
+    }
+  }
   setText('btChanceActivity', (breakthroughChance(S) * 100).toFixed(1) + '%');
   setText('powerMultActivity', powerMult(S).toFixed(1) + 'x');
 
