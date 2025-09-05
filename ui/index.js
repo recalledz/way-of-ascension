@@ -3,7 +3,7 @@
 
 // Way of Ascension — Modular JS
 
-import { configReport } from '../src/config.js';
+import { configReport, isProd } from '../src/config.js';
 import { mountDiagnostics } from '../src/ui/diagnostics.js';
 import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
@@ -14,7 +14,8 @@ import {
   foundationGainPerSec,
   powerMult,
   calculatePlayerCombatAttack,
-  calculatePlayerAttackRate
+  calculatePlayerAttackRate,
+  mortalStage
 } from '../src/features/progression/selectors.js';
 import { refillShieldFromQi } from '../src/features/combat/logic.js';
 import {
@@ -721,7 +722,17 @@ window.addEventListener('load', ()=>{
   mountKarmaUI(S);
   mountSectUI(S);
   mountMindReadingUI(S);
-  mountAstralTreeUI(S);
+  const btn = document.getElementById('openAstralTree');
+  const mini = document.getElementById('astralInsightMini');
+  const astralUnlocked = !isProd || mortalStage(S) >= 2;
+  if (astralUnlocked) {
+    if (btn) btn.style.display = '';
+    if (mini) mini.style.display = '';
+    mountAstralTreeUI(S);
+  } else {
+    if (btn) btn.style.display = 'none';
+    if (mini) mini.style.display = 'none';
+  }
   mountDiagnostics(S);
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
