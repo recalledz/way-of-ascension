@@ -7,6 +7,7 @@ import { renderEquipmentPanel } from "../../inventory/ui/CharacterPanel.js";
 import { updateActivityCooking } from "../../cooking/ui/cookingDisplay.js";
 import { fCap, qCap } from "../../progression/selectors.js";
 import { getBuildingLevel } from "../../sect/selectors.js";
+import { fmt } from "../../../shared/utils/number.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -96,6 +97,8 @@ export function updateActivitySelectors(root) {
     const expPct = (root.physique.exp / root.physique.expMax) * 100;
     physFill.style.width = `${expPct}%`;
     physInfo.textContent = root.activities?.physique ? 'Training...' : `Level ${root.physique.level}`;
+    const physText = document.getElementById('physiqueProgressTextSidebar');
+    if (physText) physText.textContent = `${fmt(root.physique.exp)} / ${fmt(root.physique.expMax)}`;
   }
 
   const agiSel = document.getElementById('agilitySelector');
@@ -107,6 +110,8 @@ export function updateActivitySelectors(root) {
     const expPct = (root.agility.exp / root.agility.expMax) * 100;
     agiFill.style.width = `${expPct}%`;
     agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
+    const agiText = document.getElementById('agilityProgressTextSidebar');
+    if (agiText) agiText.textContent = `${fmt(root.agility.exp)} / ${fmt(root.agility.expMax)}`;
   }
 
   // Mining
@@ -119,6 +124,8 @@ export function updateActivitySelectors(root) {
     const expPct = (root.mining.exp / root.mining.expMax) * 100;
     miningFill.style.width = `${expPct}%`;
     miningInfo.textContent = root.activities?.mining ? 'Mining...' : `Level ${root.mining.level}`;
+    const miningText = document.getElementById('miningProgressText');
+    if (miningText) miningText.textContent = `${fmt(root.mining.exp)} / ${fmt(root.mining.expMax)}`;
   }
 
   // Gathering
@@ -131,6 +138,8 @@ export function updateActivitySelectors(root) {
     const expPct = (root.gathering.exp / root.gathering.expMax) * 100;
     gatheringFill.style.width = `${expPct}%`;
     gatheringInfo.textContent = root.activities?.gathering ? 'Gathering...' : `Level ${root.gathering.level}`;
+    const gatheringText = document.getElementById('gatheringProgressText');
+    if (gatheringText) gatheringText.textContent = `${fmt(root.gathering.exp)} / ${fmt(root.gathering.expMax)}`;
   }
 
   // Catching
@@ -143,6 +152,8 @@ export function updateActivitySelectors(root) {
     const expPct = (root.catching.exp / root.catching.expMax) * 100;
     catchFill.style.width = `${expPct}%`;
     catchInfo.textContent = root.activities?.catching ? 'Catching...' : `Level ${root.catching.level}`;
+    const catchText = document.getElementById('catchingProgressTextSidebar');
+    if (catchText) catchText.textContent = `${fmt(root.catching.exp)} / ${fmt(root.catching.expMax)}`;
   }
 
   // Adventure

@@ -1,5 +1,6 @@
 import { S } from '../../../shared/state.js';
 import { setText, setFill } from '../../../shared/utils/dom.js';
+import { fmt } from '../../../shared/utils/number.js';
 import { on } from '../../../shared/events.js';
 import { getCookingYieldBonus } from '../selectors.js';
 import { cookMeat, equipFood, useFoodSlot } from '../mutators.js';
@@ -30,7 +31,7 @@ export function updateCookingSidebar(state = S) {
   if (!state.cooking) return;
   setText('cookingLevelSidebar', `Level ${state.cooking.level}`);
   setFill('cookingProgressFillSidebar', state.cooking.exp / state.cooking.expMax);
-  setText('cookingProgressTextSidebar', `${state.cooking.exp} / ${state.cooking.expMax} XP`);
+  setText('cookingProgressTextSidebar', `${fmt(state.cooking.exp)} / ${fmt(state.cooking.expMax)}`);
 }
 
 export function mountCookingUI(state = S) {
