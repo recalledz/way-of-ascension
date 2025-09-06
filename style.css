@@ -4195,6 +4195,8 @@ tr:last-child td {
 .badge{display:inline-block; padding:3px 8px; font-size:11px; border-radius:999px; border:1px solid #2a3758; color:#bfdbfe; background:#0a1224}
 
 .right-actions{display:flex; gap:8px; align-items:center}
+.settings-actions{display:flex;flex-direction:column;gap:8px}
+.settings-actions .btn{width:100%}
 .progress-wrap{display:flex; align-items:center; gap:10px}
 
 /* Equipment Panel */
