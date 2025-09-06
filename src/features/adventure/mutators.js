@@ -13,6 +13,7 @@ import { S } from '../../shared/state.js';
 import { initializeFight } from '../combat/mutators.js';
 import { adventureState } from './state.js';
 import { log } from '../../shared/utils/dom.js';
+import { stopActivity as stopActivityMut } from '../activity/mutators.js';
 
 export {
   selectZone,
@@ -49,11 +50,7 @@ export function retreatFromCombat(state = S) {
   baseRetreatFromCombat();
   const loss = Math.floor(qCap(state) * 0.25);
   state.qi = Math.max(0, state.qi - loss);
-  if (typeof globalThis.stopActivity === 'function') {
-    globalThis.stopActivity('adventure');
-  } else if (state.activities) {
-    state.activities.adventure = false;
-  }
+  stopActivityMut(state, 'adventure');
   log(`Retreated from combat. Lost ${loss} Qi.`, 'neutral');
 }
 

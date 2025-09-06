@@ -40,6 +40,7 @@ import {
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
 import { updateFoodSlots } from '../cooking/ui/cookControls.js';
+import { stopActivity as stopActivityMut } from '../activity/mutators.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
@@ -748,11 +749,7 @@ export function updateAdventureCombat() {
             forfeitSessionLoot(); // EQUIP-CHAR-UI
             updateLootTab(); // EQUIP-CHAR-UI
             S.qi = 0;
-            if (typeof globalThis.stopActivity === 'function') {
-              globalThis.stopActivity('adventure');
-            } else {
-              S.activities.adventure = false;
-            }
+            stopActivityMut(S, 'adventure');
             const btn = document.getElementById('startBattleButton');
             if (btn) {
               btn.textContent = '⚔️ Start Battle';

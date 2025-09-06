@@ -4,6 +4,7 @@ import { ZONES } from '../data/zones.js';
 import { startAdventure, startAdventureCombat, startBossCombat, progressToNextArea, retreatFromCombat, resetQiOnRetreat } from '../mutators.js';
 import { updateActivityAdventure, progressDungeonEncounter } from '../logic.js';
 import { clamp } from '../../progression/selectors.js';
+import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 
 export function updateAdventureProgress(state = S) {
   if (!state.adventure) return;
@@ -40,7 +41,7 @@ export function mountAdventureControls(root) {
         btn.disabled = false;
         btn.classList.remove('warn'); btn.classList.add('primary');
         btn.textContent = '⚔️ Start Battle';
-        (globalThis.stopActivity?.('adventure'));
+        stopActivityMut(root, 'adventure');
         resetQiOnRetreat(root);
         updateActivityAdventure();
         return;
@@ -63,8 +64,8 @@ export function mountAdventureControls(root) {
   startBtn?.addEventListener('click', () => {
     if (root.adventure && root.adventure.inCombat) { startRetreatCountdown(); return; }
     startAdventure();
-    if (!root.activities?.adventure && typeof globalThis.startActivity === 'function') {
-      globalThis.startActivity('adventure');
+    if (!root.activities?.adventure) {
+      startActivityMut(root, 'adventure');
     }
     startAdventureCombat();
     updateActivityAdventure();
@@ -81,8 +82,8 @@ export function mountAdventureControls(root) {
   });
   document.getElementById('challengeBossButton')?.addEventListener('click', () => {
     startAdventure();
-    if (!root.activities?.adventure && typeof globalThis.startActivity === 'function') {
-      globalThis.startActivity('adventure');
+    if (!root.activities?.adventure) {
+      startActivityMut(root, 'adventure');
     }
     startBossCombat();
     updateActivityAdventure();

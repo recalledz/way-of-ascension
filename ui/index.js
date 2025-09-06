@@ -99,10 +99,6 @@ function selectActivity(activityType) { selectActivityMut(S, activityType); }
 function startActivity(activityName)  { startActivityMut(S, activityName); }
 function stopActivity(activityName)   { stopActivityMut(S, activityName); }
 
-// Back-compat for older UI
-window.startActivity = startActivity;
-window.stopActivity  = stopActivity;
-
 
 
 

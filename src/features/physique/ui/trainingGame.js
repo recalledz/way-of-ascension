@@ -1,6 +1,7 @@
 import { on } from '../../../shared/events.js';
 import { setText, log } from '../../../shared/utils/dom.js';
 import { startTrainingSession, hitTrainingTarget, trainPhysique, moveTrainingCursor } from '../mutators.js';
+import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import {
   getPhysiqueLevel,
   getPhysiqueExp,
@@ -72,7 +73,7 @@ function render(state){
   const startBtn = document.getElementById('startPhysiqueActivity');
   if(startBtn){
     startBtn.textContent = state.activities?.physique ? '🛑 Stop Training' : '💪 Start Training';
-    startBtn.onclick = () => state.activities?.physique ? globalThis.stopActivity('physique') : globalThis.startActivity('physique');
+    startBtn.onclick = () => state.activities?.physique ? stopActivityMut(state, 'physique') : startActivityMut(state, 'physique');
   }
 }
 

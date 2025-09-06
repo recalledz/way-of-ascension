@@ -1,3 +1,5 @@
+import { stopActivity as stopActivityMut } from '../activity/mutators.js';
+
 export function advanceCatching(state){
   const root = state.catching || state;
   if(!root) return;
@@ -13,7 +15,7 @@ export function advanceCatching(state){
       cc.progress = Math.min(1, elapsed / cc.duration);
       if(elapsed >= cc.duration){
         root.currentCatch = null;
-        if(typeof globalThis.stopActivity === 'function') globalThis.stopActivity('catching');
+        stopActivityMut(state, 'catching');
         if(Math.random() < cc.chance){
           root.creatures.push({
             id: `${cc.area.id}-${now}`,

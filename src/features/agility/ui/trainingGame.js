@@ -1,6 +1,7 @@
 import { on } from '../../../shared/events.js';
 import { setText, log } from '../../../shared/utils/dom.js';
 import { startTrainingSession, hitTrainingTarget, trainAgility, moveTrainingCursor } from '../mutators.js';
+import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import {
   getAgilityLevel,
   getAgilityExp,
@@ -68,7 +69,7 @@ function render(state){
   const startBtn = document.getElementById('startAgilityActivity');
   if(startBtn){
     startBtn.textContent = state.activities?.agility ? '🛑 Stop Training' : '🏃 Start Training';
-    startBtn.onclick = () => state.activities?.agility ? globalThis.stopActivity('agility') : globalThis.startActivity('agility');
+    startBtn.onclick = () => state.activities?.agility ? stopActivityMut(state, 'agility') : startActivityMut(state, 'agility');
   }
 }
 
