@@ -30,8 +30,6 @@ import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
 import { fmt } from '../src/shared/utils/number.js';
 import { emit } from '../src/shared/events.js';
 import { createProgressBar, updateProgressBar } from './components/progressBar.js';
-import { initializeWeaponChip } from '../src/features/inventory/ui/weaponChip.js';
-import { WEAPONS } from '../src/features/weaponGeneration/data/weapons.js';
 import {
   updateActivityAdventure,
   updateAdventureCombat,
@@ -127,10 +125,6 @@ function initUI(){
 
   mountAllFeatureUIs(S);
 
-  const mh = S.equipment?.mainhand;
-  const mhKey = typeof mh === 'string' ? mh : mh?.key || 'fist';
-  const mhName = WEAPONS[mhKey]?.displayName || (mhKey === 'fist' ? 'Fists' : mhKey);
-  initializeWeaponChip({ key: mhKey, name: mhName });
   setupAbilityUI();
 
   // Assign buttons
