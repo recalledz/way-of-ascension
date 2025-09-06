@@ -29,7 +29,6 @@ import {
 import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
 import { fmt } from '../src/shared/utils/number.js';
 import { emit } from '../src/shared/events.js';
-import { createProgressBar, updateProgressBar } from './components/progressBar.js';
 import {
   updateActivityAdventure,
   updateAdventureCombat,
@@ -90,19 +89,10 @@ if (report.isProd) {
   console.groupEnd();
 }
 
-// Global variables
-const progressBars = {};
-
-
 // Activity Management System (delegates to feature)
 function selectActivity(activityType) { selectActivityMut(S, activityType); }
 function startActivity(activityName)  { startActivityMut(S, activityName); }
 function stopActivity(activityName)   { stopActivityMut(S, activityName); }
-
-
-
-
-
 
 // Import enemy data from the enemies module
 import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
