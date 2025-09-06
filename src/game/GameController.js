@@ -5,6 +5,7 @@ import { initFeatureState, tickFeatures } from "../features/registry.js";
 import { ensureMindState, onTick as mindOnTick } from "../features/mind/index.js";
 import { sideLocationState } from "../features/sideLocations/state.js";
 import { initSideLocations } from "../features/sideLocations/logic.js";
+import { applyDevUnlockPreset } from "../features/devUnlock.js";
 
 // Register feature hooks
 import "../features/proficiency/index.js";
@@ -25,6 +26,7 @@ export function createGameController() {
   Object.assign(state, hydrated);
   state.sideLocations = { ...structuredClone(sideLocationState), ...state.sideLocations };
   ensureMindState(state);
+  applyDevUnlockPreset(state);
   recalculateBuildingBonuses(state);
   initSideLocations(state);
 

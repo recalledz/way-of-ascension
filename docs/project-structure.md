@@ -90,6 +90,7 @@ way-of-ascension/
 │   │   │   └── state.js
 │   │   ├── index.js
 │   │   ├── registry.js
+│   │   ├── devUnlock.js
 │   │   ├── ability/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
@@ -968,6 +969,9 @@ Paths added:
 
 #### `src/features/registry.js` - Feature Registry
 **Purpose**: Collects feature `init` and `tick` hooks and exposes helpers to initialise slices and advance ticks.
+
+#### `src/features/devUnlock.js` - Dev Unlock Helpers
+**Purpose**: Forces core game systems unlocked when `DEV_UNLOCK_PRESET` is set to `"all"`.
 
 #### `src/ui/app.js` - App Bootstrap
 **Purpose**: Creates the controller, mounts feature UIs and debug tools, then starts the game loop.
