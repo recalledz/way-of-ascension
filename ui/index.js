@@ -238,7 +238,6 @@ function updateAll(){
   const shieldCur = S.shield?.current || 0;
   const shieldFrac = shieldMax ? shieldCur / shieldMax : 0;
   setText('hpVal', fmt(S.hp)); setText('hpMax', fmt(S.hpMax));
-  setText('hpValL', fmt(S.hp)); setText('hpMaxL', fmt(S.hpMax));
   setFill('hpFill', hpFrac);
   setFill('hpMaskRect', hpFrac);
   setFill('shieldFill', shieldFrac);
@@ -591,38 +590,6 @@ function setupMobileUI() {
   apply(mq);
 }
 
-function setupStatusToggle() {
-  const row = qs('#statusRow');
-  const toggle = qs('#statusToggle');
-  const cluster = qs('#statusCluster');
-  if (!row || !toggle || !cluster) return;
-  function firstFocusable() {
-    return cluster.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-  }
-  function close() {
-    row.setAttribute('data-open', 'false');
-    toggle.setAttribute('aria-expanded', 'false');
-    document.removeEventListener('click', outside, true);
-    window.removeEventListener('keydown', esc);
-    toggle.textContent = 'Status \u25BE';
-    toggle.focus();
-  }
-  function open() {
-    row.setAttribute('data-open', 'true');
-    toggle.setAttribute('aria-expanded', 'true');
-    const f = firstFocusable();
-    f && f.focus();
-    toggle.textContent = 'Status \u25B4';
-    document.addEventListener('click', outside, true);
-    window.addEventListener('keydown', esc);
-  }
-  function esc(e) { if (e.key === 'Escape') close(); }
-  function outside(e) { if (!row.contains(e.target)) close(); }
-  toggle.addEventListener('click', () => {
-    row.getAttribute('data-open') === 'true' ? close() : open();
-  });
-}
-
 function setupLogSheet() {
   const sheet = qs('#logSheet');
   const toggle = qs('#logToggle');
@@ -683,12 +650,11 @@ function enableLayoutDebug() {
 
 
 // Init
-window.addEventListener('load', ()=>{
-  initUI();
-  setupMobileUI();
-  setupStatusToggle();
-  setupLogSheet();
-  enableLayoutDebug();
+  window.addEventListener('load', ()=>{
+    initUI();
+    setupMobileUI();
+    setupLogSheet();
+    enableLayoutDebug();
   initLawSystem();
   mountActivityUI(S);
   mountAdventureControls(S);
