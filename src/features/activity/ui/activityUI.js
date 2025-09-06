@@ -8,6 +8,7 @@ import { updateActivityCooking } from "../../cooking/ui/cookingDisplay.js";
 import { fCap, qCap } from "../../progression/selectors.js";
 import { getBuildingLevel } from "../../sect/selectors.js";
 import { fmt } from "../../../shared/utils/number.js";
+import { configReport } from "../../../config.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -43,6 +44,34 @@ export function updateActivitySelectors(root) {
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
   root.catching ??= { level: 1, exp: 0, expMax: 100 };
 
+  const { flags } = configReport();
+  const enabled = {
+    cultivation:  true,
+    character:    true,
+    adventure:    true,
+    mining:       !!flags.FEATURE_MINING?.parsedValue,
+    gathering:    !!flags.FEATURE_GATHERING?.parsedValue,
+    forging:      !!flags.FEATURE_FORGING?.parsedValue,
+    cooking:      !!flags.FEATURE_COOKING?.parsedValue,
+    alchemy:      !!flags.FEATURE_ALCHEMY?.parsedValue,
+    physique:     !!flags.FEATURE_PHYSIQUE?.parsedValue,
+    agility:      !!flags.FEATURE_AGILITY?.parsedValue,
+    catching:     !!flags.FEATURE_CATCHING?.parsedValue,
+    sect:         !!flags.FEATURE_SECT?.parsedValue,
+    karma:        !!flags.FEATURE_KARMA?.parsedValue,
+    law:          !!flags.FEATURE_LAW?.parsedValue,
+    mind:         !!flags.FEATURE_MIND?.parsedValue,
+    proficiency:  !!flags.FEATURE_PROFICIENCY?.parsedValue,
+  };
+  document.querySelectorAll('.activity-item[data-activity]').forEach(el => {
+    const act = el.dataset.activity;
+    const show = enabled[act] !== false;
+    el.style.display = show ? '' : 'none';
+    if (!show && root.ui?.selectedActivity === act) {
+      root.ui.selectedActivity = 'cultivation';
+    }
+  });
+
   const kitchenBuilt = getBuildingLevel('kitchen', root) > 0;
   const forgingBuilt = getBuildingLevel('forging_room', root) > 0;
   let selected = root.ui?.selectedActivity || 'cultivation';
@@ -52,9 +81,9 @@ export function updateActivitySelectors(root) {
   }
 
   const cookItem = document.querySelector('.activity-item[data-activity="cooking"]');
-  if (cookItem) cookItem.style.display = kitchenBuilt ? '' : 'none';
+  if (cookItem) cookItem.style.display = enabled.cooking && kitchenBuilt ? '' : 'none';
   const forgeItem = document.querySelector('.activity-item[data-activity="forging"]');
-  if (forgeItem) forgeItem.style.display = forgingBuilt ? '' : 'none';
+  if (forgeItem) forgeItem.style.display = enabled.forging && forgingBuilt ? '' : 'none';
 
   // Generic highlight for dynamically rendered sidebar items
   document.querySelectorAll('.activity-item[data-activity]')

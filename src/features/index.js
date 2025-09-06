@@ -152,36 +152,6 @@ export function mountAllFeatureUIs(state) {
     container.appendChild(item);
   };
 
-  if (devUnlockPreset === 'all') {
-    mountCultivationSidebar(state);
-    mountProficiencyUI(state);
-    mountSectUI(state);
-    mountKarmaUI(state);
-    mountAlchemyUI(state);
-    mountCookingUI(state);
-    mountMiningUI(state);
-    mountGatheringUI(state);
-    mountForgingUI(state);
-    mountPhysiqueUI(state);
-    mountPhysiqueTrainingUI(state);
-    mountAgilityUI(state);
-    mountAgilityTrainingUI(state);
-    mountCatchingUI(state);
-    mountLawDisplay(state);
-    mountMindReadingUI(state);
-    mountAstralTreeUI(state);
-    ensure('managementActivities', 'characterSelector', 'character', 'Character');
-    ensure('levelingActivities', 'physiqueSelector', 'physique', 'Physique');
-    ensure('levelingActivities', 'agilitySelector', 'agility', 'Agility');
-    ensure('levelingActivities', 'miningSelector', 'mining', 'Mining');
-    ensure('levelingActivities', 'gatheringSelector', 'gathering', 'Gathering');
-    ensure('levelingActivities', 'forgingSelector', 'forging', 'Forging');
-    ensure('levelingActivities', 'catchingSelector', 'catching', 'Catching');
-    ensure('managementActivities', 'adventureSelector', 'adventure', 'Adventure');
-    ensure('managementActivities', 'cookingSelector', 'cooking', 'Cooking');
-    ensure('managementActivities', 'alchemySelector', 'alchemy', 'Alchemy');
-    return;
-  }
   const vis = debugFeatureVisibility(state);
   if (vis.character?.visible) ensure('managementActivities', 'characterSelector', 'character', 'Character');
   if (vis.cultivation?.visible) mountCultivationSidebar(state);
