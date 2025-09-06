@@ -8,6 +8,7 @@ import { mountDiagnostics } from './diagnostics.js';
 import { mountAllFeatureUIs, runAllFeatureTicks } from '../features/index.js';
 import { applyDevUnlockPreset } from '../features/devUnlock.js';
 import { S, defaultState, save, setState, validateState } from '../shared/state.js';
+import { GameController } from '../game/GameController.js';
 import {
   updateRealmUI,
   initRealmUI,
@@ -244,9 +245,10 @@ if (ascendBtn) {
 
 
 /* Loop */
-function tick() {
-  S.time++;
-  runAllFeatureTicks(S, 1000);
+// Controller-driven frame
+function frame(root, dtMs) {
+  root.time = (root.time || 0) + 1;
+  runAllFeatureTicks(root, dtMs);
   updateAll();
   updateAbilityBar();
 }
@@ -392,9 +394,10 @@ function enableLayoutDebug() {
     renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
     selectActivity('cultivation'); // Start with cultivation selected
     updateAll();
-    tick();
     log('Welcome, cultivator.');
-    setInterval(tick, 1000);
+    // Own the loop via GameController (fixed 1000ms for now)
+    const controller = new GameController(S, 1000).setFrame(frame);
+    controller.start();
     setInterval(() => {
     const junk = S.junk || [];
     const total = junk.reduce((sum, it) => sum + (it.qty || 1), 0);
