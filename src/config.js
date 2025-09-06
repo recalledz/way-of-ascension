@@ -1,13 +1,22 @@
 // Environment and feature flag utilities
 
 const hasImportMeta = typeof import.meta !== 'undefined' && !!import.meta.env;
+const hasWindow = typeof window !== 'undefined';
 const env = hasImportMeta
   ? import.meta.env
   : typeof process !== 'undefined'
   ? process.env
-  : typeof window !== 'undefined'
+  : hasWindow
   ? window.__ENV__
   : {};
+
+// Host-based context detection for previews
+const host = hasWindow ? String(window.location.hostname) : '';
+const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(host);
+const isNetlify = host.endsWith('.netlify.app');
+const isDeployPreview = isNetlify && host.startsWith('deploy-preview-');
+const isBranchDeploy = isNetlify && !isDeployPreview && host.includes('--');
+const isVercelPreview = host.endsWith('.vercel.app');
 
 // Determine mode and source
 const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '');
@@ -18,14 +27,24 @@ const modeSrc = env?.VERCEL_ENV
   : env?.PROD
   ? 'import.meta.env.PROD'
   : 'default';
-const vercelEnv = String(rawEnv || '').toLowerCase();
-const mode = ['production', 'prod', 'main'].includes(vercelEnv)
-  ? 'production'
-  : vercelEnv || 'development';
+let vercelEnv = String(rawEnv || '').toLowerCase();
+let mode = ['production', 'prod', 'main'].includes(vercelEnv) ? 'production' : vercelEnv;
+if (!mode) {
+  mode = isLocalhost || isDeployPreview || isBranchDeploy || isVercelPreview ? 'development' : 'production';
+} else if (isLocalhost || isDeployPreview || isBranchDeploy || isVercelPreview) {
+  mode = 'development';
+}
 
-export const isProd = mode === 'production';
-export const isPreview = mode === 'preview';
-export const isDev = !isProd && !isPreview;
+const context =
+  isLocalhost ? 'local' :
+  isDeployPreview ? 'deploy-preview' :
+  isBranchDeploy ? 'branch-deploy' :
+  isVercelPreview ? 'vercel-preview' :
+  'production';
+
+export const isProd = context === 'production';
+export const isPreview = ['deploy-preview', 'branch-deploy', 'vercel-preview'].includes(context);
+export const isDev = !isProd;
 
 // Coerce env values
 function coerce(value, fallback) {
@@ -90,7 +109,10 @@ const flagNames = [
 
 const flags = {};
 for (const name of flagNames) {
-  const fallback = name.startsWith('FEATURE_') ? false : undefined;
+  const fallback =
+    name === 'TUTORIALS_ENABLED' ? !isProd :
+    name.startsWith('FEATURE_') ? false :
+    undefined;
   flags[name] = readFlag(name, fallback);
 }
 
@@ -111,10 +133,14 @@ export const featureFlags = {
   mind: flags.FEATURE_MIND.parsedValue,
 };
 
-export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;
+const envDevUnlock = flags.DEV_UNLOCK_PRESET.parsedValue;
+const wantDevUnlock =
+  (!isProd && (isLocalhost || isDeployPreview || isBranchDeploy || isVercelPreview)) ||
+  String(envDevUnlock).toLowerCase() === 'all';
+export const devUnlockPreset = wantDevUnlock ? 'all' : envDevUnlock;
 
 // When unlocking everything for dev/preview builds, force all feature flags on
-if (devUnlockPreset === 'all') {
+if (wantDevUnlock) {
   for (const key of Object.keys(featureFlags)) {
     if (key === 'cultivation') continue;
     featureFlags[key] = true;
@@ -168,6 +194,7 @@ export function configReport() {
   return {
     mode,
     modeSource: modeSrc,
+    context,
     isProd,
     envProvider,
     bundlerGuess,

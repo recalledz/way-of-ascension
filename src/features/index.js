@@ -18,7 +18,7 @@ import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { mountTrainingGameUI as mountPhysiqueTrainingUI } from "./physique/ui/trainingGame.js";
 import { mountAgilityTrainingUI } from "./agility/ui/trainingGame.js";
 import { mountCultivationSidebar } from "./progression/ui/cultivationSidebar.js";
-import { featureFlags, devUnlockPreset } from "../config.js";
+import { configReport, devUnlockPreset } from "../config.js";
 import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
 import { applyDevUnlockPreset } from "./devUnlock.js";
 import { tickAbilityCooldowns } from "./ability/mutators.js";
@@ -126,6 +126,7 @@ const activityMeta = {
 
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
+  const { flags } = configReport();
   const ensure = (containerId, id, activity, label) => {
     const container = document.getElementById(containerId);
     if (!container || document.getElementById(id)) return;
@@ -185,34 +186,52 @@ export function mountAllFeatureUIs(state) {
   const vis = debugFeatureVisibility(state);
   if (vis.character?.visible) ensure('managementActivities', 'characterSelector', 'character', 'Character');
   if (vis.cultivation?.visible) mountCultivationSidebar(state);
-  if (vis.proficiency.visible) mountProficiencyUI(state);
-  if (vis.sect.visible) mountSectUI(state);
-  if (vis.karma.visible) mountKarmaUI(state);
-  if (vis.alchemy.visible) mountAlchemyUI(state);
-  if (vis.cooking.visible) mountCookingUI(state);
-  if (vis.mining.visible) mountMiningUI(state);
-  if (vis.gathering.visible) mountGatheringUI(state);
-  if (vis.forging.visible) mountForgingUI(state);
-  if (vis.physique.visible) {
+  if (flags.FEATURE_PROFICIENCY?.parsedValue && vis.proficiency.visible) mountProficiencyUI(state);
+  if (flags.FEATURE_SECT?.parsedValue && vis.sect.visible) mountSectUI(state);
+  if (flags.FEATURE_KARMA?.parsedValue && vis.karma.visible) mountKarmaUI(state);
+  if (flags.FEATURE_ALCHEMY?.parsedValue && vis.alchemy.visible) mountAlchemyUI(state);
+  if (flags.FEATURE_COOKING?.parsedValue && vis.cooking.visible) mountCookingUI(state);
+  if (flags.FEATURE_MINING?.parsedValue && vis.mining.visible) mountMiningUI(state);
+  if (flags.FEATURE_GATHERING?.parsedValue && vis.gathering.visible) mountGatheringUI(state);
+  if (flags.FEATURE_FORGING?.parsedValue && vis.forging.visible) mountForgingUI(state);
+  if (flags.FEATURE_PHYSIQUE?.parsedValue && vis.physique.visible) {
     mountPhysiqueUI(state);
     mountPhysiqueTrainingUI(state);
   }
-  if (vis.agility.visible) {
+  if (flags.FEATURE_AGILITY?.parsedValue && vis.agility.visible) {
     mountAgilityUI(state);
     mountAgilityTrainingUI(state);
   }
-  if (vis.catching.visible) mountCatchingUI(state);
-  if (vis.law.visible) mountLawDisplay(state);
-  if (vis.mind.visible) mountMindReadingUI(state);
+  if (flags.FEATURE_CATCHING?.parsedValue && vis.catching.visible) mountCatchingUI(state);
+  if (flags.FEATURE_LAW?.parsedValue && vis.law.visible) mountLawDisplay(state);
+  if (flags.FEATURE_MIND?.parsedValue && vis.mind.visible) mountMindReadingUI(state);
   if (vis.astralTree.visible) mountAstralTreeUI(state);
 
   // mountWeaponGenUI?.(state);
 }
 
 export function debugFeatureVisibility(state) {
+  const { flags } = configReport();
+  const cfgFeatureFlags = {
+    cultivation: true,
+    proficiency: flags.FEATURE_PROFICIENCY?.parsedValue,
+    sect: flags.FEATURE_SECT?.parsedValue,
+    karma: flags.FEATURE_KARMA?.parsedValue,
+    alchemy: flags.FEATURE_ALCHEMY?.parsedValue,
+    cooking: flags.FEATURE_COOKING?.parsedValue,
+    mining: flags.FEATURE_MINING?.parsedValue,
+    gathering: flags.FEATURE_GATHERING?.parsedValue,
+    forging: flags.FEATURE_FORGING?.parsedValue,
+    physique: flags.FEATURE_PHYSIQUE?.parsedValue,
+    agility: flags.FEATURE_AGILITY?.parsedValue,
+    catching: flags.FEATURE_CATCHING?.parsedValue,
+    law: flags.FEATURE_LAW?.parsedValue,
+    mind: flags.FEATURE_MIND?.parsedValue,
+    character: true,
+  };
   const result = {};
   const keys = new Set([
-    ...Object.keys(featureFlags),
+    ...Object.keys(cfgFeatureFlags),
     ...Object.keys(unlockMap),
   ]);
   if (devUnlockPreset === 'all') {
@@ -230,8 +249,8 @@ export function debugFeatureVisibility(state) {
         visible: unlockAllowed,
       };
     } else {
-      const hasFlag = Object.prototype.hasOwnProperty.call(featureFlags, key);
-      const flagActive = hasFlag ? !!featureFlags[key] : true;
+      const hasFlag = Object.prototype.hasOwnProperty.call(cfgFeatureFlags, key);
+      const flagActive = hasFlag ? !!cfgFeatureFlags[key] : true;
       result[key] = {
         flagAllowed: hasFlag ? flagActive : undefined,
         unlockAllowed,

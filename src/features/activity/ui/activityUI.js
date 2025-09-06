@@ -8,6 +8,7 @@ import { updateActivityCooking } from "../../cooking/ui/cookingDisplay.js";
 import { fCap, qCap } from "../../progression/selectors.js";
 import { getBuildingLevel } from "../../sect/selectors.js";
 import { fmt } from "../../../shared/utils/number.js";
+import { configReport } from "../../../config.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -36,6 +37,33 @@ export function mountActivityUI(root) {
 }
 
 export function updateActivitySelectors(root) {
+  const { flags } = configReport();
+  const enabled = {
+    cultivation:  true,
+    character:    true,
+    adventure:    true,
+    mining:       !!flags.FEATURE_MINING?.parsedValue,
+    gathering:    !!flags.FEATURE_GATHERING?.parsedValue,
+    forging:      !!flags.FEATURE_FORGING?.parsedValue,
+    cooking:      !!flags.FEATURE_COOKING?.parsedValue,
+    alchemy:      !!flags.FEATURE_ALCHEMY?.parsedValue,
+    physique:     !!flags.FEATURE_PHYSIQUE?.parsedValue,
+    agility:      !!flags.FEATURE_AGILITY?.parsedValue,
+    catching:     !!flags.FEATURE_CATCHING?.parsedValue,
+    sect:         !!flags.FEATURE_SECT?.parsedValue,
+    karma:        !!flags.FEATURE_KARMA?.parsedValue,
+    law:          !!flags.FEATURE_LAW?.parsedValue,
+    mind:         !!flags.FEATURE_MIND?.parsedValue,
+    proficiency:  !!flags.FEATURE_PROFICIENCY?.parsedValue,
+  };
+  document.querySelectorAll('.activity-item[data-activity]').forEach(el => {
+    const act = el.dataset.activity;
+    const show = enabled[act] !== false;
+    el.style.display = show ? '' : 'none';
+    if (!show && root.ui?.selectedActivity === act) {
+      root.ui.selectedActivity = 'cultivation';
+    }
+  });
   // Ensure minimal slices exist for UI reads
   root.physique ??= { level: 1, exp: 0, expMax: 100 };
   root.agility  ??= { level: 1, exp: 0, expMax: 100 };
