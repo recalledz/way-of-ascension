@@ -44,7 +44,7 @@ import { calcKarmaGain } from '../features/karma/selectors.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../features/automation/selectors.js';
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../features/activity/mutators.js';
-import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay, renderActiveActivity } from '../features/activity/ui/activityUI.js';
+import { mountActivityUI, updateActivitySelectors, renderActiveActivity } from '../features/activity/ui/activityUI.js';
 import { meditate } from '../features/progression/mutators.js';
 import { usePill, sellJunk } from '../features/inventory/mutators.js';
 import { initSideLocations } from '../features/sideLocations/logic.js';
@@ -188,7 +188,6 @@ function updateAll(){
 
   // HP/Shield & combat stats are rendered by updateCombatStats()
   updateCombatStats();
-  updateCurrentTaskDisplay(S);
 
 
   // Update progression displays
