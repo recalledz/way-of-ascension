@@ -331,8 +331,6 @@ way-of-ascension/
 │       │   └── devQuickMenu.js
 │       └── sidebar.js
 ├── ui/
-│   ├── components/
-│   │   └── progressBar.js
 │   └── index.js
 ├── README.md
 ├── CHANGELOG.md
@@ -720,14 +718,6 @@ function updateAll() {
 #### `src/features/progression/ui/cultivationSidebar.js` - Cultivation Activity Tab
 **Purpose**: Injects the cultivation activity into the sidebar when the feature is visible.
 **When to modify**: Adjust cultivation tab layout or mounting logic.
-
-#### `components/progressBar.js` - Reusable Progress Bar Component
-**Purpose**: Provides reusable functions to create and update standardized progress bars throughout the UI.
-**Key Functions**:
-- `createProgressBar()`: Creates a new progress bar component.
-- `updateProgressBar()`: Updates an existing progress bar's value and text.
-**Dependencies**: Vanilla JS, follows structure in `style.css`.
-**When to modify**: When changing the fundamental structure or style of all progress bars.
 
 #### `src/features/inventory/ui/CharacterPanel.js` - Equipment & Inventory Panel
 **Purpose**: Single source for rendering equipped items and inventory with actions to equip, use, scrap, filter, and view details.
