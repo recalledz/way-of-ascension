@@ -46,7 +46,8 @@ import { isAutoMeditate, isAutoAdventure } from '../features/automation/selector
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../features/activity/mutators.js';
 import { mountActivityUI, updateActivitySelectors, renderActiveActivity } from '../features/activity/ui/activityUI.js';
 import { meditate } from '../features/progression/mutators.js';
-import { usePill, sellJunk } from '../features/inventory/mutators.js';
+import { sellJunk } from '../features/inventory/mutators.js';
+import { usePill } from '../features/alchemy/mutators.js';
 import { initSideLocations } from '../features/sideLocations/logic.js';
 
 const report = configReport();
