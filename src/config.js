@@ -1,7 +1,13 @@
 // Environment and feature flag utilities
 
 const hasImportMeta = typeof import.meta !== 'undefined' && !!import.meta.env;
-const env = hasImportMeta ? import.meta.env : (typeof process !== 'undefined' ? process.env : {});
+const env = hasImportMeta
+  ? import.meta.env
+  : typeof process !== 'undefined'
+  ? process.env
+  : typeof window !== 'undefined'
+  ? window.__ENV__
+  : {};
 
 // Determine mode and source
 const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '');
@@ -35,8 +41,21 @@ function coerce(value, fallback) {
 function readFlag(name, fallback) {
   const order = [
     { prefix: 'VITE_', source: 'VITE', provider: hasImportMeta ? import.meta.env : undefined },
-    { prefix: 'NEXT_PUBLIC_', source: 'NEXT_PUBLIC', provider: typeof process !== 'undefined' ? process.env : undefined },
-    { prefix: 'REACT_APP_', source: 'REACT_APP', provider: typeof process !== 'undefined' ? process.env : undefined }
+    {
+      prefix: 'NEXT_PUBLIC_',
+      source: 'NEXT_PUBLIC',
+      provider: typeof process !== 'undefined' ? process.env : undefined
+    },
+    {
+      prefix: 'REACT_APP_',
+      source: 'REACT_APP',
+      provider: typeof process !== 'undefined' ? process.env : undefined
+    },
+    {
+      prefix: '',
+      source: 'window.__ENV__',
+      provider: typeof window !== 'undefined' ? window.__ENV__ : undefined
+    }
   ];
 
   for (const { prefix, source, provider } of order) {
@@ -94,6 +113,16 @@ export const featureFlags = {
 
 export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;
 
+// When unlocking everything for dev/preview builds, force all feature flags on
+if (devUnlockPreset === 'all') {
+  for (const key of Object.keys(featureFlags)) {
+    if (key === 'cultivation') continue;
+    featureFlags[key] = true;
+    const flagKey = 'FEATURE_' + key.toUpperCase();
+    if (flags[flagKey]) flags[flagKey].parsedValue = true;
+  }
+}
+
 export function configReport() {
   const missingKeys = Object.entries(flags)
     .filter(([, v]) => v.source === 'default')
@@ -104,6 +133,8 @@ export function configReport() {
     ? 'vite import.meta.env'
     : typeof process !== 'undefined'
     ? 'process.env'
+    : typeof window !== 'undefined'
+    ? 'window.__ENV__'
     : 'unknown';
 
   let bundlerGuess = 'unknown';
