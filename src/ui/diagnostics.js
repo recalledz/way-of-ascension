@@ -42,13 +42,13 @@ export function mountDiagnostics(state) {
     overlay.appendChild(container);
 
     const summary = document.createElement("pre");
-    summary.textContent = `mode: ${report.mode}\nprovider: ${report.envProvider}\nbundler: ${report.bundlerGuess}`;
+    summary.textContent = `mode: ${report.mode}\nprovider: ${report.provider}\nbundler: ${report.bundler}`;
     container.appendChild(summary);
 
-    if (report.warnings.length) {
+    if (report.missingKeys && report.missingKeys.length) {
       const warn = document.createElement("div");
       warn.style.color = "yellow";
-      warn.textContent = "Warnings:\n" + report.warnings.join("\n");
+      warn.textContent = "Missing env vars:\n" + report.missingKeys.join("\n");
       container.appendChild(warn);
     }
 
