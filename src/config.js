@@ -1,35 +1,44 @@
 // Environment and feature flag utilities
 
-const hasImportMeta = typeof import.meta !== 'undefined' && !!import.meta.env;
+// Detect environment provider
+const hasImportMeta = typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined';
+const hasProcess = typeof process !== 'undefined' && typeof process.env !== 'undefined';
+const hasWindowEnv = typeof window !== 'undefined' && typeof window.__ENV__ !== 'undefined';
+
 const env = hasImportMeta
   ? import.meta.env
-  : typeof process !== 'undefined'
+  : hasProcess
   ? process.env
-  : typeof window !== 'undefined'
+  : hasWindowEnv
   ? window.__ENV__
   : {};
 
-// Determine mode and source
-const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '');
-const modeSrc = env?.VERCEL_ENV
-  ? 'VERCEL_ENV'
-  : env?.NODE_ENV
-  ? 'NODE_ENV'
-  : env?.PROD
-  ? 'import.meta.env.PROD'
+export const provider = hasImportMeta
+  ? 'import.meta.env'
+  : hasProcess
+  ? 'process.env'
+  : hasWindowEnv
+  ? 'window.__ENV__'
   : 'default';
-const vercelEnv = String(rawEnv || '').toLowerCase();
-const mode = ['production', 'prod', 'main'].includes(vercelEnv)
-  ? 'production'
-  : vercelEnv || 'development';
+
+// Determine mode
+let mode = String(env.NODE_ENV || env.MODE || '').toLowerCase();
+
+let isLocalhost = false;
+if (typeof window !== 'undefined' && window.location) {
+  const host = window.location.hostname;
+  isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(host);
+}
+
+if (provider === 'window.__ENV__' && !mode) {
+  mode = isLocalhost ? 'development' : 'production';
+}
 
 export const isProd = mode === 'production';
-export const isPreview = mode === 'preview';
-export const isDev = !isProd && !isPreview;
 
 // Coerce env values
 function coerce(value, fallback) {
-  if (value === undefined) return fallback;
+  if (value === undefined || value === '') return fallback;
   const str = String(value).toLowerCase();
   if (str === 'true' || str === '1') return true;
   if (str === 'false' || str === '0') return false;
@@ -38,142 +47,102 @@ function coerce(value, fallback) {
   return value;
 }
 
-function readFlag(name, fallback) {
-  const order = [
-    { prefix: 'VITE_', source: 'VITE', provider: hasImportMeta ? import.meta.env : undefined },
-    {
-      prefix: 'NEXT_PUBLIC_',
-      source: 'NEXT_PUBLIC',
-      provider: typeof process !== 'undefined' ? process.env : undefined
-    },
-    {
-      prefix: 'REACT_APP_',
-      source: 'REACT_APP',
-      provider: typeof process !== 'undefined' ? process.env : undefined
-    },
-    {
-      prefix: '',
-      source: 'window.__ENV__',
-      provider: typeof window !== 'undefined' ? window.__ENV__ : undefined
-    }
-  ];
+// Default flag values (safe for production)
+const defaults = {
+  TUTORIALS_ENABLED: false,
+  DEV_UNLOCK_PRESET: '',
+  DISCOVERY_RATE_MULT: 1,
+  TIMERS_SPEED_MULT: 1,
+  // default locked in prod; gameplay unlocks them via progression/buildings
+  FEATURE_PROFICIENCY: false,
+  FEATURE_SECT: false,
+  FEATURE_KARMA: false,
+  FEATURE_ALCHEMY: false,
+  FEATURE_COOKING: false,
+  FEATURE_MINING: false,
+  FEATURE_GATHERING: false,
+  FEATURE_FORGING: false,
+  FEATURE_PHYSIQUE: false,
+  FEATURE_AGILITY: false,
+  FEATURE_CATCHING: false,
+  FEATURE_LAW: false,
+  FEATURE_MIND: false,
+};
 
-  for (const { prefix, source, provider } of order) {
-    const key = prefix + name;
-    if (provider && Object.prototype.hasOwnProperty.call(provider, key)) {
-      const raw = provider[key];
-      return { rawValue: raw, parsedValue: coerce(raw, fallback), source };
+function readEnv(name) {
+  const variants = [name, `VITE_${name}`, `NEXT_PUBLIC_${name}`, `REACT_APP_${name}`];
+  for (const key of variants) {
+    if (Object.prototype.hasOwnProperty.call(env, key)) {
+      return env[key];
     }
   }
-  return { rawValue: undefined, parsedValue: fallback, source: 'default' };
+  return undefined;
 }
 
-const flagNames = [
-  'TUTORIALS_ENABLED',
-  'DEV_UNLOCK_PRESET',
-  'DISCOVERY_RATE_MULT',
-  'TIMERS_SPEED_MULT',
-  'FEATURE_PROFICIENCY',
-  'FEATURE_SECT',
-  'FEATURE_KARMA',
-  'FEATURE_ALCHEMY',
-  'FEATURE_COOKING',
-  'FEATURE_MINING',
-  'FEATURE_GATHERING',
-  'FEATURE_FORGING',
-  'FEATURE_PHYSIQUE',
-  'FEATURE_AGILITY',
-  'FEATURE_CATCHING',
-  'FEATURE_LAW',
-  'FEATURE_MIND',
-];
-
 const flags = {};
-for (const name of flagNames) {
-  const fallback = name.startsWith('FEATURE_') ? false : undefined;
-  flags[name] = readFlag(name, fallback);
+const flagInfo = {};
+for (const [name, def] of Object.entries(defaults)) {
+  const raw = readEnv(name);
+  const parsed = coerce(raw, def);
+  flags[name] = parsed;
+  flagInfo[name] = {
+    rawValue: raw !== undefined ? raw : def,
+    parsedValue: parsed,
+    source: raw !== undefined ? provider : 'default',
+  };
+}
+
+const preset = String(flags.DEV_UNLOCK_PRESET || '').toLowerCase();
+if (!isProd && preset === 'all') {
+  for (const key of Object.keys(flags)) {
+    if (key.startsWith('FEATURE_')) {
+      flags[key] = true;
+      if (flagInfo[key]) flagInfo[key].parsedValue = true;
+    }
+  }
 }
 
 export const featureFlags = {
   cultivation: true,
-  proficiency: flags.FEATURE_PROFICIENCY.parsedValue,
-  sect: flags.FEATURE_SECT.parsedValue,
-  karma: flags.FEATURE_KARMA.parsedValue,
-  alchemy: flags.FEATURE_ALCHEMY.parsedValue,
-  cooking: flags.FEATURE_COOKING.parsedValue,
-  mining: flags.FEATURE_MINING.parsedValue,
-  gathering: flags.FEATURE_GATHERING.parsedValue,
-  forging: flags.FEATURE_FORGING.parsedValue,
-  physique: flags.FEATURE_PHYSIQUE.parsedValue,
-  agility: flags.FEATURE_AGILITY.parsedValue,
-  catching: flags.FEATURE_CATCHING.parsedValue,
-  law: flags.FEATURE_LAW.parsedValue,
-  mind: flags.FEATURE_MIND.parsedValue,
+  proficiency: flags.FEATURE_PROFICIENCY,
+  sect: flags.FEATURE_SECT,
+  karma: flags.FEATURE_KARMA,
+  alchemy: flags.FEATURE_ALCHEMY,
+  cooking: flags.FEATURE_COOKING,
+  mining: flags.FEATURE_MINING,
+  gathering: flags.FEATURE_GATHERING,
+  forging: flags.FEATURE_FORGING,
+  physique: flags.FEATURE_PHYSIQUE,
+  agility: flags.FEATURE_AGILITY,
+  catching: flags.FEATURE_CATCHING,
+  law: flags.FEATURE_LAW,
+  mind: flags.FEATURE_MIND,
 };
 
-export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;
-
-// When unlocking everything for dev/preview builds, force all feature flags on
-if (devUnlockPreset === 'all') {
-  for (const key of Object.keys(featureFlags)) {
-    if (key === 'cultivation') continue;
-    featureFlags[key] = true;
-    const flagKey = 'FEATURE_' + key.toUpperCase();
-    if (flags[flagKey]) flags[flagKey].parsedValue = true;
-  }
-}
+export const devUnlockPreset = flags.DEV_UNLOCK_PRESET;
 
 export function configReport() {
-  const missingKeys = Object.entries(flags)
+  const missingKeys = Object.entries(flagInfo)
     .filter(([, v]) => v.source === 'default')
     .map(([k]) => k);
   const allKnownKeysFound = missingKeys.length === 0;
 
-  const envProvider = hasImportMeta
-    ? 'vite import.meta.env'
-    : typeof process !== 'undefined'
-    ? 'process.env'
+  const bundler = import.meta?.env
+    ? 'vite'
+    : typeof process !== 'undefined' && process?.versions?.node
+    ? 'node'
     : typeof window !== 'undefined'
-    ? 'window.__ENV__'
+    ? 'browser'
     : 'unknown';
 
-  let bundlerGuess = 'unknown';
-  const envKeys = Object.keys(env || {});
-  const hasVite = envKeys.some((k) => k.startsWith('VITE_'));
-  const hasNext = envKeys.some((k) => k.startsWith('NEXT_PUBLIC_'));
-  const hasCra = envKeys.some((k) => k.startsWith('REACT_APP_'));
-  if (hasImportMeta) bundlerGuess = 'vite';
-  else if (hasNext) bundlerGuess = 'next';
-  else if (hasCra) bundlerGuess = 'cra';
-
-  const warnings = [];
-  if (bundlerGuess === 'vite') {
-    if (hasNext || hasCra) warnings.push('Mixing VITE_* with other prefixes');
-    for (const key of missingKeys) {
-      if (envKeys.includes('NEXT_PUBLIC_' + key)) {
-        warnings.push(`Expected VITE_${key} but NEXT_PUBLIC_${key} is set`);
-      }
-      if (envKeys.includes('REACT_APP_' + key)) {
-        warnings.push(`Expected VITE_${key} but REACT_APP_${key} is set`);
-      }
-    }
-  }
-  if (bundlerGuess === 'next') {
-    if (hasCra || hasVite) warnings.push('Mixing NEXT_PUBLIC_* with other prefixes');
-  }
-  if (bundlerGuess === 'cra') {
-    if (hasNext || hasVite) warnings.push('Mixing REACT_APP_* with other prefixes');
-  }
-
   return {
-    mode,
-    modeSource: modeSrc,
     isProd,
-    envProvider,
-    bundlerGuess,
-    warnings,
-    flags,
+    mode,
+    provider,
+    bundler,
+    flags: flagInfo,
     allKnownKeysFound,
-    missingKeys
+    missingKeys,
   };
 }
+
