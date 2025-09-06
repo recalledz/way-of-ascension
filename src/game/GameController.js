@@ -6,6 +6,7 @@ import { ensureMindState, onTick as mindOnTick } from "../features/mind/index.js
 import { sideLocationState } from "../features/sideLocations/state.js";
 import { initSideLocations } from "../features/sideLocations/logic.js";
 import { applyDevUnlockPreset } from "../features/devUnlock.js";
+import { initTutorial, tickTutorial } from "../features/tutorial/logic.js";
 
 // Register feature hooks
 import "../features/proficiency/index.js";
@@ -29,6 +30,7 @@ export function createGameController() {
   applyDevUnlockPreset(state);
   recalculateBuildingBonuses(state);
   initSideLocations(state);
+  initTutorial(state);
 
   let running = false;
   let acc = 0;
@@ -52,6 +54,7 @@ export function createGameController() {
       mindOnTick(state, stepMs / 1000);
 
       // --- New world: per-feature listeners advance here ---
+      tickTutorial(state);
       emit("TICK", { stepMs, now });
 
       acc -= stepMs;
@@ -67,6 +70,7 @@ export function createGameController() {
   function step() {
     tickFeatures(state, stepMs);
     mindOnTick(state, stepMs / 1000);
+    tickTutorial(state);
     emit("TICK", { stepMs, now: performance.now() });
     emit("RENDER");
     saveDebounced(state);

@@ -54,6 +54,7 @@ way-of-ascension/
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
 │   ├── side-location-discovery.md
+│   ├── tutorial.md
 │   ├── project-structure.md
 │   └── ARCHITECTURE.md
 ├── node_modules/
@@ -293,19 +294,22 @@ way-of-ascension/
 │   │   │   ├── imbuement.js
 │   │   │   ├── logic.js
 │   │   │   └── selectors.js
-│   │   └── weaponGeneration/
-│   │       ├── data/
-│   │       │   ├── _balance.contract.js
-│   │       │   ├── materials.stub.js
-│   │       │   ├── weaponIcons.js
-│   │       │   ├── weaponClasses.js
-│   │       │   ├── weaponTypes.js
-│   │       │   └── weapons.js
-│   │       ├── index.js
+│   │   ├── weaponGeneration/
+│   │   │   ├── data/
+│   │   │   │   ├── _balance.contract.js
+│   │   │   │   ├── materials.stub.js
+│   │   │   │   ├── weaponIcons.js
+│   │   │   │   ├── weaponClasses.js
+│   │   │   │   ├── weaponTypes.js
+│   │   │   │   └── weapons.js
+│   │   │   ├── index.js
+│   │   │   ├── logic.js
+│   │   │   ├── migrations.js
+│   │   │   ├── mutators.js
+│   │   │   ├── selectors.js
+│   │   │   └── state.js
+│   │   └── tutorial/
 │   │       ├── logic.js
-│   │       ├── migrations.js
-│   │       ├── mutators.js
-│   │       ├── selectors.js
 │   │       └── state.js
 │   ├── game/
 │   │   ├── GameController.js
@@ -329,6 +333,7 @@ way-of-ascension/
 │       ├── dev/
 │       │   ├── balanceTuner.js
 │       │   └── devQuickMenu.js
+│       ├── tutorialBox.js
 │       └── sidebar.js
 ├── ui/
 │   └── index.js
@@ -1231,4 +1236,10 @@ Paths added:
  - `src/features/catching/index.js` – Catching feature descriptor.
  - `src/features/mind/index.js` – Mind feature descriptor.
  - `src/features/astralTree/index.js` – Astral Tree feature descriptor.
- - `src/features/law/index.js` – Law feature descriptor.
+- `src/features/law/index.js` – Law feature descriptor.
+
+### Tutorial Files
+- `src/features/tutorial/state.js` – Tracks tutorial progress (`step`, `completed`).
+- `src/features/tutorial/logic.js` – Advances tutorial steps and exposes `tickTutorial`.
+- `src/ui/tutorialBox.js` – Displays tutorial guidance messages in an overlay.
+- `docs/tutorial.md` – Explains the tutorial flow and how to reset or disable it.
