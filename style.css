@@ -1101,17 +1101,70 @@ html.reduce-motion .rune-ring .orbit {
   border: 1px solid rgba(30, 144, 255, 0.3);
 }
 
-.qi-fill-silhouette {
+  .qi-fill-silhouette {
+    height: 100%;
+    background: linear-gradient(90deg,
+      rgba(135, 206, 250, 0.9) 0%,
+      rgba(30, 144, 255, 0.9) 50%,
+      rgba(0, 191, 255, 0.9) 100%
+    );
+    width: 0%;
+    transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(30, 144, 255, 0.4);
+  }
+
+/* Breakthrough vignette and progress bar */
+.breakthrough-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 7;
+}
+
+.breakthrough .breakthrough-vignette {
+  opacity: 1;
+}
+
+.breakthrough-progress {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  display: none;
+  z-index: 8;
+}
+
+.breakthrough .breakthrough-progress {
+  display: block;
+}
+
+.breakthrough-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, 
-    rgba(135, 206, 250, 0.9) 0%,
-    rgba(30, 144, 255, 0.9) 50%,
-    rgba(0, 191, 255, 0.9) 100%
-  );
   width: 0%;
-  transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(30, 144, 255, 0.4);
+  background: var(--accent);
+  transition: width 0.3s linear;
+}
+
+/* Center visualization during breakthrough */
+.cultivation-layout.breakthrough-mode {
+  justify-content: center;
+}
+
+.cultivation-layout.breakthrough-mode .cultivation-controls-card {
+  display: none;
+}
+
+.cultivation-layout.breakthrough-mode .cultivation-visualization-container {
+  margin: 0 auto;
 }
 
 /* Cultivation controls card */

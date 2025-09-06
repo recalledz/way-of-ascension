@@ -97,21 +97,35 @@ export function updateActivityCultivation() {
   }
 
   const btBtn = document.getElementById('breakthroughBtnActivity');
-  if (btBtn) {
-    if (S.breakthrough && S.breakthrough.inProgress) {
-      btBtn.textContent = `Breakthrough in Progress... (${Math.ceil(S.breakthrough.timeRemaining)}s)`;
-      btBtn.disabled = true;
-      btBtn.classList.add('disabled');
-    } else {
-      btBtn.textContent = 'Attempt Breakthrough';
-      btBtn.disabled = false;
-      btBtn.classList.remove('disabled');
+    if (btBtn) {
+      if (S.breakthrough && S.breakthrough.inProgress) {
+        btBtn.textContent = `Breakthrough in Progress... (${Math.ceil(S.breakthrough.timeRemaining)}s)`;
+        btBtn.disabled = true;
+        btBtn.classList.add('disabled');
+      } else {
+        btBtn.textContent = 'Attempt Breakthrough';
+        btBtn.disabled = false;
+        btBtn.classList.remove('disabled');
+      }
+
+      btBtn.onclick = () => {
+        tryBreakthrough();
+      };
     }
 
-    btBtn.onclick = () => {
-      tryBreakthrough();
-    };
-  }
+    const layout = document.querySelector('.cultivation-layout');
+    const progress = document.getElementById('breakthroughProgress');
+    const progressFill = document.getElementById('breakthroughProgressFill');
+    if (S.breakthrough && S.breakthrough.inProgress) {
+      layout?.classList.add('breakthrough-mode');
+      if (progress && progressFill && S.breakthrough.totalTime) {
+        const pct = (1 - S.breakthrough.timeRemaining / S.breakthrough.totalTime) * 100;
+        progressFill.style.width = pct + '%';
+      }
+    } else {
+      layout?.classList.remove('breakthrough-mode');
+      if (progressFill) progressFill.style.width = '0%';
+    }
 
   const statsCard = document.getElementById('cultivationStatsCard');
   if (statsCard) {
