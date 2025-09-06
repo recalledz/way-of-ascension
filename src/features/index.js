@@ -57,10 +57,22 @@ const coreFeatures = new Set([
   'sect',
   'adventure',
   'proficiency',
+  'character',
 ]);
 
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
+  const ensure = (containerId, id, activity, label) => {
+    const container = document.getElementById(containerId);
+    if (!container || document.getElementById(id)) return;
+    const item = document.createElement('div');
+    item.className = containerId === 'levelingActivities' ? 'activity-item leveling-tab' : 'activity-item management-tab';
+    item.id = id;
+    item.dataset.activity = activity;
+    item.innerHTML = `<div class="activity-name">${label}</div>`;
+    container.appendChild(item);
+  };
+
   if (devUnlockPreset === 'all') {
     mountCultivationSidebar(state);
     mountProficiencyUI(state);
@@ -79,17 +91,7 @@ export function mountAllFeatureUIs(state) {
     mountLawDisplay(state);
     mountMindReadingUI(state);
     mountAstralTreeUI(state);
-    const ensure = (containerId, id, activity, label) => {
-      const container = document.getElementById(containerId);
-      if (!container || document.getElementById(id)) return;
-      const item = document.createElement('div');
-      item.className = containerId === 'levelingActivities' ? 'activity-item leveling-tab' : 'activity-item management-tab';
-      item.id = id;
-      item.dataset.activity = activity;
-      item.innerHTML = `<div class="activity-name">${label}</div>`;
-      container.appendChild(item);
-    };
-
+    ensure('managementActivities', 'characterSelector', 'character', 'Character');
     ensure('levelingActivities', 'physiqueSelector', 'physique', 'Physique');
     ensure('levelingActivities', 'agilitySelector', 'agility', 'Agility');
     ensure('levelingActivities', 'miningSelector', 'mining', 'Mining');
@@ -102,6 +104,7 @@ export function mountAllFeatureUIs(state) {
     return;
   }
   const vis = debugFeatureVisibility(state);
+  if (vis.character?.visible) ensure('managementActivities', 'characterSelector', 'character', 'Character');
   if (vis.cultivation?.visible) mountCultivationSidebar(state);
   if (vis.proficiency.visible) mountProficiencyUI(state);
   if (vis.sect.visible) mountSectUI(state);
