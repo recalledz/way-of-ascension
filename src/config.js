@@ -67,7 +67,6 @@ const flagNames = [
   'FEATURE_CATCHING',
   'FEATURE_LAW',
   'FEATURE_MIND',
-  'FEATURE_ASTRAL_TREE'
 ];
 
 const flags = {};
@@ -91,7 +90,6 @@ export const featureFlags = {
   catching: flags.FEATURE_CATCHING.parsedValue,
   law: flags.FEATURE_LAW.parsedValue,
   mind: flags.FEATURE_MIND.parsedValue,
-  astralTree: flags.FEATURE_ASTRAL_TREE.parsedValue
 };
 
 export const devUnlockPreset = flags.DEV_UNLOCK_PRESET.parsedValue;

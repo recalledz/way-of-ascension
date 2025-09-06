@@ -1,8 +1,14 @@
 import { progressionState } from "./state.js";
+import { featureFlags } from "../../config.js";
 
 export const ProgressionFeature = {
   key: "progression",
   initialState: () => ({ ...progressionState, _v: 0 }),
+  nav: {
+    visible() {
+      return featureFlags.cultivation;
+    },
+  },
 };
 
 export {

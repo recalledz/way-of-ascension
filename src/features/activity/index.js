@@ -12,4 +12,9 @@ export const ActivityFeature = {
     catching: false,
     _v: 0,
   }),
+  nav: {
+    visible() {
+      return true;
+    },
+  },
 };
