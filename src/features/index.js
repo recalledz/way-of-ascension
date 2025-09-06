@@ -76,16 +76,44 @@ const coreFeatures = new Set([
   'character',
 ]);
 
+const activityMeta = {
+  physique: { icon: 'mdi:arm-flex', infoId: 'physiqueInfo', fillId: 'physiqueSelectorFill' },
+  agility: { icon: 'mdi:run-fast', infoId: 'agilityInfo', fillId: 'agilitySelectorFill' },
+  mining: { icon: 'mdi:pickaxe', infoId: 'miningInfo', fillId: 'miningSelectorFill' },
+  gathering: { icon: 'mdi:leaf', infoId: 'gatheringInfo', fillId: 'gatheringSelectorFill' },
+  forging: { icon: 'mdi:anvil', infoId: 'forgingLevelSidebar', fillId: 'forgingProgressFillSidebar', textId: 'forgingProgressTextSidebar' },
+  catching: { icon: 'mdi:butterfly-outline', infoId: 'catchingLevel', fillId: 'catchingProgressFill' },
+  adventure: { icon: 'mdi:map', infoId: 'adventureInfo' },
+  cooking: { icon: 'mdi:chef-hat' },
+  alchemy: { icon: 'mdi:flask-round-bottom' },
+  character: { icon: 'mdi:account' },
+};
+
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
   const ensure = (containerId, id, activity, label) => {
     const container = document.getElementById(containerId);
     if (!container || document.getElementById(id)) return;
+    const meta = activityMeta[activity] || {};
     const item = document.createElement('div');
     item.className = containerId === 'levelingActivities' ? 'activity-item leveling-tab' : 'activity-item management-tab';
     item.id = id;
     item.dataset.activity = activity;
-    item.innerHTML = `<div class="activity-name">${label}</div>`;
+    const iconHTML = meta.icon ? `<iconify-icon icon="${meta.icon}" class="ui-icon"></iconify-icon>` : '';
+    const levelHTML = meta.infoId ? `<div class="activity-level" id="${meta.infoId}"></div>` : '';
+    const progressFill = meta.fillId ? `<div class="progress-fill" id="${meta.fillId}"></div>` : '';
+    const progressText = meta.textId ? `<div class="progress-text" id="${meta.textId}"></div>` : '';
+    const progressHTML = meta.fillId ? `<div class="activity-progress-bar">${progressFill}${progressText}</div>` : '';
+    item.innerHTML = `
+      <div class="activity-header">
+        <div class="activity-icon">${iconHTML}</div>
+        <div class="activity-info">
+          <div class="activity-name">${label}</div>
+          ${levelHTML}
+        </div>
+      </div>
+      ${progressHTML}
+    `;
     container.appendChild(item);
   };
 
