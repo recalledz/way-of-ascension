@@ -11,6 +11,7 @@ import { gatheringState } from '../features/gathering/state.js';
 import { agilityState } from '../features/agility/state.js';
 import { catchingState } from '../features/catching/state.js';
 import { sideLocationState } from '../features/sideLocations/state.js';
+import { tutorialState } from '../features/tutorial/state.js';
 
 export function loadSave(){
   try{
@@ -165,6 +166,7 @@ export const defaultState = () => {
   },
   sect: structuredClone(sectState),
   sideLocations: structuredClone(sideLocationState),
+  tutorial: structuredClone(tutorialState),
   };
 };
 
@@ -203,6 +205,7 @@ S.physique = { ...structuredClone(physiqueState), ...S.physique };
 S.agility = { ...structuredClone(agilityState), ...S.agility };
 S.catching = { ...structuredClone(catchingState), ...S.catching };
 S.sideLocations = { ...structuredClone(sideLocationState), ...S.sideLocations };
+S.tutorial = { ...structuredClone(tutorialState), ...S.tutorial };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the

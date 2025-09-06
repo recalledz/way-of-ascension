@@ -37,6 +37,7 @@ import { updateBreakthrough } from "./progression/index.js";
 import { updateAdventureCombat } from "./adventure/logic.js";
 import { onTick as mindOnTick } from "./mind/index.js";
 import { log } from "../shared/utils/dom.js";
+import { mountTutorialBox } from "../ui/tutorialBox.js";
 
 
 // Example placeholder for later:
@@ -126,6 +127,7 @@ const activityMeta = {
 
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
+  mountTutorialBox(state);
   const { flags } = configReport();
   const ensure = (containerId, id, activity, label) => {
     const container = document.getElementById(containerId);
