@@ -76,6 +76,26 @@ function applyDevUnlockPreset(state) {
 
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
+  if (devUnlockPreset === 'all') {
+    mountCultivationSidebar(state);
+    mountProficiencyUI(state);
+    mountSectUI(state);
+    mountKarmaUI(state);
+    mountAlchemyUI(state);
+    mountCookingUI(state);
+    mountMiningUI(state);
+    mountGatheringUI(state);
+    mountForgingUI(state);
+    mountPhysiqueUI(state);
+    mountPhysiqueTrainingUI(state);
+    mountAgilityUI(state);
+    mountAgilityTrainingUI(state);
+    mountCatchingUI(state);
+    mountLawDisplay(state);
+    mountMindReadingUI(state);
+    mountAstralTreeUI(state);
+    return;
+  }
   const vis = debugFeatureVisibility(state);
   if (vis.cultivation?.visible) mountCultivationSidebar(state);
   if (vis.proficiency.visible) mountProficiencyUI(state);
@@ -103,11 +123,18 @@ export function mountAllFeatureUIs(state) {
 }
 
 export function debugFeatureVisibility(state) {
-  const result = {};
   const keys = new Set([
     ...Object.keys(featureFlags),
     ...Object.keys(unlockMap),
   ]);
+  if (devUnlockPreset === 'all') {
+    const allVisible = {};
+    for (const key of keys) {
+      allVisible[key] = { visible: true };
+    }
+    return allVisible;
+  }
+  const result = {};
   for (const key of keys) {
     const unlockFn = unlockMap[key] || (() => true);
     const unlockAllowed = unlockFn(state);
