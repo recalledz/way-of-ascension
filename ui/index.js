@@ -6,6 +6,7 @@
 import { configReport } from '../src/config.js';
 import { mountDiagnostics } from '../src/ui/diagnostics.js';
 import { mountAllFeatureUIs } from '../src/features/index.js';
+import { applyDevUnlockPreset } from '../src/features/devUnlock.js';
 import { S, defaultState, save, setState, validateState } from '../src/shared/state.js';
 import {
   clamp,
@@ -123,6 +124,7 @@ import { ENEMY_DATA } from '../src/features/adventure/data/enemies.js';
 function initUI(){
   // Ensure Mind feature state exists for UI reads
   ensureMindState(S);
+  applyDevUnlockPreset(S);
   initSideLocations(S);
 
   mountAllFeatureUIs(S);

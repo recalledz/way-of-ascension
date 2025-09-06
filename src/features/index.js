@@ -18,10 +18,9 @@ import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { mountTrainingGameUI as mountPhysiqueTrainingUI } from "./physique/ui/trainingGame.js";
 import { mountAgilityTrainingUI } from "./agility/ui/trainingGame.js";
 import { mountCultivationSidebar } from "./progression/ui/cultivationSidebar.js";
-import { featureFlags, devUnlockPreset } from "../config.js";
+import { featureFlags } from "../config.js";
 import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
-import { advanceRealm, unlockAstralNode } from "./progression/mutators.js";
-import { forceBuild } from "./sect/mutators.js";
+import { applyDevUnlockPreset } from "./devUnlock.js";
 
 
 // Example placeholder for later:
@@ -59,20 +58,6 @@ const coreFeatures = new Set([
   'adventure',
   'proficiency',
 ]);
-
-function applyDevUnlockPreset(state) {
-  if (devUnlockPreset !== 'all') return;
-  const prog = state.progression || state;
-  while (selectProgress.mortalStage(prog) < 5) advanceRealm(prog);
-  while (!selectProgress.isQiRefiningReached(prog) || selectProgress.realmStage(prog) < 2) {
-    advanceRealm(prog);
-  }
-  unlockAstralNode(4060, prog);
-  unlockAstralNode(4061, prog);
-  unlockAstralNode(4062, prog);
-  forceBuild(state, 'alchemy');
-  forceBuild(state, 'kitchen');
-}
 
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
