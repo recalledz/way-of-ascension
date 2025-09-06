@@ -21,6 +21,22 @@ import { mountCultivationSidebar } from "./progression/ui/cultivationSidebar.js"
 import { featureFlags, devUnlockPreset } from "../config.js";
 import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
 import { applyDevUnlockPreset } from "./devUnlock.js";
+import { tickAbilityCooldowns } from "./ability/mutators.js";
+import { clamp, qCap, qiRegenPerSec, fCap, foundationGainPerSec } from "./progression/selectors.js";
+import { refillShieldFromQi } from "./combat/logic.js";
+import { advanceMining } from "./mining/logic.js";
+import { advanceGathering } from "./gathering/logic.js";
+import { advanceForging } from "./forging/logic.js";
+import { advanceCatching } from "./catching/logic.js";
+import { tickPhysiqueTraining } from "./physique/mutators.js";
+import { tickAgilityTraining } from "./agility/mutators.js";
+import { isAutoMeditate, isAutoAdventure } from "./automation/selectors.js";
+import { startActivity } from "./activity/mutators.js";
+import { tickInsight } from "./progression/insight.js";
+import { updateBreakthrough } from "./progression/index.js";
+import { updateAdventureCombat } from "./adventure/logic.js";
+import { onTick as mindOnTick } from "./mind/index.js";
+import { log } from "../shared/utils/dom.js";
 
 
 // Example placeholder for later:
@@ -161,5 +177,60 @@ export function debugFeatureVisibility(state) {
     }
   }
   return result;
+}
+
+export function runAllFeatureTicks(state, stepMs) {
+  const stepSec = stepMs / 1000;
+  tickAbilityCooldowns(stepMs);
+  mindOnTick(state, stepSec);
+
+  state.qi = clamp(state.qi + qiRegenPerSec(state) * stepSec, 0, qCap(state));
+  if (!(state.adventure?.inCombat)) {
+    state.hp = clamp(state.hp + stepSec, 0, state.hpMax);
+    if (state.adventure) state.adventure.playerHP = state.hp;
+    const { gained, qiSpent } = refillShieldFromQi(state);
+    if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
+  }
+
+  if (state.activities.cultivation) {
+    const gain = foundationGainPerSec(state) * stepSec;
+    state.foundation = clamp(state.foundation + gain, 0, fCap(state));
+  }
+
+  advanceMining(state);
+  advanceGathering(state);
+  advanceForging(state);
+  advanceCatching(state);
+
+  const physSessionEnd = tickPhysiqueTraining(state);
+  if (physSessionEnd) {
+    let msg = `Training session complete! ${physSessionEnd.hits} hits for ${physSessionEnd.xp} XP`;
+    if (physSessionEnd.qiRecovered) {
+      msg += ` and recovered ${physSessionEnd.qiRecovered.toFixed(0)} Qi`;
+    }
+    log(msg, 'good');
+  }
+
+  const agiSessionEnd = tickAgilityTraining(state);
+  if (agiSessionEnd) {
+    const msg = `Agility session complete! ${agiSessionEnd.hits} hits for ${agiSessionEnd.xp} XP`;
+    log(msg, 'good');
+  }
+
+  if (isAutoMeditate() && Object.values(state.activities).every(a => !a)) {
+    const gain = foundationGainPerSec(state) * stepSec * 0.5;
+    state.foundation = clamp(state.foundation + gain, 0, fCap(state));
+  }
+  if (isAutoAdventure() && !state.activities.adventure) {
+    startActivity(state, 'adventure');
+  }
+
+  tickInsight(state, stepSec);
+
+  updateBreakthrough();
+
+  if (state.activities.adventure && state.adventure && state.adventure.inCombat) {
+    updateAdventureCombat();
+  }
 }
 
