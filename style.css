@@ -2737,6 +2737,7 @@ html.reduce-motion .shield-shimmer{animation:none;}
   align-items: center;
   justify-content: center;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .modal-backdrop {
@@ -2750,6 +2751,9 @@ html.reduce-motion .shield-shimmer{animation:none;}
 .modal-content {
     position: relative;
     z-index: 1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Map Overlay Modal - MAP-UI-UPDATE */
