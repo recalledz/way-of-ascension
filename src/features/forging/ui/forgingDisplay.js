@@ -1,5 +1,6 @@
 import { S } from '../../../shared/state.js';
 import { setText } from '../../../shared/utils/dom.js';
+import { fmt } from '../../../shared/utils/number.js';
 import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
 import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
@@ -119,8 +120,9 @@ function updateForgingSidebar(state = S) {
   if (fill) {
     const pct = (state.forging.exp / state.forging.expMax) * 100;
     fill.style.width = pct + '%';
-    setText('forgingProgressTextSidebar', pct.toFixed(0) + '%');
   }
+  const text = document.getElementById('forgingProgressTextSidebar');
+  if (text) text.textContent = `${fmt(state.forging.exp)} / ${fmt(state.forging.expMax)}`;
 }
 
 export function mountForgingUI(state = S) {

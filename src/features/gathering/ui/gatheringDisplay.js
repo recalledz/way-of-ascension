@@ -1,5 +1,6 @@
 import { S } from '../../../shared/state.js';
 import { setText, log } from '../../../shared/utils/dom.js';
+import { fmt } from '../../../shared/utils/number.js';
 import { on } from '../../../shared/events.js';
 import { getGatheringRate } from '../logic.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
@@ -61,8 +62,9 @@ export function updateGatheringSidebar(state = S) {
   if (fill) {
     const progressPct = Math.floor(state.gathering.exp / state.gathering.expMax * 100);
     fill.style.width = progressPct + '%';
-    setText('gatheringProgressText', progressPct + '%');
   }
+  const gatherText = document.getElementById('gatheringProgressText');
+  if (gatherText) gatherText.textContent = `${fmt(state.gathering.exp)} / ${fmt(state.gathering.expMax)}`;
 }
 
 export function mountGatheringUI(state = S) {
