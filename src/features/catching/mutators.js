@@ -1,5 +1,6 @@
 import { ZONES } from '../adventure/data/zones.js';
 import { getCatchingIcon } from './data/icons.js';
+import { startActivity as startActivityMut } from '../activity/mutators.js';
 function getRoot(state){
   return state.catching || state;
 }
@@ -19,6 +20,6 @@ export function startCatch(state, zi, ai){
   const icon = getCatchingIcon(area.enemy);
   root.nets -= 1;
   root.currentCatch = { start: Date.now(), duration, chance, stage, area, enemy: area.enemy, icon, progress: 0 };
-  if(typeof globalThis.startActivity === 'function') globalThis.startActivity('catching');
+  startActivityMut(state, 'catching');
   return true;
 }

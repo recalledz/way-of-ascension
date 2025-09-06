@@ -2,6 +2,7 @@ import { S } from '../../../shared/state.js';
 import { setText, log } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { getGatheringRate } from '../logic.js';
+import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 
 export function updateActivityGathering(state = S) {
   if (!state.gathering) return;
@@ -21,7 +22,7 @@ export function updateActivityGathering(state = S) {
   const startBtn = document.getElementById('startGatheringActivity');
   if (startBtn) {
     startBtn.textContent = state.activities.gathering ? '🛑 Stop Gathering' : '🪓 Start Gathering';
-    startBtn.onclick = () => state.activities.gathering ? window.stopActivity('gathering') : window.startActivity('gathering');
+    startBtn.onclick = () => state.activities.gathering ? stopActivityMut(state, 'gathering') : startActivityMut(state, 'gathering');
   }
 
   const selectedRadio = document.querySelector(`input[name="gatheringResource"][value="${state.gathering.selectedResource}"]`);

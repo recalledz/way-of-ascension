@@ -4,6 +4,7 @@ import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
 import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
 import { GEAR_BASES } from '../../gearGeneration/data/gearBases.js';
+import { startActivity as startActivityMut } from '../../activity/mutators.js';
 
 function displayName(it) {
   if (!it) return '';
@@ -91,7 +92,7 @@ function updateForgeSlot(state = S) {
     alignBtn.onclick = () => {
       const element = elementSel.value;
       startForging(item.id, element, state);
-      window.startActivity('forging');
+      startActivityMut(state, 'forging');
       updateForgeSlot(state);
       updateForgeInventory(state);
     };
@@ -103,7 +104,7 @@ function updateForgeSlot(state = S) {
     imbBtn.onclick = () => {
       const element = item.element || elementSel.value;
       startForging(item.id, element, state);
-      window.startActivity('forging');
+      startActivityMut(state, 'forging');
       updateForgeSlot(state);
       updateForgeInventory(state);
     };

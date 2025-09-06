@@ -2,6 +2,7 @@ import { S } from '../../../shared/state.js';
 import { setText, log } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { getMiningRate } from '../logic.js';
+import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 
 export function updateActivityMining(state = S) {
   if (!state.mining) return;
@@ -21,7 +22,7 @@ export function updateActivityMining(state = S) {
   const startBtn = document.getElementById('startMiningActivity');
   if (startBtn) {
     startBtn.textContent = state.activities.mining ? '🛑 Stop Mining' : '⛏️ Start Mining';
-    startBtn.onclick = () => state.activities.mining ? window.stopActivity('mining') : window.startActivity('mining');
+    startBtn.onclick = () => state.activities.mining ? stopActivityMut(state, 'mining') : startActivityMut(state, 'mining');
   }
 
   const ironOption = document.getElementById('ironOption');
