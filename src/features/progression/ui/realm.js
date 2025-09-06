@@ -16,6 +16,7 @@ import { advanceRealm } from '../mutators.js';
 import { qs, setText, log } from '../../../shared/utils/dom.js';
 import { isProd } from '../../../config.js';
 import { mountAllFeatureUIs } from '../../index.js';
+import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 
 let pendingAstralUnlock = false;
 
@@ -89,7 +90,10 @@ export function updateActivityCultivation() {
   const startBtn = document.getElementById('startCultivationActivity');
   if (startBtn) {
     startBtn.textContent = S.activities.cultivation ? 'Stop Cultivating' : 'Start Cultivating';
-    startBtn.onclick = () => S.activities.cultivation ? stopActivity('cultivation') : startActivity('cultivation');
+    startBtn.onclick = () =>
+      S.activities.cultivation
+        ? stopActivityMut(S, 'cultivation')
+        : startActivityMut(S, 'cultivation');
   }
 
   const btBtn = document.getElementById('breakthroughBtnActivity');
