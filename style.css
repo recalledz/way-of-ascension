@@ -18,7 +18,7 @@
   --radius: 16px;
   --gap: 20px;
   --pad: 16px;
-  --header-h: 76px;
+    --header-h: 64px;
   --log-h: 0px;
   --tabs-h: 48px;
   --safe-bottom: env(safe-area-inset-bottom,0px);
@@ -1568,10 +1568,7 @@ header{
   position:relative; z-index:2;
 }
 .primary-row{display:flex; align-items:center; gap:20px;}
-.status-row{display:flex; align-items:center; gap:20px; margin-left:auto;}
-.status-toggle{display:none;}
-.status-cluster{display:flex; align-items:center; gap:20px;}
-.brand{display:flex; gap:14px; align-items:center}
+  .brand{display:flex; gap:14px; align-items:center}
 .qi-orb{
   background:linear-gradient(135deg, var(--foundation-primary), var(--foundation-secondary)); 
   width:84px; 
@@ -1709,9 +1706,13 @@ h1{font-size:20px; margin:0; letter-spacing:.5px}
 .topbar{display:flex; gap:14px; flex-wrap:wrap}
 /* STYLE-GUIDE-UPDATE: Parchment chip style */
 .chip{background:var(--panel); border:1px solid var(--accent); padding:8px 12px; border-radius:999px; font-size:12px; box-shadow: inset 0 1px 3px rgba(139, 117, 95, 0.2);}
+.resource-chips{display:flex; flex-direction:column; gap:var(--gap); margin-bottom:var(--gap);}
 .hp-chip{display:flex; flex-direction:column; align-items:flex-start;}
+.qi-chip{display:flex; flex-direction:column; align-items:flex-start;}
 .hp-chip .hp-bar{position:relative; width:100px; height:8px; background:rgba(239,68,68,0.3); border-radius:4px; margin-top:2px;}
 .hp-chip .hp-bar .fill{height:100%; background:linear-gradient(90deg,#ef4444,#f87171); border-radius:4px; transition:width 0.3s ease; width:0%;}
+.qi-chip .qi-bar{position:relative; width:100px; height:8px; background:rgba(37,99,235,0.3); border-radius:4px; margin-top:2px;}
+.qi-chip .qi-bar .qi-fill{height:100%; background:linear-gradient(90deg,#3b82f6,#60a5fa); border-radius:4px; transition:width 0.3s ease; width:0%;}
 .shield-overlay{position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; transition:width 0.2s linear;}
 .shield-fill{fill:rgba(0,255,255,0.6); height:100%; transition:width 0.2s linear;}
 .shield-shimmer{height:100%; transition:width 0.2s linear; animation:shield-shimmer 1.5s linear infinite; opacity:0.6;}
@@ -1719,7 +1720,7 @@ h1{font-size:20px; margin:0; letter-spacing:.5px}
 html.reduce-motion .shield-overlay,html.reduce-motion .shield-fill,html.reduce-motion .shield-shimmer{transition:none;}
 html.reduce-motion .shield-shimmer{animation:none;}
 
-main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - 76px)}
+  main{display:grid; grid-template-columns: 280px 1fr; height:calc(100% - var(--header-h))}
 
 /* STYLE-GUIDE-UPDATE: Left stats panel with parchment texture */
 .left{
@@ -4424,17 +4425,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
   .title-wrap .sub{display:none;}
   .qi-orb{width:40px;height:40px;}
   .hamburger{display:block;}
-  .status-row{width:100%;display:flex;flex-direction:column;align-items:flex-start;}
-  .status-toggle{display:block;background:var(--panel);border:1px solid var(--accent);border-radius:999px;padding:calc(var(--pad)/2) var(--pad);min-height:44px;}
-  .status-row:not([data-open="true"]) .status-cluster{display:none;}
-  .status-row[data-open="true"] .status-cluster{display:flex;flex-wrap:wrap;gap:var(--gap);margin-top:var(--gap);}
-  .status-row[data-open="true"] #top-chips,
-  .status-row[data-open="true"] .right-actions{display:flex;flex-wrap:wrap;gap:var(--gap);width:100%;}
-  .status-row[data-open="true"] #top-chips > *,
-  .status-row[data-open="true"] .right-actions > *{flex:1 1 calc(50% - var(--gap));}
-  .status-row[data-open="true"] .btn{min-height:44px;}
-  #taskChip,#realmChip,#stonesChip{display:none;}
-  main{display:block;height:auto;}
+    main{display:block;height:auto;}
   #sidebar{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:80%;transform:translateX(-100%);transition:transform .3s;background:linear-gradient(180deg,var(--panel),#ebe0c8);z-index:1001;padding:var(--pad);}
   #sidebar.open{transform:translateX(0);}
   body.drawer-open{overflow:hidden;}
@@ -4442,7 +4433,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
   .activity-content{padding:var(--pad);height:calc(100dvh - var(--header-h) - var(--tabs-h));overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--log-h) + env(safe-area-inset-bottom,0px));}
   .activity-content::after{content:"";display:block;height:var(--log-h);}
   img,canvas{max-width:100%;height:auto;}
-  .hp-chip .hp-bar{width:100%;max-width:100%;}
+    .hp-chip .hp-bar,.qi-chip .qi-bar{width:100%;max-width:100%;}
   .chip{padding:calc(var(--pad)/2) var(--pad);min-height:44px;}
 
   .log-toggle{display:flex;align-items:center;justify-content:center;width:100%;height:48px;background:none;border:none;font-family:inherit;font-size:1rem;}
