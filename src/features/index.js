@@ -18,7 +18,7 @@ import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { mountTrainingGameUI as mountPhysiqueTrainingUI } from "./physique/ui/trainingGame.js";
 import { mountAgilityTrainingUI } from "./agility/ui/trainingGame.js";
 import { mountCultivationSidebar } from "./progression/ui/cultivationSidebar.js";
-import { featureFlags } from "../config.js";
+import { featureFlags, devUnlockPreset } from "../config.js";
 import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
 import { applyDevUnlockPreset } from "./devUnlock.js";
 
@@ -61,6 +61,46 @@ const coreFeatures = new Set([
 
 export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
+  if (devUnlockPreset === 'all') {
+    mountCultivationSidebar(state);
+    mountProficiencyUI(state);
+    mountSectUI(state);
+    mountKarmaUI(state);
+    mountAlchemyUI(state);
+    mountCookingUI(state);
+    mountMiningUI(state);
+    mountGatheringUI(state);
+    mountForgingUI(state);
+    mountPhysiqueUI(state);
+    mountPhysiqueTrainingUI(state);
+    mountAgilityUI(state);
+    mountAgilityTrainingUI(state);
+    mountCatchingUI(state);
+    mountLawDisplay(state);
+    mountMindReadingUI(state);
+    mountAstralTreeUI(state);
+    const ensure = (containerId, id, activity, label) => {
+      const container = document.getElementById(containerId);
+      if (!container || document.getElementById(id)) return;
+      const item = document.createElement('div');
+      item.className = containerId === 'levelingActivities' ? 'activity-item leveling-tab' : 'activity-item management-tab';
+      item.id = id;
+      item.dataset.activity = activity;
+      item.innerHTML = `<div class="activity-name">${label}</div>`;
+      container.appendChild(item);
+    };
+
+    ensure('levelingActivities', 'physiqueSelector', 'physique', 'Physique');
+    ensure('levelingActivities', 'agilitySelector', 'agility', 'Agility');
+    ensure('levelingActivities', 'miningSelector', 'mining', 'Mining');
+    ensure('levelingActivities', 'gatheringSelector', 'gathering', 'Gathering');
+    ensure('levelingActivities', 'forgingSelector', 'forging', 'Forging');
+    ensure('levelingActivities', 'catchingSelector', 'catching', 'Catching');
+    ensure('managementActivities', 'adventureSelector', 'adventure', 'Adventure');
+    ensure('managementActivities', 'cookingSelector', 'cooking', 'Cooking');
+    ensure('managementActivities', 'alchemySelector', 'alchemy', 'Alchemy');
+    return;
+  }
   const vis = debugFeatureVisibility(state);
   if (vis.cultivation?.visible) mountCultivationSidebar(state);
   if (vis.proficiency.visible) mountProficiencyUI(state);
@@ -93,6 +133,12 @@ export function debugFeatureVisibility(state) {
     ...Object.keys(featureFlags),
     ...Object.keys(unlockMap),
   ]);
+  if (devUnlockPreset === 'all') {
+    for (const key of keys) {
+      result[key] = { visible: true };
+    }
+    return result;
+  }
   for (const key of keys) {
     const unlockFn = unlockMap[key] || (() => true);
     const unlockAllowed = unlockFn(state);
