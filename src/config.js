@@ -1,7 +1,15 @@
 // Environment and feature flag utilities
 
 const hasImportMeta = typeof import.meta !== 'undefined' && !!import.meta.env;
-const env = hasImportMeta ? import.meta.env : (typeof process !== 'undefined' ? process.env : {});
+const hasProcess = typeof process !== 'undefined';
+const hasRuntimeEnv = typeof window !== 'undefined' && !!window.__ENV__;
+const env = hasImportMeta
+  ? import.meta.env
+  : hasProcess
+  ? process.env
+  : hasRuntimeEnv
+  ? window.__ENV__
+  : {};
 
 // Determine mode and source
 const rawEnv = env?.VERCEL_ENV || env?.NODE_ENV || (env?.PROD ? 'production' : '');
@@ -35,8 +43,9 @@ function coerce(value, fallback) {
 function readFlag(name, fallback) {
   const order = [
     { prefix: 'VITE_', source: 'VITE', provider: hasImportMeta ? import.meta.env : undefined },
-    { prefix: 'NEXT_PUBLIC_', source: 'NEXT_PUBLIC', provider: typeof process !== 'undefined' ? process.env : undefined },
-    { prefix: 'REACT_APP_', source: 'REACT_APP', provider: typeof process !== 'undefined' ? process.env : undefined }
+    { prefix: 'NEXT_PUBLIC_', source: 'NEXT_PUBLIC', provider: hasProcess ? process.env : undefined },
+    { prefix: 'REACT_APP_', source: 'REACT_APP', provider: hasProcess ? process.env : undefined },
+    { prefix: '', source: 'RUNTIME', provider: hasRuntimeEnv ? window.__ENV__ : undefined }
   ];
 
   for (const { prefix, source, provider } of order) {
@@ -102,8 +111,10 @@ export function configReport() {
 
   const envProvider = hasImportMeta
     ? 'vite import.meta.env'
-    : typeof process !== 'undefined'
+    : hasProcess
     ? 'process.env'
+    : hasRuntimeEnv
+    ? 'window.__ENV__'
     : 'unknown';
 
   let bundlerGuess = 'unknown';
