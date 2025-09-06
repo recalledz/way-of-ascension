@@ -1,6 +1,10 @@
 // src/features/activity/ui/activityUI.js
 import { selectActivity } from "../mutators.js";
-import { getActiveActivity } from "../selectors.js";
+import { getActiveActivity, getSelectedActivity } from "../selectors.js";
+import { updateActivityCultivation } from "../../progression/ui/realm.js";
+import { updateActivityAdventure } from "../../adventure/logic.js";
+import { renderEquipmentPanel } from "../../inventory/ui/CharacterPanel.js";
+import { updateActivityCooking } from "../../cooking/ui/cookingDisplay.js";
 import { fCap, qCap } from "../../progression/selectors.js";
 import { getBuildingLevel } from "../../sect/selectors.js";
 
@@ -8,9 +12,7 @@ export function mountActivityUI(root) {
   const handle = name => {
     selectActivity(root, name);
     updateActivitySelectors(root);
-    if (typeof globalThis.updateActivityContent === 'function') {
-      globalThis.updateActivityContent();
-    }
+    renderActiveActivity(root);
   };
 
   // Click handlers (new compact sidebar + legacy)
@@ -180,4 +182,21 @@ export function updateCurrentTaskDisplay(root) {
   };
   const active = getActiveActivity(root);
   el.textContent = active ? (map[active] || 'Idle') : 'Idle';
+}
+
+export function renderActiveActivity(root) {
+  updateActivityCultivation();
+  const selected = getSelectedActivity(root);
+  switch (selected) {
+    case 'adventure':
+      updateActivityAdventure();
+      break;
+    case 'character':
+      renderEquipmentPanel();
+      break;
+    case 'cooking':
+      updateActivityCooking();
+      break;
+    // other activities intentionally no-op
+  }
 }

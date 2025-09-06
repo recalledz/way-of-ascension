@@ -24,7 +24,6 @@ import {
   updateActivityCultivation,
   updateBreakthrough,
   initRealmUI,
-  getRealmName,
   checkLawUnlocks,
 } from '../src/features/progression/index.js';
 import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
@@ -72,8 +71,7 @@ import { tickAgilityTraining } from '../src/features/agility/mutators.js';
 import { toggleAutoMeditate, toggleAutoAdventure } from '../src/features/automation/mutators.js';
 import { isAutoMeditate, isAutoAdventure } from '../src/features/automation/selectors.js';
 import { selectActivity as selectActivityMut, startActivity as startActivityMut, stopActivity as stopActivityMut } from '../src/features/activity/mutators.js';
-import { getSelectedActivity } from '../src/features/activity/selectors.js';
-import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay } from '../src/features/activity/ui/activityUI.js';
+import { mountActivityUI, updateActivitySelectors, updateCurrentTaskDisplay, renderActiveActivity } from '../src/features/activity/ui/activityUI.js';
 import { meditate } from '../src/features/progression/mutators.js';
 import { tickInsight } from '../src/features/progression/insight.js';
 import { usePill, sellJunk } from '../src/features/inventory/mutators.js';
@@ -95,9 +93,6 @@ if (report.isProd) {
 // Global variables
 const progressBars = {};
 
-// Track last known equipment/inventory state to avoid unnecessary re-renders
-let lastInventorySnapshot = JSON.stringify(S.inventory || []);
-let lastEquipmentSnapshot = JSON.stringify(S.equipment || {});
 
 // Activity Management System (delegates to feature)
 function selectActivity(activityType) { selectActivityMut(S, activityType); }
@@ -264,6 +259,7 @@ function updateAll(){
 
   // activity UI refresh:
   updateActivitySelectors(S);
+  renderActiveActivity(S);
 
   updateResourceDisplay();
 
@@ -273,151 +269,12 @@ function updateAll(){
 
   updateKarmaDisplay();
   updateLawsUI();
-  updateActivityCards();
   renderMindMainTab(document.getElementById('mindMainTab'), S);
   renderMindReadingTab(document.getElementById('mindReadingTab'), S);
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
 
   emit('RENDER');
-}
-
-
-
-function updateActivityContent() {
-  // Update cultivation activity content
-  updateActivityCultivation();
-  const selected = getSelectedActivity(S);
-  switch(selected) {
-    case 'adventure':
-      updateActivityAdventure();
-      break;
-    case 'character': {
-      const invState = JSON.stringify(S.inventory || []);
-      const equipState = JSON.stringify(S.equipment || {});
-      if (invState !== lastInventorySnapshot || equipState !== lastEquipmentSnapshot) {
-        renderEquipmentPanel(); // EQUIP-CHAR-UI
-        lastInventorySnapshot = invState;
-        lastEquipmentSnapshot = equipState;
-      }
-      break;
-    }
-    case 'cooking':
-      updateActivityCooking();
-      break;
-    case 'mind': {
-      const active = document.querySelector('.mind-tab-btn.active')?.dataset.tab;
-      if (active === 'mindMain') {
-        renderMindMainTab(document.getElementById('mindMainTab'), S);
-      } else if (active === 'mindReading') {
-        renderMindReadingTab(document.getElementById('mindReadingTab'), S);
-      } else if (active === 'mindStats') {
-        renderMindStatsTab(document.getElementById('mindStatsTab'), S);
-      } else {
-        renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
-      }
-      break;
-    }
-    case 'catching':
-      updateCatchingUI(S);
-      break;
-  }
-}
-globalThis.updateActivityContent = updateActivityContent;
-
-
-// Update sidebar activity displays
-function updateSidebarActivities() {
-  // Update cultivation
-  setText('cultivationLevel', `${getRealmName(S.realm.tier)} ${S.realm.stage}`);
-  const cultivationFill = document.getElementById('cultivationProgressFill');
-  if (cultivationFill) {
-    const foundationProgress = S.foundation / fCap(S);
-    const progressPct = Math.floor(foundationProgress * 100);
-    cultivationFill.style.width = progressPct + '%';
-    setText('cultivationProgressText', progressPct + '%');
-  }
-  
-  // Update physique
-  if (S.physique) {
-    setText('physiqueLevel', `Level ${S.physique.level}`);
-    const physiqueFill = document.getElementById('physiqueProgressFill');
-    if (physiqueFill) {
-      const progressPct = Math.floor(S.physique.exp / S.physique.expMax * 100);
-      physiqueFill.style.width = progressPct + '%';
-      setText('physiqueProgressText', progressPct + '%');
-    }
-  }
-
-  // Update adventure
-  if (S.adventure) {
-    const currentZone = ZONES[S.adventure.currentZone];
-    setText('adventureLevel', currentZone ? currentZone.name : 'Zone 1');
-    const adventureFill = document.getElementById('adventureProgressFill');
-    if (adventureFill && currentZone) {
-      const currentArea = currentZone.areas[S.adventure.currentArea];
-      if (currentArea) {
-        const progress = S.adventure.killsInCurrentArea / currentArea.killReq;
-        const progressPct = Math.floor(progress * 100);
-        adventureFill.style.width = progressPct + '%';
-        setText('adventureProgressText', progressPct + '%');
-      }
-    }
-  }
-  
-  updateCookingSidebar();
-  
-  // Update sect status indicator
-  const sectStatus = document.getElementById('sectStatus');
-  if (sectStatus) {
-    if (getSelectedActivity(S) === 'sect') {
-      sectStatus.textContent = 'Active';
-      sectStatus.classList.add('active');
-    } else {
-      sectStatus.textContent = 'Inactive';
-      sectStatus.classList.remove('active');
-    }
-  }
-}
-
-// Legacy function for compatibility
-function updateActivityCards() {
-  updateActivitySelectors(S);
-  updateActivityContent();
-}
-
-function updateActivityUI() {
-  // Update activity status displays
-  const activities = ['cultivation', 'physique', 'adventure', 'mining', 'cooking', 'alchemy'];
-
-  activities.forEach(activity => {
-    const statusEl = document.getElementById(`${activity}Status`);
-    const btnEl = document.getElementById(`start${activity.charAt(0).toUpperCase() + activity.slice(1)}`);
-    const panelEl = document.getElementById(`${activity}Panel`);
-
-    if (statusEl && btnEl && panelEl) {
-      if (S.activities[activity]) {
-        statusEl.textContent = 'Active';
-        statusEl.style.background = 'rgba(34, 197, 94, 0.2)';
-        statusEl.style.color = '#22c55e';
-        btnEl.textContent = btnEl.textContent.replace('Start', 'Stop');
-        btnEl.classList.add('active');
-        panelEl.classList.add('active');
-      } else {
-        statusEl.textContent = 'Inactive';
-        statusEl.style.background = 'rgba(107, 114, 128, 0.2)';
-        statusEl.style.color = '#9ca3af';
-        btnEl.classList.remove('active');
-        panelEl.classList.remove('active');
-
-        // Reset button text
-        if (activity === 'cultivation') btnEl.textContent = 'Start Cultivating';
-        if (activity === 'physique') btnEl.textContent = '💪 Train Physique';
-        if (activity === 'adventure') btnEl.textContent = '🗺️ Explore';
-        if (activity === 'mining') btnEl.textContent = '⛏️ Mine Ore';
-      }
-    }
-  });
 }
 
 // Initialize law system on game start
