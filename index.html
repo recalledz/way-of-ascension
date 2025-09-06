@@ -62,14 +62,13 @@
       </div>
     </div>
   </div>
-  <div class="status-row" id="statusRow" data-open="false">
-    <button id="statusToggle" class="status-toggle" aria-controls="statusCluster" aria-expanded="false">Status ▾</button>
-    <div id="statusCluster" class="status-cluster">
-      <div class="topbar" id="top-chips">
-        <div class="chip" id="taskChip">Task: <span id="currentTask">Idle</span></div>
-        <div class="chip" id="realmChip">Realm: <span id="realmName">Mortal 1</span></div>
-        <div class="chip" id="qiChip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span></div>
-        <div class="chip" id="stonesChip">Stones: <span id="stonesVal">0</span></div>
+  </header>
+
+  <div id="drawerScrim" class="drawer-scrim" hidden></div>
+  <main>
+    <aside class="left" id="sidebar">
+
+      <div class="resource-bars">
         <div class="chip hp-chip">HP: <span id="hpVal">100</span>/<span id="hpMax">100</span>
           <div class="hp-bar">
             <div class="fill" id="hpFill"></div>
@@ -90,16 +89,13 @@
           </div>
           <span id="hpA11y" class="sr-only">HP 100/100, Shield 0/0</span>
         </div>
+        <div class="chip qi-chip">Qi: <span id="qiVal">0</span>/<span id="qiCap">100</span>
+          <div class="qi-bar">
+            <div class="qi-fill" id="qiFill"></div>
+          </div>
+        </div>
       </div>
-      
-    </div>
-  </div>
-  </header>
 
-  <div id="drawerScrim" class="drawer-scrim" hidden></div>
-  <main>
-    <aside class="left" id="sidebar">
-      
       <!-- Leveling Activities Group -->
       <div class="activity-group">
         <h4 class="group-title"><iconify-icon icon="ri:hand-line" class="ui-icon" width="20"></iconify-icon> Training & Skills</h4>
