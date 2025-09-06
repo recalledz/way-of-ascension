@@ -4258,6 +4258,14 @@ tr:last-child td {
 .status-ailments .ailment{position:relative;width:20px;height:20px;font-size:16px;line-height:20px}
 .status-ailments .ailment .stack{position:absolute;bottom:-2px;right:-2px;font-size:10px;color:#fff;text-shadow:0 0 2px #000}
 .status-ailments .ailment .duration{position:absolute;top:-4px;left:50%;transform:translateX(-50%);font-size:9px;color:#fff;text-shadow:0 0 2px #000}
+
+/* Tutorial overlay */
+.tutorial-overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:2000}
+.tutorial-card{background:#f2ecd8;padding:20px;max-width:420px;border:2px solid #bfa888;border-radius:6px;color:#000;text-align:left;box-shadow:0 2px 6px rgba(0,0,0,0.4)}
+.tutorial-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+.current-objective{margin-top:8px;font-size:14px;font-style:italic}
+.objective-highlight{animation:tutorialPulse 1s ease-in-out infinite;box-shadow:0 0 8px 2px var(--accent)}
+@keyframes tutorialPulse{0%,100%{box-shadow:0 0 8px 2px var(--accent)}50%{box-shadow:0 0 2px 1px var(--accent)}}
 .sprite-stage{position:relative;flex:0 0 auto;min-height:120px;display:flex;align-items:flex-start;justify-content:center;gap:24px;padding:8px}
 .sprite-stage .combatant{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center;position:relative}
 .sprite-stage .sprite{position:relative;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9)0%,rgba(255,255,255,.6)60%,rgba(255,255,255,0)70%),hsl(0,0%,80%);box-shadow:0 0 8px rgba(255,255,255,.6);animation:sprite-bob 2s ease-in-out infinite alternate}

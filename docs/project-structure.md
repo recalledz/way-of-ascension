@@ -310,6 +310,7 @@ way-of-ascension/
 │   │       └── state.js
 │   │   ├── tutorial/
 │   │   │   ├── logic.js
+│   │   │   ├── objectives.js
 │   │   │   └── state.js
 │   ├── game/
 │   │   ├── GameController.js
@@ -1243,4 +1244,5 @@ Paths added:
 - `docs/tutorial.md` – explains the tutorial flow and reset options.
 - `src/features/tutorial/state.js` – stores tutorial step and completion flag.
 - `src/features/tutorial/logic.js` – evaluates player actions and advances steps.
+- `src/features/tutorial/objectives.js` – objective definitions, requirements, and rewards.
 - `src/ui/tutorialBox.js` – displays on-screen guidance during the tutorial.

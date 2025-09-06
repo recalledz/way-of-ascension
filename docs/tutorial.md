@@ -1,13 +1,13 @@
 # Tutorial Flow
 
-The game includes a simple tutorial that guides new players through the opening steps of cultivation.
+The game includes a parchment-style tutorial that introduces objectives and rewards.
 
-1. **Start cultivating** – toggle the cultivation activity.
-2. **Gain foundation** – accumulate any amount of foundation.
-3. **Attempt a breakthrough** – begin a breakthrough once ready.
-4. **Reach stage 1 of the next realm** – succeeding the breakthrough completes the tutorial.
+1. **Journey to immortality** – start cultivating and reach 100% foundation.
+   *Reward: 1 breakthrough pill.*
+2. **Breakthrough to stage 2** – attempt a breakthrough.
+   *Reward: unlock the astral tree and gain 50 insight.*
 
-The current progress is stored in `state.tutorial.step` and `state.tutorial.completed`.
+Progress is stored in `state.tutorial.step`, `state.tutorial.claimable` and `state.tutorial.completed`.
 
 To disable the tutorial, set `state.tutorial.completed = true` in the console.
-To restart, set `state.tutorial = { step: 0, completed: false }` or call `resetTutorial(state)` from `src/features/tutorial/logic.js`.
+To restart, set `state.tutorial = { step: 0, completed: false, claimable: false }` or call `resetTutorial(state)` from `src/features/tutorial/logic.js`.
