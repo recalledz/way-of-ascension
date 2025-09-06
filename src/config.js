@@ -133,9 +133,12 @@ export const featureFlags = {
   mind: flags.FEATURE_MIND.parsedValue,
 };
 
-const envDevUnlock = flags.DEV_UNLOCK_PRESET.parsedValue;
+// Respect development unlocks only for non-production contexts
+// or when explicitly requested via environment variable in those contexts.
+const envDevUnlock = isProd ? undefined : flags.DEV_UNLOCK_PRESET.parsedValue;
 const wantDevUnlock =
-  (!isProd && (isLocalhost || isDeployPreview || isBranchDeploy || isVercelPreview)) ||
+  isLocalhost ||
+  isPreview ||
   String(envDevUnlock).toLowerCase() === 'all';
 export const devUnlockPreset = wantDevUnlock ? 'all' : envDevUnlock;
 
