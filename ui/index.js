@@ -24,8 +24,8 @@ import {
   updateActivityCultivation,
   updateBreakthrough,
   initRealmUI,
-  checkLawUnlocks,
 } from '../src/features/progression/index.js';
+import { ensureLaws } from '../src/features/progression/migrations.js';
 import { qs, setText, setFill, log } from '../src/shared/utils/dom.js';
 import { fmt } from '../src/shared/utils/number.js';
 import { emit } from '../src/shared/events.js';
@@ -273,27 +273,6 @@ function updateAll(){
   emit('RENDER');
 }
 
-// Initialize law system on game start
-function initLawSystem(){
-  // Ensure laws object exists
-  if(!S.laws) {
-    S.laws = {
-      selected: null,
-      unlocked: [],
-      points: 0,
-      trees: {
-        sword: {},
-        formation: {},
-        alchemy: {}
-      }
-    };
-  }
-  
-  // Check for any laws that should already be unlocked
-  checkLawUnlocks();
-}
-
-
 // Upgrades
 function canPay(cost){ return Object.entries(cost).every(([k,v])=> (S[k]||0) >= v); }
 function pay(cost){ if(!canPay(cost)) return false; Object.entries(cost).forEach(([k,v])=> S[k]-=v); return true; }
@@ -508,25 +487,25 @@ function enableLayoutDebug() {
     setupMobileUI();
     setupLogSheet();
     enableLayoutDebug();
-  initLawSystem();
-  mountActivityUI(S);
-  mountAdventureControls(S);
-  setupAdventureTabs();
-  setupMindTabs();
-  setupEquipmentTab(); // EQUIP-CHAR-UI
-  // Ensure derived stats like Qi shield are initialized based on equipped gear
-  recomputePlayerTotals(S);
-  mountDiagnostics(S);
-  renderMindMainTab(document.getElementById('mindMainTab'), S);
-  renderMindReadingTab(document.getElementById('mindReadingTab'), S);
-  renderMindStatsTab(document.getElementById('mindStatsTab'), S);
-  renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
-  selectActivity('cultivation'); // Start with cultivation selected
-  updateAll();
-  tick();
-  log('Welcome, cultivator.');
-  setInterval(tick, 1000);
-  setInterval(() => {
+    ensureLaws(S);
+    mountActivityUI(S);
+    mountAdventureControls(S);
+    setupAdventureTabs();
+    setupMindTabs();
+    setupEquipmentTab(); // EQUIP-CHAR-UI
+    // Ensure derived stats like Qi shield are initialized based on equipped gear
+    recomputePlayerTotals(S);
+    mountDiagnostics(S);
+    renderMindMainTab(document.getElementById('mindMainTab'), S);
+    renderMindReadingTab(document.getElementById('mindReadingTab'), S);
+    renderMindStatsTab(document.getElementById('mindStatsTab'), S);
+    renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
+    selectActivity('cultivation'); // Start with cultivation selected
+    updateAll();
+    tick();
+    log('Welcome, cultivator.');
+    setInterval(tick, 1000);
+    setInterval(() => {
     const junk = S.junk || [];
     const total = junk.reduce((sum, it) => sum + (it.qty || 1), 0);
     if (junk.length === 0) {
