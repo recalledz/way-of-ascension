@@ -157,6 +157,11 @@ export function meditate(root) {
 }
 
 export function unlockAstralNode(id, state = progressionState) {
-  state.astralUnlockedNodes = state.astralUnlockedNodes || new Set();
-  state.astralUnlockedNodes.add(id);
+  let set = state.astralUnlockedNodes;
+  if (!(set instanceof Set)) {
+    if (Array.isArray(set)) set = new Set(set);
+    else set = new Set();
+    state.astralUnlockedNodes = set;
+  }
+  set.add(id);
 }
