@@ -7,6 +7,7 @@ import { renderEquipmentPanel } from "../../inventory/ui/CharacterPanel.js";
 import { updateActivityCooking } from "../../cooking/ui/cookingDisplay.js";
 import { fCap, qCap } from "../../progression/selectors.js";
 import { getBuildingLevel } from "../../sect/selectors.js";
+import { fmt } from "../../../shared/utils/number.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -41,6 +42,8 @@ export function updateActivitySelectors(root) {
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
   root.catching ??= { level: 1, exp: 0, expMax: 100 };
+  root.forging  ??= { level: 1, exp: 0, expMax: 100 };
+  root.cooking  ??= { level: 1, exp: 0, expMax: 100 };
 
   const kitchenBuilt = getBuildingLevel('kitchen', root) > 0;
   const forgingBuilt = getBuildingLevel('forging_room', root) > 0;
@@ -90,60 +93,84 @@ export function updateActivitySelectors(root) {
   const physSel = document.getElementById('physiqueSelector');
   const physFill = document.getElementById('physiqueSelectorFill');
   const physInfo = document.getElementById('physiqueInfo');
+  const physText = document.getElementById('physiqueProgressTextSidebar');
   physSel?.classList.toggle('active', selected === 'physique');
   physSel?.classList.toggle('running', root.activities?.physique);
-  if (physFill && physInfo) {
-    const expPct = (root.physique.exp / root.physique.expMax) * 100;
-    physFill.style.width = `${expPct}%`;
-    physInfo.textContent = root.activities?.physique ? 'Training...' : `Level ${root.physique.level}`;
-  }
+  const physPct = (root.physique.exp / root.physique.expMax) * 100;
+  if (physFill) physFill.style.width = `${physPct}%`;
+  if (physInfo) physInfo.textContent = root.activities?.physique ? 'Training...' : `Level ${root.physique.level}`;
+  if (physText) physText.textContent = `${fmt(root.physique.exp)} / ${fmt(root.physique.expMax)}`;
 
   const agiSel = document.getElementById('agilitySelector');
   const agiFill = document.getElementById('agilitySelectorFill');
   const agiInfo = document.getElementById('agilityInfo');
+  const agiText = document.getElementById('agilityProgressTextSidebar');
   agiSel?.classList.toggle('active', selected === 'agility');
   agiSel?.classList.toggle('running', root.activities?.agility);
-  if (agiFill && agiInfo) {
-    const expPct = (root.agility.exp / root.agility.expMax) * 100;
-    agiFill.style.width = `${expPct}%`;
-    agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
-  }
+  const agiPct = (root.agility.exp / root.agility.expMax) * 100;
+  if (agiFill) agiFill.style.width = `${agiPct}%`;
+  if (agiInfo) agiInfo.textContent = root.activities?.agility ? 'Training...' : `Level ${root.agility.level}`;
+  if (agiText) agiText.textContent = `${fmt(root.agility.exp)} / ${fmt(root.agility.expMax)}`;
 
   // Mining
   const miningSel = document.getElementById('miningSelector');
   const miningFill = document.getElementById('miningSelectorFill');
   const miningInfo = document.getElementById('miningInfo');
+  const miningText = document.getElementById('miningProgressTextSidebar');
   miningSel?.classList.toggle('active', selected === 'mining');
   miningSel?.classList.toggle('running', root.activities?.mining);
-  if (miningFill && miningInfo) {
-    const expPct = (root.mining.exp / root.mining.expMax) * 100;
-    miningFill.style.width = `${expPct}%`;
-    miningInfo.textContent = root.activities?.mining ? 'Mining...' : `Level ${root.mining.level}`;
-  }
+  const miningPct = (root.mining.exp / root.mining.expMax) * 100;
+  if (miningFill) miningFill.style.width = `${miningPct}%`;
+  if (miningInfo) miningInfo.textContent = root.activities?.mining ? 'Mining...' : `Level ${root.mining.level}`;
+  if (miningText) miningText.textContent = `${fmt(root.mining.exp)} / ${fmt(root.mining.expMax)}`;
 
   // Gathering
   const gatheringSel = document.getElementById('gatheringSelector');
   const gatheringFill = document.getElementById('gatheringSelectorFill');
   const gatheringInfo = document.getElementById('gatheringInfo');
+  const gatheringText = document.getElementById('gatheringProgressTextSidebar');
   gatheringSel?.classList.toggle('active', selected === 'gathering');
   gatheringSel?.classList.toggle('running', root.activities?.gathering);
-  if (gatheringFill && gatheringInfo) {
-    const expPct = (root.gathering.exp / root.gathering.expMax) * 100;
-    gatheringFill.style.width = `${expPct}%`;
-    gatheringInfo.textContent = root.activities?.gathering ? 'Gathering...' : `Level ${root.gathering.level}`;
-  }
+  const gatheringPct = (root.gathering.exp / root.gathering.expMax) * 100;
+  if (gatheringFill) gatheringFill.style.width = `${gatheringPct}%`;
+  if (gatheringInfo) gatheringInfo.textContent = root.activities?.gathering ? 'Gathering...' : `Level ${root.gathering.level}`;
+  if (gatheringText) gatheringText.textContent = `${fmt(root.gathering.exp)} / ${fmt(root.gathering.expMax)}`;
 
   // Catching
   const catchSel = document.getElementById('catchingSelector');
   const catchFill = document.getElementById('catchingProgressFill');
   const catchInfo = document.getElementById('catchingLevel');
+  const catchText = document.getElementById('catchingProgressTextSidebar');
   catchSel?.classList.toggle('active', selected === 'catching');
   catchSel?.classList.toggle('running', root.activities?.catching);
-  if (catchFill && catchInfo) {
-    const expPct = (root.catching.exp / root.catching.expMax) * 100;
-    catchFill.style.width = `${expPct}%`;
-    catchInfo.textContent = root.activities?.catching ? 'Catching...' : `Level ${root.catching.level}`;
-  }
+  const catchPct = (root.catching.exp / root.catching.expMax) * 100;
+  if (catchFill) catchFill.style.width = `${catchPct}%`;
+  if (catchInfo) catchInfo.textContent = root.activities?.catching ? 'Catching...' : `Level ${root.catching.level}`;
+  if (catchText) catchText.textContent = `${fmt(root.catching.exp)} / ${fmt(root.catching.expMax)}`;
+
+  // Forging
+  const forgeSel = document.getElementById('forgingSelector');
+  const forgeFill = document.getElementById('forgingProgressFillSidebar');
+  const forgeInfo = document.getElementById('forgingLevelSidebar');
+  const forgeText = document.getElementById('forgingProgressTextSidebar');
+  forgeSel?.classList.toggle('active', selected === 'forging');
+  forgeSel?.classList.toggle('running', root.activities?.forging);
+  const forgePct = (root.forging.exp / root.forging.expMax) * 100;
+  if (forgeFill) forgeFill.style.width = `${forgePct}%`;
+  if (forgeInfo) forgeInfo.textContent = root.activities?.forging ? 'Forging...' : `Level ${root.forging.level}`;
+  if (forgeText) forgeText.textContent = `${fmt(root.forging.exp)} / ${fmt(root.forging.expMax)}`;
+
+  // Cooking
+  const cookSel = document.getElementById('cookingSelector');
+  const cookFill = document.getElementById('cookingProgressFillSidebar');
+  const cookInfo = document.getElementById('cookingLevelSidebar');
+  const cookText = document.getElementById('cookingProgressTextSidebar');
+  cookSel?.classList.toggle('active', selected === 'cooking');
+  cookSel?.classList.toggle('running', root.activities?.cooking);
+  const cookPct = (root.cooking.exp / root.cooking.expMax) * 100;
+  if (cookFill) cookFill.style.width = `${cookPct}%`;
+  if (cookInfo) cookInfo.textContent = root.activities?.cooking ? 'Cooking...' : `Level ${root.cooking.level}`;
+  if (cookText) cookText.textContent = `${fmt(root.cooking.exp)} / ${fmt(root.cooking.expMax)}`;
 
   // Adventure
   const advSel = document.getElementById('adventureSelector');

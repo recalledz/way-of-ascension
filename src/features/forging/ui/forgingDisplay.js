@@ -2,6 +2,7 @@ import { S } from '../../../shared/state.js';
 import { setText } from '../../../shared/utils/dom.js';
 import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
+import { fmt } from '../../../shared/utils/number.js';
 import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
 import { GEAR_BASES } from '../../gearGeneration/data/gearBases.js';
 import { startActivity as startActivityMut } from '../../activity/mutators.js';
@@ -117,9 +118,11 @@ function updateForgingSidebar(state = S) {
   setText('forgingLevelSidebar', `Level ${state.forging.level}`);
   const fill = document.getElementById('forgingProgressFillSidebar');
   if (fill) {
-    const pct = (state.forging.exp / state.forging.expMax) * 100;
+    const exp = state.forging.exp;
+    const max = state.forging.expMax;
+    const pct = (exp / max) * 100;
     fill.style.width = pct + '%';
-    setText('forgingProgressTextSidebar', pct.toFixed(0) + '%');
+    setText('forgingProgressTextSidebar', `${fmt(exp)} / ${fmt(max)}`);
   }
 }
 

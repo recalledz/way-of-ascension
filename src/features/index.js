@@ -77,14 +77,49 @@ const coreFeatures = new Set([
 ]);
 
 const activityMeta = {
-  physique: { icon: 'mdi:arm-flex', infoId: 'physiqueInfo', fillId: 'physiqueSelectorFill' },
-  agility: { icon: 'mdi:run-fast', infoId: 'agilityInfo', fillId: 'agilitySelectorFill' },
-  mining: { icon: 'mdi:pickaxe', infoId: 'miningInfo', fillId: 'miningSelectorFill' },
-  gathering: { icon: 'mdi:leaf', infoId: 'gatheringInfo', fillId: 'gatheringSelectorFill' },
-  forging: { icon: 'mdi:anvil', infoId: 'forgingLevelSidebar', fillId: 'forgingProgressFillSidebar', textId: 'forgingProgressTextSidebar' },
-  catching: { icon: 'mdi:butterfly-outline', infoId: 'catchingLevel', fillId: 'catchingProgressFill' },
+  physique: {
+    icon: 'mdi:arm-flex',
+    infoId: 'physiqueInfo',
+    fillId: 'physiqueSelectorFill',
+    textId: 'physiqueProgressTextSidebar'
+  },
+  agility: {
+    icon: 'mdi:run-fast',
+    infoId: 'agilityInfo',
+    fillId: 'agilitySelectorFill',
+    textId: 'agilityProgressTextSidebar'
+  },
+  mining: {
+    icon: 'mdi:pickaxe',
+    infoId: 'miningInfo',
+    fillId: 'miningSelectorFill',
+    textId: 'miningProgressTextSidebar'
+  },
+  gathering: {
+    icon: 'mdi:leaf',
+    infoId: 'gatheringInfo',
+    fillId: 'gatheringSelectorFill',
+    textId: 'gatheringProgressTextSidebar'
+  },
+  forging: {
+    icon: 'mdi:anvil',
+    infoId: 'forgingLevelSidebar',
+    fillId: 'forgingProgressFillSidebar',
+    textId: 'forgingProgressTextSidebar'
+  },
+  catching: {
+    icon: 'mdi:butterfly-outline',
+    infoId: 'catchingLevel',
+    fillId: 'catchingProgressFill',
+    textId: 'catchingProgressTextSidebar'
+  },
   adventure: { icon: 'mdi:map', infoId: 'adventureInfo' },
-  cooking: { icon: 'mdi:chef-hat' },
+  cooking: {
+    icon: 'mdi:chef-hat',
+    infoId: 'cookingLevelSidebar',
+    fillId: 'cookingProgressFillSidebar',
+    textId: 'cookingProgressTextSidebar'
+  },
   alchemy: { icon: 'mdi:flask-round-bottom' },
   character: { icon: 'mdi:account' },
 };
