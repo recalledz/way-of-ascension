@@ -84,15 +84,20 @@ export function mountAllFeatureUIs(state) {
 
 export function debugFeatureVisibility(state) {
   const result = {};
-  for (const [key, flag] of Object.entries(featureFlags)) {
+  const keys = new Set([
+    ...Object.keys(featureFlags),
+    ...Object.keys(unlockMap),
+  ]);
+  for (const key of keys) {
     const unlockFn = unlockMap[key] || (() => true);
     const unlockAllowed = unlockFn(state);
-    const flagAllowed = !!flag;
+    const hasFlag = Object.prototype.hasOwnProperty.call(featureFlags, key);
+    const flagActive = hasFlag ? !!featureFlags[key] : true;
     result[key] = {
-      flagAllowed,
+      flagAllowed: hasFlag ? flagActive : undefined,
       unlockAllowed,
-      visible: flagAllowed && unlockAllowed,
-      reason: !flagAllowed ? 'flag=false' : unlockAllowed ? 'unlocked' : 'locked',
+      visible: flagActive && unlockAllowed,
+      reason: !flagActive ? 'flag=false' : unlockAllowed ? 'unlocked' : 'locked',
     };
   }
   return result;

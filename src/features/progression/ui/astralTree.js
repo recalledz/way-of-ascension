@@ -204,6 +204,10 @@ export function mountAstralTreeUI() {
   const closeBtn = document.getElementById('closeAstralTree');
   if (!openBtn || !overlay || !closeBtn) return;
 
+  openBtn.style.display = '';
+  const miniEl = document.getElementById('astralInsightMini');
+  if (miniEl) miniEl.style.display = '';
+
   const starfield = overlay.querySelector('.starfield');
 
   function rand() {

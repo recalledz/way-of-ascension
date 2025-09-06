@@ -14,8 +14,8 @@ import {
 } from '../selectors.js';
 import { advanceRealm } from '../mutators.js';
 import { qs, setText, log } from '../../../shared/utils/dom.js';
-import { isProd, featureFlags } from '../../../config.js';
-import { mountAstralTreeUI } from './astralTree.js';
+import { isProd } from '../../../config.js';
+import { mountAllFeatureUIs } from '../../index.js';
 
 let pendingAstralUnlock = false;
 
@@ -476,12 +476,8 @@ export function updateBreakthrough() {
       const info = advanceRealm(S);
       log('Breakthrough succeeded! Realm advanced.', 'good');
       showBreakthroughResult(true, info);
-      if (isProd && featureFlags.astralTree && info.type === 'stage' && mortalStage(S) === 2) {
-        const btn = document.getElementById('openAstralTree');
-        const mini = document.getElementById('astralInsightMini');
-        if (btn) btn.style.display = '';
-        if (mini) mini.style.display = '';
-        mountAstralTreeUI(S);
+      mountAllFeatureUIs(S);
+      if (isProd && info.type === 'stage' && mortalStage(S) === 2) {
         pendingAstralUnlock = true;
       }
     } else {

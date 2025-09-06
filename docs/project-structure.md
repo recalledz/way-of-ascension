@@ -357,6 +357,7 @@ way-of-ascension/
 ├── src/features/automation/state.js
 ├── src/features/combat/index.js
 ├── src/features/karma/index.js
+├── src/features/law/index.js
 ├── src/features/mining/index.js
 ├── src/features/gathering/index.js
 ├── src/features/gathering/logic.js
@@ -376,9 +377,11 @@ way-of-ascension/
 ├── src/features/agility/state.js
 ├── src/features/agility/ui/agilityDisplay.js
 ├── src/features/agility/ui/trainingGame.js
+├── src/features/astralTree/index.js
 ├── src/features/catching/
 │   ├── data/
 │   │   └── icons.js
+│   ├── index.js
 │   ├── logic.js
 │   ├── mutators.js
 │   ├── state.js
@@ -1090,6 +1093,7 @@ Paths added:
 - `src/features/agility/index.js` – Agility feature descriptor.
 
 ### Catching Feature (`src/features/catching/`)
+- `src/features/catching/index.js` – Catching feature descriptor.
 - `src/features/catching/state.js` – Tracks caught creatures, hunger, and taming progress.
 - `src/features/catching/logic.js` – Handles hunger decay and catch timers.
 - `src/features/catching/mutators.js` – Starts catch attempts, consuming nets and scheduling completion.
@@ -1184,6 +1188,12 @@ Paths added:
 - `src/features/automation/mutators.js` – Toggles automation options like auto-meditate and auto-adventure.
 - `src/features/automation/selectors.js` – Reads automation settings from state.
 
+### Astral Tree Feature (`src/features/astralTree/`)
+- `src/features/astralTree/index.js` – Astral Tree feature descriptor controlling nav visibility.
+
+### Law Feature (`src/features/law/`)
+- `src/features/law/index.js` – Law feature descriptor gating law navigation on Qi-refining.
+
 ### Feature Migration Files
 - `src/features/ability/migrations.js` – Save migrations for ability feature.
 - `src/features/adventure/migrations.js` – Save migrations for adventure feature.
@@ -1222,3 +1232,9 @@ Paths added:
 - `src/features/weaponGeneration/index.js` – Weapon generation feature descriptor.
 - `src/features/agility/index.js` – Agility feature descriptor.
 - `src/features/sideLocations/index.js` – Side locations feature descriptor.
+ - `src/features/gathering/index.js` – Gathering feature descriptor.
+ - `src/features/forging/index.js` – Forging feature descriptor.
+ - `src/features/catching/index.js` – Catching feature descriptor.
+ - `src/features/mind/index.js` – Mind feature descriptor.
+ - `src/features/astralTree/index.js` – Astral Tree feature descriptor.
+ - `src/features/law/index.js` – Law feature descriptor.

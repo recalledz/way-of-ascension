@@ -85,6 +85,11 @@ export function mortalStage(state = progressionState) {
   return realm.stage || 0;
 }
 
+export function realmStage(state = progressionState) {
+  const slice = state.progression || state;
+  return slice.realm?.stage || 0;
+}
+
 export function isQiRefiningReached(state = progressionState) {
   const slice = state.progression || state;
   return (slice.realm?.tier ?? 0) >= 1;
