@@ -1,7 +1,6 @@
 // src/features/mind/index.js
 
 import { defaultMindState, ensureMindState } from './state.js';
-import { featureFlags } from '../../config.js';
 import { selectAstral } from '../../shared/selectors.js';
 
 export { defaultMindState, ensureMindState } from './state.js';
@@ -38,7 +37,7 @@ export const MindFeature = {
   initialState: () => ({ ...defaultMindState, _v: 0 }),
   nav: {
     visible(root) {
-      return featureFlags.mind && selectAstral.isNodeUnlocked(4061, root);
+      return selectAstral.isNodeUnlocked(4061, root);
     },
   },
 };

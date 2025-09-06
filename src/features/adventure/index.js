@@ -1,5 +1,4 @@
 import { adventureState } from "./state.js";
-import { featureFlags } from "../../config.js";
 import { selectProgress } from "../../shared/selectors.js";
 
 export const AdventureFeature = {
@@ -7,7 +6,7 @@ export const AdventureFeature = {
   initialState: () => ({ ...adventureState, _v: 0 }),
   nav: {
     visible(root) {
-      return featureFlags.proficiency && selectProgress.mortalStage(root) >= 5;
+      return selectProgress.mortalStage(root) >= 5;
     },
   },
 };

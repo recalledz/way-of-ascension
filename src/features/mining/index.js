@@ -1,5 +1,4 @@
 import { miningState } from "./state.js";
-import { featureFlags } from "../../config.js";
 import { selectAstral } from "../../shared/selectors.js";
 
 export const MiningFeature = {
@@ -7,7 +6,7 @@ export const MiningFeature = {
   initialState: () => ({ ...miningState, _v: 0 }),
   nav: {
     visible(root) {
-      return featureFlags.mining && selectAstral.isNodeUnlocked(4060, root);
+      return selectAstral.isNodeUnlocked(4060, root);
     },
   },
 };

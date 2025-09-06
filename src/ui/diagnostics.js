@@ -70,23 +70,38 @@ export function mountDiagnostics(state) {
     container.appendChild(table1);
 
     const vis = debugFeatureVisibility(state);
-    const table2 = document.createElement("table");
-    table2.style.marginTop = "20px";
-    table2.border = "1";
-    const h2 = table2.insertRow();
-    ["featureKey", "flagAllowed", "unlockAllowed", "visible", "reason"].forEach((h) => {
-      const th = h2.insertCell();
+    const expTable = document.createElement("table");
+    expTable.style.marginTop = "20px";
+    expTable.border = "1";
+    const hExp = expTable.insertRow();
+    ["featureKey", "flagAllowed", "unlockAllowed", "visible"].forEach((h) => {
+      const th = hExp.insertCell();
+      th.textContent = h;
+    });
+    const coreTable = document.createElement("table");
+    coreTable.style.marginTop = "20px";
+    coreTable.border = "1";
+    const hCore = coreTable.insertRow();
+    ["featureKey", "unlockAllowed", "visible"].forEach((h) => {
+      const th = hCore.insertCell();
       th.textContent = h;
     });
     for (const [k, v] of Object.entries(vis)) {
-      const row = table2.insertRow();
-      row.insertCell().textContent = k;
-      row.insertCell().textContent = String(v.flagAllowed);
-      row.insertCell().textContent = String(v.unlockAllowed);
-      row.insertCell().textContent = String(v.visible);
-      row.insertCell().textContent = v.reason;
+      if (v.flagAllowed === undefined) {
+        const row = coreTable.insertRow();
+        row.insertCell().textContent = k;
+        row.insertCell().textContent = String(v.unlockAllowed);
+        row.insertCell().textContent = String(v.visible);
+      } else {
+        const row = expTable.insertRow();
+        row.insertCell().textContent = k;
+        row.insertCell().textContent = String(v.flagAllowed);
+        row.insertCell().textContent = String(v.unlockAllowed);
+        row.insertCell().textContent = String(v.visible);
+      }
     }
-    container.appendChild(table2);
+    if (expTable.rows.length > 1) container.appendChild(expTable);
+    if (coreTable.rows.length > 1) container.appendChild(coreTable);
 
     document.body.appendChild(overlay);
   }

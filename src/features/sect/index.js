@@ -1,5 +1,4 @@
 import { sectState } from "./state.js";
-import { featureFlags } from "../../config.js";
 import { selectProgress } from "../../shared/selectors.js";
 
 export const SectFeature = {
@@ -7,7 +6,7 @@ export const SectFeature = {
   initialState: () => ({ ...sectState, _v: 0 }),
   nav: {
     visible(root) {
-      return featureFlags.sect && selectProgress.mortalStage(root) >= 3;
+      return selectProgress.mortalStage(root) >= 3;
     },
   },
 };
