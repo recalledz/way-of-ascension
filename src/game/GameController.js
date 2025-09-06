@@ -78,3 +78,35 @@ export function createGameController() {
 
   return { state, start, setMode, pause, resume, step, getSpeed, setSpeed };
 }
+
+export class GameController {
+  // If class exists, extend it; otherwise create it.
+  constructor(root, stepMs = 1000) {
+    this.root = root;
+    this.stepMs = stepMs;
+    this.timer = null;
+    this.frame = null;   // (root, dtMs) => void
+  }
+
+  /**
+   * Set the frame function to run each tick.
+   * fn signature: (root, dtMs) => void
+   */
+  setFrame(fn) {
+    this.frame = fn;
+    return this;
+  }
+
+  start() {
+    if (this.timer) return;
+    this.timer = setInterval(() => {
+      if (this.frame) this.frame(this.root, this.stepMs);
+    }, this.stepMs);
+  }
+
+  stop() {
+    if (!this.timer) return;
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+}
