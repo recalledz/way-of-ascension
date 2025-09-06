@@ -28,25 +28,45 @@ import { forceBuild } from "./sect/mutators.js";
 // import { mountWeaponGenUI } from "./weaponGeneration/ui/weaponGenerationDisplay.js";
 
 const unlockMap = {
-  astralTree: (s) => selectProgress.mortalStage(s) >= 2,
+  astralTree: (s) => selectProgress.realmStage(s) >= 2,
   mining: (s) => selectAstral.isNodeUnlocked(4060, s),
   physique: (s) => selectAstral.isNodeUnlocked(4060, s),
   gathering: (s) => selectAstral.isNodeUnlocked(4061, s),
   mind: (s) => selectAstral.isNodeUnlocked(4061, s),
   catching: (s) => selectAstral.isNodeUnlocked(4062, s),
   agility: (s) => selectAstral.isNodeUnlocked(4062, s),
+  forging: (s) => selectAstral.isNodeUnlocked(4062, s),
   alchemy: (s) => selectSect.isBuildingBuilt('alchemy', s),
   cooking: (s) => selectSect.isBuildingBuilt('kitchen', s),
   law: (s) => selectProgress.isQiRefiningReached(s),
   sect: (s) => selectProgress.mortalStage(s) >= 3,
+  adventure: (s) => selectProgress.mortalStage(s) >= 5,
   proficiency: (s) => selectProgress.mortalStage(s) >= 5,
 };
+
+const coreFeatures = new Set([
+  'astralTree',
+  'mining',
+  'physique',
+  'gathering',
+  'mind',
+  'forging',
+  'agility',
+  'alchemy',
+  'cooking',
+  'law',
+  'sect',
+  'adventure',
+  'proficiency',
+]);
 
 function applyDevUnlockPreset(state) {
   if (devUnlockPreset !== 'all') return;
   const prog = state.progression || state;
   while (selectProgress.mortalStage(prog) < 5) advanceRealm(prog);
-  while (!selectProgress.isQiRefiningReached(prog)) advanceRealm(prog);
+  while (!selectProgress.isQiRefiningReached(prog) || selectProgress.realmStage(prog) < 2) {
+    advanceRealm(prog);
+  }
   unlockAstralNode(4060, prog);
   unlockAstralNode(4061, prog);
   unlockAstralNode(4062, prog);
@@ -91,14 +111,20 @@ export function debugFeatureVisibility(state) {
   for (const key of keys) {
     const unlockFn = unlockMap[key] || (() => true);
     const unlockAllowed = unlockFn(state);
-    const hasFlag = Object.prototype.hasOwnProperty.call(featureFlags, key);
-    const flagActive = hasFlag ? !!featureFlags[key] : true;
-    result[key] = {
-      flagAllowed: hasFlag ? flagActive : undefined,
-      unlockAllowed,
-      visible: flagActive && unlockAllowed,
-      reason: !flagActive ? 'flag=false' : unlockAllowed ? 'unlocked' : 'locked',
-    };
+    if (coreFeatures.has(key)) {
+      result[key] = {
+        unlockAllowed,
+        visible: unlockAllowed,
+      };
+    } else {
+      const hasFlag = Object.prototype.hasOwnProperty.call(featureFlags, key);
+      const flagActive = hasFlag ? !!featureFlags[key] : true;
+      result[key] = {
+        flagAllowed: hasFlag ? flagActive : undefined,
+        unlockAllowed,
+        visible: flagActive && unlockAllowed,
+      };
+    }
   }
   return result;
 }

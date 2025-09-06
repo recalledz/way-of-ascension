@@ -1,5 +1,4 @@
 import { agilityState } from './state.js';
-import { featureFlags } from '../../config.js';
 import { selectAstral } from '../../shared/selectors.js';
 
 export const AgilityFeature = {
@@ -7,7 +6,7 @@ export const AgilityFeature = {
   initialState: () => ({ ...agilityState, _v: 0 }),
   nav: {
     visible(root) {
-      return featureFlags.agility && selectAstral.isNodeUnlocked(4062, root);
+      return selectAstral.isNodeUnlocked(4062, root);
     },
   },
 };
