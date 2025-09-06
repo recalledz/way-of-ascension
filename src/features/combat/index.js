@@ -5,6 +5,11 @@ import { registerFeature } from "../registry.js";
 export const CombatFeature = {
   key: "combat",
   initialState: () => ({ ...combatState, _v: 0 }),
+  nav: {
+    visible() {
+      return true;
+    },
+  },
 };
 
 registerFeature({

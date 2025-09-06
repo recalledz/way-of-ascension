@@ -1,4 +1,9 @@
-import { mortalStage, isQiRefiningReached, isNodeUnlocked } from '../features/progression/selectors.js';
+import {
+  mortalStage,
+  realmStage,
+  isQiRefiningReached,
+  isNodeUnlocked,
+} from '../features/progression/selectors.js';
 import { isBuildingBuilt } from '../features/sect/selectors.js';
 
 export * from '../features/ability/selectors.js';
@@ -17,6 +22,6 @@ export * from '../features/progression/selectors.js';
 export * from '../features/sect/selectors.js';
 export * from '../features/weaponGeneration/selectors.js';
 
-export const selectProgress = { mortalStage, isQiRefiningReached };
+export const selectProgress = { mortalStage, realmStage, isQiRefiningReached };
 export const selectAstral = { isNodeUnlocked };
 export const selectSect = { isBuildingBuilt };
