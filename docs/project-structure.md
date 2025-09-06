@@ -54,6 +54,7 @@ way-of-ascension/
 │   ├── proficiency.md
 │   ├── parameters-and-formulas.md
 │   ├── side-location-discovery.md
+│   ├── tutorial.md
 │   ├── project-structure.md
 │   └── ARCHITECTURE.md
 ├── node_modules/
@@ -307,6 +308,9 @@ way-of-ascension/
 │   │       ├── mutators.js
 │   │       ├── selectors.js
 │   │       └── state.js
+│   │   ├── tutorial/
+│   │   │   ├── logic.js
+│   │   │   └── state.js
 │   ├── game/
 │   │   ├── GameController.js
 │   │   └── migrations.js
@@ -329,7 +333,8 @@ way-of-ascension/
 │       ├── dev/
 │       │   ├── balanceTuner.js
 │       │   └── devQuickMenu.js
-│       └── sidebar.js
+│       ├── sidebar.js
+│       └── tutorialBox.js
 ├── ui/
 │   └── index.js
 ├── README.md
@@ -1230,5 +1235,12 @@ Paths added:
  - `src/features/forging/index.js` – Forging feature descriptor.
  - `src/features/catching/index.js` – Catching feature descriptor.
  - `src/features/mind/index.js` – Mind feature descriptor.
- - `src/features/astralTree/index.js` – Astral Tree feature descriptor.
- - `src/features/law/index.js` – Law feature descriptor.
+- `src/features/astralTree/index.js` – Astral Tree feature descriptor.
+- `src/features/law/index.js` – Law feature descriptor.
+
+## Tutorial Feature
+
+- `docs/tutorial.md` – explains the tutorial flow and reset options.
+- `src/features/tutorial/state.js` – stores tutorial step and completion flag.
+- `src/features/tutorial/logic.js` – evaluates player actions and advances steps.
+- `src/ui/tutorialBox.js` – displays on-screen guidance during the tutorial.
