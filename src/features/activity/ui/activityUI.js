@@ -24,6 +24,7 @@ export function mountActivityUI(root) {
   document.getElementById('gatheringSelector')?.addEventListener('click', () => handle('gathering'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
   document.getElementById('sectSelector')?.addEventListener('click', () => handle('sect'));
+  document.getElementById('settingsSelector')?.addEventListener('click', () => handle('settings'));
   document.getElementById('catchingSelector')?.addEventListener('click', () => handle('catching'));
 
   // Initial paint
@@ -155,6 +156,9 @@ export function updateActivitySelectors(root) {
   // Sect tab indicator (simple)
   const sectSelector = document.getElementById('sectSelector');
   sectSelector?.classList.toggle('active', selected === 'sect');
+
+  const settingsSelector = document.getElementById('settingsSelector');
+  settingsSelector?.classList.toggle('active', selected === 'settings');
 
   updateCurrentTaskDisplay(root);
 }

@@ -92,12 +92,7 @@
         </div>
         <div class="chip" id="reduceMotionChip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
       </div>
-      <div class="right-actions">
-        <button class="btn small ghost" id="saveBtn">💾 Save</button>
-        <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
-        <button class="btn small ghost" id="importBtn">⬆️ Import</button>
-        <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
-      </div>
+      
     </div>
   </div>
   </header>
@@ -129,6 +124,11 @@
       <div class="activity-selector" id="sectSelector" data-activity="sect">
         <div class="activity-name">🏛️ Sect</div>
         <div class="activity-info" id="sectInfo">0 Buildings</div>
+      </div>
+
+      <!-- Settings Selector -->
+      <div class="activity-selector" id="settingsSelector" data-activity="settings">
+        <div class="activity-name">⚙️ Settings</div>
       </div>
     </aside>
 
@@ -1116,6 +1116,20 @@
         <div id="mindReadingTab" class="mind-tab-content tab-content" style="display:none;"></div>
         <div id="mindStatsTab" class="mind-tab-content tab-content" style="display:none;"></div>
         <div id="mindPuzzlesTab" class="mind-tab-content tab-content" style="display:none;"></div>
+      </section>
+
+      <section id="activity-settings" class="activity-content tab-content" style="display:none;">
+        <h2>⚙️ Settings</h2>
+        <div class="cards">
+          <div class="card">
+            <div class="settings-buttons">
+              <button class="btn small ghost" id="saveBtn">💾 Save</button>
+              <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
+              <button class="btn small ghost" id="importBtn">⬆️ Import</button>
+              <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section id="tab-combat">
