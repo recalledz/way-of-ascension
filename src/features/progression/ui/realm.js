@@ -461,6 +461,9 @@ export function tryBreakthrough(){
   S.breakthrough.timeRemaining = duration;
   S.breakthrough.totalTime = duration;
 
+  const progressFill = document.getElementById('breakthroughProgressFill');
+  if (progressFill) progressFill.style.width = '0%';
+
   if(S.pills.ward>0){ S.pills.ward--; }
 
   log(`Breakthrough initiated! Duration: ${duration.toFixed(1)} seconds...`, 'neutral');
@@ -470,6 +473,12 @@ export function updateBreakthrough() {
   if(!S.breakthrough || !S.breakthrough.inProgress) return;
 
   S.breakthrough.timeRemaining -= 1;
+
+  const progressFill = document.getElementById('breakthroughProgressFill');
+  if (progressFill && S.breakthrough.totalTime > 0) {
+    const pct = (1 - (S.breakthrough.timeRemaining / S.breakthrough.totalTime)) * 100;
+    progressFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  }
 
   if(S.breakthrough.timeRemaining <= 0) {
     const ch = breakthroughChance(S);
