@@ -3,7 +3,7 @@
 The game includes a simple tutorial that guides new players through the opening steps of cultivation.
 
 1. **Start cultivating** – toggle the cultivation activity.
-2. **Gain foundation** – accumulate any amount of foundation.
+2. **Reach 100% foundation** – fill the foundation bar to its maximum.
 3. **Attempt a breakthrough** – begin a breakthrough once ready.
 4. **Reach stage 1 of the next realm** – succeeding the breakthrough completes the tutorial.
 
