@@ -5033,4 +5033,11 @@ html.reduce-motion .log-sheet{transition:none;}
   background: var(--parchment-light);
   border: 1px solid #c8b68c;
   font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.current-objective-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 10px 0 0;
 }
