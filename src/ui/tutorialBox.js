@@ -65,14 +65,17 @@ export function mountTutorialBox(state) {
 
   function renderObjective() {
     const el = document.getElementById('currentObjective');
-    if (!el) return;
+    const label = document.getElementById('currentObjectiveLabel');
+    if (!el || !label) return;
     if (state.tutorial.completed) {
       el.style.display = 'none';
+      label.style.display = 'none';
       return;
     }
     const step = STEPS[state.tutorial.step];
     el.textContent = step.title;
     el.style.display = 'block';
+    label.style.display = 'block';
   }
 
   function updateHighlight() {
@@ -106,6 +109,21 @@ export function mountTutorialBox(state) {
     }
     updateHighlight();
     renderObjective();
+  }
+
+  const objectiveEl = document.getElementById('currentObjective');
+  if (objectiveEl) {
+    const openOverlay = () => {
+      state.tutorial.showOverlay = true;
+      render();
+    };
+    objectiveEl.addEventListener('click', openOverlay);
+    objectiveEl.addEventListener('keypress', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openOverlay();
+      }
+    });
   }
 
   function closeOverlay() {
