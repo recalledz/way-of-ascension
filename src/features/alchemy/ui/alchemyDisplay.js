@@ -15,42 +15,35 @@ function renderAlchemyUI(state) {
   const recipeSelect = document.getElementById('recipeSelect');
   const brewBtn = document.getElementById('brewBtn');
   if (recipeSelect && brewBtn) {
-    if (!state.alchemy.unlocked) {
-      recipeSelect.innerHTML = '<option value="">Alchemy not unlocked - Build Alchemy Laboratory</option>';
-      recipeSelect.disabled = true;
-      brewBtn.disabled = true;
-      brewBtn.textContent = '🔒 Locked';
-    } else {
-      recipeSelect.disabled = false;
-      brewBtn.disabled = false;
-      brewBtn.textContent = '🔥 Brew';
-      recipeSelect.innerHTML = '';
-      state.alchemy.knownRecipes.forEach(key => {
-        const recipe = ALCHEMY_RECIPES[key];
-        if (!recipe) return;
+    recipeSelect.disabled = false;
+    brewBtn.disabled = false;
+    brewBtn.textContent = '🔥 Brew';
+    recipeSelect.innerHTML = '';
+    state.alchemy.knownRecipes.forEach(key => {
+      const recipe = ALCHEMY_RECIPES[key];
+      if (!recipe) return;
+      const opt = document.createElement('option');
+      opt.value = key;
+      let label = recipe.name;
+      if (recipe.cost) {
+        const costStr = Object.entries(recipe.cost)
+          .map(([res, amt]) => `${amt}${RES_ICONS[res] || res}`)
+          .join(' ');
+        label += ` (${costStr}, ${recipe.time}s, ${Math.floor(recipe.base * 100)}%)`;
+      }
+      opt.textContent = label;
+      recipeSelect.appendChild(opt);
+    });
+    Object.entries(ALCHEMY_RECIPES).forEach(([key, recipe]) => {
+      if (state.alchemy.knownRecipes.includes(key)) return;
+      if (recipe.unlockHint) {
         const opt = document.createElement('option');
-        opt.value = key;
-        let label = recipe.name;
-        if (recipe.cost) {
-          const costStr = Object.entries(recipe.cost)
-            .map(([res, amt]) => `${amt}${RES_ICONS[res] || res}`)
-            .join(' ');
-          label += ` (${costStr}, ${recipe.time}s, ${Math.floor(recipe.base * 100)}%)`;
-        }
-        opt.textContent = label;
+        opt.value = '';
+        opt.disabled = true;
+        opt.textContent = `??? - ${recipe.unlockHint}`;
         recipeSelect.appendChild(opt);
-      });
-      Object.entries(ALCHEMY_RECIPES).forEach(([key, recipe]) => {
-        if (state.alchemy.knownRecipes.includes(key)) return;
-        if (recipe.unlockHint) {
-          const opt = document.createElement('option');
-          opt.value = '';
-          opt.disabled = true;
-          opt.textContent = `??? - ${recipe.unlockHint}`;
-          recipeSelect.appendChild(opt);
-        }
-      });
-    }
+      }
+    });
   }
 
   const tbody = document.getElementById('queueTable');
