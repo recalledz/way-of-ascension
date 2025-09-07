@@ -8,8 +8,11 @@ import { rollWeaponDropForZone } from '../../features/weaponGeneration/selectors
 import { rollGearDropForZone } from '../../features/gearGeneration/selectors.js';
 import { addToInventory } from '../../features/inventory/mutators.js';
 import { ZONES as ZONE_IDS } from '../../features/adventure/data/zoneIds.js';
-import { qCap } from '../../features/progression/selectors.js';
+import { qCap, fCap } from '../../features/progression/selectors.js';
+import { advanceRealm } from '../../features/progression/mutators.js';
+import { mountAllFeatureUIs } from '../../features/index.js';
 import { updateQiAndFoundation } from '../../features/progression/ui/qiDisplay.js';
+import { log } from '../../shared/utils/dom.js';
 
 let mounted = false;
 
@@ -140,6 +143,32 @@ export function mountDevQuickMenu() {
   });
   qiWrap.append(qiBtn);
   panel.appendChild(row("Qi", qiWrap));
+
+  // Foundation helpers
+  const foundationWrap = el("div");
+  foundationWrap.style.display = "flex";
+  foundationWrap.style.gap = "6px";
+  const foundationBtn = smallBtn("Max", () => {
+    S.foundation = fCap(S);
+    updateQiAndFoundation();
+  });
+  foundationWrap.append(foundationBtn);
+  panel.appendChild(row("Foundation", foundationWrap));
+
+  // Breakthrough helpers
+  const btWrap = el("div");
+  btWrap.style.display = "flex";
+  btWrap.style.gap = "6px";
+  const btBtn = smallBtn("Success", () => {
+    const info = advanceRealm(S);
+    S.qi = 0;
+    S.foundation = 0;
+    mountAllFeatureUIs(S);
+    updateQiAndFoundation();
+    log(`[dev] Breakthrough to ${info.realmName} ${info.stage}`, 'good');
+  });
+  btWrap.append(btBtn);
+  panel.appendChild(row("Breakthrough", btWrap));
 
   // Loot generators
   const lootWrap = el("div");

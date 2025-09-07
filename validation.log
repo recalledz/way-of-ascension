@@ -5,6 +5,7 @@
 ❌ VERIFICATION FAILED - MUST fix before proceeding
 
 🚨 VIOLATIONS DETECTED:
+   • app.js imports feature internals (mutators/logic/selectors). Only import registry, sidebar, debug, controller.
    • UI write violation: src/features/activity/ui/activityUI.js mutates root.* (use mutators)
    • UI state violation: src/features/adventure/ui/adventureDisplay.js imports S from shared/state.js
    • UI state violation: src/features/adventure/ui/mapUI.js imports S from shared/state.js
