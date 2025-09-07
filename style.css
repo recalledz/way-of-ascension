@@ -559,6 +559,55 @@ html.reduce-motion .rune-ring .orbit {
   stroke-linejoin: round;
 }
 
+/* Breakthrough focus vignette */
+.breakthrough {
+  overflow: visible;
+}
+
+.breakthrough::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%),
+    rgba(0,0,0,0.5);
+  pointer-events: none;
+  z-index: 2000;
+}
+
+.breakthrough .lotus-silhouette {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2001;
+}
+
+.breakthrough-progress {
+  display: none;
+  position: fixed;
+  top: calc(50% + 120px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 2002;
+}
+
+.breakthrough-progress .fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, var(--accent-2), var(--accent));
+}
+
+.breakthrough .breakthrough-progress {
+  display: block;
+}
+
 /* MYSTIC-REALM-UPDATE: Lotus silhouette with breathing animation */
 .lotus-silhouette {
   position: absolute;
