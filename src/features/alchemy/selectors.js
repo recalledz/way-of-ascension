@@ -3,6 +3,10 @@ import { alchemyState } from './state.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
 import { ALCHEMY_RECIPES } from './data/recipes.js';
 
+const LEVEL_SPEED_BONUS = 0.002; // 0.2% speed per level
+const LEVEL_SUCCESS_BONUS = 0.005; // 0.5% success per level
+const SLOT_INTERVAL = 10;
+
 function slice(state = S) {
   return state.alchemy || alchemyState;
 }
@@ -45,14 +49,30 @@ export function inspectPillResistance(lineKey, tier = 1, state = S) {
 
 export function getSuccessBonus(state = S) {
   const building = getBuildingBonuses(state).alchemySuccess || 0;
+  const level = getAlchemyLevel(state) * LEVEL_SUCCESS_BONUS;
   const mind = (state.stats?.mind || 10) - 10;
-  return building + mind * 0.04;
+  return building + level + mind * 0.04;
 }
 
 export function getAlchemySpeedBonus(state = S) {
-  return getBuildingBonuses(state).alchemySpeed || 0;
+  const building = getBuildingBonuses(state).alchemySpeed || 0;
+  const level = getAlchemyLevel(state) * LEVEL_SPEED_BONUS;
+  return building + level;
 }
 
 export function getQiDrainMultiplier(state = S) {
-  return getBuildingBonuses(state).alchemyQiDrainMult || 1;
+  const reduction = getBuildingBonuses(state).alchemyQiDrainReduction || 0;
+  return Math.max(0, 1 - reduction);
+}
+
+export function getLabSlots(state = S) {
+  const lab = getLab(state);
+  const base = lab.baseSlots ?? lab.slots ?? 0;
+  const building = getBuildingBonuses(state).alchemySlots || 0;
+  const levelSlots = Math.floor(getAlchemyLevel(state) / SLOT_INTERVAL);
+  return base + building + levelSlots;
+}
+
+export function getSuccessChance(state = S) {
+  return Math.min(1, 0.8 + getSuccessBonus(state));
 }

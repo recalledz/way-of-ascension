@@ -3,7 +3,7 @@ import { setText } from '../../../shared/utils/dom.js';
 import { ALCHEMY_RECIPES } from '../data/recipes.js';
 import { PILL_LINES } from '../data/pills.js';
 import { usePill, startConcoct } from '../mutators.js';
-import { inspectPillResistance } from '../selectors.js';
+import { inspectPillResistance, getSuccessChance, getAlchemySpeedBonus, getQiDrainMultiplier, getLabSlots } from '../selectors.js';
 
 function describeEffect(recipe) {
   const eff = recipe.effects || {};
@@ -23,9 +23,17 @@ function render(state) {
   setText('alchLvl', state.alchemy.level);
   setText('alchXp', state.alchemy.xp);
   const lab = state.alchemy.lab;
+  setText('labSlotsDisplay', getLabSlots(state));
   const timer = lab?.activeJobs?.[0]?.remaining ?? 0;
   setText('labTimer', timer.toFixed(1));
   setText('labStatus', lab.paused ? 'Paused' : lab.activeJobs.length ? 'Running' : 'Idle');
+  const speedBonus = getAlchemySpeedBonus(state);
+  const timeRed = Math.round((speedBonus / (1 + speedBonus)) * 100);
+  const success = Math.round(getSuccessChance(state) * 100);
+  const qiRed = Math.round((1 - getQiDrainMultiplier(state)) * 100);
+  setText('labTimeBonus', `-${timeRed}%`);
+  setText('labSuccessBonus', `${success}%`);
+  setText('labDrainBonus', `-${qiRed}%`);
 
   const recipeSel = document.getElementById('labRecipeSelect');
   if (recipeSel && recipeSel.options.length !== Object.keys(state.alchemy.knownRecipes || {}).length) {
@@ -72,7 +80,8 @@ function render(state) {
         const time = tier.baseTime ?? 0;
         const crafted = state.alchemy.recipeStats?.[key]?.crafted || 0;
         const effect = describeEffect(recipe);
-        row.innerHTML = `<td>${recipe.name}</td><td>${cost}</td><td>${qi}</td><td>${time}s</td><td>100%</td><td>${effect}</td><td>${crafted}</td>`;
+        const success = Math.round(getSuccessChance(state) * 100);
+        row.innerHTML = `<td>${recipe.name}</td><td>${cost}</td><td>${qi}</td><td>${time}s</td><td>${success}%</td><td>${effect}</td><td>${crafted}</td>`;
       } else {
         row.innerHTML = `<td colspan="7">${key}</td>`;
       }

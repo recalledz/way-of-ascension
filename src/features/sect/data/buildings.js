@@ -27,10 +27,39 @@ export const SECT_BUILDINGS = {
     baseCost: { stones: 100, ore: 40, wood: 60, herbs: 30 },
     costScaling: 2.0,
     effects: {
-      1: { alchemyUnlock: true, alchemySlots: 1, alchemySuccess: 0.15, desc: 'Unlocks alchemy, +1 slot, +15% success' },
-      2: { alchemySlots: 1, alchemySuccess: 0.30, desc: '+1 slot, +30% success' },
-      3: { alchemySlots: 2, alchemySuccess: 0.50, desc: '+2 slots, +50% success' },
-      4: { alchemySlots: 2, alchemySuccess: 0.75, desc: '+2 slots, +75% success' }
+      1: {
+        alchemyUnlock: true,
+        alchemySlots: 1,
+        alchemySuccess: 0.15,
+        alchemySpeed: 0.1,
+        alchemyQiDrainReduction: 0.1,
+        alchemyCoalesceSpeed: 0.1,
+        desc: 'Unlocks alchemy, +1 slot, +15% success, +10% speed, -10% Qi drain'
+      },
+      2: {
+        alchemySlots: 1,
+        alchemySuccess: 0.30,
+        alchemySpeed: 0.15,
+        alchemyQiDrainReduction: 0.15,
+        alchemyCoalesceSpeed: 0.15,
+        desc: '+1 slot, +30% success, +15% speed, -15% Qi drain'
+      },
+      3: {
+        alchemySlots: 2,
+        alchemySuccess: 0.50,
+        alchemySpeed: 0.25,
+        alchemyQiDrainReduction: 0.2,
+        alchemyCoalesceSpeed: 0.25,
+        desc: '+2 slots, +50% success, +25% speed, -20% Qi drain'
+      },
+      4: {
+        alchemySlots: 2,
+        alchemySuccess: 0.75,
+        alchemySpeed: 0.35,
+        alchemyQiDrainReduction: 0.3,
+        alchemyCoalesceSpeed: 0.35,
+        desc: '+2 slots, +75% success, +35% speed, -30% Qi drain'
+      }
     }
   },
 

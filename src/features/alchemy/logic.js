@@ -1,5 +1,5 @@
 import { alchemyState } from './state.js';
-import { getAlchemySpeedBonus, getQiDrainMultiplier } from './selectors.js';
+import { getAlchemySpeedBonus, getQiDrainMultiplier, getLabSlots } from './selectors.js';
 import { addNotification, dismissNotification } from '../../ui/notifications.js';
 import { finishConcoct } from './mutators.js';
 
@@ -12,6 +12,8 @@ export function tickAlchemy(state, stepMs = 100) {
   const alch = slice(state);
   const lab = alch.lab;
   lab.queue ||= [];
+  lab.baseSlots ??= lab.slots ?? 0;
+  lab.slots = getLabSlots(state);
   // Fill available slots from queue
   while (lab.activeJobs.length < lab.slots && lab.queue.length > 0) {
     lab.activeJobs.push(lab.queue.shift());
