@@ -44,6 +44,17 @@ function render(state) {
         tierSpan.textContent = `T${tier}`;
         const qtySpan = document.createElement('span');
         qtySpan.textContent = `x${qty}`;
+        li.append(nameSpan, tierSpan, qtySpan);
+        if (lineKey === 'meridian_opening_dan') {
+          const inst = state.statuses?.pill_meridian_opening_t1;
+          if (inst) {
+            const timerSpan = document.createElement('span');
+            timerSpan.className = 'chip pill-timer';
+            timerSpan.textContent = `${Math.ceil(inst.duration)}s`;
+            if (inst.duration <= 3) timerSpan.classList.add('pulse');
+            li.appendChild(timerSpan);
+          }
+        }
         const useBtn = document.createElement('button');
         useBtn.textContent = 'Use';
         useBtn.className = 'btn small';
@@ -59,7 +70,7 @@ function render(state) {
           const btn = document.querySelector('#activity-alchemy .alchemy-subtab[data-subtab="coalesce"]');
           btn?.click();
         });
-        li.append(nameSpan, tierSpan, qtySpan, useBtn, coBtn);
+        li.append(useBtn, coBtn);
         const targetList = meta.class === 'permanent' ? permList : tempList;
         targetList.appendChild(li);
       });

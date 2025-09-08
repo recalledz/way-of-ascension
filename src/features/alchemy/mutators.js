@@ -66,7 +66,7 @@ export function toggleQiDrain(enabled, state = S) {
 }
 
 export function usePill(root, type, tier = 1) {
-  root.pills ??= { qi: 0, body: 0, ward: 0 };
+  root.pills ??= { qi: 0, body: 0, ward: 0, meridian_opening_dan: 0 };
   if ((root.pills[type] ?? 0) <= 0) return { ok: false, reason: 'none' };
 
   if (type === 'qi') {
@@ -78,6 +78,9 @@ export function usePill(root, type, tier = 1) {
   }
   if (type === 'ward') {
     applyConsumableEffect(root, `pill_breakthrough_t${tier}`, root);
+  }
+  if (type === 'meridian_opening_dan') {
+    applyConsumableEffect(root, 'pill_meridian_opening_t1', root);
   }
 
   root.pills[type]--;
