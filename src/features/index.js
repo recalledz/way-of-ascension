@@ -59,8 +59,8 @@ const unlockMap = {
   cooking: (s) => selectSect.isBuildingBuilt('kitchen', s),
   law: (s) => selectProgress.isQiRefiningReached(s),
   sect: (s) => selectProgress.mortalStage(s) >= 3,
-  adventure: (s) => selectProgress.mortalStage(s) >= 5,
-  proficiency: (s) => selectProgress.mortalStage(s) >= 5,
+  adventure: (s) => selectProgress.mortalStage(s) >= 5 || s.tutorial?.adventureUnlocked,
+  proficiency: (s) => selectProgress.mortalStage(s) >= 5 || s.tutorial?.adventureUnlocked,
 };
 
 const coreFeatures = new Set([

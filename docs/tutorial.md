@@ -5,7 +5,7 @@ The game includes a simple tutorial that guides new players through the opening 
 1. **Start cultivating** – toggle the cultivation activity.
 2. **Gain foundation** – accumulate any amount of foundation.
 3. **Attempt a breakthrough** – begin a breakthrough once ready.
-4. **Reach stage 1 of the next realm** – succeeding the breakthrough completes the tutorial.
+4. **Purchase a notable astral tree node** – spend Insight on one of the larger nodes to unlock Adventure and choose a starting weapon.
 
 The current progress is stored in `state.tutorial.step` and `state.tutorial.completed`.
 
