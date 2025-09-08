@@ -1123,11 +1123,14 @@ Paths added:
 ### Alchemy Feature
 - `src/features/alchemy/index.js` – Registers alchemy hooks.
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
+- `src/features/alchemy/data/pills.js` – Metadata for pill lines and classification for inventory.
 - `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
 - `src/features/alchemy/mutators.js` – Start/complete brews and unlock new recipes.
 - `src/features/alchemy/selectors.js` – Accessors for brewing queue and success chance calculations.
 - `src/features/alchemy/state.js` – Base alchemy stats including level, XP, and known recipes.
 - `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.
+- `src/features/alchemy/consumableEffects.js` – Applies status effects when consuming pills and handles exclusivity.
+- `src/features/alchemy/test.js` – Unit tests covering alchemy selectors and mutators.
 
 ### Cooking Feature (`src/features/cooking/`)
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
@@ -1244,3 +1247,4 @@ Paths added:
 - `src/features/tutorial/state.js` – stores tutorial step and completion flag.
 - `src/features/tutorial/logic.js` – evaluates player actions and advances steps.
 - `src/ui/tutorialBox.js` – displays on-screen guidance during the tutorial.
+- `src/features/tutorial/steps.js` – Step definitions and triggers for tutorial progression.

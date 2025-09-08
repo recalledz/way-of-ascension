@@ -25,13 +25,19 @@ export function finishConcoct(jobId, state = S) {
   if (idx === -1) return false;
   const [job] = lab.activeJobs.splice(idx, 1);
   if (job.output) {
-    const { itemKey, qty = 0, tier } = job.output;
-    const out = alch.outputs[itemKey] || { qty: 0, tiers: {} };
+    const { itemKey, qty = 0, tier, type } = job.output;
+    const out = alch.outputs[itemKey] || { qty: 0, tiers: {}, type };
     out.qty += qty;
     if (tier !== undefined) {
       out.tiers[tier] = (out.tiers[tier] || 0) + qty;
     }
+    if (type) out.type = type;
     alch.outputs[itemKey] = out;
+
+    if (type === 'pill') {
+      state.pills ??= {};
+      state.pills[itemKey] = (state.pills[itemKey] || 0) + qty;
+    }
   }
   alch.exp += job.exp || 0;
   while (alch.exp >= alch.expMax) {
@@ -75,5 +81,12 @@ export function usePill(root, type, tier = 1) {
   }
 
   root.pills[type]--;
+  const inv = root.alchemy?.outputs?.[type];
+  if (inv) {
+    inv.qty = Math.max(0, inv.qty - 1);
+    if (inv.tiers && inv.tiers[tier] !== undefined) {
+      inv.tiers[tier] = Math.max(0, (inv.tiers[tier] || 0) - 1);
+    }
+  }
   return { ok: true, type, tier };
 }

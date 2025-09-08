@@ -1097,6 +1097,7 @@
           <button class="alchemy-subtab active" data-subtab="recipe-book">Recipe Book</button>
           <button class="alchemy-subtab" data-subtab="lab">Lab</button>
           <button class="alchemy-subtab" data-subtab="coalesce">Coalesce</button>
+          <button class="alchemy-subtab" data-subtab="pill-inventory">Pill Inventory</button>
         </div>
 
         <div id="recipe-book" class="alchemy-subtab-content">
@@ -1122,6 +1123,21 @@
         <div id="coalesce" class="alchemy-subtab-content" style="display:none;">
           <div class="cards">
             <div class="card"><p class="muted">Coalesce coming soon...</p></div>
+          </div>
+        </div>
+
+        <div id="pill-inventory" class="alchemy-subtab-content" style="display:none;">
+          <div class="cards">
+            <div class="card">
+              <h4>Temporary Pills</h4>
+              <ul id="tempPillsList"></ul>
+              <p class="muted" id="noTempPills" style="display:none;">No pills yet <button class="btn small ghost pill-open-recipes">Recipe Book</button></p>
+            </div>
+            <div class="card">
+              <h4>Permanent Pills</h4>
+              <ul id="permPillsList"></ul>
+              <p class="muted" id="noPermPills" style="display:none;">No pills yet <button class="btn small ghost pill-open-recipes">Recipe Book</button></p>
+            </div>
           </div>
         </div>
       </section>
