@@ -1,43 +1,61 @@
+import { S, save } from '../../shared/state.js';
 import { alchemyState } from './state.js';
-import { ALCHEMY_RECIPES } from './data/recipes.js';
-import { getMaxSlots, getSuccessChance } from './selectors.js';
 import { qCap, clamp } from '../progression/selectors.js';
 
-function slice(state){
-  return state.alchemy || alchemyState;
+function slice(state = S) {
+  state.alchemy = state.alchemy || structuredClone(alchemyState);
+  return state.alchemy;
 }
 
-export function startBrew(state, recipe){
+export function startConcoct(job, state = S) {
+  const lab = slice(state).lab;
+  if (lab.activeJobs.length >= lab.slots) return false;
+  const id = job.id || Date.now() + Math.random();
+  const total = job.time ?? job.duration ?? 0;
+  lab.activeJobs.push({ ...job, id, time: total, remaining: job.remaining ?? total });
+  save?.();
+  return id;
+}
+
+export function finishConcoct(jobId, state = S) {
   const alch = slice(state);
-  if(!alch.unlocked) return false;
-  if(alch.queue.length >= getMaxSlots(state)) return false;
-  if(!alch.knownRecipes.includes(recipe.key)) return false;
-  alch.queue.push({ key: recipe.key, name: recipe.name, t: recipe.time, T: recipe.time, done:false });
+  const lab = alch.lab;
+  const idx = lab.activeJobs.findIndex(j => j.id === jobId);
+  if (idx === -1) return false;
+  const [job] = lab.activeJobs.splice(idx, 1);
+  if (job.output) {
+    const { itemKey, qty = 0, tier } = job.output;
+    const out = alch.outputs[itemKey] || { qty: 0, tiers: {} };
+    out.qty += qty;
+    if (tier !== undefined) {
+      out.tiers[tier] = (out.tiers[tier] || 0) + qty;
+    }
+    alch.outputs[itemKey] = out;
+  }
+  alch.exp += job.exp || 0;
+  while (alch.exp >= alch.expMax) {
+    alch.exp -= alch.expMax;
+    alch.level += 1;
+    alch.expMax = Math.round(alch.expMax * 1.5);
+  }
+  save?.();
   return true;
 }
 
-export function completeBrew(state, index){
-  const alch = slice(state);
-  const q = alch.queue[index];
-  if(!q || !q.done) return false;
-  const recipe = ALCHEMY_RECIPES[q.key];
-  const chance = getSuccessChance(recipe, state);
-  if(Math.random() < chance){
-    recipe.effect?.(state);
-  }
-  alch.xp += recipe.xp || 0;
-  alch.queue.splice(index,1);
-  const threshold = 30 + 20 * (alch.level - 1);
-  if(alch.xp >= threshold){
-    alch.level++;
-    alch.xp = 0;
-  }
+export function cancelConcoct(jobId, state = S) {
+  const lab = slice(state).lab;
+  const idx = lab.activeJobs.findIndex(j => j.id === jobId);
+  if (idx === -1) return false;
+  lab.activeJobs.splice(idx, 1);
+  save?.();
   return true;
 }
 
-export function unlockRecipe(state, key){
+export function toggleQiDrain(enabled, state = S) {
   const alch = slice(state);
-  if(!alch.knownRecipes.includes(key)) alch.knownRecipes.push(key);
+  alch.settings.qiDrainEnabled = !!enabled;
+  save?.();
+  return alch.settings.qiDrainEnabled;
 }
 
 export function usePill(root, type) {
