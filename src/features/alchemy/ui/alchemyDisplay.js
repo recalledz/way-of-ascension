@@ -5,12 +5,13 @@ import { ALCHEMY_RECIPES } from '../data/recipes.js';
 function render(state) {
   setText('alchLvl', state.alchemy.level);
   setText('alchXp', state.alchemy.xp);
-  setText('labTimer', state.alchemy.labTimer.toFixed(1));
+  const timer = state.alchemy.lab?.activeJobs?.[0]?.remaining ?? 0;
+  setText('labTimer', timer.toFixed(1));
 
   const list = document.getElementById('recipeList');
   if (list) {
     list.innerHTML = '';
-    state.alchemy.knownRecipes.forEach(key => {
+    Object.keys(state.alchemy.knownRecipes || {}).forEach(key => {
       const recipe = ALCHEMY_RECIPES[key];
       const li = document.createElement('li');
       li.textContent = recipe?.name || key;
