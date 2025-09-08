@@ -169,6 +169,7 @@ export const defaultState = () => {
   sect: structuredClone(sectState),
   sideLocations: structuredClone(sideLocationState),
   tutorial: structuredClone(tutorialState),
+  notifications: [],
   };
 };
 

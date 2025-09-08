@@ -5054,19 +5054,31 @@ html.reduce-motion .log-sheet{transition:none;}
   font-style: italic;
 }
 
-.current-objective {
+.notification-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 10px 0 0;
+}
+
+.notification-tray {
   margin: 10px 0;
+}
+
+.notification {
+  margin: 0 0 5px;
   padding: 6px;
   background: var(--parchment-light);
   border: 1px solid #c8b68c;
   font-size: 0.9rem;
   cursor: pointer;
+  position: relative;
 }
 
-.current-objective-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 10px 0 0;
+.notification .dismiss {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  cursor: pointer;
 }
 
 .rarity-magic { color: #3b82f6; }
