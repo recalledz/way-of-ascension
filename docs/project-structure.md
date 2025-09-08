@@ -393,6 +393,10 @@ way-of-ascension/
 │       └── catchingDisplay.js
 ├── src/features/forging/index.js
 ├── src/features/physique/index.js
+├── src/features/alchemy/consumableEffects.js
+├── src/features/alchemy/data/pills.js
+├── src/features/alchemy/test.js
+├── src/features/tutorial/steps.js
 └── style.css
 ```
 
