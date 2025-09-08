@@ -6,6 +6,7 @@ The game includes a simple tutorial that guides new players through the opening 
 2. **Gain foundation** – accumulate any amount of foundation.
 3. **Attempt a breakthrough** – begin a breakthrough once ready.
 4. **Purchase a notable astral tree node** – spend Insight on one of the larger nodes to unlock Adventure and choose a starting weapon.
+5. **Equip your weapon and defeat an enemy** – open the character menu to equip your weapon, then defeat a foe in the Forest Grove.
 
 The current progress is stored in `state.tutorial.step` and `state.tutorial.completed`.
 
