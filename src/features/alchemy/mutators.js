@@ -9,6 +9,13 @@ function slice(state = S) {
   return state.alchemy;
 }
 
+export function unlockRecipe(recipeKey, state = S) {
+  const alch = slice(state);
+  alch.knownRecipes = alch.knownRecipes || {};
+  alch.knownRecipes[recipeKey] = true;
+  save?.();
+}
+
 export function startConcoct(job, state = S) {
   const lab = slice(state).lab;
   if (lab.activeJobs.length >= lab.slots) return false;
@@ -39,6 +46,12 @@ export function finishConcoct(jobId, state = S) {
       state.pills ??= {};
       state.pills[itemKey] = (state.pills[itemKey] || 0) + qty;
     }
+  }
+  if (job.recipeKey) {
+    alch.recipeStats = alch.recipeStats || {};
+    const stats = alch.recipeStats[job.recipeKey] || { crafted: 0 };
+    stats.crafted += 1;
+    alch.recipeStats[job.recipeKey] = stats;
   }
   alch.exp += job.exp || 0;
   while (alch.exp >= alch.expMax) {
@@ -71,23 +84,23 @@ export function usePill(root, type, tier = 1) {
   if ((root.pills[type] ?? 0) <= 0) return { ok: false, reason: 'none' };
 
   const recipe = ALCHEMY_RECIPES[type];
-  const perm = recipe?.permanent;
 
-  if (perm) {
+  if (recipe?.type === 'permanent') {
+    const resDef = recipe.resistance || { rpCap: 0, baseRp: 0, tierWeight: 1 };
     const alch = slice(root);
-    const res = alch.resistance?.[type] || { rp: 0, rpCap: perm.rpCap };
+    const res = alch.resistance?.[type] || { rp: 0, rpCap: resDef.rpCap };
     let { rp } = res;
-    const tierDef = perm.tiers?.[tier] || {};
-    const tierMult = tierDef.tierMultiplier ?? 1;
-    const tierWeight = tierDef.tierWeight ?? 1;
-    let effectiveMultiplier = 0;
-    if (rp < perm.rpCap) {
-      effectiveMultiplier = perm.baseMultiplier * tierMult / (1 + rp);
-      perm.apply?.(root, effectiveMultiplier);
+    if (rp < resDef.rpCap) {
+      const stats = recipe.effects?.stats || {};
+      root.stats = root.stats || {};
+      for (const [stat, val] of Object.entries(stats)) {
+        const gain = val / (1 + rp);
+        root.stats[stat] = (root.stats[stat] || 0) + gain;
+      }
     }
-    const rpGain = perm.baseRp * tierWeight;
-    rp = Math.min(rp + rpGain, perm.rpCap);
-    alch.resistance[type] = { rp, rpCap: perm.rpCap };
+    const rpGain = resDef.baseRp * (resDef.tierWeight ?? 1);
+    rp = Math.min(rp + rpGain, resDef.rpCap);
+    alch.resistance[type] = { rp, rpCap: resDef.rpCap };
   } else {
     if (type === 'qi') {
       const add = Math.floor(qCap(root) * 0.25);
