@@ -17,4 +17,10 @@ export const PILL_LINES = {
     class: 'temporary',
     exclusivityGroup: 'breakthrough',
   },
+  meridian_opening_dan: {
+    key: 'meridian_opening_dan',
+    name: 'Meridian-Opening Dan',
+    class: 'temporary',
+    exclusivityGroup: 'breakthrough',
+  },
 };

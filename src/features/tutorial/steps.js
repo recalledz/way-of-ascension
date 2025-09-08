@@ -5,12 +5,20 @@ export const STEPS = [
     title: 'Journey to immortality',
     text: 'Begin your practice by pressing the start cultivating button. While cultivating, you will gain foundation, which will accumulate until reaching max. Once you reach max you will be able to attempt breakthrough.',
     req: 'Objective: Reach 100% foundation on stage 1.',
-    reward: 'Reward: 1 breakthrough pill.',
+    reward: 'Reward: 1 breakthrough pill and 1 Meridian-Opening Dan.',
     highlight: 'startCultivationActivity',
     check: state => state.foundation >= fCap(state) * 0.99,
     applyReward(state) {
-      state.pills = state.pills || { qi: 0, body: 0, ward: 0 };
+      state.pills = state.pills || { qi: 0, body: 0, ward: 0, meridian_opening_dan: 0 };
       state.pills.ward = (state.pills.ward || 0) + 1;
+      state.pills.meridian_opening_dan = (state.pills.meridian_opening_dan || 0) + 1;
+
+      state.alchemy = state.alchemy || {};
+      state.alchemy.outputs = state.alchemy.outputs || {};
+      const out = state.alchemy.outputs.meridian_opening_dan || { qty: 0, tiers: {}, type: 'pill' };
+      out.qty += 1;
+      out.tiers[1] = (out.tiers[1] || 0) + 1;
+      state.alchemy.outputs.meridian_opening_dan = out;
     },
   },
   {

@@ -7,7 +7,7 @@ export const alchemyState = {
     activeJobs: [],
     paused: false,
   },
-  knownRecipes: { qi: true },
+  knownRecipes: { qi: true, meridian_opening_dan: true },
   outputs: {},
   resistance: {},
   settings: { qiDrainEnabled: false },

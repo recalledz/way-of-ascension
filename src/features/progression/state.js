@@ -27,7 +27,9 @@ export const progressionState = {
   tempArmor: 0,
     alchemy: { successBonus: 0 },
   karma: { qiRegen: 0, atk: 0, armor: 0 },
-  pills: { ward: 0 },
+  pills: { ward: 0, meridian_opening_dan: 0 },
+  breakthroughBonus: 0,
+  breakthroughChanceMult: 1,
   stats: {
     physique: 10,
     mind: 10,

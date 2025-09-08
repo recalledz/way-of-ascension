@@ -3897,6 +3897,16 @@ tr:last-child td {
   animation: cultivation-gold-sheen 1.5s ease-in-out infinite alternate;
 }
 
+.pill-timer {
+  margin-left:4px;
+  font-size:0.9em;
+  color:var(--muted);
+}
+
+.pill-timer.pulse {
+  animation:pulse 1s ease-in-out infinite;
+}
+
 @keyframes cultivation-gold-sheen {
   from {
     box-shadow: 0 0 4px rgba(251, 191, 36, 0.5);

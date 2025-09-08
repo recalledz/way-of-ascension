@@ -15,4 +15,14 @@ export const ALCHEMY_RECIPES = {
     xp: 7,
     output: { itemKey: 'body', qty: 1, tier: 1, type: 'pill' },
   },
+  meridian_opening_dan: {
+    key: 'meridian_opening_dan',
+    name: 'Meridian-Opening Dan',
+    time: 40,
+    base: 0.75,
+    qiCost: 20,
+    cost: { spirit_stone: 100, basic_core: 10 },
+    xp: 8,
+    output: { itemKey: 'meridian_opening_dan', qty: 1, tier: 1, type: 'pill' },
+  },
 };

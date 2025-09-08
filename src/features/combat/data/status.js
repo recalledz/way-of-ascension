@@ -96,6 +96,18 @@ export const STATUSES = {
       target.breakthroughBonus = (target.breakthroughBonus || 0) - 0.15;
     },
   },
+  pill_meridian_opening_t1: {
+    duration: 30,
+    maxStacks: 1,
+    exclusivityGroup: 'breakthrough',
+    tier: 1,
+    onApply: ({ target }) => {
+      target.breakthroughChanceMult = (target.breakthroughChanceMult || 1) * 1.2;
+    },
+    onExpire: ({ target }) => {
+      target.breakthroughChanceMult = (target.breakthroughChanceMult || 1) / 1.2;
+    },
+  },
 };
 
 // Compatibility alias

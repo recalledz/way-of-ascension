@@ -113,6 +113,20 @@ export function updateActivityCultivation() {
     };
   }
 
+  const buffTimer = document.getElementById('breakthroughBuffTimer');
+  if (buffTimer) {
+    const inst = S.statuses?.pill_meridian_opening_t1;
+    if (inst) {
+      const secs = Math.ceil(inst.duration);
+      buffTimer.textContent = `Meridian-Opening Dan: ${secs}s`;
+      buffTimer.style.display = '';
+      buffTimer.classList.toggle('pulse', secs <= 3);
+    } else {
+      buffTimer.style.display = 'none';
+      buffTimer.classList.remove('pulse');
+    }
+  }
+
   const statsCard = document.getElementById('cultivationStatsCard');
   if (statsCard) {
     statsCard.style.display = 'block';

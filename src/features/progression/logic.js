@@ -209,14 +209,15 @@ export function breakthroughChance(state = progressionState){
 
   base = base * stageMultiplier - realmPenalty;
 
-  const ward = state.pills.ward>0 ? 0.15 : 0;
   const alchemyBonus = getAlchemySuccessBonus(state) * 0.1;
   const cookingBonus = getCookingSuccessBonus(state) * 0.1;
   const cultivationBonus = (state.cultivation.talent - 1) * 0.1;
 
   const gearBonus = state.gearBonuses?.breakthroughBonus || 0;
+  const tempBonus = state.breakthroughBonus || 0;
+  const mult = state.breakthroughChanceMult || 1;
 
-  const totalChance = base + ward + cookingBonus + cultivationBonus + gearBonus;
+  const totalChance = (base + cookingBonus + cultivationBonus + gearBonus + tempBonus + alchemyBonus) * mult;
 
   return clamp(totalChance, 0.01, 0.95);
 }
