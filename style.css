@@ -5088,3 +5088,37 @@ html.reduce-motion .log-sheet{transition:none;}
 .rarity-rare { color: #fbbf24; }
 .rarity-epic { color: #a855f7; }
 .rarity-legendary { color: #f87171; }
+
+#weaponSelectOverlay .weapon-select-card {
+  background: #fff;
+  border: 2px solid #b38b5d;
+  padding: 20px;
+  text-align: center;
+}
+
+#weaponSelectOverlay .weapon-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#weaponSelectOverlay .weapon-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--ink-light);
+  cursor: pointer;
+}
+
+#weaponSelectOverlay .weapon-option:hover {
+  border-color: var(--accent);
+}
+
+#weaponSelectOverlay .weapon-icon {
+  width: 32px;
+  height: 32px;
+  margin: 0 0 4px;
+}

@@ -1,4 +1,11 @@
 import { fCap, realmStage } from '../progression/selectors.js';
+import { showWeaponSelectOverlay } from '../../ui/weaponSelectOverlay.js';
+
+const NOTABLE_NODE_IDS = [
+  28, 33, 38, 52, 1028, 1033, 1038, 1043, 1052, 2028, 2033, 2038, 2043,
+  2052, 3028, 3033, 3038, 3043, 3052, 4028, 4033, 4038, 4043, 4052, 4060,
+  4061, 4062,
+];
 
 export const STEPS = [
   {
@@ -32,6 +39,26 @@ export const STEPS = [
       state.astralPoints = (state.astralPoints || 0) + 50;
       const btn = document.getElementById('openAstralTree');
       if (btn) btn.style.display = 'block';
+    },
+  },
+  {
+    title: 'Astral Insight',
+    text: 'You have unlocked the astral tree which can be found on the top right of the cultivation menu. Buying astral nodes requieres Insight. Insight is gained by performing cultivation.  Doing other tasks will also increase your insight, at a lower rate. Insight is a precious resource, and each purchase increases the cost of all other nodes in the tree, so use it wisely',
+    req: 'Objective: purchase your first notable (one of the bigger circles in the astral tree)',
+    reward: 'Reward: unlock adventure, select weapon: (dim focus, crude knuckles or crude nunchaku)',
+    highlight: 'openAstralTree',
+    check: state => {
+      const nodes = state.astralUnlockedNodes;
+      if (!nodes) return false;
+      for (const id of nodes) {
+        if (NOTABLE_NODE_IDS.includes(Number(id))) return true;
+      }
+      return false;
+    },
+    applyReward(state) {
+      state.tutorial = state.tutorial || {};
+      state.tutorial.adventureUnlocked = true;
+      showWeaponSelectOverlay(state);
     },
   },
 ];
