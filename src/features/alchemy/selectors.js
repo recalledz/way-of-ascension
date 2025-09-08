@@ -48,3 +48,11 @@ export function getSuccessBonus(state = S) {
   const mind = (state.stats?.mind || 10) - 10;
   return building + mind * 0.04;
 }
+
+export function getAlchemySpeedBonus(state = S) {
+  return getBuildingBonuses(state).alchemySpeed || 0;
+}
+
+export function getQiDrainMultiplier(state = S) {
+  return getBuildingBonuses(state).alchemyQiDrainMult || 1;
+}
