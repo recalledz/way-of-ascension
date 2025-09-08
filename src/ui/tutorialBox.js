@@ -1,5 +1,6 @@
 import { on } from '../shared/events.js';
 import { STEPS } from '../features/tutorial/steps.js';
+import { addNotification, dismissNotification } from './notifications.js';
 
 export function mountTutorialBox(state) {
   if (document.getElementById('tutorialOverlay')) return;
@@ -39,20 +40,14 @@ export function mountTutorialBox(state) {
   overlay.append(backdrop, card);
   document.body.appendChild(overlay);
 
-  function renderObjective() {
-    const el = document.getElementById('currentObjective');
-    const label = document.getElementById('currentObjectiveLabel');
-    if (!el || !label) return;
+  function updateObjectiveNotification() {
     if (state.tutorial.completed) {
-      el.style.display = 'none';
-      label.style.display = 'none';
+      dismissNotification(state, 'objective');
       return;
     }
     const step = STEPS[state.tutorial.step];
     if (!step) return;
-    el.textContent = step.title;
-    el.style.display = 'block';
-    label.style.display = 'block';
+    addNotification(state, { id: 'objective', text: step.title, dismissible: false });
   }
 
   function updateHighlight() {
@@ -71,7 +66,7 @@ export function mountTutorialBox(state) {
     if (t.completed) {
       overlay.style.display = 'none';
       updateHighlight();
-      renderObjective();
+      updateObjectiveNotification();
       return;
     }
     if (t.showOverlay) {
@@ -88,23 +83,13 @@ export function mountTutorialBox(state) {
       overlay.style.display = 'none';
     }
     updateHighlight();
-    renderObjective();
+    updateObjectiveNotification();
   }
 
-  const objectiveEl = document.getElementById('currentObjective');
-  if (objectiveEl) {
-    const openOverlay = () => {
-      state.tutorial.showOverlay = true;
-      render();
-    };
-    objectiveEl.addEventListener('click', openOverlay);
-    objectiveEl.addEventListener('keypress', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openOverlay();
-      }
-    });
-  }
+  on('OPEN_TUTORIAL', () => {
+    state.tutorial.showOverlay = true;
+    render();
+  });
 
   function closeOverlay() {
     state.tutorial.showOverlay = false;
