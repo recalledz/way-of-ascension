@@ -20,6 +20,7 @@ export function createGameController() {
     app: { mode: "town", lastTick: performance.now() },
     ...initFeatureState(),
     sideLocations: structuredClone(sideLocationState),
+    notifications: [],
     // legacy root pieces remain attached to `state` until migrated
   };
 

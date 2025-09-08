@@ -335,6 +335,7 @@ way-of-ascension/
 │       │   ├── balanceTuner.js
 │       │   └── devQuickMenu.js
 │       ├── sidebar.js
+│       ├── notifications.js
 │       └── tutorialBox.js
 ├── ui/
 │   └── index.js
@@ -749,6 +750,10 @@ function updateAll() {
 #### `src/ui/sidebar.js` - Sidebar Activity Renderer
 **Purpose**: Builds the sidebar activity list and progress displays.
 **When to modify**: Adjust sidebar activities or their presentation.
+
+#### `src/ui/notifications.js` - Notification Tray
+**Purpose**: Manages sidebar notifications, showing up to three messages and an overlay with the full list.
+**Key Functions**: `mountNotifications(state)` mounts UI, `setNotification(state, notif)` adds or updates a notification, `removeNotification(state, id)` dismisses one.
 
 #### `src/ui/dev/devQuickMenu.js`
 **Purpose:** Tiny top-right Dev button and menu. Uses existing `window.__*` hooks when available, emits `DEV:SET_SEED` for RNG, and exposes a Mind helper to level up the active manual for debugging.

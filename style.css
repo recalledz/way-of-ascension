@@ -5054,19 +5054,34 @@ html.reduce-motion .log-sheet{transition:none;}
   font-style: italic;
 }
 
-.current-objective {
+.notifications-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 10px 0 0;
+}
+
+.notifications-tray {
   margin: 10px 0;
+}
+
+.notification-item {
   padding: 6px;
   background: var(--parchment-light);
   border: 1px solid #c8b68c;
   font-size: 0.9rem;
   cursor: pointer;
+  position: relative;
+  margin-bottom: 4px;
 }
 
-.current-objective-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 10px 0 0;
+.notification-item .dismiss-btn {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .rarity-magic { color: #3b82f6; }

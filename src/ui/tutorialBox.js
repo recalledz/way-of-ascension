@@ -1,5 +1,6 @@
 import { on } from '../shared/events.js';
 import { STEPS } from '../features/tutorial/steps.js';
+import { setNotification, removeNotification } from './notifications.js';
 
 export function mountTutorialBox(state) {
   if (document.getElementById('tutorialOverlay')) return;
@@ -39,20 +40,24 @@ export function mountTutorialBox(state) {
   overlay.append(backdrop, card);
   document.body.appendChild(overlay);
 
+  function openOverlay() {
+    state.tutorial.showOverlay = true;
+    render();
+  }
+
   function renderObjective() {
-    const el = document.getElementById('currentObjective');
-    const label = document.getElementById('currentObjectiveLabel');
-    if (!el || !label) return;
     if (state.tutorial.completed) {
-      el.style.display = 'none';
-      label.style.display = 'none';
+      removeNotification(state, 'currentObjective');
       return;
     }
     const step = STEPS[state.tutorial.step];
     if (!step) return;
-    el.textContent = step.title;
-    el.style.display = 'block';
-    label.style.display = 'block';
+    setNotification(state, {
+      id: 'currentObjective',
+      text: step.title,
+      dismissible: false,
+      onClick: openOverlay
+    });
   }
 
   function updateHighlight() {
@@ -91,20 +96,6 @@ export function mountTutorialBox(state) {
     renderObjective();
   }
 
-  const objectiveEl = document.getElementById('currentObjective');
-  if (objectiveEl) {
-    const openOverlay = () => {
-      state.tutorial.showOverlay = true;
-      render();
-    };
-    objectiveEl.addEventListener('click', openOverlay);
-    objectiveEl.addEventListener('keypress', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openOverlay();
-      }
-    });
-  }
 
   function closeOverlay() {
     state.tutorial.showOverlay = false;
