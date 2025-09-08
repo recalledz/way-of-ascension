@@ -27,6 +27,7 @@ export function mountTutorialBox(state) {
   const bodyEl = document.createElement('p');
   const reqEl = document.createElement('p');
   const rewardEl = document.createElement('p');
+  reqEl.className = 'objective';
   rewardEl.className = 'reward';
   const claimBtn = document.createElement('button');
   claimBtn.id = 'claimTutorialReward';
