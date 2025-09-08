@@ -62,7 +62,6 @@
       </div>
       <div class="title-wrap">
         <h1>Way of Ascension</h1>
-        <div class="sub">Idle xianxia cultivation • autosaves</div>
       </div>
     </div>
     </div>
@@ -74,33 +73,22 @@
       <aside class="left" id="sidebar">
         <div class="status-card">
           <h4>Status</h4>
+          <div class="current-task">
+            <div class="chip"><iconify-icon icon="mdi:progress-clock" width="16"></iconify-icon> <span id="currentTask">Idle</span></div>
+          </div>
           <div class="status-metric">
             <div class="status-row">
-              <div class="status-label"><iconify-icon icon="mdi:cards-heart" width="16"></iconify-icon> HP</div>
+              <div class="status-label">HP</div>
               <div class="status-value"><span id="hpVal">100</span>/<span id="hpMax">100</span></div>
             </div>
             <div class="status-bar hp-bar">
               <div class="fill" id="hpFill"></div>
-              <svg class="shield-overlay" viewBox="0 0 100 8" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="shieldGradient">
-                    <stop offset="0%" stop-color="rgba(255,255,255,0)" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
-                  </linearGradient>
-                </defs>
-                <mask id="hpMask">
-                  <rect id="hpMaskRect" x="0" y="0" width="100%" height="100%" fill="#fff" />
-                </mask>
-                <rect id="shieldFill" class="shield-fill" x="0" y="0" width="0" height="100%" mask="url(#hpMask)" />
-                <rect class="shield-shimmer" x="0" y="0" width="100%" height="100%" mask="url(#hpMask)" fill="url(#shieldGradient)" />
-              </svg>
             </div>
             <span id="hpA11y" class="sr-only">HP 100/100, Shield 0/0</span>
           </div>
           <div class="status-metric">
             <div class="status-row">
-              <div class="status-label"><iconify-icon icon="mdi:yin-yang" width="16"></iconify-icon> Qi</div>
+              <div class="status-label">Qi</div>
               <div class="status-value"><span id="qiVal">0</span>/<span id="qiCap">100</span></div>
             </div>
             <div class="status-bar qi-bar">
@@ -109,39 +97,30 @@
           </div>
         </div>
 
-        <div id="notificationHeader" class="notification-header">Notifications</div>
-        <div id="notificationTray" class="notification-tray"></div>
-
-        <!-- Leveling Activities Group -->
-      <div class="activity-group">
-        <h4 class="group-title"><iconify-icon icon="ri:hand-line" class="ui-icon" width="20"></iconify-icon> Training & Skills</h4>
-        <div class="activities leveling-activities" id="levelingActivities"></div>
-      </div>
-
-      <!-- Separator -->
-      <div class="activity-separator">
-        <div class="separator-line"></div>
-        <div class="separator-text">⚔️</div>
-        <div class="separator-line"></div>
-      </div>
-
-      <!-- Exploration & Management Activities Group -->
-      <div class="activity-group">
-        <h4 class="group-title">Exploration & Management</h4>
-        <div class="activities management-activities" id="managementActivities"></div>
-      </div>
-
-      <!-- Sect Selector -->
-      <div class="activity-selector" id="sectSelector" data-activity="sect">
-        <div class="activity-name">🏛️ Sect</div>
-        <div class="activity-info" id="sectInfo">0 Buildings</div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="activity-selector" id="settingsSelector" data-activity="settings">
-          <div class="activity-name">⚙️ Settings</div>
+        <div class="activity-group">
+          <h4 class="group-title"><iconify-icon icon="ri:hand-line" class="ui-icon" width="20"></iconify-icon> Skills</h4>
+          <div class="activities leveling-activities" id="levelingActivities"></div>
         </div>
-      </div>
+
+        <div class="activity-group">
+          <h4 class="group-title">Exploration</h4>
+          <div class="activities management-activities" id="managementActivities"></div>
+        </div>
+
+        <div class="activity-selector" id="sectSelector" data-activity="sect">
+          <div class="activity-name">🏛️ Sect</div>
+          <div class="activity-info" id="sectInfo">0 Buildings</div>
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="btn small ghost" id="saveBtn">💾 Save</button>
+          <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
+          <button class="btn small ghost" id="importBtn">⬆️ Import</button>
+          <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
+          <div class="activity-selector" id="settingsSelector" data-activity="settings">
+            <div class="activity-name">⚙️ Settings</div>
+          </div>
+        </div>
       </aside>
 
     <section class="content">
@@ -1160,14 +1139,6 @@
       <section id="activity-settings" class="activity-content tab-content" style="display:none;">
         <h2>⚙️ Settings</h2>
         <div class="cards">
-          <div class="card">
-            <div class="settings-buttons">
-              <button class="btn small ghost" id="saveBtn">💾 Save</button>
-              <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
-              <button class="btn small ghost" id="importBtn">⬆️ Import</button>
-              <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
-            </div>
-          </div>
           <div class="card">
             <div class="chip" id="reduceMotionChip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
           </div>
