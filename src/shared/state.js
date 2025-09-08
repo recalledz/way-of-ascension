@@ -67,7 +67,7 @@ export const defaultState = () => {
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
-  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi']}, // Start with only Qi recipe
+  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi'], labTimer:0}, // Start with only Qi recipe
   abilityCooldowns:{},
   actionQueue:[],
   manualAbilityKeys:[],

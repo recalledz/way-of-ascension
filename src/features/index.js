@@ -30,6 +30,7 @@ import { advanceForging } from "./forging/logic.js";
 import { advanceCatching } from "./catching/logic.js";
 import { tickPhysiqueTraining } from "./physique/mutators.js";
 import { tickAgilityTraining } from "./agility/mutators.js";
+import { tickAlchemy } from "./alchemy/logic.js";
 import { isAutoMeditate, isAutoAdventure } from "./automation/selectors.js";
 import { startActivity } from "./activity/mutators.js";
 import { tickInsight } from "./progression/insight.js";
@@ -286,6 +287,7 @@ export function runAllFeatureTicks(state, stepMs) {
   advanceGathering(state);
   advanceForging(state);
   advanceCatching(state);
+  tickAlchemy(state, stepMs);
 
   const physSessionEnd = tickPhysiqueTraining(state);
   if (physSessionEnd) {
