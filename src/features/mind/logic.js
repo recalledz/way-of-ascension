@@ -1,5 +1,7 @@
 // src/features/mind/logic.js
 
+import { alchemyState } from '../alchemy/state.js';
+
 // Pure calculation helpers for the Mind feature. These functions do not
 // mutate state and are easily unit testable.
 
@@ -97,6 +99,14 @@ export function applyManualEffects(player, manual, level) {
   player.abilityMods = player.abilityMods || {};
   player.abilitySlotLimit = player.abilitySlotLimit || 0;
 
+  if (effects.unlockRecipes) {
+    player.alchemy = player.alchemy || structuredClone(alchemyState);
+    player.alchemy.knownRecipes = player.alchemy.knownRecipes || {};
+    for (const r of effects.unlockRecipes) {
+      player.alchemy.knownRecipes[r] = true;
+    }
+  }
+
   if (effects.unlockAbility && !player.availableAbilityKeys.includes(effects.unlockAbility)) {
     player.availableAbilityKeys.push(effects.unlockAbility);
     if (player.manualAbilityKeys.length < player.abilitySlotLimit) {
@@ -115,7 +125,7 @@ export function applyManualEffects(player, manual, level) {
   }
 
   for (const [key, val] of Object.entries(effects)) {
-    if (key === 'unlockAbility' || key === 'abilityMods') continue;
+    if ((key === 'unlockAbility' || key === 'abilityMods' || key === 'unlockRecipes')) continue;
     if (key.endsWith('Pct')) {
       const stat = key.slice(0, -3);
       if (stat in player.stats) {

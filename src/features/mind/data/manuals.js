@@ -111,7 +111,7 @@ export const MANUALS = {
     maxSpeedBoostPct: 400,
     levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { mindXpGainPct: 5 },
+      { mindXpGainPct: 5, unlockRecipes: ['insight'] },
       { mindXpGainPct: 5 },
       { mindXpGainPct: 7 },
       { mindXpGainPct: 8 },

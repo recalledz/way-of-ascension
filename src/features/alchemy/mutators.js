@@ -40,6 +40,9 @@ export function finishConcoct(jobId, state = S) {
       state.pills[itemKey] = (state.pills[itemKey] || 0) + qty;
     }
   }
+  if (job.recipeKey) {
+    alch.recipeStats[job.recipeKey] = (alch.recipeStats[job.recipeKey] || 0) + 1;
+  }
   alch.exp += job.exp || 0;
   while (alch.exp >= alch.expMax) {
     alch.exp -= alch.expMax;
@@ -71,36 +74,31 @@ export function usePill(root, type, tier = 1) {
   if ((root.pills[type] ?? 0) <= 0) return { ok: false, reason: 'none' };
 
   const recipe = ALCHEMY_RECIPES[type];
-  const perm = recipe?.permanent;
+  if (!recipe) return { ok: false, reason: 'unknown' };
 
-  if (perm) {
+  if (recipe.type === 'permanent') {
     const alch = slice(root);
-    const res = alch.resistance?.[type] || { rp: 0, rpCap: perm.rpCap };
+    const resDef = recipe.resistance || {};
+    const res = alch.resistance?.[type] || { rp: 0, rpCap: resDef.rpCap };
     let { rp } = res;
-    const tierDef = perm.tiers?.[tier] || {};
-    const tierMult = tierDef.tierMultiplier ?? 1;
-    const tierWeight = tierDef.tierWeight ?? 1;
-    let effectiveMultiplier = 0;
-    if (rp < perm.rpCap) {
-      effectiveMultiplier = perm.baseMultiplier * tierMult / (1 + rp);
-      perm.apply?.(root, effectiveMultiplier);
+    if (rp < resDef.rpCap) {
+      const mult = (recipe.effect?.amount ?? 0) / (1 + rp);
+      const stat = recipe.effect?.stat;
+      if (stat) {
+        root.stats = root.stats || {};
+        root.stats[stat] = (root.stats[stat] || 0) + mult;
+      }
     }
-    const rpGain = perm.baseRp * tierWeight;
-    rp = Math.min(rp + rpGain, perm.rpCap);
-    alch.resistance[type] = { rp, rpCap: perm.rpCap };
+    const rpGain = resDef.baseRp * (resDef.tierWeight ?? 1);
+    rp = Math.min(rp + rpGain, resDef.rpCap);
+    alch.resistance[type] = { rp, rpCap: resDef.rpCap };
   } else {
-    if (type === 'qi') {
-      const add = Math.floor(qCap(root) * 0.25);
+    if (recipe.effect?.qiGainPct) {
+      const add = Math.floor(qCap(root) * (recipe.effect.qiGainPct / 100));
       root.qi = clamp(root.qi + add, 0, qCap(root));
     }
-    if (type === 'body') {
-      applyConsumableEffect(root, `pill_body_t${tier}`, root);
-    }
-    if (type === 'ward') {
-      applyConsumableEffect(root, `pill_breakthrough_t${tier}`, root);
-    }
-    if (type === 'meridian_opening_dan') {
-      applyConsumableEffect(root, 'pill_meridian_opening_t1', root);
+    if (recipe.effect?.statusKey) {
+      applyConsumableEffect(root, recipe.effect.statusKey, root);
     }
   }
 

@@ -29,18 +29,17 @@ export function getResistanceFor(lineKey, state = S) {
 
 export function inspectPillResistance(lineKey, tier = 1, state = S) {
   const recipe = ALCHEMY_RECIPES[lineKey];
-  const perm = recipe?.permanent;
-  if (!perm) return null;
-  const res = slice(state).resistance?.[lineKey] || { rp: 0, rpCap: perm.rpCap };
+  if (!recipe || recipe.type !== 'permanent') return null;
+  const resDef = recipe.resistance || {};
+  const res = slice(state).resistance?.[lineKey] || { rp: 0, rpCap: resDef.rpCap };
   const rp = res.rp || 0;
-  const rpCap = res.rpCap || perm.rpCap || 0;
-  const tierDef = perm.tiers?.[tier] || {};
-  const tierMult = tierDef.tierMultiplier ?? 1;
-  const tierWeight = tierDef.tierWeight ?? 1;
-  const effectiveMultiplier = rp >= rpCap ? 0 : perm.baseMultiplier * tierMult / (1 + rp);
-  const rpGain = perm.baseRp * tierWeight;
+  const rpCap = res.rpCap || resDef.rpCap || 0;
+  const tierWeight = resDef.tierWeight ?? 1;
+  const base = recipe.effect?.amount ?? 0;
+  const effectiveMultiplier = rp >= rpCap ? 0 : base / (1 + rp);
+  const rpGain = resDef.baseRp * tierWeight;
   const nextRp = Math.min(rp + rpGain, rpCap);
-  const predictedGain = nextRp >= rpCap ? 0 : perm.baseMultiplier * tierMult / (1 + nextRp);
+  const predictedGain = nextRp >= rpCap ? 0 : base / (1 + nextRp);
   return { rp, rpCap, effectiveMultiplier, nextGain: predictedGain };
 }
 

@@ -37,9 +37,9 @@ export const LAWS = {
     unlockReq: {realm: 2, stage: 1}, // Foundation 1
     bonuses: {alchemySuccess: 1.2, pillEffectiveness: 1.15, qiRegen: 1.05},
     tree: {
-      'basic_alchemy': {name: 'Basic Pill Theory', desc: '+15% alchemy success, +10% pill effects', cost: 10, prereq: null, bonus:{alchemySuccess: 0.15, pillEffect: 0.10}},
+      'basic_alchemy': {name: 'Basic Pill Theory', desc: '+15% alchemy success, +10% pill effects', cost: 10, prereq: null, bonus:{alchemySuccess: 0.15, pillEffect: 0.10}, unlockRecipes: ['qi', 'body']},
       'herb_mastery': {name: 'Herb Mastery', desc: '+30% herb yield, +1 alchemy slot', cost: 25, prereq: 'basic_alchemy', bonus: {herbYield: 0.30, alchemySlots: 1}},
-      'qi_condensation': {name: 'Qi Condensation', desc: '+20% Qi from pills, +15% Qi regen', cost: 40, prereq: 'basic_alchemy', bonus: {pillQiBonus: 0.20, qiRegen: 0.15}},
+      'qi_condensation': {name: 'Qi Condensation', desc: '+20% Qi from pills, +15% Qi regen', cost: 40, prereq: 'basic_alchemy', bonus: {pillQiBonus: 0.20, qiRegen: 0.15}, unlockRecipes: ['meridian_opening_dan']},
       'pill_mastery': {name: 'Pill Mastery', desc: '+40% pill effectiveness, +20% foundation from pills', cost: 50, prereq: 'qi_condensation', bonus: {pillMult: 0.40, pillFoundation: 0.20}},
       'master_alchemist': {name: 'Master Alchemist', desc: '+25% success, +20% pill effects, +1 slot, +15% comprehension', cost: 100, prereq: ['pill_mastery'], bonus: {alchemySuccess: 0.25, pillEffect: 0.20, alchemySlots: 1, comprehension: 0.15}}
     }

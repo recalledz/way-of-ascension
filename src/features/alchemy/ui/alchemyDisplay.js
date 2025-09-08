@@ -16,8 +16,16 @@ function render(state) {
     list.innerHTML = '';
     Object.keys(state.alchemy.knownRecipes || {}).forEach(key => {
       const recipe = ALCHEMY_RECIPES[key];
+      if (!recipe) return;
       const li = document.createElement('li');
-      li.textContent = recipe?.name || key;
+      const inputs = recipe.tier1?.inputs || {};
+      const cost = Object.entries(inputs)
+        .map(([mat, qty]) => `${qty} ${mat}`)
+        .join(', ') || 'None';
+      const qiCost = recipe.tier1?.qiCost || 0;
+      const baseTime = recipe.tier1?.baseTime || 0;
+      const crafted = state.alchemy.recipeStats?.[key] || 0;
+      li.innerHTML = `<strong>${recipe.name}</strong> - Cost: ${cost} | Qi: ${qiCost} | Success: 100% | Time: ${baseTime}s | Crafted: ${crafted}`;
       list.appendChild(li);
     });
   }

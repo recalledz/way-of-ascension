@@ -1,4 +1,5 @@
 import { progressionState } from './state.js';
+import { alchemyState } from '../alchemy/state.js';
 import { ACCURACY_BASE, DODGE_BASE } from '../combat/hit.js';
 import { REALMS } from './data/realms.js';
 import { LAWS } from './data/laws.js';
@@ -141,6 +142,14 @@ export function learnSkill(lawKey, skillKey, state = progressionState) {
 function applySkillBonuses(lawKey, skillKey, state = progressionState) {
   const skill = LAWS[lawKey].tree[skillKey];
   const bonus = skill.bonus || {};
+
+  if (skill.unlockRecipes) {
+    state.alchemy = state.alchemy || structuredClone(alchemyState);
+    state.alchemy.knownRecipes = state.alchemy.knownRecipes || {};
+    for (const r of skill.unlockRecipes) {
+      state.alchemy.knownRecipes[r] = true;
+    }
+  }
 
   state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
 
