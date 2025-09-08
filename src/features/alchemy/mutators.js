@@ -2,6 +2,7 @@ import { S, save } from '../../shared/state.js';
 import { alchemyState } from './state.js';
 import { qCap, clamp } from '../progression/selectors.js';
 import { applyConsumableEffect } from './consumableEffects.js';
+import { ALCHEMY_RECIPES } from './data/recipes.js';
 
 function slice(state = S) {
   state.alchemy = state.alchemy || structuredClone(alchemyState);
@@ -66,21 +67,41 @@ export function toggleQiDrain(enabled, state = S) {
 }
 
 export function usePill(root, type, tier = 1) {
-  root.pills ??= { qi: 0, body: 0, ward: 0, meridian_opening_dan: 0 };
+  root.pills ??= { qi: 0, body: 0, ward: 0, meridian_opening_dan: 0, insight: 0 };
   if ((root.pills[type] ?? 0) <= 0) return { ok: false, reason: 'none' };
 
-  if (type === 'qi') {
-    const add = Math.floor(qCap(root) * 0.25);
-    root.qi = clamp(root.qi + add, 0, qCap(root));
-  }
-  if (type === 'body') {
-    applyConsumableEffect(root, `pill_body_t${tier}`, root);
-  }
-  if (type === 'ward') {
-    applyConsumableEffect(root, `pill_breakthrough_t${tier}`, root);
-  }
-  if (type === 'meridian_opening_dan') {
-    applyConsumableEffect(root, 'pill_meridian_opening_t1', root);
+  const recipe = ALCHEMY_RECIPES[type];
+  const perm = recipe?.permanent;
+
+  if (perm) {
+    const alch = slice(root);
+    const res = alch.resistance?.[type] || { rp: 0, rpCap: perm.rpCap };
+    let { rp } = res;
+    const tierDef = perm.tiers?.[tier] || {};
+    const tierMult = tierDef.tierMultiplier ?? 1;
+    const tierWeight = tierDef.tierWeight ?? 1;
+    let effectiveMultiplier = 0;
+    if (rp < perm.rpCap) {
+      effectiveMultiplier = perm.baseMultiplier * tierMult / (1 + rp);
+      perm.apply?.(root, effectiveMultiplier);
+    }
+    const rpGain = perm.baseRp * tierWeight;
+    rp = Math.min(rp + rpGain, perm.rpCap);
+    alch.resistance[type] = { rp, rpCap: perm.rpCap };
+  } else {
+    if (type === 'qi') {
+      const add = Math.floor(qCap(root) * 0.25);
+      root.qi = clamp(root.qi + add, 0, qCap(root));
+    }
+    if (type === 'body') {
+      applyConsumableEffect(root, `pill_body_t${tier}`, root);
+    }
+    if (type === 'ward') {
+      applyConsumableEffect(root, `pill_breakthrough_t${tier}`, root);
+    }
+    if (type === 'meridian_opening_dan') {
+      applyConsumableEffect(root, 'pill_meridian_opening_t1', root);
+    }
   }
 
   root.pills[type]--;

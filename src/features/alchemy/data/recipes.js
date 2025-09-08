@@ -25,4 +25,24 @@ export const ALCHEMY_RECIPES = {
     xp: 8,
     output: { itemKey: 'meridian_opening_dan', qty: 1, tier: 1, type: 'pill' },
   },
+  insight: {
+    key: 'insight',
+    name: 'Insight Pill',
+    time: 60,
+    base: 0.6,
+    xp: 10,
+    output: { itemKey: 'insight', qty: 1, tier: 1, type: 'pill' },
+    permanent: {
+      baseMultiplier: 1,
+      baseRp: 1,
+      rpCap: 10,
+      tiers: {
+        1: { tierMultiplier: 1, tierWeight: 1 },
+      },
+      apply: (root, mult) => {
+        root.stats = root.stats || {};
+        root.stats.mind = (root.stats.mind || 0) + mult;
+      },
+    },
+  },
 };

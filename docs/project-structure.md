@@ -239,7 +239,8 @@ way-of-ascension/
 │   │   │   ├── state.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
-│   │   │       └── alchemyDisplay.js
+│   │   │       ├── alchemyDisplay.js
+│   │   │       └── pillIcons.js
 │   │   ├── mind/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
@@ -1133,6 +1134,7 @@ Paths added:
 - `src/features/alchemy/selectors.js` – Accessors for brewing queue and success chance calculations.
 - `src/features/alchemy/state.js` – Base alchemy stats including level, XP, and known recipes.
 - `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.
+- `src/features/alchemy/ui/pillIcons.js` – Renders active pill timers as icons.
 - `src/features/alchemy/consumableEffects.js` – Applies status effects when consuming pills and handles exclusivity.
 - `src/features/alchemy/test.js` – Unit tests covering alchemy selectors and mutators.
 

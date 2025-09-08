@@ -3,6 +3,7 @@ import { setText } from '../../../shared/utils/dom.js';
 import { ALCHEMY_RECIPES } from '../data/recipes.js';
 import { PILL_LINES } from '../data/pills.js';
 import { usePill } from '../mutators.js';
+import { inspectPillResistance } from '../selectors.js';
 
 function render(state) {
   setText('alchLvl', state.alchemy.level);
@@ -71,6 +72,12 @@ function render(state) {
           btn?.click();
         });
         li.append(useBtn, coBtn);
+        if (meta.class === 'permanent') {
+          const info = inspectPillResistance(lineKey, tier, state);
+          if (info) {
+            li.title = `rp ${info.rp.toFixed(1)}/${info.rpCap}\ncur ${info.effectiveMultiplier.toFixed(2)}\nnext ${info.nextGain.toFixed(2)}`;
+          }
+        }
         const targetList = meta.class === 'permanent' ? permList : tempList;
         targetList.appendChild(li);
       });
