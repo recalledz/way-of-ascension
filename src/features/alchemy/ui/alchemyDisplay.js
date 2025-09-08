@@ -5,6 +5,20 @@ import { PILL_LINES } from '../data/pills.js';
 import { usePill, startConcoct } from '../mutators.js';
 import { inspectPillResistance } from '../selectors.js';
 
+function describeEffect(recipe) {
+  const eff = recipe.effects || {};
+  if (eff.qiRestorePct) return `Restores ${eff.qiRestorePct}% Qi`;
+  if (eff.stats) {
+    return Object.entries(eff.stats)
+      .map(([stat, val]) => `+${val} ${stat}`)
+      .join(', ');
+  }
+  if (eff.status === 'pill_body_t1') return 'Boosts attack and armor for 30s';
+  if (eff.status === 'pill_breakthrough_t1') return '+10% breakthrough success for 60s';
+  if (eff.status === 'pill_meridian_opening_t1') return '+20% breakthrough chance for 30s';
+  return '';
+}
+
 function render(state) {
   setText('alchLvl', state.alchemy.level);
   setText('alchXp', state.alchemy.xp);
@@ -48,7 +62,7 @@ function render(state) {
     list.innerHTML = '';
     Object.keys(state.alchemy.knownRecipes || {}).forEach(key => {
       const recipe = ALCHEMY_RECIPES[key];
-      const li = document.createElement('li');
+      const row = document.createElement('tr');
       if (recipe) {
         const tier = recipe.tiers?.[1] || {};
         const cost = Object.entries(tier.inputs || {})
@@ -57,11 +71,12 @@ function render(state) {
         const qi = tier.qiCost ?? 0;
         const time = tier.baseTime ?? 0;
         const crafted = state.alchemy.recipeStats?.[key]?.crafted || 0;
-        li.innerHTML = `<strong>${recipe.name}</strong> - Cost: ${cost} | Qi: ${qi} | Time: ${time}s | Success: 100% | Crafted: ${crafted}`;
+        const effect = describeEffect(recipe);
+        row.innerHTML = `<td>${recipe.name}</td><td>${cost}</td><td>${qi}</td><td>${time}s</td><td>100%</td><td>${effect}</td><td>${crafted}</td>`;
       } else {
-        li.textContent = key;
+        row.innerHTML = `<td colspan="7">${key}</td>`;
       }
-      list.appendChild(li);
+      list.appendChild(row);
     });
   }
 
