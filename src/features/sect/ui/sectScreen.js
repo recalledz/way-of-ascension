@@ -35,8 +35,16 @@ function renderBuildings(state){
       costDiv.textContent = 'Max level';
     } else {
       const cost = getBuildingCost(key, next);
-      const costStr = Object.entries(cost).map(([res, amt]) => `${amt} ${res}`).join(', ');
-      costDiv.textContent = costStr;
+      const nodes = [];
+      Object.entries(cost).forEach(([res, amt], idx, arr) => {
+        const span = document.createElement('span');
+        const cur = state[res] || 0;
+        span.textContent = `${cur}/${amt} ${res}`;
+        span.style.color = cur >= amt ? 'red' : 'green';
+        nodes.push(span);
+        if(idx < arr.length - 1) nodes.push(document.createTextNode(', '));
+      });
+      costDiv.append(...nodes);
     }
     card.appendChild(costDiv);
 
