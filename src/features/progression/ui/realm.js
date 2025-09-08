@@ -17,6 +17,7 @@ import { qs, setText, log } from '../../../shared/utils/dom.js';
 import { isProd } from '../../../config.js';
 import { mountAllFeatureUIs } from '../../index.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
+import { renderPillIcons } from '../../alchemy/ui/pillIcons.js';
 
 let pendingAstralUnlock = false;
 
@@ -112,20 +113,7 @@ export function updateActivityCultivation() {
       tryBreakthrough();
     };
   }
-
-  const buffTimer = document.getElementById('breakthroughBuffTimer');
-  if (buffTimer) {
-    const inst = S.statuses?.pill_meridian_opening_t1;
-    if (inst) {
-      const secs = Math.ceil(inst.duration);
-      buffTimer.textContent = `Meridian-Opening Dan: ${secs}s`;
-      buffTimer.style.display = '';
-      buffTimer.classList.toggle('pulse', secs <= 3);
-    } else {
-      buffTimer.style.display = 'none';
-      buffTimer.classList.remove('pulse');
-    }
-  }
+  renderPillIcons(S, 'cultivationPillIcons', 'cultivation');
 
   const statsCard = document.getElementById('cultivationStatsCard');
   if (statsCard) {
