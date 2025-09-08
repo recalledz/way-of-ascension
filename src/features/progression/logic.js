@@ -199,8 +199,6 @@ export function calculatePlayerAttackRate(state = progressionState) {
 }
 
 export function breakthroughChance(state = progressionState){
-  if(state.qi < qCap(state)*0.99 || state.foundation < fCap(state)*0.99) return 0;
-
   const realm = REALMS[state.realm.tier];
   let base = realm.bt;
 

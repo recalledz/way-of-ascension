@@ -334,7 +334,9 @@ export function updateCultivationVisualization() {
 
   // Update breakthrough proximity effects
   const btChance = breakthroughChance(S);
-  if (btChance > 0.7) {
+  const breakthroughReady =
+    S.qi >= qCap(S) * 0.99 && S.foundation >= fCap(S) * 0.99;
+  if (breakthroughReady && btChance > 0.7) {
     cultivationViz.classList.add('near-breakthrough');
   } else {
     cultivationViz.classList.remove('near-breakthrough');
