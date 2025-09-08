@@ -5003,6 +5003,8 @@ html.reduce-motion .log-sheet{transition:none;}
 .alchemy-tabs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .alchemy-subtab{padding:4px 8px;background:#e5e7eb;border:none;cursor:pointer;border-radius:4px}
 .alchemy-subtab.active{background:#3b82f6;color:#fff}
+.recipe-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.recipe-table th,.recipe-table td{padding:4px;white-space:nowrap;font-size:0.8rem}
 .creature-entry{border:1px solid #d1d5db;padding:4px;margin-bottom:6px}
 .creature-header{display:flex;align-items:center;gap:4px}
 .creature-actions{margin-top:4px;display:flex;gap:4px}
