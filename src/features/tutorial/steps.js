@@ -76,4 +76,12 @@ export const STEPS = [
       state.cookedMeat = (state.cookedMeat || 0) + 10;
     },
   },
+  {
+    title: 'Abilities',
+    text: 'Each base type weapon comes with an ability. Abilities usually cost qi to use and have a set cooldown before it can be used again. More abilities may be learned or equipped through laws or manuals. Abilities may be equipped in character menu abilities sub tab.',
+    req: 'Objective: Use an ability.',
+    reward: 'Reward: None.',
+    highlight: 'abilityBar',
+    check: state => state.tutorial?.usedAbility,
+  },
 ];

@@ -14,6 +14,7 @@ import { migrations as proficiency } from '../features/proficiency/migrations.js
 import { migrations as progression } from '../features/progression/migrations.js';
 import { migrations as sect } from '../features/sect/migrations.js';
 import { migrations as weaponGeneration } from '../features/weaponGeneration/migrations.js';
+import { migrations as tutorial } from '../features/tutorial/migrations.js';
 
 const migrations = [
   ...progression,
@@ -24,6 +25,7 @@ const migrations = [
   ...cooking,
   ...forging,
   ...ability,
+  ...tutorial,
   ...adventure,
   ...affixes,
   ...combat,

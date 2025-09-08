@@ -3,4 +3,5 @@ export const tutorialState = {
   completed: false,
   showOverlay: true,
   rewardReady: false,
+  usedAbility: false,
 };

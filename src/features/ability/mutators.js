@@ -58,6 +58,8 @@ export function tryCastAbility(abilityKey, state = S) {
     enqueue();
     processAbilityQueue(state);
   }
+  state.tutorial = state.tutorial || {};
+  state.tutorial.usedAbility = true;
   return true;
 }
 
