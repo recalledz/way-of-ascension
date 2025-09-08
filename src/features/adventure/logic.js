@@ -24,6 +24,7 @@ import { ZONES, getZoneById, getAreaById, getDungeonById, isZoneUnlocked, isArea
 import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
+import { renderPillIcons } from '../alchemy/ui/pillIcons.js';
 import {
   playSlashArc,
   playThrustLine,
@@ -282,6 +283,7 @@ export function updateBattleDisplay() {
     const playerQiPct = playerMaxQi ? (playerQi / playerMaxQi) * 100 : 0;
     playerQiFill.style.width = `${playerQiPct}%`;
   }
+  renderPillIcons(S, 'adventurePillIcons', 'adventure');
   const playerStunFill = document.getElementById('playerStunFill');
   const playerStunBarEl = document.getElementById('playerStunBar');
   const playerStunGauge = S.adventure.playerStunBar || 0;
