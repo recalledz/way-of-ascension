@@ -6,4 +6,5 @@ export const alchemyState = {
   successBonus: 0,
   unlocked: false,
   knownRecipes: ['qi'],
+  labTimer: 0,
 };

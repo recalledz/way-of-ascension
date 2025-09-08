@@ -1093,27 +1093,35 @@
 
       <section id="activity-alchemy" class="activity-content tab-content" style="display:none;">
         <h2>⚗️ Alchemy</h2>
-        <div class="cards">
-          <div class="card">
-            <h4>Alchemy Cauldron</h4>
-            <p class="muted">Brew pills that boost cultivation and breakthroughs. Success grows with Alchemy level.</p>
-            <div class="stat"><span>Level</span><span id="alchLvl">1</span></div>
-            <div class="stat"><span>XP</span><span id="alchXp">0</span></div>
-            <div class="row">
-              <select id="recipeSelect" class="btn">
-                <!-- Recipes populated dynamically based on unlock status -->
-              </select>
-              <button class="btn primary" id="brewBtn">🔥 Brew</button>
+        <div class="alchemy-tabs">
+          <button class="alchemy-subtab active" data-subtab="recipe-book">Recipe Book</button>
+          <button class="alchemy-subtab" data-subtab="lab">Lab</button>
+          <button class="alchemy-subtab" data-subtab="coalesce">Coalesce</button>
+        </div>
+
+        <div id="recipe-book" class="alchemy-subtab-content">
+          <div class="cards">
+            <div class="card">
+              <h4>Recipes</h4>
+              <ul id="recipeList"></ul>
             </div>
           </div>
+        </div>
 
-          <div class="card">
-            <h4>Queue</h4>
-            <p class="muted">Slots: <span id="slotCount">1</span></p>
-            <table>
-              <thead><tr><th>Item</th><th>Progress</th><th>Status</th><th></th></tr></thead>
-              <tbody id="queueTable"></tbody>
-            </table>
+        <div id="lab" class="alchemy-subtab-content" style="display:none;">
+          <div class="cards">
+            <div class="card">
+              <h4>Lab</h4>
+              <div class="stat"><span>Level</span><span id="alchLvl">1</span></div>
+              <div class="stat"><span>XP</span><span id="alchXp">0</span></div>
+              <div class="stat"><span>Timer</span><span id="labTimer">0.0</span>s</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="coalesce" class="alchemy-subtab-content" style="display:none;">
+          <div class="cards">
+            <div class="card"><p class="muted">Coalesce coming soon...</p></div>
           </div>
         </div>
       </section>

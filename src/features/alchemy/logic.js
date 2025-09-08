@@ -7,6 +7,7 @@ function slice(state){
 export function tickAlchemy(state, stepMs = 100){
   const dt = stepMs / 1000;
   const alch = slice(state);
+  alch.labTimer = (alch.labTimer || 0) + dt;
   alch.queue.forEach(q => {
     if(!q.done){
       q.t -= dt;
