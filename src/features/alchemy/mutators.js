@@ -18,10 +18,14 @@ export function unlockRecipe(recipeKey, state = S) {
 
 export function startConcoct(job, state = S) {
   const lab = slice(state).lab;
-  if (lab.activeJobs.length >= lab.slots) return false;
   const id = job.id || Date.now() + Math.random();
   const total = job.time ?? job.duration ?? 0;
-  lab.activeJobs.push({ ...job, id, time: total, remaining: job.remaining ?? total });
+  const fullJob = { ...job, id, time: total, remaining: job.remaining ?? total };
+  if (lab.activeJobs.length < lab.slots) lab.activeJobs.push(fullJob);
+  else {
+    lab.queue = lab.queue || [];
+    lab.queue.push(fullJob);
+  }
   save?.();
   return id;
 }
@@ -65,9 +69,14 @@ export function finishConcoct(jobId, state = S) {
 
 export function cancelConcoct(jobId, state = S) {
   const lab = slice(state).lab;
-  const idx = lab.activeJobs.findIndex(j => j.id === jobId);
-  if (idx === -1) return false;
-  lab.activeJobs.splice(idx, 1);
+  let idx = lab.activeJobs.findIndex(j => j.id === jobId);
+  if (idx !== -1) {
+    lab.activeJobs.splice(idx, 1);
+  } else {
+    idx = lab.queue.findIndex(j => j.id === jobId);
+    if (idx === -1) return false;
+    lab.queue.splice(idx, 1);
+  }
   save?.();
   return true;
 }

@@ -1118,6 +1118,14 @@
               <div class="stat"><span>Level</span><span id="alchLvl">1</span></div>
               <div class="stat"><span>XP</span><span id="alchXp">0</span></div>
               <div class="stat"><span>Timer</span><span id="labTimer">0.0</span>s</div>
+              <div class="row" style="margin-top:8px;gap:4px;">
+                <select id="labRecipeSelect"></select>
+                <input type="number" id="labQty" value="1" min="1" style="width:60px;"/>
+                <button class="btn small" id="labStart">Concoct</button>
+              </div>
+              <div class="stat"><span>Status</span><span id="labStatus">Idle</span></div>
+              <ul id="labJobs"></ul>
+              <p class="muted" id="labNoJobs" style="display:none;">No jobs queued</p>
             </div>
           </div>
         </div>

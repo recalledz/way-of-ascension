@@ -2,14 +2,46 @@ import { on } from '../../../shared/events.js';
 import { setText } from '../../../shared/utils/dom.js';
 import { ALCHEMY_RECIPES } from '../data/recipes.js';
 import { PILL_LINES } from '../data/pills.js';
-import { usePill } from '../mutators.js';
+import { usePill, startConcoct } from '../mutators.js';
 import { inspectPillResistance } from '../selectors.js';
 
 function render(state) {
   setText('alchLvl', state.alchemy.level);
   setText('alchXp', state.alchemy.xp);
-  const timer = state.alchemy.lab?.activeJobs?.[0]?.remaining ?? 0;
+  const lab = state.alchemy.lab;
+  const timer = lab?.activeJobs?.[0]?.remaining ?? 0;
   setText('labTimer', timer.toFixed(1));
+  setText('labStatus', lab.paused ? 'Paused' : lab.activeJobs.length ? 'Running' : 'Idle');
+
+  const recipeSel = document.getElementById('labRecipeSelect');
+  if (recipeSel && recipeSel.options.length !== Object.keys(state.alchemy.knownRecipes || {}).length) {
+    recipeSel.innerHTML = '';
+    Object.keys(state.alchemy.knownRecipes || {}).forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = ALCHEMY_RECIPES[key]?.name || key;
+      recipeSel.appendChild(opt);
+    });
+  }
+
+  const jobsList = document.getElementById('labJobs');
+  if (jobsList) {
+    jobsList.innerHTML = '';
+    lab.activeJobs.forEach(job => {
+      const li = document.createElement('li');
+      const name = ALCHEMY_RECIPES[job.recipeKey]?.name || job.recipeKey;
+      li.textContent = `${name} - ${job.remaining.toFixed(1)}s`;
+      jobsList.appendChild(li);
+    });
+    lab.queue.forEach(job => {
+      const li = document.createElement('li');
+      const name = ALCHEMY_RECIPES[job.recipeKey]?.name || job.recipeKey;
+      li.textContent = `[Q] ${name}`;
+      jobsList.appendChild(li);
+    });
+    const noJobs = document.getElementById('labNoJobs');
+    if (noJobs) noJobs.style.display = (lab.activeJobs.length || lab.queue.length) ? 'none' : '';
+  }
 
   const list = document.getElementById('recipeList');
   if (list) {
@@ -114,6 +146,23 @@ export function mountAlchemyUI(state) {
       const recipeBtn = document.querySelector('#activity-alchemy .alchemy-subtab[data-subtab="recipe-book"]');
       recipeBtn?.click();
     });
+  });
+
+  const startBtn = document.getElementById('labStart');
+  startBtn?.addEventListener('click', () => {
+    const recipeKey = document.getElementById('labRecipeSelect')?.value;
+    const qty = Math.max(1, parseInt(document.getElementById('labQty')?.value, 10) || 1);
+    const recipe = ALCHEMY_RECIPES[recipeKey];
+    const tier = recipe?.tiers?.[1] || {};
+    for (let i = 0; i < qty; i++) {
+      startConcoct({
+        recipeKey,
+        duration: tier.baseTime || 0,
+        output: { itemKey: recipe.lineKey, qty: 1, tier: 1, type: 'pill' },
+        exp: 1,
+      }, state);
+    }
+    render(state);
   });
 
   on('RENDER', () => render(state));
