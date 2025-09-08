@@ -8,6 +8,7 @@ export function applyStatus(target, key, power, state, options = {}) { // STATUS
   if (key === 'interrupt' && target.statuses?.[key]) return;
   if (!target.statuses) target.statuses = {};
   const current = target.statuses[key] || { stacks: 0, duration: 0 };
+  const prevStacks = current.stacks;
   current.stacks = Math.min(def.maxStacks ?? Infinity, current.stacks + 1);
   let duration = def.duration;
   if (key === 'stun') {
@@ -17,6 +18,9 @@ export function applyStatus(target, key, power, state, options = {}) { // STATUS
   duration *= 1 - (targetStats.ccResist || 0);
   current.duration = duration;
   target.statuses[key] = current;
+  if (def.onApply && current.stacks !== prevStacks) {
+    def.onApply({ target, stack: current.stacks });
+  }
   if (state?.adventure) {
     state.adventure.combatLog = state.adventure.combatLog || [];
     const targetName = target === state ? 'You' : target.name || 'Enemy';

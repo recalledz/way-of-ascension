@@ -1,6 +1,7 @@
 import { S, save } from '../../shared/state.js';
 import { alchemyState } from './state.js';
 import { qCap, clamp } from '../progression/selectors.js';
+import { applyConsumableEffect } from './consumableEffects.js';
 
 function slice(state = S) {
   state.alchemy = state.alchemy || structuredClone(alchemyState);
@@ -58,7 +59,7 @@ export function toggleQiDrain(enabled, state = S) {
   return alch.settings.qiDrainEnabled;
 }
 
-export function usePill(root, type) {
+export function usePill(root, type, tier = 1) {
   root.pills ??= { qi: 0, body: 0, ward: 0 };
   if ((root.pills[type] ?? 0) <= 0) return { ok: false, reason: 'none' };
 
@@ -67,14 +68,12 @@ export function usePill(root, type) {
     root.qi = clamp(root.qi + add, 0, qCap(root));
   }
   if (type === 'body') {
-    root.tempAtk = (root.tempAtk || 0) + 4;
-    root.tempArmor = (root.tempArmor || 0) + 3;
-    // NOTE: timer remains in UI for now; long-term move to a timed effect system
+    applyConsumableEffect(root, `pill_body_t${tier}`, root);
   }
   if (type === 'ward') {
-    // consumed during breakthrough
+    applyConsumableEffect(root, `pill_breakthrough_t${tier}`, root);
   }
 
   root.pills[type]--;
-  return { ok: true, type };
+  return { ok: true, type, tier };
 }
