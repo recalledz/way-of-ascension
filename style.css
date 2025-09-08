@@ -5054,3 +5054,8 @@ html.reduce-motion .log-sheet{transition:none;}
   font-weight: 600;
   margin: 10px 0 0;
 }
+
+.rarity-magic { color: #3b82f6; }
+.rarity-rare { color: #fbbf24; }
+.rarity-epic { color: #a855f7; }
+.rarity-legendary { color: #f87171; }

@@ -9,7 +9,8 @@ export function updateLootTab(state = S) {
   getSessionLoot(state).forEach(item => {
     const row = document.createElement('div');
     row.className = 'loot-row';
-    row.textContent = `${item.qty || 1} ${item.key}`;
+    const name = item.name || item.key;
+    row.textContent = `${item.qty || 1} ${name}`;
     list.appendChild(row);
   });
 }
