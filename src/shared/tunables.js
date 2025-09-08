@@ -3,6 +3,9 @@ export const DEFAULTS = {
   'combat.attackRateMult': 1,
   'progression.foundationGainMult': 1,
   'progression.qiRegenMult': 1,
+  'alchemy.qiDrainBase': 1,
+  'alchemy.qiDrainMult': 1,
+  'alchemy.speedMult': 1,
 };
 let _overrides = Object.create(null);
 

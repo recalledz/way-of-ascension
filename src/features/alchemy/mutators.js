@@ -3,6 +3,7 @@ import { alchemyState } from './state.js';
 import { qCap, clamp } from '../progression/selectors.js';
 import { applyConsumableEffect } from './consumableEffects.js';
 import { ALCHEMY_RECIPES } from './data/recipes.js';
+import { addNotification } from '../../ui/notifications.js';
 
 function slice(state = S) {
   state.alchemy = state.alchemy || structuredClone(alchemyState);
@@ -17,11 +18,25 @@ export function unlockRecipe(recipeKey, state = S) {
 }
 
 export function startConcoct(job, state = S) {
-  const lab = slice(state).lab;
-  if (lab.activeJobs.length >= lab.slots) return false;
+  const alch = slice(state);
+  const lab = alch.lab;
   const id = job.id || Date.now() + Math.random();
   const total = job.time ?? job.duration ?? 0;
-  lab.activeJobs.push({ ...job, id, time: total, remaining: job.remaining ?? total });
+  const entry = { ...job, id, time: total, remaining: job.remaining ?? total };
+  lab.queue = lab.queue || [];
+  const hasQi = !alch.settings?.qiDrainEnabled || (state.qi ?? 0) > 0;
+  const canStart = lab.activeJobs.length < lab.slots && !lab.paused && hasQi;
+  if (canStart) {
+    lab.activeJobs.push(entry);
+  } else {
+    lab.queue.push(entry);
+    if (alch.settings?.qiDrainEnabled && (state.qi ?? 0) <= 0) {
+      addNotification?.(state, {
+        id: 'alchemy-no-qi',
+        text: 'Alchemy paused: insufficient Qi',
+      });
+    }
+  }
   save?.();
   return id;
 }
@@ -65,11 +80,19 @@ export function finishConcoct(jobId, state = S) {
 
 export function cancelConcoct(jobId, state = S) {
   const lab = slice(state).lab;
-  const idx = lab.activeJobs.findIndex(j => j.id === jobId);
-  if (idx === -1) return false;
-  lab.activeJobs.splice(idx, 1);
-  save?.();
-  return true;
+  let idx = lab.activeJobs.findIndex(j => j.id === jobId);
+  if (idx !== -1) {
+    lab.activeJobs.splice(idx, 1);
+    save?.();
+    return true;
+  }
+  idx = lab.queue.findIndex(j => j.id === jobId);
+  if (idx !== -1) {
+    lab.queue.splice(idx, 1);
+    save?.();
+    return true;
+  }
+  return false;
 }
 
 export function toggleQiDrain(enabled, state = S) {

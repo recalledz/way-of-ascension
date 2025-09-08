@@ -10,9 +10,14 @@ export const migrations = [
   save => {
     if (save.alchemy) {
       if (!save.alchemy.lab) {
-        save.alchemy.lab = { slots: 2, activeJobs: [], paused: false };
+        save.alchemy.lab = { slots: 2, activeJobs: [], queue: [], paused: false };
       }
       delete save.alchemy.labTimer;
+    }
+  },
+  save => {
+    if (save.alchemy?.lab && !Array.isArray(save.alchemy.lab.queue)) {
+      save.alchemy.lab.queue = [];
     }
   }
 ];

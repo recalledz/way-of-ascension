@@ -5,6 +5,7 @@ export const alchemyState = {
   lab: {
     slots: 2,
     activeJobs: [],
+    queue: [],
     paused: false,
   },
   knownRecipes: { qi: true, body: true, ward: true },
