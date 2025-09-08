@@ -61,4 +61,19 @@ export const STEPS = [
       showWeaponSelectOverlay(state);
     },
   },
+  {
+    title: 'Choose your path',
+    text: 'There are 3 primary paths: Disciples of metal and fire use primal strength to brandish enemies and brute force through immortality by sheer resilience. Focus on fist, palms and hammers. Disciples of wood and earth use the knowledge and connection with the spirits to expand into greater horizons of existence. Focus on focus, wands and scepters. Disciples of water, freeflowing and nimble like water, harness the power to adapt any form. Use of spears, nunchaku and chakram. You may equip your weapon in the character menu. Access the menu and equip weapon to aid you in adventure progress',
+    req: 'Objective: equip weapon in character menu and defeat 1 enemy in forest grove',
+    reward: 'Reward: 10 cooked meat',
+    highlight: 'characterSelector',
+    check: state => {
+      const weaponEquipped = state.equipment?.mainhand?.key && state.equipment.mainhand.key !== 'fist';
+      const kills = state.adventure?.totalKills >= 1;
+      return weaponEquipped && kills;
+    },
+    applyReward(state) {
+      state.cookedMeat = (state.cookedMeat || 0) + 10;
+    },
+  },
 ];
