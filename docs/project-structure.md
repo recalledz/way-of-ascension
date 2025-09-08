@@ -336,7 +336,8 @@ way-of-ascension/
 │       │   └── devQuickMenu.js
 │       ├── notifications.js
 │       ├── sidebar.js
-│       └── tutorialBox.js
+│       ├── tutorialBox.js
+│       └── weaponSelectOverlay.js
 ├── ui/
 │   └── index.js
 ├── README.md
@@ -1258,4 +1259,5 @@ Paths added:
 - `src/features/tutorial/state.js` – stores tutorial step and completion flag.
 - `src/features/tutorial/logic.js` – evaluates player actions and advances steps.
 - `src/ui/tutorialBox.js` – displays on-screen guidance during the tutorial.
+- `src/ui/weaponSelectOverlay.js` – overlay to choose a starting weapon after unlocking Adventure.
 - `src/features/tutorial/steps.js` – Step definitions and triggers for tutorial progression.
