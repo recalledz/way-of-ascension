@@ -34,6 +34,9 @@ export function calculateBonuses(buildings){
     cookingSpeed: 0,
     alchemySlots: 0,
     alchemySuccess: 0,
+    alchemySpeed: 0,
+    alchemyQiDrainReduction: 0,
+    alchemyCoalesceSpeed: 0,
     imbuementSpeed: 0
   };
   for(const [key, level] of Object.entries(buildings)){

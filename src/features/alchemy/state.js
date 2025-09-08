@@ -3,6 +3,7 @@ export const alchemyState = {
   exp: 0,
   expMax: 100,
   lab: {
+    baseSlots: 2,
     slots: 2,
     activeJobs: [],
     queue: [],

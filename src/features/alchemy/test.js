@@ -7,11 +7,14 @@ const root = { alchemy: structuredClone(alchemyState) };
 
 assert.strictEqual(getAlchemyLevel(root), 1);
 assert.strictEqual(getLab(root).slots, 2);
-assert.deepStrictEqual(getKnownRecipes(root), { qi: true });
+assert.deepStrictEqual(getKnownRecipes(root), { qi: true, body: true, ward: true });
 
 const id = startConcoct({ time: 1, output: { itemKey: 'potion', qty: 1, tier: 0 }, exp: 10 }, root);
 assert.strictEqual(getLab(root).activeJobs.length, 1);
+const rand = Math.random;
+Math.random = () => 0; // ensure success
 finishConcoct(id, root);
+Math.random = rand;
 assert.strictEqual(getLab(root).activeJobs.length, 0);
 assert.strictEqual(getOutputs(root).potion.qty, 1);
 

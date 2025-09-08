@@ -1,5 +1,6 @@
 import { S, save } from '../../shared/state.js';
 import { alchemyState } from './state.js';
+import { getSuccessBonus } from './selectors.js';
 import { qCap, clamp } from '../progression/selectors.js';
 import { applyConsumableEffect } from './consumableEffects.js';
 import { ALCHEMY_RECIPES } from './data/recipes.js';
@@ -36,7 +37,9 @@ export function finishConcoct(jobId, state = S) {
   const idx = lab.activeJobs.findIndex(j => j.id === jobId);
   if (idx === -1) return false;
   const [job] = lab.activeJobs.splice(idx, 1);
-  if (job.output) {
+  const successChance = Math.min(1, 0.8 + getSuccessBonus(state));
+  const succeeded = Math.random() < successChance;
+  if (succeeded && job.output) {
     const { itemKey, qty = 0, tier, type } = job.output;
     const out = alch.outputs[itemKey] || { qty: 0, tiers: {}, type };
     out.qty += qty;
