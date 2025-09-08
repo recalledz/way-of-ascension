@@ -6,15 +6,13 @@ function slice(state){
 
 export function tickAlchemy(state, stepMs = 100){
   const dt = stepMs / 1000;
-  const alch = slice(state);
-  alch.labTimer = (alch.labTimer || 0) + dt;
-  alch.queue.forEach(q => {
-    if(!q.done){
-      q.t -= dt;
-      if(q.t <= 0){
-        q.t = 0;
-        q.done = true;
-      }
+  const lab = slice(state).lab;
+  lab.activeJobs.forEach(job => {
+    if(job.done) return;
+    job.t -= dt;
+    if(job.t <= 0){
+      job.t = 0;
+      job.done = true;
     }
   });
 }

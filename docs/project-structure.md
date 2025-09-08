@@ -142,6 +142,7 @@ way-of-ascension/
 │   │   │   ├── mutators.js
 │   │   │   ├── selectors.js
 │   │   │   ├── state.js
+│   │   │   ├── alchemy.test.js
 │   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       ├── cookControls.js
@@ -310,7 +311,8 @@ way-of-ascension/
 │   │       └── state.js
 │   │   ├── tutorial/
 │   │   │   ├── logic.js
-│   │   │   └── state.js
+│   │   │   ├── state.js
+│   │   │   └── steps.js
 │   ├── game/
 │   │   ├── GameController.js
 │   │   └── migrations.js
@@ -1123,11 +1125,12 @@ Paths added:
 ### Alchemy Feature
 - `src/features/alchemy/index.js` – Registers alchemy hooks.
 - `src/features/alchemy/data/recipes.js` – Basic pill recipes with brew times and rewards.
-- `src/features/alchemy/logic.js` – Tick handler that advances brew timers.
-- `src/features/alchemy/mutators.js` – Start/complete brews and unlock new recipes.
-- `src/features/alchemy/selectors.js` – Accessors for brewing queue and success chance calculations.
-- `src/features/alchemy/state.js` – Base alchemy stats including level, XP, and known recipes.
+- `src/features/alchemy/logic.js` – Tick handler that advances concoction timers.
+- `src/features/alchemy/mutators.js` – Start, finish, or cancel concoctions and toggle Qi drain.
+- `src/features/alchemy/selectors.js` – Accessors for alchemy level, lab jobs, recipes, outputs, and resistance data.
+- `src/features/alchemy/state.js` – Base alchemy stats including lab slots, known recipes, outputs, and resistances.
 - `src/features/alchemy/ui/alchemyDisplay.js` – UI for managing the alchemy cauldron.
+- `src/features/alchemy/alchemy.test.js` – Smoke tests for alchemy selectors and mutators.
 
 ### Cooking Feature (`src/features/cooking/`)
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
@@ -1243,4 +1246,5 @@ Paths added:
 - `docs/tutorial.md` – explains the tutorial flow and reset options.
 - `src/features/tutorial/state.js` – stores tutorial step and completion flag.
 - `src/features/tutorial/logic.js` – evaluates player actions and advances steps.
+- `src/features/tutorial/steps.js` – Step definitions used by the tutorial logic.
 - `src/ui/tutorialBox.js` – displays on-screen guidance during the tutorial.

@@ -1,43 +1,55 @@
 import { alchemyState } from './state.js';
-import { ALCHEMY_RECIPES } from './data/recipes.js';
-import { getMaxSlots, getSuccessChance } from './selectors.js';
 import { qCap, clamp } from '../progression/selectors.js';
 
 function slice(state){
   return state.alchemy || alchemyState;
 }
 
-export function startBrew(state, recipe){
-  const alch = slice(state);
-  if(!alch.unlocked) return false;
-  if(alch.queue.length >= getMaxSlots(state)) return false;
-  if(!alch.knownRecipes.includes(recipe.key)) return false;
-  alch.queue.push({ key: recipe.key, name: recipe.name, t: recipe.time, T: recipe.time, done:false });
+export function startConcoct(state, job){
+  const lab = slice(state).lab;
+  if(lab.paused) return false;
+  if(lab.activeJobs.length >= (lab.slots || 0)) return false;
+  lab.activeJobs.push({ ...job });
   return true;
 }
 
-export function completeBrew(state, index){
+export function finishConcoct(state, jobId){
   const alch = slice(state);
-  const q = alch.queue[index];
-  if(!q || !q.done) return false;
-  const recipe = ALCHEMY_RECIPES[q.key];
-  const chance = getSuccessChance(recipe, state);
-  if(Math.random() < chance){
-    recipe.effect?.(state);
+  const lab = alch.lab;
+  const idx = lab.activeJobs.findIndex(j => j.id === jobId);
+  if(idx === -1) return false;
+  const job = lab.activeJobs[idx];
+  lab.activeJobs.splice(idx,1);
+  const out = alch.outputs[job.output] || { qty: 0, tiers: {} };
+  const qty = job.qty || 1;
+  out.qty += qty;
+  if(job.tier !== undefined){
+    out.tiers[job.tier] = (out.tiers[job.tier] || 0) + qty;
   }
-  alch.xp += recipe.xp || 0;
-  alch.queue.splice(index,1);
-  const threshold = 30 + 20 * (alch.level - 1);
-  if(alch.xp >= threshold){
+  alch.outputs[job.output] = out;
+  alch.exp += job.exp || 0;
+  while(alch.exp >= alch.expMax){
+    alch.exp -= alch.expMax;
     alch.level++;
-    alch.xp = 0;
   }
   return true;
+}
+
+export function cancelConcoct(state, jobId){
+  const lab = slice(state).lab;
+  const idx = lab.activeJobs.findIndex(j => j.id === jobId);
+  if(idx === -1) return false;
+  lab.activeJobs.splice(idx,1);
+  return true;
+}
+
+export function toggleQiDrain(state, enabled){
+  slice(state).settings.qiDrainEnabled = !!enabled;
 }
 
 export function unlockRecipe(state, key){
-  const alch = slice(state);
-  if(!alch.knownRecipes.includes(key)) alch.knownRecipes.push(key);
+  const known = slice(state).knownRecipes;
+  known[key] = true;
 }
 
 export function usePill(root, type) {
@@ -51,7 +63,6 @@ export function usePill(root, type) {
   if (type === 'body') {
     root.tempAtk = (root.tempAtk || 0) + 4;
     root.tempArmor = (root.tempArmor || 0) + 3;
-    // NOTE: timer remains in UI for now; long-term move to a timed effect system
   }
   if (type === 'ward') {
     // consumed during breakthrough

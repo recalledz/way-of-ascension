@@ -12,6 +12,7 @@ import { agilityState } from '../features/agility/state.js';
 import { catchingState } from '../features/catching/state.js';
 import { sideLocationState } from '../features/sideLocations/state.js';
 import { tutorialState } from '../features/tutorial/state.js';
+import { alchemyState } from '../features/alchemy/state.js';
 
 export function loadSave(){
   try{
@@ -67,7 +68,7 @@ export const defaultState = () => {
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
-  alchemy:{level:1, xp:0, queue:[], maxSlots:1, successBonus:0, unlocked:false, knownRecipes:['qi'], labTimer:0}, // Start with only Qi recipe
+  alchemy: structuredClone(alchemyState),
   abilityCooldowns:{},
   actionQueue:[],
   manualAbilityKeys:[],
@@ -201,6 +202,7 @@ export function validateState(candidate) {
 export let S = loadSave() || defaultState();
 S.sect = { ...structuredClone(sectState), ...S.sect };
 S.karma = { ...structuredClone(karmaState), ...S.karma };
+S.alchemy = { ...structuredClone(alchemyState), ...S.alchemy };
 S.physique = { ...structuredClone(physiqueState), ...S.physique };
 S.agility = { ...structuredClone(agilityState), ...S.agility };
 S.catching = { ...structuredClone(catchingState), ...S.catching };
