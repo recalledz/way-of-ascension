@@ -1,6 +1,6 @@
 import { SECT_BUILDINGS } from '../data/buildings.js';
 import { getBuildingLevel } from '../selectors.js';
-import { getBuildingCost } from '../logic.js';
+import { getBuildingCost, canUpgrade } from '../logic.js';
 import { upgradeBuilding } from '../mutators.js';
 import { on } from '../../../shared/events.js';
 import { updateActivitySelectors } from '../../activity/ui/activityUI.js';
@@ -35,15 +35,18 @@ function renderBuildings(state){
       costDiv.textContent = 'Max level';
     } else {
       const cost = getBuildingCost(key, next);
-      const costStr = Object.entries(cost).map(([res, amt]) => `${amt} ${res}`).join(', ');
-      costDiv.textContent = costStr;
+      costDiv.innerHTML = Object.entries(cost).map(([res, amt]) => {
+        const current = state[res] || 0;
+        const color = current >= amt ? 'var(--foundation-primary)' : '#a52a2a';
+        return `<span style="color:${color}">${current}/${amt} ${res}</span>`;
+      }).join(', ');
     }
     card.appendChild(costDiv);
 
     const btn = document.createElement('button');
     btn.className = 'btn small';
     btn.textContent = next > b.maxLevel ? 'Max' : 'Upgrade';
-    btn.disabled = next > b.maxLevel;
+    btn.disabled = next > b.maxLevel || !canUpgrade(state.sect.buildings, state, state, key);
     btn.addEventListener('click', () => {
       if(upgradeBuilding(state, key)){
         render(state);
