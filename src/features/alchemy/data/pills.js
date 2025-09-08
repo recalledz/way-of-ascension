@@ -27,4 +27,11 @@ export const PILL_LINES = {
     icon: 'M',
     statusPrefix: 'pill_meridian_opening',
   },
+  insight: {
+    key: 'insight',
+    name: 'Insight Pill',
+    class: 'permanent',
+    icon: 'I',
+    statusPrefix: null,
+  },
 };
