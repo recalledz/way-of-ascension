@@ -35,6 +35,7 @@ import { startActivity } from "./activity/mutators.js";
 import { tickInsight } from "./progression/insight.js";
 import { updateBreakthrough } from "./progression/index.js";
 import { updateAdventureCombat } from "./adventure/logic.js";
+import { tickTutorial } from "./tutorial/logic.js";
 import { onTick as mindOnTick } from "./mind/index.js";
 import { log } from "../shared/utils/dom.js";
 import { mountTutorialBox } from "../ui/tutorialBox.js";
@@ -312,6 +313,8 @@ export function runAllFeatureTicks(state, stepMs) {
   tickInsight(state, stepSec);
 
   updateBreakthrough();
+
+  tickTutorial(state);
 
   if (state.activities.adventure && state.adventure && state.adventure.inCombat) {
     updateAdventureCombat();
