@@ -17,7 +17,18 @@ function render(state) {
     Object.keys(state.alchemy.knownRecipes || {}).forEach(key => {
       const recipe = ALCHEMY_RECIPES[key];
       const li = document.createElement('li');
-      li.textContent = recipe?.name || key;
+      if (recipe) {
+        const tier = recipe.tiers?.[1] || {};
+        const cost = Object.entries(tier.inputs || {})
+          .map(([mat, qty]) => `${qty} ${mat}`)
+          .join(', ') || '—';
+        const qi = tier.qiCost ?? 0;
+        const time = tier.baseTime ?? 0;
+        const crafted = state.alchemy.recipeStats?.[key]?.crafted || 0;
+        li.innerHTML = `<strong>${recipe.name}</strong> - Cost: ${cost} | Qi: ${qi} | Time: ${time}s | Success: 100% | Crafted: ${crafted}`;
+      } else {
+        li.textContent = key;
+      }
       list.appendChild(li);
     });
   }

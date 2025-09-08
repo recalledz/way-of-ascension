@@ -71,7 +71,7 @@ export const MANUALS = {
     maxSpeedBoostPct: 400,
     levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { qiMaxPct: 7, qiRegenPct: 7 },
+      { qiMaxPct: 7, qiRegenPct: 7, unlockRecipe: 'qi' },
       { qiMaxPct: 7, qiRegenPct: 7 },
       { qiMaxPct: 9, qiRegenPct: 10 },
       { qiMaxPct: 12, qiRegenPct: 12 },
@@ -91,7 +91,7 @@ export const MANUALS = {
     maxSpeedBoostPct: 400,
     levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { foundationGainPct: 6 },
+      { foundationGainPct: 6, unlockRecipe: 'ward' },
       { foundationGainPct: 6 },
       { foundationGainPct: 8 },
       { foundationGainPct: 10 },
@@ -131,7 +131,7 @@ export const MANUALS = {
     maxSpeedBoostPct: 400,
     levelTimeMult: [1, 6, 30, 180, 1800],
     effects: [
-      { physiqueXpGainPct: 7 },
+      { physiqueXpGainPct: 7, unlockRecipe: 'body' },
       { physiqueXpGainPct: 7 },
       { physiqueXpGainPct: 12 },
       { physiqueXpGainPct: 12 },

@@ -5,6 +5,7 @@ import { LAWS } from './data/laws.js';
 import { log } from '../../shared/utils/dom.js';
 import { canLearnSkill } from './logic.js';
 import { clamp, fCap, foundationGainPerMeditate } from './selectors.js';
+import { unlockRecipe } from '../alchemy/mutators.js';
 
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;
@@ -148,6 +149,10 @@ function applySkillBonuses(lawKey, skillKey, state = progressionState) {
   if (bonus.comprehension) state.cultivation.comprehension = (state.cultivation.comprehension || 0) + bonus.comprehension;
   if (bonus.foundationMult) state.cultivation.foundationMult += bonus.foundationMult;
   if (bonus.pillMult) state.cultivation.pillMult += bonus.pillMult;
+
+  if (skill.unlockRecipe) {
+    unlockRecipe(skill.unlockRecipe, state);
+  }
 }
 
 export function meditate(root) {

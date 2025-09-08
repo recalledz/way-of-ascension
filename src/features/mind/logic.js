@@ -3,6 +3,8 @@
 // Pure calculation helpers for the Mind feature. These functions do not
 // mutate state and are easily unit testable.
 
+import { unlockRecipe } from '../alchemy/mutators.js';
+
 export function calcFromProficiency(profXp) {
   return Math.max(0, profXp) * 0.25;
 }
@@ -104,6 +106,10 @@ export function applyManualEffects(player, manual, level) {
     }
   }
 
+  if (effects.unlockRecipe) {
+    unlockRecipe(effects.unlockRecipe, player);
+  }
+
   if (effects.abilityMods) {
     for (const [abilityKey, mods] of Object.entries(effects.abilityMods)) {
       const tgt = player.abilityMods[abilityKey] || {};
@@ -115,7 +121,7 @@ export function applyManualEffects(player, manual, level) {
   }
 
   for (const [key, val] of Object.entries(effects)) {
-    if (key === 'unlockAbility' || key === 'abilityMods') continue;
+    if (key === 'unlockAbility' || key === 'abilityMods' || key === 'unlockRecipe') continue;
     if (key.endsWith('Pct')) {
       const stat = key.slice(0, -3);
       if (stat in player.stats) {
