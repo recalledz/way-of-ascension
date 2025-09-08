@@ -44,6 +44,34 @@ import { stopActivity as stopActivityMut } from '../activity/mutators.js';
 
 // Use centralized zone data from zones.js - old ADVENTURE_ZONES removed
 
+const RARITY_NAMES = ['normal', 'magic', 'rare', 'epic', 'legendary'];
+
+export const COMMON_CORE_CHANCE = 0.01;
+export const MAGIC_CORE_CHANCE = 0.05;
+export const RARE_CORE_CHANCE = 0.1;
+export const EPIC_CORE_CHANCE = 0.2;
+export const LEGENDARY_CORE_CHANCE = 0.3;
+
+const CORE_DROP_CHANCE = {
+  normal: COMMON_CORE_CHANCE,
+  magic: MAGIC_CORE_CHANCE,
+  rare: RARE_CORE_CHANCE,
+  epic: EPIC_CORE_CHANCE,
+  legendary: LEGENDARY_CORE_CHANCE,
+};
+
+const ENEMY_RARITY_COLORS = {
+  normal: '',
+  magic: '#3b82f6',
+  rare: '#fbbf24',
+  epic: '#a855f7',
+  legendary: '#f87171',
+};
+
+function rarityFromAffixCount(count) {
+  return RARITY_NAMES[Math.min(count, RARITY_NAMES.length - 1)];
+}
+
 const loggedResistTypes = new Set();
 const DUNGEON_COOLDOWN_MS = 60 * 60 * 1000;
 const AILMENT_ICONS = {
@@ -313,7 +341,14 @@ export function updateBattleDisplay() {
     const enemy = S.adventure.currentEnemy;
     const enemyHP = S.adventure.enemyHP || 0;
     const enemyMaxHP = S.adventure.enemyMaxHP || 0;
-    setText('enemyName', enemy.name || 'Unknown Enemy');
+    const nameEl = document.getElementById('enemyName');
+    if (nameEl) {
+      const rarity = enemy.rarity || 'normal';
+      const prefix = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+      const color = ENEMY_RARITY_COLORS[rarity];
+      const inner = `${prefix}${enemy.name || 'Unknown Enemy'}`;
+      nameEl.innerHTML = color ? `<span class="rarity-${rarity}">${inner}</span>` : inner;
+    }
     setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
     const enemyAtkEl = document.getElementById('enemyAttack');
     if (enemyAtkEl) enemyAtkEl.title = `ATK: ${Math.round(enemy.attack || 0)}`;
@@ -860,6 +895,13 @@ function defeatEnemy() {
     });
   }
 
+  const coreChance = CORE_DROP_CHANCE[enemy.rarity || 'normal'] || 0;
+  if (Math.random() < coreChance) {
+    addSessionLoot({ key: 'cores', type: 'material', qty: 1, source: area?.name });
+    lootEntries.push(['cores', 1]);
+    S.adventure.combatLog.push('💎 A core drops!');
+  }
+
   if (S.flags?.weaponsEnabled) { // WEAPONS-INTEGRATION
     const tableKey = toLootTableKey(area?.id || zone?.id);
     const drop = rollLoot(tableKey);
@@ -990,11 +1032,12 @@ export function startBossCombat() {
   const { bossData, originalType } = bossInfo;
   const { enemyHP, enemyMax, atk, armor } = initializeFight(bossData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
-  
+
   // Bosses get more affixes
   applyRandomAffixes(h);
-  applyRandomAffixes(h); // Apply twice for more challenge
-  
+  const affixCount = applyRandomAffixes(h); // Apply twice for more challenge
+  const rarity = rarityFromAffixCount(affixCount);
+
   S.adventure.inCombat = true;
   S.adventure.isBossFight = true;
   S.adventure.currentEnemy = {
@@ -1004,6 +1047,7 @@ export function startBossCombat() {
     armor: Math.round(h.eArmor),
     regen: h.regen,
     affixes: h.affixes,
+    rarity,
     hpMax: h.enemyMax,
     hp: h.enemyHP
   };
@@ -1041,7 +1085,8 @@ export function startAdventureCombat() {
   }
   const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
-  applyRandomAffixes(h);
+  const affixCount = applyRandomAffixes(h);
+  const rarity = rarityFromAffixCount(affixCount);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = false;
   S.adventure.currentEnemy = {
@@ -1051,6 +1096,7 @@ export function startAdventureCombat() {
     armor: Math.round(h.eArmor),
     regen: h.regen,
     affixes: h.affixes,
+    rarity,
     hpMax: h.enemyMax,
     hp: h.enemyHP
   };
@@ -1065,7 +1111,8 @@ export function startAdventureCombat() {
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
-  S.adventure.combatLog.push(`A ${enemyData.name} appears!`);
+  const rarityLabel = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+  S.adventure.combatLog.push(`A ${rarityLabel}${enemyData.name} appears!`);
   logEnemyResists(S.adventure.currentEnemy);
 }
 
@@ -1101,7 +1148,8 @@ function startDungeonEncounter() {
   const enemyData = { ...base, hp: base.hp * 2, attack: base.attack * 2, element: dungeon.element };
   const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
-  applyRandomAffixes(h);
+  const affixCount = applyRandomAffixes(h);
+  const rarity = rarityFromAffixCount(affixCount);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = !!floor.boss;
   S.adventure.currentEnemy = {
@@ -1111,6 +1159,7 @@ function startDungeonEncounter() {
     armor: Math.round(h.eArmor),
     regen: h.regen,
     affixes: h.affixes,
+    rarity,
     hpMax: h.enemyMax,
     hp: h.enemyHP
   };
@@ -1125,6 +1174,8 @@ function startDungeonEncounter() {
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = [`Entering ${dungeon.name} - Floor ${ds.floor + 1}`];
+  const rarityLabel = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+  S.adventure.combatLog.push(`A ${rarityLabel}${enemyData.name} appears!`);
   logEnemyResists(S.adventure.currentEnemy);
 }
 
