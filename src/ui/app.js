@@ -136,8 +136,15 @@ function initUI(){
       if (confirm('Hard reset?')) {
         // Wipe all persisted data so no stray keys survive a reset.
         // This covers older save slots and any feature-specific flags.
+        // Some browsers may block clear(), so remove known keys manually
+        // as a fallback to ensure progress and settings reset.
         try {
           localStorage.clear();
+        } catch {}
+        try {
+          ['woa-save', 'astralTreeAllocated', 'reduce-motion'].forEach(k =>
+            localStorage.removeItem(k)
+          );
         } catch {}
         setState(defaultState());
         save();
