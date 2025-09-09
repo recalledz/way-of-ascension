@@ -41,6 +41,7 @@ import { onTick as mindOnTick } from "./mind/index.js";
 import { log } from "../shared/utils/dom.js";
 import { mountTutorialBox } from "../ui/tutorialBox.js";
 import { mountNotificationTray } from "../ui/notifications.js";
+import { mountAbilityTutorialPopup } from "../ui/tutorialPopups.js";
 
 
 // Example placeholder for later:
@@ -132,6 +133,7 @@ export function mountAllFeatureUIs(state) {
   applyDevUnlockPreset(state);
   mountNotificationTray(state);
   mountTutorialBox(state);
+  mountAbilityTutorialPopup(state);
   const { flags } = configReport();
   const ensure = (containerId, id, activity, label) => {
     const container = document.getElementById(containerId);
