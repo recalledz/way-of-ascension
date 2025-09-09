@@ -5042,8 +5042,9 @@ html.reduce-motion .log-sheet{transition:none;}
   background: rgba(0,0,0,0.6);
 }
 
-#tutorialOverlay .tutorial-card {
-  background: #fff;
+#tutorialOverlay .tutorial-card,
+#abilityTutorialOverlay .tutorial-card {
+  background: #f2ecd8;
   border: 2px solid #b38b5d;
   padding: 20px;
   max-width: 400px;

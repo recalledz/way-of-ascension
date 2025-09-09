@@ -80,6 +80,7 @@ export function processAbilityQueue(state = S) {
 }
 
 function applyAbilityResult(abilityKey, res, state) {
+  emit('ABILITY:CAST', { abilityKey });
   if (!res) return;
   const ability = ABILITIES[abilityKey];
   const logs = state.adventure?.combatLog;
