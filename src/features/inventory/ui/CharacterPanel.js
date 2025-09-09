@@ -119,23 +119,64 @@ function renderEquipment() {
     const el = document.getElementById(`slot-${s.key}`);
     if (!el) return;
     const item = S.equipment[s.key];
-    const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
-    const icon = item?.type === 'weapon'
+    const iconEl = el.querySelector('.slot-icon');
+    const emptyLabel = el.querySelector('.slot-empty-label');
+    const unequipBtn = el.querySelector('.unequip-chip');
+    const rarityDot = el.querySelector('.rarity-dot');
+    const countBadge = el.querySelector('.count-badge');
+
+    const itemName = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : null);
+    let icon = item?.type === 'weapon'
       ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
       : GEAR_ICONS[item?.slot || item?.type];
-    const stars = QUALITY_STARS[item?.quality] || '';
+    if (!item) {
+      const slotType = s.key.startsWith('ring') ? 'ring'
+        : s.key.startsWith('talisman') ? 'talisman'
+        : s.key === 'mainhand' ? null
+        : s.key;
+      icon = slotType ? GEAR_ICONS[slotType] : WEAPON_ICONS.sword;
+    }
+
+    iconEl.innerHTML = icon ? `<iconify-icon icon="${icon}"${item ? '' : ' style="opacity:0.3"'}></iconify-icon>` : '';
+    if (item) {
+      el.classList.add('equipped');
+      el.classList.remove('empty');
+      emptyLabel.style.display = 'none';
+      unequipBtn.style.display = 'block';
+    } else {
+      el.classList.add('empty');
+      el.classList.remove('equipped');
+      emptyLabel.style.display = 'block';
+      unequipBtn.style.display = 'none';
+    }
+
+    el.onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
+    unequipBtn.onclick = evt => { evt.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
+
+    el.oncontextmenu = evt => { if (item) { evt.preventDefault(); showDetails(item, evt); } };
+
     const rarity = item?.rarity;
     const rarityColor = RARITY_COLORS[rarity] || '';
-    const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
-    const displayName = rarityPrefix + name;
-    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
-    const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
-    const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
-    el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
-    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
+    if (rarity && rarity !== 'normal') {
+      el.classList.add('has-rarity');
+      rarityDot.style.backgroundColor = rarityColor;
+    } else {
+      el.classList.remove('has-rarity');
+      rarityDot.style.backgroundColor = '';
+    }
+
+    if (item?.type === 'food' && item?.qty) {
+      el.classList.add('has-count');
+      countBadge.textContent = item.qty;
+    } else {
+      el.classList.remove('has-count');
+      countBadge.textContent = '';
+    }
+
     const element = item?.element || item?.imbuement?.element;
     el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
+    el.setAttribute('aria-label', itemName ? `${s.label}: ${itemName} equipped` : `${s.label} empty`);
+    el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } };
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;

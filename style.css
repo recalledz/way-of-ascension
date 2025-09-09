@@ -27,6 +27,14 @@
   --card-gap: 8px;
   --dot-size: 8px;
   --row-h: 48px;
+
+  --slotS: clamp(48px, 15vw, 60px);
+  --slotM: clamp(68px, 20vw, 84px);
+  --slotL-w: calc(var(--slotM) * 1.6);
+  --slotL-h: calc(var(--slotM) * 2);
+  --slot-pad: 8px;
+  --slot-radius: 8px;
+  --outline-stroke: 1.5px;
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
@@ -5148,4 +5156,115 @@ html.reduce-motion .log-sheet{transition:none;}
 
 #journalEntries li.current .checkmark {
   color: var(--core-primary);
+}
+
+/* Gear slot component */
+.equip-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.gear-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--slot-pad);
+  border: 1px solid currentColor;
+  border-radius: var(--slot-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.gear-slot.empty {
+  border-style: dashed;
+}
+
+.gear-slot.size-s {
+  width: var(--slotS);
+  height: var(--slotS);
+}
+
+.gear-slot.size-m {
+  width: var(--slotM);
+  height: var(--slotM);
+}
+
+.gear-slot.size-l {
+  width: var(--slotL-w);
+  height: var(--slotL-h);
+}
+
+.gear-slot .slot-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gear-slot .slot-icon iconify-icon {
+  width: 72%;
+  height: 72%;
+  stroke-width: var(--outline-stroke);
+}
+
+.gear-slot.size-s .slot-icon iconify-icon { width: 70%; height: 70%; }
+.gear-slot.size-l .slot-icon iconify-icon { width: 75%; height: 75%; }
+
+.slot-empty-label {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.gear-slot .unequip-chip {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+  display: none;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.gear-slot.equipped .unequip-chip {
+  display: block;
+}
+
+.rarity-dot {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: none;
+}
+
+.gear-slot.has-rarity .rarity-dot {
+  display: block;
+}
+
+.count-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 10px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--panel);
+  display: none;
+}
+
+.gear-slot.has-count .count-badge {
+  display: block;
+}
+
+.gear-slot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
