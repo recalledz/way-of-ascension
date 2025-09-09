@@ -219,6 +219,9 @@ way-of-ascension/
 │   │   │   ├── index.js
 │   │   │   └── ui/
 │   │   │       └── sectScreen.js
+│   │   ├── library/
+│   │   │   └── ui/
+│   │   │       └── libraryDisplay.js
 │   │   ├── karma/
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -1205,6 +1208,9 @@ Paths added:
 
 ### Astral Tree Feature (`src/features/astralTree/`)
 - `src/features/astralTree/index.js` – Astral Tree feature descriptor controlling nav visibility.
+
+### Library Feature (`src/features/library/`)
+- `src/features/library/ui/libraryDisplay.js` – Displays tutorial journal entries in the Library tab.
 
 ### Law Feature (`src/features/law/`)
 - `src/features/law/index.js` – Law feature descriptor gating law navigation on Qi-refining.
