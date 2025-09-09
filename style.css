@@ -5123,3 +5123,29 @@ html.reduce-motion .log-sheet{transition:none;}
   height: 32px;
   margin: 0 0 4px;
 }
+
+/* Journal entries styling */
+#journalEntries {
+  list-style: none;
+  padding-left: 0;
+}
+
+#journalEntries li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+#journalEntries li .checkmark {
+  font-weight: bold;
+}
+
+#journalEntries li.completed .checkmark {
+  color: var(--foundation-primary);
+}
+
+#journalEntries li.current .checkmark {
+  color: var(--core-primary);
+}
