@@ -105,14 +105,13 @@ function renderStats() {
 
 function renderEquipment() {
   const slots = [
-    { key: 'mainhand', label: 'Weapon' },
     { key: 'head', label: 'Head' },
+    { key: 'ring1', label: 'Accessory' },
+    { key: 'mainhand', label: 'Weapon' },
     { key: 'body', label: 'Body' },
-    { key: 'foot', label: 'Feet' },
-    { key: 'ring1', label: 'Ring 1' },
-    { key: 'ring2', label: 'Ring 2' },
     { key: 'talisman1', label: 'Talisman 1' },
     { key: 'talisman2', label: 'Talisman 2' },
+    { key: 'ring2', label: 'Talisman 3' },
     { key: 'food', label: 'Food' }
   ];
   slots.forEach(s => {
@@ -123,18 +122,18 @@ function renderEquipment() {
     const icon = item?.type === 'weapon'
       ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
       : GEAR_ICONS[item?.slot || item?.type];
-    const stars = QUALITY_STARS[item?.quality] || '';
-    const rarity = item?.rarity;
-    const rarityColor = RARITY_COLORS[rarity] || '';
-    const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
-    const displayName = rarityPrefix + name;
-    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
-    const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
-    const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
-    el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
-    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
+    const iconEl = el.querySelector('.slot-icon');
+    iconEl.innerHTML = item && icon ? `<iconify-icon icon="${icon}"></iconify-icon>` : '';
+    el.querySelector('.slot-name').textContent = item ? name : 'Empty';
+    const chip = el.querySelector('.unequip-chip');
+    chip.hidden = !item;
+    chip.onclick = e => { e.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
+    chip.setAttribute('aria-label', `Unequip ${s.label}`);
+    el.onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
+    el.setAttribute('aria-label', `Equip ${s.label}`);
     const element = item?.element || item?.imbuement?.element;
+    el.classList.toggle('equipped', !!item);
+    el.classList.toggle('empty', !item);
     el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
   });
   const armorEl = document.getElementById('armorVal');

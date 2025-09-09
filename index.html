@@ -885,16 +885,47 @@
               <button class="gear-tab-btn" data-tab="gearAbilities">Abilities</button>
             </div>
             <div id="gearEquipSubTab" class="gear-tab-content active">
-              <div class="equip-slots">
-                <div class="equip-slot" id="slot-mainhand"><span class="slot-label">Weapon</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-head"><span class="slot-label">Head</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-body"><span class="slot-label">Body</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-foot"><span class="slot-label">Feet</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-ring1"><span class="slot-label">Ring 1</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-ring2"><span class="slot-label">Ring 2</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-talisman1"><span class="slot-label">Talisman 1</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-talisman2"><span class="slot-label">Talisman 2</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
-                <div class="equip-slot" id="slot-food"><span class="slot-label">Food</span> <span class="slot-name">Empty</span> <div class="slot-actions"><button class="btn small equip-btn">Equip…</button> <button class="btn small unequip-btn">Unequip</button></div></div>
+              <div class="gear-grid">
+                <div class="gear-slot size-m" id="slot-head" aria-label="Equip Head" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Head" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-s" id="slot-ring1" aria-label="Equip Accessory" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Accessory" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-m" id="slot-mainhand" aria-label="Equip Weapon" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Weapon" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-l" id="slot-body" aria-label="Equip Body" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Body" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-s" id="slot-talisman1" aria-label="Equip Talisman 1" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Talisman 1" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-s" id="slot-talisman2" aria-label="Equip Talisman 2" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Talisman 2" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-s" id="slot-ring2" aria-label="Equip Talisman 3" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Talisman 3" hidden>✕</button>
+                </div>
+                <div class="gear-slot size-s" id="slot-food" aria-label="Equip Food" tabindex="0">
+                  <div class="slot-icon"></div>
+                  <div class="slot-name">Empty</div>
+                  <button class="unequip-chip" aria-label="Unequip Food" hidden>✕</button>
+                </div>
               </div>
               <div class="stat" title="Reduces Physical damage. Mitigation = armor / (armor + K × hit), capped at 90%">🛡 <span id="armorVal">0</span></div>
               <div class="stat" title="Chance to hit enemies">⚔ <span id="accuracyVal">0</span></div>
