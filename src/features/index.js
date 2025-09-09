@@ -195,6 +195,7 @@ export function mountAllFeatureUIs(state) {
   }
   const vis = debugFeatureVisibility(state);
   if (vis.character?.visible) ensure('managementActivities', 'characterSelector', 'character', 'Character');
+  if (vis.adventure?.visible) ensure('managementActivities', 'adventureSelector', 'adventure', 'Adventure');
   if (vis.cultivation?.visible) mountCultivationSidebar(state);
   if (flags.FEATURE_PROFICIENCY?.parsedValue && vis.proficiency.visible) mountProficiencyUI(state);
   if (flags.FEATURE_SECT?.parsedValue && vis.sect.visible) mountSectUI(state);
