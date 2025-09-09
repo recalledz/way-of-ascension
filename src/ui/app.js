@@ -8,6 +8,7 @@ import { mountDiagnostics } from './diagnostics.js';
 import { mountAllFeatureUIs, runAllFeatureTicks } from '../features/index.js';
 import { applyDevUnlockPreset } from '../features/devUnlock.js';
 import { S, defaultState, save, setState, validateState } from '../shared/state.js';
+import { cancelSaveDebounce } from '../shared/saveLoad.js';
 import { GameController } from '../game/GameController.js';
 import {
   updateRealmUI,
@@ -136,6 +137,7 @@ function initUI(){
       if (confirm('Hard reset?')) {
         // Wipe all persisted data so no stray keys survive a reset.
         // This covers older save slots and any feature-specific flags.
+        cancelSaveDebounce();
         try {
           localStorage.clear();
         } catch {}
