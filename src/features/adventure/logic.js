@@ -468,6 +468,13 @@ export function updateAbilityBar() {
     'game-icons:mighty-force': '💥',
     'game-icons:fireball': '🔥',
   };
+
+  const renderIcon = (icon) => {
+    if (iconMap[icon]) return iconMap[icon];
+    return icon.includes(':')
+      ? `<iconify-icon icon="${icon}" aria-hidden="true"></iconify-icon>`
+      : icon;
+  };
   let html = '';
   const slotData = [];
   slots.forEach((slot, i) => {
@@ -505,7 +512,7 @@ export function updateAbilityBar() {
           ${dmgLine}
           ${castLine}
         </div>
-        <div class="ability-icon">${iconMap[def.icon] || def.icon}</div>
+        <div class="ability-icon">${renderIcon(def.icon)}</div>
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
