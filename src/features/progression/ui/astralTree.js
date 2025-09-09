@@ -300,6 +300,11 @@ async function buildTree() {
         refreshClasses();
         animateEdge(parentId, n.id);
         hideTooltip();
+        if (n.id === 4060 || n.id === 4061 || n.id === 4062) {
+          import('../../index.js').then(m => {
+            if (typeof m.mountAllFeatureUIs === 'function') m.mountAllFeatureUIs(S);
+          });
+        }
       });
       tooltip.appendChild(document.createElement('br'));
       tooltip.appendChild(btn);
@@ -595,13 +600,15 @@ function isAllocatable(id, allocated, adj, manifest) {
 
 function applyEffects(id, manifest) {
   const info = manifest[id];
-  if (!info || !info.bonus) return;
+  if (!info) return;
   const bonuses = S.astralTreeBonuses || (S.astralTreeBonuses = {});
-  for (const [k, v] of Object.entries(info.bonus)) {
-    if (typeof v === 'number') {
-      bonuses[k] = (bonuses[k] || 0) + v;
-    } else if (typeof v === 'boolean') {
-      bonuses[k] = bonuses[k] || v;
+  if (info.bonus) {
+    for (const [k, v] of Object.entries(info.bonus)) {
+      if (typeof v === 'number') {
+        bonuses[k] = (bonuses[k] || 0) + v;
+      } else if (typeof v === 'boolean') {
+        bonuses[k] = bonuses[k] || v;
+      }
     }
   }
   renderAstralTreeTotals();
