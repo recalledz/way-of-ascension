@@ -2210,6 +2210,74 @@ html.reduce-motion .shield-shimmer{animation:none;}
   display: block;
 }
 
+/* Equipment grid layout */
+:root {
+  --slotS: clamp(48px, 15vw, 60px);
+  --slotM: clamp(68px, 20vw, 84px);
+  --slotL-w: calc(var(--slotM) * 1.6);
+  --slotL-h: calc(var(--slotM) * 2.0);
+}
+
+.equip-grid {
+  display: grid;
+  grid-template-columns: var(--slotS) var(--slotM) var(--slotL-w) var(--slotS);
+  gap: 8px;
+  justify-content: center;
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--muted);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.slot.equipped {
+  border-style: solid;
+  color: var(--ink);
+}
+
+.slot .slot-name {
+  font-size: 12px;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
+}
+
+.slot-s { width: var(--slotS); height: var(--slotS); }
+.slot-m { width: var(--slotM); height: var(--slotM); }
+.slot-l { width: var(--slotL-w); height: var(--slotL-h); }
+
+.head-slot { grid-column: 2 / 4; justify-self: center; }
+.accessory-slot { grid-column: 1; grid-row: 2; }
+.weapon-slot { grid-column: 2; grid-row: 2; }
+.body-slot { grid-column: 3; grid-row: 2 / span 3; }
+.talisman1-slot { grid-column: 4; grid-row: 2; }
+.talisman2-slot { grid-column: 4; grid-row: 3; }
+.talisman3-slot { grid-column: 4; grid-row: 4; }
+.food-slot { grid-column: 1; grid-row: 5; }
+
+.unequip-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: none;
+}
+
+.slot.equipped .unequip-btn {
+  display: block;
+}
+
 .ability-slot,
 .available-ability {
   display: flex;

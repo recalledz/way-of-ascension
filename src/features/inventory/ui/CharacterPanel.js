@@ -105,14 +105,13 @@ function renderStats() {
 
 function renderEquipment() {
   const slots = [
-    { key: 'mainhand', label: 'Weapon' },
     { key: 'head', label: 'Head' },
+    { key: 'ring1', label: 'Accessory' },
+    { key: 'mainhand', label: 'Weapon' },
     { key: 'body', label: 'Body' },
-    { key: 'foot', label: 'Feet' },
-    { key: 'ring1', label: 'Ring 1' },
-    { key: 'ring2', label: 'Ring 2' },
-    { key: 'talisman1', label: 'Talisman 1' },
-    { key: 'talisman2', label: 'Talisman 2' },
+    { key: 'ring2', label: 'Talisman 1' },
+    { key: 'talisman1', label: 'Talisman 2' },
+    { key: 'talisman2', label: 'Talisman 3' },
     { key: 'food', label: 'Food' }
   ];
   slots.forEach(s => {
@@ -132,8 +131,14 @@ function renderEquipment() {
     const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
     const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
     el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
-    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
+    el.classList.toggle('equipped', !!item);
+    el.onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
+    const unequipBtn = el.querySelector('.unequip-btn');
+    if (unequipBtn) {
+      unequipBtn.onclick = ev => { ev.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
+      unequipBtn.setAttribute('aria-label', `Unequip ${s.label}`);
+    }
+    el.setAttribute('aria-label', `Equip ${s.label}`);
     const element = item?.element || item?.imbuement?.element;
     el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
   });
