@@ -595,25 +595,16 @@ function isAllocatable(id, allocated, adj, manifest) {
 
 function applyEffects(id, manifest) {
   const info = manifest[id];
-  if (!info) return;
+  if (!info || !info.bonus) return;
   const bonuses = S.astralTreeBonuses || (S.astralTreeBonuses = {});
-  if (info.bonus) {
-    for (const [k, v] of Object.entries(info.bonus)) {
-      if (typeof v === 'number') {
-        bonuses[k] = (bonuses[k] || 0) + v;
-      } else if (typeof v === 'boolean') {
-        bonuses[k] = bonuses[k] || v;
-      }
+  for (const [k, v] of Object.entries(info.bonus)) {
+    if (typeof v === 'number') {
+      bonuses[k] = (bonuses[k] || 0) + v;
+    } else if (typeof v === 'boolean') {
+      bonuses[k] = bonuses[k] || v;
     }
   }
   renderAstralTreeTotals();
   recomputePlayerTotals(S);
-
-  // Unlock corresponding activities when purchasing starting notables
-  if (id === 4060 || id === 4061 || id === 4062) {
-    import('../../index.js').then(m => {
-      if (typeof m.mountAllFeatureUIs === 'function') m.mountAllFeatureUIs(S);
-    });
-  }
 }
 
