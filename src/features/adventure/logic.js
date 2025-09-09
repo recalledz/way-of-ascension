@@ -457,24 +457,76 @@ export function updateBattleDisplay() {
   }
 }
 
+const abilityIconMap = {
+  'pointy-sword': '🗡️',
+  'game-icons:mighty-force': '💥',
+  'game-icons:fireball': '🔥',
+};
+
+function renderAbilityIcon(icon) {
+  if (abilityIconMap[icon]) return abilityIconMap[icon];
+  return icon.includes(':')
+    ? `<iconify-icon icon="${icon}" aria-hidden="true"></iconify-icon>`
+    : icon;
+}
+
+let currentAbilityTooltip = null;
+function hideAbilityTooltip() {
+  if (currentAbilityTooltip) {
+    currentAbilityTooltip.remove();
+    currentAbilityTooltip = null;
+  }
+}
+
+function showAbilityTooltip(anchor, html) {
+  hideAbilityTooltip();
+  const tooltip = document.createElement('div');
+  tooltip.className = 'item-tooltip';
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'tooltip-close';
+  closeBtn.textContent = '✖';
+  closeBtn.onclick = hideAbilityTooltip;
+  tooltip.appendChild(closeBtn);
+  const content = document.createElement('div');
+  content.className = 'tooltip-content';
+  content.innerHTML = html;
+  tooltip.appendChild(content);
+  document.body.appendChild(tooltip);
+  const rect = anchor.getBoundingClientRect();
+  const tRect = tooltip.getBoundingClientRect();
+  let left = rect.right + 8;
+  let top = rect.top + rect.height / 2 - tRect.height / 2;
+  if (left + tRect.width > window.innerWidth - 8) left = rect.left - tRect.width - 8;
+  if (left < 8) left = 8;
+  if (top < 8) top = 8;
+  if (top + tRect.height > window.innerHeight - 8) top = window.innerHeight - tRect.height - 8;
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+  currentAbilityTooltip = tooltip;
+}
+
+function abilityDetailsHTML(def, data) {
+  const header = `<div class="tooltip-header">${renderAbilityIcon(def.icon)}<span class="tooltip-name">${def.displayName}</span></div>`;
+  const lines = [];
+  if (def.desc) lines.push(`<div class="stat-row"><span class="label">Effect</span><span class="value">${def.desc}</span></div>`);
+  if (data.dmg !== null) lines.push(`<div class="stat-row"><span class="label">Damage</span><span class="value">${data.dmg}</span></div>`);
+  lines.push(`<div class="stat-row"><span class="label">Cost</span><span class="value">${def.costQi} Qi</span></div>`);
+  if (data.castTimeMs > 0) lines.push(`<div class="stat-row"><span class="label">Cast</span><span class="value">${(data.castTimeMs / 1000).toFixed(2)}s</span></div>`);
+  lines.push(`<div class="stat-row"><span class="label">Cooldown</span><span class="value">${(data.cooldownMs / 1000).toFixed(2)}s</span></div>`);
+  if (def.requiresWeaponClass) lines.push(`<div class="stat-row"><span class="label">Requires</span><span class="value">${def.requiresWeaponClass}</span></div>`);
+  const core = `<div class="tooltip-core">${lines.join('')}</div>`;
+  const tags = def.tags?.join(', ');
+  const footer = tags ? `<div class="tooltip-footer"><div class="tags">Tags: ${tags}</div></div>` : '';
+  return header + core + footer;
+}
+
 let lastAbilityHTML = '';
 export function updateAbilityBar() {
+  hideAbilityTooltip();
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
   const slots = getAbilitySlots(S);
   const weapon = getEquippedWeapon(S);
-  const iconMap = {
-    'pointy-sword': '🗡️',
-    'game-icons:mighty-force': '💥',
-    'game-icons:fireball': '🔥',
-  };
-
-  const renderIcon = (icon) => {
-    if (iconMap[icon]) return iconMap[icon];
-    return icon.includes(':')
-      ? `<iconify-icon icon="${icon}" aria-hidden="true"></iconify-icon>`
-      : icon;
-  };
   let html = '';
   const slotData = [];
   slots.forEach((slot, i) => {
@@ -501,18 +553,13 @@ export function updateAbilityBar() {
           (1 + (S.astralTreeBonuses?.cooldownPct || 0) / 100) /
           speedMult
       );
-      const cdSec = cooldownMs / 1000;
-      const ctSec = castTimeMs / 1000;
-      let title = `${def.displayName} — Cost ${def.costQi} Qi`;
-      if (castTimeMs > 0) title += `, Cast ${ctSec}s`;
-      title += `, CD ${cdSec}s`;
       let content = `
         <div class="ability-title">
           <div class="ability-name">${def.displayName}</div>
           ${dmgLine}
           ${castLine}
         </div>
-        <div class="ability-icon">${renderIcon(def.icon)}</div>
+        <div class="ability-icon">${renderAbilityIcon(def.icon)}</div>
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
@@ -522,8 +569,8 @@ export function updateAbilityBar() {
       const classes = ['ability-card'];
       if (slot.cooldownRemainingMs > 0) classes.push('cooling');
       if (slot.insufficientQi) classes.push('insufficient');
-      html += `<div class="${classes.join(' ')}" data-slot="${i + 1}" title="${title}">${content}</div>`;
-      slotData.push({ abilityKey: slot.abilityKey });
+      html += `<div class="${classes.join(' ')}" data-slot="${i + 1}">${content}</div>`;
+      slotData.push({ abilityKey: slot.abilityKey, dmg, castTimeMs, cooldownMs });
     } else {
       html += `<div class="ability-card empty" data-slot="${i + 1}">
         <div class="ability-name">—</div>
@@ -540,7 +587,29 @@ export function updateAbilityBar() {
   Array.from(bar.children).forEach((card, i) => {
     const data = slotData[i];
     if (data.abilityKey) {
+      let pressTimer;
+      const def = ABILITIES[data.abilityKey];
+      const show = () => {
+        const html = abilityDetailsHTML(def, data);
+        showAbilityTooltip(card, html);
+      };
+      card.addEventListener('mouseenter', show);
+      card.addEventListener('mouseleave', hideAbilityTooltip);
+      card.addEventListener('touchstart', () => {
+        pressTimer = setTimeout(show, 500);
+      });
+      const cancel = () => {
+        clearTimeout(pressTimer);
+        hideAbilityTooltip();
+      };
+      card.addEventListener('touchend', cancel);
+      card.addEventListener('touchmove', cancel);
+      card.addEventListener('touchcancel', cancel);
       card.addEventListener('click', () => {
+        if (currentAbilityTooltip) {
+          hideAbilityTooltip();
+          return;
+        }
         if (tryCastAbility(data.abilityKey)) {
           S.qi -= ABILITIES[data.abilityKey].costQi;
           flashAbilityCard(i + 1);

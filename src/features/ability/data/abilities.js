@@ -15,6 +15,7 @@ export const ABILITIES = {
     castTimeMs: 0,
     tags: ['weapon-skill', 'physical'],
     requiresWeaponClass: 'sword',
+    desc: 'Slash for 130% weapon damage and heal for 5 HP.',
   },
   
   palmStrike: {
@@ -25,6 +26,7 @@ export const ABILITIES = {
     cooldownMs: 0,
     castTimeMs: 0,
     tags: ['weapon-skill', 'physical'],
+    desc: 'A quick strike using your weapon.',
   },
     
   flowingPalm: {
@@ -36,6 +38,7 @@ export const ABILITIES = {
     castTimeMs: 0,
     tags: ['martial', 'physical'],
     requiresWeaponClass: 'palm',
+    desc: 'Strike with your weapon and heavily stun the enemy.',
   },
   seventyFive: {
     key: 'seventyFive',
@@ -44,7 +47,8 @@ export const ABILITIES = {
     costQi: 0,
     cooldownMs: 0,
     castTimeMs: 0,
-    tags: ['special']
+    tags: ['special'],
+    desc: 'Instantly defeat the enemy and fully restore yourself.',
   },
   fireball: {
     key: 'fireball',
@@ -53,7 +57,8 @@ export const ABILITIES = {
     costQi: 50,
     cooldownMs: 0,
     castTimeMs: 3_000,
-    tags: ['spell', 'fire']
+    tags: ['spell', 'fire'],
+    desc: 'Hurl a fireball dealing fire damage based on manual level.',
   },
   lightningStep: {
     key: 'lightningStep',
@@ -62,7 +67,8 @@ export const ABILITIES = {
     costQi: 30,
     cooldownMs: 30_000,
     castTimeMs: 500,
-    tags: ['buff', 'metal']
+    tags: ['buff', 'metal'],
+    desc: 'Temporarily increase attack speed and damage.',
   },
   // Leave other abilities out until you define them.
 };
