@@ -20,7 +20,7 @@ export const ABILITIES = {
   palmStrike: {
     key: 'palmStrike',
     displayName: 'Palm Strike',
-    icon: 'ph:hand-palm-thin',
+    icon: 'arcticons:palmpay',
     costQi: 0,
     cooldownMs: 0,
     castTimeMs: 0,
