@@ -105,37 +105,63 @@ function renderStats() {
 
 function renderEquipment() {
   const slots = [
-    { key: 'mainhand', label: 'Weapon' },
-    { key: 'head', label: 'Head' },
-    { key: 'body', label: 'Body' },
-    { key: 'foot', label: 'Feet' },
-    { key: 'ring1', label: 'Ring 1' },
-    { key: 'ring2', label: 'Ring 2' },
-    { key: 'talisman1', label: 'Talisman 1' },
-    { key: 'talisman2', label: 'Talisman 2' },
-    { key: 'food', label: 'Food' }
+    { key: 'mainhand', label: 'Weapon', placeholder: WEAPON_ICONS.sword },
+    { key: 'head', label: 'Head', placeholder: GEAR_ICONS.head },
+    { key: 'body', label: 'Body', placeholder: GEAR_ICONS.body },
+    { key: 'foot', label: 'Feet', placeholder: GEAR_ICONS.foot },
+    { key: 'ring1', label: 'Ring 1', placeholder: GEAR_ICONS.ring },
+    { key: 'ring2', label: 'Ring 2', placeholder: GEAR_ICONS.ring },
+    { key: 'talisman1', label: 'Talisman 1', placeholder: GEAR_ICONS.talisman },
+    { key: 'talisman2', label: 'Talisman 2', placeholder: GEAR_ICONS.talisman },
+    { key: 'food', label: 'Food', placeholder: GEAR_ICONS.food }
   ];
   slots.forEach(s => {
     const el = document.getElementById(`slot-${s.key}`);
     if (!el) return;
     const item = S.equipment[s.key];
-    const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
+    const iconEl = el.querySelector('.slot-icon');
+    const unequipBtn = el.querySelector('.unequip-chip');
+    const rarityBadge = el.querySelector('.rarity-badge');
+    const countBadge = el.querySelector('.count-badge');
     const icon = item?.type === 'weapon'
       ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
       : GEAR_ICONS[item?.slot || item?.type];
-    const stars = QUALITY_STARS[item?.quality] || '';
-    const rarity = item?.rarity;
-    const rarityColor = RARITY_COLORS[rarity] || '';
-    const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
-    const displayName = rarityPrefix + name;
-    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
-    const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
-    const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
-    el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
-    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
-    const element = item?.element || item?.imbuement?.element;
-    el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
+    iconEl.setAttribute('icon', icon || s.placeholder);
+    iconEl.classList.toggle('placeholder', !item);
+    el.onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
+    if (item) {
+      el.classList.add('equipped');
+      el.classList.remove('empty');
+      unequipBtn.style.display = '';
+      unequipBtn.onclick = e => { e.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
+      const name = item.name || (item.key ? (WEAPONS[item.key]?.displayName || item.key) : '');
+      el.setAttribute('aria-label', `${s.label}: ${name} equipped`);
+      const rarityColor = RARITY_COLORS[item.rarity];
+      if (rarityColor) {
+        rarityBadge.style.background = rarityColor;
+        rarityBadge.style.display = '';
+      } else {
+        rarityBadge.style.display = 'none';
+      }
+      const element = item.element || item.imbuement?.element;
+      el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
+      if (item.type === 'food' && item.qty > 1) {
+        countBadge.textContent = item.qty;
+        el.classList.add('has-count');
+      } else {
+        countBadge.textContent = '';
+        el.classList.remove('has-count');
+      }
+    } else {
+      el.classList.add('empty');
+      el.classList.remove('equipped', 'has-count');
+      unequipBtn.style.display = 'none';
+      unequipBtn.onclick = null;
+      rarityBadge.style.display = 'none';
+      countBadge.textContent = '';
+      el.style.backgroundColor = '';
+      el.setAttribute('aria-label', `${s.label} empty`);
+    }
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;

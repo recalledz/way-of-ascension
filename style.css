@@ -27,7 +27,16 @@
   --card-gap: 8px;
   --dot-size: 8px;
   --row-h: 48px;
-  
+
+  /* Gear slot dimensions */
+  --slotS: clamp(48px, 15vw, 60px);
+  --slotM: clamp(68px, 20vw, 84px);
+  --slotL-w: calc(var(--slotM) * 1.6);
+  --slotL-h: calc(var(--slotM) * 2);
+  --slot-pad: 8px;
+  --slot-radius: 8px;
+  --outline-stroke: 1.5px;
+
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
   --mortal-primary: #a66c4c; /* lighter saddle brown */
   --mortal-secondary: #b6825e; /* warm tan */
@@ -2209,6 +2218,84 @@ html.reduce-motion .shield-shimmer{animation:none;}
 .gear-tab-content.active {
   display: block;
 }
+
+.equip-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gear-slot {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: var(--slot-pad);
+  border: 1px solid currentColor;
+  border-radius: var(--slot-radius);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.gear-slot.slot-s { width: var(--slotS); height: var(--slotS); }
+.gear-slot.slot-m { width: var(--slotM); height: var(--slotM); }
+.gear-slot.slot-l { width: var(--slotL-w); height: var(--slotL-h); }
+
+.gear-slot.empty { border-style: dashed; }
+
+.gear-slot iconify-icon {
+  color: currentColor;
+  stroke-width: var(--outline-stroke);
+  fill: none;
+}
+
+.slot-icon.placeholder { opacity: 0.3; }
+
+.gear-slot.slot-s iconify-icon { width: calc((var(--slotS) - 16px) * 0.7); height: calc((var(--slotS) - 16px) * 0.7); }
+.gear-slot.slot-m iconify-icon { width: calc((var(--slotM) - 16px) * 0.72); height: calc((var(--slotM) - 16px) * 0.72); }
+.gear-slot.slot-l iconify-icon { width: calc((var(--slotL-w) - 16px) * 0.75); height: calc((var(--slotL-w) - 16px) * 0.75); }
+
+.empty-label {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.gear-slot.equipped .empty-label { display: none; }
+
+.unequip-chip {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 12px;
+  padding: 2px 4px;
+  display: none;
+}
+
+.rarity-badge {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  display: none;
+}
+
+.count-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 10px;
+  background: var(--panel);
+  padding: 1px 3px;
+  border-radius: 8px;
+  display: none;
+}
+
+.gear-slot.has-count .count-badge { display: block; }
 
 .ability-slot,
 .available-ability {
