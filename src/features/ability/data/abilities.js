@@ -20,7 +20,8 @@ export const ABILITIES = {
   palmStrike: {
     key: 'palmStrike',
     displayName: 'Palm Strike',
-    icon: 'ph:hand-palm-thin',
+    // Use a game-icons palm to avoid missing phosphor icon rendering
+    icon: 'game-icons:open-palm',
     costQi: 0,
     cooldownMs: 0,
     castTimeMs: 0,

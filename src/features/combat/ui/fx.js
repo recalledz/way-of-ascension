@@ -70,7 +70,8 @@ export function playPalmHit(svg, at) {
   const parent = svg.parentNode;
   if (!parent || reduceMotion || active >= MAX_FX) return;
   const icon = document.createElement('iconify-icon');
-  icon.setAttribute('icon', 'ph:hand-palm-fill');
+  // Use a reliable game-icons palm to ensure the hit effect renders correctly
+  icon.setAttribute('icon', 'game-icons:open-palm');
   icon.setAttribute('aria-hidden', 'true');
   icon.classList.add('fx-palm-hit');
   icon.style.left = `calc(${at.x}% - 12px)`;

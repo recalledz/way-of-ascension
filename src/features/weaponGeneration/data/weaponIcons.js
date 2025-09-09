@@ -7,6 +7,7 @@ export const WEAPON_ICONS = {
   spear: 'mdi:spear',
   focus: 'ri:focus-line',
   fist: 'game-icons:fist',
-  palm: 'ph:hand-palm-thin',
+  // Phosphor's hand-palm icon fails to render; use a game-icons palm instead
+  palm: 'game-icons:open-palm',
   nunchaku: 'game-icons:nunchaku',
 };
