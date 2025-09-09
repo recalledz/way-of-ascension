@@ -8,6 +8,7 @@ import { mountDiagnostics } from './diagnostics.js';
 import { mountAllFeatureUIs, runAllFeatureTicks } from '../features/index.js';
 import { applyDevUnlockPreset } from '../features/devUnlock.js';
 import { S, defaultState, save, setState, validateState } from '../shared/state.js';
+import { cancelSaveDebounce } from '../shared/saveLoad.js';
 import { GameController } from '../game/GameController.js';
 import {
   updateRealmUI,
@@ -49,6 +50,8 @@ import { meditate } from '../features/progression/mutators.js';
 import { sellJunk } from '../features/inventory/mutators.js';
 import { usePill } from '../features/alchemy/mutators.js';
 import { initSideLocations } from '../features/sideLocations/logic.js';
+
+export let controller;
 
 const report = configReport();
 if (report.isProd) {
@@ -134,6 +137,8 @@ function initUI(){
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       if (confirm('Hard reset?')) {
+        controller?.stop();
+        cancelSaveDebounce();
         // Wipe all persisted data so no stray keys survive a reset.
         // This covers older save slots and any feature-specific flags.
         try {
@@ -396,7 +401,7 @@ function enableLayoutDebug() {
     updateAll();
     log('Welcome, cultivator.');
     // Own the loop via GameController (fixed 1000ms for now)
-    const controller = new GameController(S, 1000).setFrame(frame);
+    controller = new GameController(S, 1000).setFrame(frame);
     controller.start();
     setInterval(() => {
     const junk = S.junk || [];
