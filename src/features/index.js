@@ -18,6 +18,7 @@ import { mountForgingUI } from "./forging/ui/forgingDisplay.js";
 import { mountTrainingGameUI as mountPhysiqueTrainingUI } from "./physique/ui/trainingGame.js";
 import { mountAgilityTrainingUI } from "./agility/ui/trainingGame.js";
 import { mountCultivationSidebar } from "./progression/ui/cultivationSidebar.js";
+import { mountLibraryUI, updateLibraryJournal } from "./library/ui/libraryDisplay.js";
 import { configReport, devUnlockPreset } from "../config.js";
 import { selectProgress, selectAstral, selectSect } from "../shared/selectors.js";
 import { applyDevUnlockPreset } from "./devUnlock.js";
@@ -134,6 +135,7 @@ export function mountAllFeatureUIs(state) {
   mountNotificationTray(state);
   mountTutorialBox(state);
   mountAbilityTutorialPopup(state);
+  mountLibraryUI(state);
   const { flags } = configReport();
   const ensure = (containerId, id, activity, label) => {
     const container = document.getElementById(containerId);
@@ -321,6 +323,7 @@ export function runAllFeatureTicks(state, stepMs) {
   updateBreakthrough();
 
   tickTutorial(state);
+  updateLibraryJournal(state);
 
   if (state.activities.adventure && state.adventure && state.adventure.inCombat) {
     updateAdventureCombat();

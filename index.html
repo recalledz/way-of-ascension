@@ -137,6 +137,11 @@
         <div class="activity-info" id="sectInfo">0 Buildings</div>
       </div>
 
+      <!-- Library Selector -->
+      <div class="activity-selector" id="librarySelector" data-activity="library">
+        <div class="activity-name">📚 Library</div>
+      </div>
+
       <div class="sidebar-footer">
         <div class="activity-selector" id="settingsSelector" data-activity="settings">
           <div class="activity-name">⚙️ Settings</div>
@@ -928,6 +933,21 @@
             <h4>Sect Buildings</h4>
             <p class="muted">Construct and upgrade buildings to enhance your sect's capabilities. Buildings unlock as you advance in cultivation and provide powerful bonuses.</p>
             <div id="buildingsContainer"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity-library" class="activity-content tab-content" style="display:none;">
+        <h2>📚 Library</h2>
+        <div class="library-tabs tab-bar">
+          <button class="library-tab-btn active" data-tab="journal">Journal</button>
+        </div>
+        <div id="journalTab" class="library-tab-content tab-content active">
+          <div class="cards">
+            <div class="card">
+              <h4>Tutorial Journal</h4>
+              <ul id="journalEntries"></ul>
+            </div>
           </div>
         </div>
       </section>
