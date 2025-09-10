@@ -81,7 +81,7 @@ export const WEAPON_TYPES = {
     slot: 'mainhand',
       base: { min: 1, max: 3, rate: 1.1 },
     tags: [],
-    signatureAbilityKey: 'mindSpike',
+    signatureAbilityKey: 'rockSling',
     implicitStats: { qiCostPct: -0.05 },
   },
   starFocus: {

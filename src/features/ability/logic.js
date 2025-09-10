@@ -36,6 +36,8 @@ export function resolveAbilityHit(abilityKey, state) {
       return resolveFireball(state);
     case 'lightningStep':
       return resolveLightningStep(state);
+    case 'rockSling':
+      return resolveRockSling(state);
     case 'seventyFive':
       return resolveSeventyFive();
     default:
@@ -88,6 +90,16 @@ function resolveLightningStep(state) {
     expiresAt: Date.now() + durationMs,
   };
   return {};
+}
+
+function resolveRockSling(state) {
+  const dmg = Math.floor(Math.random() * 11) + 10; // 10-20 damage
+  return {
+    attacks: [
+      { amount: dmg, type: 'earth', target: state.adventure.currentEnemy },
+    ],
+    stun: { mult: 1.2 },
+  };
 }
 
 function resolveSeventyFive() {
