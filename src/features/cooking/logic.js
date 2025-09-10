@@ -1,5 +1,6 @@
 import { log } from '../../shared/utils/dom.js';
 import { getCookingSpeedBonus } from './selectors.js';
+import { FOODS } from './data/foods.js';
 
 export function getFoodSlotData(state) {
   if (!state.foodSlots) {
@@ -117,5 +118,28 @@ export function useFoodSlot(slotNumber, state) {
   log(`Used ${foodType === 'meat' ? 'raw meat' : 'cooked meat'} and restored ${actualHeal} HP!`, 'good');
   if (state.adventure && state.adventure.inCombat) {
     state.adventure.playerHP = state.hp;
+  }
+}
+
+export function autoConsumeFood(state, stepMs) {
+  state.cooking = state.cooking || {};
+  state.cooking._autoFoodTimer = (state.cooking._autoFoodTimer || 0) + stepMs;
+  if (state.cooking._autoFoodTimer < 20000) return;
+  state.cooking._autoFoodTimer = 0;
+  if (state.hp >= state.hpMax) return;
+  for (let i = 1; i <= 5; i++) {
+    const slot = `food${i}`;
+    const item = state.equipment?.[slot];
+    if (item && item.type === 'food' && item.qty > 0) {
+      const info = FOODS[item.key];
+      const heal = info?.heal || 0;
+      const oldHP = state.hp;
+      state.hp = Math.min(state.hpMax, state.hp + heal);
+      const healed = state.hp - oldHP;
+      item.qty -= 1;
+      if (item.qty <= 0) state.equipment[slot] = null;
+      log(`Ate ${info?.name || item.key} and restored ${healed} HP!`, 'good');
+      break;
+    }
   }
 }

@@ -1,5 +1,7 @@
 import { cookingState } from "./state.js";
 import { selectSect } from "../../shared/selectors.js";
+import { autoConsumeFood } from "./logic.js";
+import { registerFeature } from "../registry.js";
 
 export const CookingFeature = {
   key: "cooking",
@@ -10,3 +12,9 @@ export const CookingFeature = {
     },
   },
 };
+
+registerFeature({
+  id: "cooking",
+  init: () => ({ ...cookingState, _v: 0 }),
+  tick: (state, stepMs) => autoConsumeFood(state, stepMs),
+});

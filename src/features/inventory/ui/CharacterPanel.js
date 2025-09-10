@@ -5,6 +5,7 @@ import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
 import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
 import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
+import { FOODS } from '../../cooking/data/foods.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -253,6 +254,14 @@ function weaponDetailsHTML(item) {
   return header + core + imbue + implicitHtml + modsHtml + footer;
 }
 
+function foodDetailsHTML(item) {
+  const info = FOODS[item.key] || {};
+  const header = `<div class="tooltip-header"><iconify-icon icon="${GEAR_ICONS.food}" class="weapon-icon"></iconify-icon><span class="tooltip-name">${info.name || item.name || item.key}</span></div>`;
+  const core = `<div class="tooltip-core"><div class="stat-row"><span class="label">Heal</span><span class="value">${info.heal || 0} HP</span></div></div>`;
+  const desc = info.description ? `<div class="tooltip-desc">${info.description}</div>` : '';
+  return header + core + desc;
+}
+
 function gearDetailsHTML(item) {
   const stars = QUALITY_STARS[item.quality] || '';
   const rarityColor = RARITY_COLORS[item.rarity] || '';
@@ -329,6 +338,8 @@ function showDetails(item, evt) {
     html = weaponDetailsHTML(item);
   } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
     html = gearDetailsHTML(item);
+  } else if (item.type === 'food') {
+    html = foodDetailsHTML(item);
   } else {
     html = item.name || item.key;
   }
@@ -370,7 +381,7 @@ function createInventoryRow(item) {
       useBtn.className = 'btn small';
       useBtn.textContent = 'Eat';
       useBtn.onclick = () => {
-        const heal = item.key === 'cookedMeat' ? 40 : 20;
+        const heal = FOODS[item.key]?.heal || 0;
         S.hp = Math.min(S.hpMax, (S.hp || 0) + heal);
         item.qty = (item.qty || 1) - 1;
         if (item.qty <= 0) removeFromInventory(item.id);
