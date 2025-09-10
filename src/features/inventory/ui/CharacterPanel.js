@@ -30,6 +30,18 @@ const RARITY_COLORS = {
   rare: '#fbbf24',
 };
 
+const SLOT_PLACEHOLDERS = {
+  mainhand: WEAPON_ICONS.sword,
+  head: GEAR_ICONS.head,
+  body: GEAR_ICONS.body,
+  foot: GEAR_ICONS.foot,
+  ring1: GEAR_ICONS.ring,
+  ring2: GEAR_ICONS.ring,
+  talisman1: GEAR_ICONS.talisman,
+  talisman2: GEAR_ICONS.talisman,
+  food: GEAR_ICONS.food,
+};
+
 const ELEMENT_ICONS = {
   physical: '⚪',
   metal: '⚙',
@@ -119,23 +131,65 @@ function renderEquipment() {
     const el = document.getElementById(`slot-${s.key}`);
     if (!el) return;
     const item = S.equipment[s.key];
-    const name = item?.name || (item?.key ? (WEAPONS[item.key]?.displayName || item.key) : 'Empty');
-    const icon = item?.type === 'weapon'
-      ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
-      : GEAR_ICONS[item?.slot || item?.type];
-    const stars = QUALITY_STARS[item?.quality] || '';
-    const rarity = item?.rarity;
-    const rarityColor = RARITY_COLORS[rarity] || '';
-    const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
-    const displayName = rarityPrefix + name;
-    const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
-    const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
-    const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
-    el.querySelector('.slot-name').innerHTML = nameHtml;
-    el.querySelector('.equip-btn').onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
-    el.querySelector('.unequip-btn').onclick = () => { unequip(s.key); renderEquipmentPanel(); };
-    const element = item?.element || item?.imbuement?.element;
-    el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
+    el.innerHTML = '';
+    el.onclick = () => { slotFilter = s.key; renderInventory({ dismissTooltip: true }); };
+    el.onkeydown = evt => {
+      if (evt.key === 'Enter' || evt.key === ' ') {
+        evt.preventDefault();
+        el.click();
+      }
+    };
+    const placeholder = SLOT_PLACEHOLDERS[s.key];
+    if (item) {
+      el.classList.remove('empty');
+      el.classList.add('equipped');
+      const icon = item.type === 'weapon'
+        ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+        : GEAR_ICONS[item.slot || item.type];
+      const iconEl = document.createElement('iconify-icon');
+      iconEl.setAttribute('icon', icon || placeholder);
+      iconEl.className = 'slot-icon';
+      el.appendChild(iconEl);
+      const rarityColor = RARITY_COLORS[item.rarity] || '';
+      if (rarityColor) {
+        const dot = document.createElement('span');
+        dot.className = 'rarity-dot';
+        dot.style.backgroundColor = rarityColor;
+        el.appendChild(dot);
+      }
+      const unequipBtn = document.createElement('button');
+      unequipBtn.className = 'unequip-chip';
+      unequipBtn.textContent = 'Unequip';
+      unequipBtn.onclick = evt => { evt.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
+      el.appendChild(unequipBtn);
+      const infoBtn = document.createElement('button');
+      infoBtn.className = 'slot-info';
+      infoBtn.textContent = 'i';
+      infoBtn.onclick = evt => { evt.stopPropagation(); showDetails(item, evt); };
+      el.appendChild(infoBtn);
+      if (s.key === 'food' && item.qty > 1) {
+        const badge = document.createElement('span');
+        badge.className = 'count-badge';
+        badge.textContent = item.qty;
+        el.appendChild(badge);
+      }
+      const element = item.element || item.imbuement?.element;
+      el.style.backgroundColor = element ? (ELEMENT_BG_COLORS[element] || '') : '';
+      el.setAttribute('aria-label', `${s.label}: ${item.name || item.key} equipped`);
+    } else {
+      el.classList.remove('equipped');
+      el.classList.add('empty');
+      const iconEl = document.createElement('iconify-icon');
+      iconEl.setAttribute('icon', placeholder);
+      iconEl.className = 'slot-icon placeholder';
+      el.appendChild(iconEl);
+      const lbl = document.createElement('span');
+      lbl.className = 'slot-empty-label';
+      lbl.textContent = 'Empty';
+      el.appendChild(lbl);
+      el.style.backgroundColor = '';
+      el.setAttribute('aria-label', `${s.label} empty`);
+    }
   });
   const armorEl = document.getElementById('armorVal');
   if (armorEl) armorEl.textContent = S.stats?.armor || 0;
