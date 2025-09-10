@@ -2221,16 +2221,26 @@ html.reduce-motion .shield-shimmer{animation:none;}
 /* Gear Slots */
 .equip-slots {
   display: grid;
-  column-gap: 8px;
-  row-gap: 2px;
-  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  grid-template-columns: auto auto auto;
   grid-template-areas:
-    ". . head . ring1"
-    "weapon . body foot ring2"
-    ". . . . talisman1"
-    ". . . . talisman2"
-    "food food2 food3 food4 food5";
+    ". head rings"
+    "weapon body rings"
+    ". foot talismans";
   justify-content: center;
+}
+
+.gear-slot-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.food-slot-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-start;
 }
 
 .gear-slot {
@@ -2277,15 +2287,12 @@ html.reduce-motion .shield-shimmer{animation:none;}
 #slot-head { grid-area: head; }
 #slot-body { grid-area: body; }
 #slot-foot { grid-area: foot; }
-#slot-ring1 { grid-area: ring1; }
-#slot-ring2 { grid-area: ring2; }
-#slot-talisman1 { grid-area: talisman1; }
-#slot-talisman2 { grid-area: talisman2; }
-#slot-food { grid-area: food; }
-#slot-food2 { grid-area: food2; }
-#slot-food3 { grid-area: food3; }
-#slot-food4 { grid-area: food4; }
-#slot-food5 { grid-area: food5; }
+#ring-slots { grid-area: rings; }
+#talisman-slots { grid-area: talismans; }
+
+#slot-head, #slot-foot {
+  width: var(--slotL-w);
+}
 
 .gear-slot .slot-empty-label {
   font-size: 10px;
@@ -2296,18 +2303,18 @@ html.reduce-motion .shield-shimmer{animation:none;}
   position: absolute;
   top: 2px;
   right: 2px;
-  font-size: 10px;
   width: 16px;
   height: 16px;
-  padding: 0;
-  border: none;
-  border-radius: 4px;
-  background: var(--ink);
-  color: var(--paper, var(--panel));
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper, var(--panel));
+  cursor: pointer;
 }
 
 .gear-slot .slot-info {
@@ -5205,10 +5212,14 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 
 .notification {
-  margin: 0 0 5px;
-  padding: 6px;
-  background: var(--parchment-light);
-  border: 1px solid #c8b68c;
+  margin: 0 0 4px;
+  padding: 4px 8px 4px 18px;
+  background: linear-gradient(90deg,
+    rgba(216, 165, 82, 0.6) 0px,
+    rgba(216, 165, 82, 0.1) 12px,
+    var(--parchment-light) 12px,
+    var(--parchment-light) 100%);
+  border: none;
   font-size: 0.9rem;
   cursor: pointer;
   position: relative;

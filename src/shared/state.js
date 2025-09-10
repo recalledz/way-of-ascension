@@ -143,7 +143,7 @@ export const defaultState = () => {
   // Combat Proficiency
   proficiency: {},
 
-  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, food: null }, // EQUIP-CHAR-UI
+  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, foot: null, ring1: null, ring2: null, talisman1: null, talisman2: null, food1: null, food2: null, food3: null, food4: null, food5: null }, // EQUIP-CHAR-UI
   inventory: [{ id: 'palmWraps', key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' }],
   junk: [],
   gearBonuses: {},

@@ -39,7 +39,7 @@ const SLOT_PLACEHOLDERS = {
   ring2: GEAR_ICONS.ring,
   talisman1: GEAR_ICONS.talisman,
   talisman2: GEAR_ICONS.talisman,
-  food: GEAR_ICONS.food,
+  food1: GEAR_ICONS.food,
   food2: GEAR_ICONS.food,
   food3: GEAR_ICONS.food,
   food4: GEAR_ICONS.food,
@@ -129,11 +129,11 @@ function renderEquipment() {
     { key: 'ring2', label: 'Ring 2' },
     { key: 'talisman1', label: 'Talisman 1' },
     { key: 'talisman2', label: 'Talisman 2' },
-    { key: 'food', label: 'Food' },
-    { key: 'food2', label: 'Food' },
-    { key: 'food3', label: 'Food' },
-    { key: 'food4', label: 'Food' },
-    { key: 'food5', label: 'Food' }
+    { key: 'food1', label: 'Food 1' },
+    { key: 'food2', label: 'Food 2' },
+    { key: 'food3', label: 'Food 3' },
+    { key: 'food4', label: 'Food 4' },
+    { key: 'food5', label: 'Food 5' }
   ];
   slots.forEach(s => {
     const el = document.getElementById(`slot-${s.key}`);
@@ -167,7 +167,7 @@ function renderEquipment() {
       }
       const unequipBtn = document.createElement('button');
       unequipBtn.className = 'unequip-chip';
-      unequipBtn.textContent = '×';
+      unequipBtn.textContent = '✕';
       unequipBtn.onclick = evt => { evt.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
       el.appendChild(unequipBtn);
       const infoBtn = document.createElement('button');
@@ -175,7 +175,7 @@ function renderEquipment() {
       infoBtn.textContent = 'i';
       infoBtn.onclick = evt => { evt.stopPropagation(); showDetails(item, evt); };
       el.appendChild(infoBtn);
-      if (s.key === 'food' && item.qty > 1) {
+      if (s.key.startsWith('food') && item.qty > 1) {
         const badge = document.createElement('span');
         badge.className = 'count-badge';
         badge.textContent = item.qty;
@@ -418,7 +418,12 @@ function canEquipToSlot(item, slot) {
     case 'ring2': return item.type === 'ring';
     case 'talisman1':
     case 'talisman2': return item.type === 'talisman';
-    case 'food': return item.type === 'food';
+    case 'food1':
+    case 'food2':
+    case 'food3':
+    case 'food4':
+    case 'food5':
+      return item.type === 'food';
   }
   return false;
 }
@@ -493,6 +498,7 @@ function setupGearTabs() {
         content.classList.add('active');
         content.style.display = 'block';
         if (tabName === 'gearAbilities') renderAbilitySlots();
+        else if (tabName === 'gearStats') renderStats();
       }
     };
   });

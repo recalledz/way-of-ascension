@@ -855,52 +855,58 @@
         <h2>🧙 Character</h2>
         <div class="cards character-cards">
           <div class="card">
-            <h4>Stats</h4>
-            <div class="stat"><span>HP</span><span id="stat-hp">100/100</span></div>
-            <div class="stat"><span>Shield</span><span id="stat-shield">0/0</span></div>
-            <div class="stat"><span>Attack</span><span id="stat-atkBase">5</span></div>
-            <div class="stat"><span>Base Armor</span><span id="stat-armorBase">2</span></div>
-            <div class="stat"><span>Armor</span><span id="stat-armor">0</span></div>
-            <div class="stat"><span>Accuracy</span><span id="stat-accuracy">0</span></div>
-            <div class="stat"><span>Dodge</span><span id="stat-dodge">0</span></div>
-            <div class="stat"><span>Physique</span><span id="stat-physique">10</span></div>
-            <div class="stat"><span>Mind</span><span id="stat-mind">10</span></div>
-            <div class="stat"><span>Agility</span><span id="stat-agility">10</span></div>
-            <div class="stat"><span>Dexterity</span><span id="stat-dexterity">10</span></div>
-            <div class="stat"><span>Comprehension</span><span id="stat-comprehension">10</span></div>
-            <div class="stat"><span>Crit Chance</span><span id="stat-criticalChance">5%</span></div>
-            <div class="stat"><span>Attack Speed</span><span id="stat-attackSpeed">1.00</span></div>
-            <div class="stat"><span>Cooldown Reduction</span><span id="stat-cooldownReduction">0%</span></div>
-            <div class="stat"><span>Adventure Speed</span><span id="stat-adventureSpeed">1.00</span></div>
-            <div class="stat"><span>Coin</span><span id="stat-coin">0</span></div>
-          </div>
-          <div class="card">
             <h4>Equipment</h4>
-            <div class="gear-tabs">
-              <button class="gear-tab-btn active" data-tab="gearEquip">Gear</button>
-              <button class="gear-tab-btn" data-tab="gearAbilities">Abilities</button>
-            </div>
+              <div class="gear-tabs">
+                <button class="gear-tab-btn active" data-tab="gearEquip">Gear</button>
+                <button class="gear-tab-btn" data-tab="gearAbilities">Abilities</button>
+                <button class="gear-tab-btn" data-tab="gearStats">Stats</button>
+              </div>
             <div id="gearEquipSubTab" class="gear-tab-content active">
               <div class="equip-slots">
                 <div class="gear-slot size-m empty" id="slot-mainhand" role="button" tabindex="0"></div>
-                <div class="gear-slot size-l empty" id="slot-head" role="button" tabindex="0"></div>
+                <div class="gear-slot size-m empty" id="slot-head" role="button" tabindex="0"></div>
                 <div class="gear-slot size-l empty" id="slot-body" role="button" tabindex="0"></div>
-                <div class="gear-slot size-l empty" id="slot-foot" role="button" tabindex="0"></div>
-                <div class="gear-slot size-s empty" id="slot-ring1" role="button" tabindex="0"></div>
-                <div class="gear-slot size-s empty" id="slot-ring2" role="button" tabindex="0"></div>
-                <div class="gear-slot size-s empty" id="slot-talisman1" role="button" tabindex="0"></div>
-                <div class="gear-slot size-s empty" id="slot-talisman2" role="button" tabindex="0"></div>
-                <div class="gear-slot size-s empty" id="slot-food" role="button" tabindex="0"></div>
+                <div class="gear-slot size-m empty" id="slot-foot" role="button" tabindex="0"></div>
+                <div class="gear-slot-stack" id="ring-slots">
+                  <div class="gear-slot size-s empty" id="slot-ring1" role="button" tabindex="0"></div>
+                  <div class="gear-slot size-s empty" id="slot-ring2" role="button" tabindex="0"></div>
+                </div>
+                <div class="gear-slot-stack" id="talisman-slots">
+                  <div class="gear-slot size-s empty" id="slot-talisman1" role="button" tabindex="0"></div>
+                  <div class="gear-slot size-s empty" id="slot-talisman2" role="button" tabindex="0"></div>
+                </div>
+              </div>
+              <div class="food-slot-row">
+                <div class="gear-slot size-s empty" id="slot-food1" role="button" tabindex="0"></div>
                 <div class="gear-slot size-s empty" id="slot-food2" role="button" tabindex="0"></div>
                 <div class="gear-slot size-s empty" id="slot-food3" role="button" tabindex="0"></div>
                 <div class="gear-slot size-s empty" id="slot-food4" role="button" tabindex="0"></div>
                 <div class="gear-slot size-s empty" id="slot-food5" role="button" tabindex="0"></div>
               </div>
             </div>
-            <div id="gearAbilitiesSubTab" class="gear-tab-content" style="display:none;">
-              <div id="abilitySlots"></div>
-              <div id="availableAbilities"></div>
-            </div>
+              <div id="gearAbilitiesSubTab" class="gear-tab-content" style="display:none;">
+                <div id="abilitySlots"></div>
+                <div id="availableAbilities"></div>
+              </div>
+              <div id="gearStatsSubTab" class="gear-tab-content" style="display:none;">
+                <div class="stat"><span>HP</span><span id="stat-hp">100/100</span></div>
+                <div class="stat"><span>Shield</span><span id="stat-shield">0/0</span></div>
+                <div class="stat"><span>Attack</span><span id="stat-atkBase">5</span></div>
+                <div class="stat"><span>Base Armor</span><span id="stat-armorBase">2</span></div>
+                <div class="stat"><span>Armor</span><span id="stat-armor">0</span></div>
+                <div class="stat"><span>Accuracy</span><span id="stat-accuracy">0</span></div>
+                <div class="stat"><span>Dodge</span><span id="stat-dodge">0</span></div>
+                <div class="stat"><span>Physique</span><span id="stat-physique">10</span></div>
+                <div class="stat"><span>Mind</span><span id="stat-mind">10</span></div>
+                <div class="stat"><span>Agility</span><span id="stat-agility">10</span></div>
+                <div class="stat"><span>Dexterity</span><span id="stat-dexterity">10</span></div>
+                <div class="stat"><span>Comprehension</span><span id="stat-comprehension">10</span></div>
+                <div class="stat"><span>Crit Chance</span><span id="stat-criticalChance">5%</span></div>
+                <div class="stat"><span>Attack Speed</span><span id="stat-attackSpeed">1.00</span></div>
+                <div class="stat"><span>Cooldown Reduction</span><span id="stat-cooldownReduction">0%</span></div>
+                <div class="stat"><span>Adventure Speed</span><span id="stat-adventureSpeed">1.00</span></div>
+                <div class="stat"><span>Coin</span><span id="stat-coin">0</span></div>
+              </div>
           </div>
           <div class="card">
             <h4>Inventory</h4>
