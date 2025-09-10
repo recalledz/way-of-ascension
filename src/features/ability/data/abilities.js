@@ -71,5 +71,16 @@ export const ABILITIES = {
     description: 'Empowers you with lightning, boosting attack speed and damage for a short time.',
     tags: ['buff', 'metal']
   },
+  rockSling: {
+    key: 'rockSling',
+    displayName: 'Rock Sling',
+    icon: 'game-icons:stone-sphere',
+    costQi: 15,
+    cooldownMs: 3_000,
+    castTimeMs: 0,
+    description: 'Hurls a jagged stone that deals earth damage and a minor stun.',
+    tags: ['spell', 'earth'],
+    requiresWeaponClass: 'focus',
+  },
   // Leave other abilities out until you define them.
 };

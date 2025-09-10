@@ -34,6 +34,8 @@ export function resolveAbilityHit(abilityKey, state) {
       return resolveFlowingPalm(state);
     case 'fireball':
       return resolveFireball(state);
+    case 'rockSling':
+      return resolveRockSling(state);
     case 'lightningStep':
       return resolveLightningStep(state);
     case 'seventyFive':
@@ -68,6 +70,16 @@ function resolveFireball(state) {
     attacks: [{ amount: damage, type: 'fire', target: state.adventure.currentEnemy }],
 
    };
+}
+
+function resolveRockSling(state) {
+  const damage = Math.floor(Math.random() * 11) + 10;
+  return {
+    attacks: [
+      { amount: damage, type: 'earth', target: state.adventure.currentEnemy },
+    ],
+    stun: { mult: 0.2 },
+  };
 }
 
 function resolvePalmStrike(state) {
