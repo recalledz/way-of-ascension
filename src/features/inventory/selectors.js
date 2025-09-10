@@ -1,5 +1,4 @@
 import { S } from '../../shared/state.js';
-import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 
 export function getInventory(state = S) {
   return state.inventory || [];
@@ -14,12 +13,12 @@ export function getEquipped(slot, state = S) {
 }
 
 export function getEquippedWeapon(state = S) {
-  if (!state.flags?.weaponsEnabled) return WEAPONS.fist;
+  const fists = { key: 'fist', name: 'Fists', typeKey: 'fist', classKey: 'fist', slot: 'mainhand' };
+  if (!state.flags?.weaponsEnabled) return fists;
   const eq = state.equipment?.mainhand;
-  const key = typeof eq === 'string' ? eq : eq?.key;
-  if (WEAPONS[key]) return WEAPONS[key];
-  if (eq && typeof eq === 'object') {
-    return { ...eq, key, displayName: eq.displayName || eq.name || key };
+  if (!eq) return fists;
+  if (typeof eq === 'string') {
+    return { ...fists, key: eq, name: eq, typeKey: eq, classKey: eq };
   }
-  return WEAPONS.fist;
+  return { slot: 'mainhand', ...eq, name: eq.name || eq.key };
 }
