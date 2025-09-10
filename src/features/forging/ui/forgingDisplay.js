@@ -3,18 +3,11 @@ import { setText } from '../../../shared/utils/dom.js';
 import { fmt } from '../../../shared/utils/number.js';
 import { on } from '../../../shared/events.js';
 import { startForging } from '../mutators.js';
-import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
-import { GEAR_BASES } from '../../gearGeneration/data/gearBases.js';
 import { startActivity as startActivityMut } from '../../activity/mutators.js';
 
 function displayName(it) {
   if (!it) return '';
-  return (
-    it.name ||
-    WEAPONS[it.key]?.displayName ||
-    GEAR_BASES[it.key]?.displayName ||
-    it.id
-  );
+  return it.name || it.key || it.id;
 }
 
 function updateForgingActivity(state = S) {

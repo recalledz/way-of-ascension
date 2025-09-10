@@ -1,5 +1,4 @@
 import { S, save } from '../../../shared/state.js';
-import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
 import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
 import { equipItem, unequip, removeFromInventory, moveToJunk } from '../mutators.js';
 import { recomputePlayerTotals } from '../logic.js';
@@ -152,7 +151,7 @@ function renderEquipment() {
       el.classList.remove('empty');
       el.classList.add('equipped');
       const icon = item.type === 'weapon'
-        ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+        ? WEAPON_ICONS[item.classKey]
         : GEAR_ICONS[item.slot || item.type];
       const iconEl = document.createElement('iconify-icon');
       iconEl.setAttribute('icon', icon || placeholder);
@@ -202,13 +201,12 @@ function renderEquipment() {
 }
 
 function weaponDetailsHTML(item) {
-  const w = WEAPONS[item.key] || item;
+  const w = item;
   if (!w) return '';
-  const iconKey = WEAPONS[item.key]?.proficiencyKey;
-  const icon = iconKey ? WEAPON_ICONS[iconKey] : null;
+  const icon = w.classKey ? WEAPON_ICONS[w.classKey] : null;
   const stars = QUALITY_STARS[item.quality] || '';
   const rarityColor = RARITY_COLORS[item.rarity] || '';
-  const name = w.displayName || w.name;
+  const name = w.name;
   const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
 
   const phys = w.base?.phys || { min: 0, max: 0 };
@@ -348,7 +346,7 @@ function createInventoryRow(item) {
     row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
   }
   const icon = item.type === 'weapon'
-    ? WEAPON_ICONS[WEAPONS[item.key]?.classKey]
+    ? WEAPON_ICONS[item.classKey]
     : GEAR_ICONS[item.slot || item.type];
   const rarity = item.rarity;
   const rarityColor = RARITY_COLORS[rarity] || '';

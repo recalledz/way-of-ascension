@@ -1,16 +1,15 @@
 import { addToInventory, equipItem } from '../features/inventory/mutators.js';
-import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
+import { generateWeapon } from '../features/weaponGeneration/logic.js';
+import { WEAPON_TYPES } from '../features/weaponGeneration/data/weaponTypes.js';
 import { WEAPON_ICONS } from '../features/weaponGeneration/data/weaponIcons.js';
 
-const CHOICES = ['dimFocus', 'crudeKnuckles', 'crudeNunchaku'];
-
 function renderOption(key) {
-  const weapon = WEAPONS[key];
-  const icon = WEAPON_ICONS[weapon.classKey];
+  const sample = generateWeapon({ typeKey: key });
+  const icon = WEAPON_ICONS[sample.classKey];
   return `
     <button class="weapon-option" data-key="${key}">
       <iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>
-      <span>${weapon.displayName}</span>
+      <span>${sample.name}</span>
     </button>
   `;
 }
@@ -29,7 +28,7 @@ export function showWeaponSelectOverlay(state) {
         <button class="btn small ghost close-btn">×</button>
       </div>
       <div class="weapon-options">
-        ${CHOICES.map(renderOption).join('')}
+        ${Object.keys(WEAPON_TYPES).map(renderOption).join('')}
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -43,7 +42,8 @@ export function showWeaponSelectOverlay(state) {
   overlay.querySelectorAll('.weapon-option').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-key');
-      const id = addToInventory(WEAPONS[key], state);
+      const weapon = generateWeapon({ typeKey: key });
+      const id = addToInventory(weapon, state);
       const item = state.inventory.find(it => it.id === id);
       equipItem(item, 'mainhand', state);
       close();
