@@ -4418,7 +4418,7 @@ html.reduce-motion .sprite-stage .sprite{animation:none}
 
 /* Ability bar */
 .ability-bar { display:flex; gap:4px; }
-.ability-card { width:48px; height:72px; background:var(--panel); border:1px solid var(--ink-light); border-radius:3.2px; position:relative; padding:1.6px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; }
+.ability-card { width:48px; height:72px; background:var(--panel); border:1px solid var(--ink-light); border-radius:3.2px; position:relative; padding:1.6px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; touch-action:manipulation; }
 .ability-card .ability-name { font-size:8px; text-align:center; }
 .ability-card .ability-title { display:flex; flex-direction:column; align-items:center; }
 .ability-card .ability-damage { font-size:8px; }
