@@ -50,7 +50,11 @@ export function tickStunDecay(target, dtSec, nowMs) {
 
 /** Add stun progress; triggers stun when threshold reached. */
 export function addStunPercent(stun, rawPercent, opts = {}) {
-  const gain = Math.min(rawPercent, MAX_STUN_PER_HIT);
+  const { attackerStats = {}, targetStats = {} } = opts;
+  let gain = rawPercent;
+  gain *= 1 + (attackerStats.stunBuildMult || 0);
+  gain *= 1 - (targetStats.stunBuildTakenReduction || 0);
+  gain = Math.min(gain, MAX_STUN_PER_HIT);
   stun.value += gain;
   if (stun.value >= STUN_THRESHOLD) {
     const overshoot = stun.value - STUN_THRESHOLD;

@@ -17,7 +17,10 @@ again【F:src/game/GameController.js†L13-L53】.
 Temporary conditions such as **Bruise**, **Fracture** or **Qi Disruption** are
 modeled as status entries with duration, stack limits and rule modifiers. Some
 statuses scale with attributes like Physique or Mind, and special flags handle
-stun immunity and weakened states【F:src/data/status.ts†L1-L55】.
+stun immunity and weakened states【F:src/data/status.ts†L1-L55】. Stun build from
+physical hits is further modified by the attacker’s **Stun Strength**
+(`stunBuildMult`) and the defender’s **Stun Build Reduction**
+(`stunBuildTakenReduction`) before the per-hit cap is applied【F:src/engine/combat/stun.js†L52-L59】.
 
 The Physique attribute grants permanent bonuses. Each Physique level awards one
 Physique point. For every point the player gains +3 maximum HP and +1
