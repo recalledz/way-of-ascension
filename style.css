@@ -1755,19 +1755,20 @@ h1{font-size:20px; margin:0; letter-spacing:.5px}
 .topbar{display:flex; gap:14px; flex-wrap:wrap}
 /* STYLE-GUIDE-UPDATE: Parchment chip style */
 .chip{background:var(--panel); border:1px solid var(--accent); padding:8px 12px; border-radius:999px; font-size:12px; box-shadow: inset 0 1px 3px rgba(139, 117, 95, 0.2);}
-.status-card{background:var(--panel);border:1px solid var(--accent);padding:var(--pad);border-radius:4px;margin-bottom:var(--gap);}
-.status-card h4{margin:0 0 var(--gap) 0;font-size:14px;}
-.status-metric{margin-bottom:var(--gap);}
+.status-card{position:relative;background:var(--panel);border:1px solid rgba(45,37,32,0.25);padding:12px;border-radius:8px;margin-bottom:var(--gap);}
+.status-card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(rgba(0,0,0,0.03),rgba(0,0,0,0.03)),radial-gradient(circle at 30% 20%,rgba(45,37,32,0.04)0%,transparent 60%),radial-gradient(circle at 80% 70%,rgba(45,37,32,0.03)0%,transparent 55%);}
+.status-card h4{margin:0 0 8px 0;font-size:13px;}
+.status-metric{display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:6px;margin-bottom:4px;}
 .status-metric:last-child{margin-bottom:0;}
-.status-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;}
-.status-label{display:flex;align-items:center;gap:4px;}
-.status-value{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.status-bar{position:relative;width:100%;height:8px;background:rgba(0,0,0,0.1);border-radius:4px;margin-top:4px;}
+.status-label{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;white-space:nowrap;}
+.status-value{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:500;text-align:right;width:60px;}
+.status-bar{position:relative;width:100%;height:8px;background:rgba(0,0,0,0.1);border-radius:4px;min-width:0;overflow:hidden;}
 .hp-bar,.qi-bar{height:8px;}
 .hp-bar{background:rgba(239,68,68,0.3);}
 .hp-bar .fill{height:100%;background:linear-gradient(90deg,#ef4444,#f87171);border-radius:4px;transition:width 0.3s ease;width:0%;}
 .qi-bar{background:rgba(37,99,235,0.3);}
 .qi-bar .qi-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:4px;transition:width 0.3s ease;width:0%;}
+.status-metric .sr-only{grid-column:1/-1;}
 .shield-overlay{position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; transition:width 0.2s linear;}
 .shield-fill{fill:rgba(0,255,255,0.6); height:100%; transition:width 0.2s linear;}
 .shield-shimmer{height:100%; transition:width 0.2s linear; animation:shield-shimmer 1.5s linear infinite; opacity:0.6;}
