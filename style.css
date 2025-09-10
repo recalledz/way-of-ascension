@@ -2221,15 +2221,13 @@ html.reduce-motion .shield-shimmer{animation:none;}
 /* Gear Slots */
 .equip-slots {
   display: grid;
-  column-gap: 8px;
-  row-gap: 2px;
-  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  grid-template-columns: auto auto auto;
   grid-template-areas:
-    ". . head . ring1"
-    "weapon . body foot ring2"
-    ". . . . talisman1"
-    ". . . . talisman2"
-    "food food2 food3 food4 food5";
+    ". head ring1"
+    "weapon body ring2"
+    ". foot talisman1"
+    "food . talisman2";
   justify-content: center;
 }
 
@@ -2282,10 +2280,6 @@ html.reduce-motion .shield-shimmer{animation:none;}
 #slot-talisman1 { grid-area: talisman1; }
 #slot-talisman2 { grid-area: talisman2; }
 #slot-food { grid-area: food; }
-#slot-food2 { grid-area: food2; }
-#slot-food3 { grid-area: food3; }
-#slot-food4 { grid-area: food4; }
-#slot-food5 { grid-area: food5; }
 
 .gear-slot .slot-empty-label {
   font-size: 10px;
@@ -2294,20 +2288,15 @@ html.reduce-motion .shield-shimmer{animation:none;}
 
 .gear-slot .unequip-chip {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  font-size: 10px;
-  width: 16px;
-  height: 16px;
-  padding: 0;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+  padding: 2px 4px;
   border: none;
   border-radius: 4px;
   background: var(--ink);
   color: var(--paper, var(--panel));
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .gear-slot .slot-info {
