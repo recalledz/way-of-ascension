@@ -1,5 +1,4 @@
 import { S, save } from '../../shared/state.js';
-import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 import { emit } from '../../shared/events.js';
 import { recomputePlayerTotals, canEquip } from './logic.js';
 export { usePill } from '../alchemy/mutators.js'; // deprecated shim
@@ -57,10 +56,16 @@ export function equipItem(item, slot = null, state = S) {
   const { id, ...equipData } = item;
   state.equipment[slotKey] = equipData;
   removeFromInventory(id, state);
-  console.log('[equip]', 'slot→', slotKey, 'item→', item.key);
+  console.log('[equip]', 'slot→', slotKey, 'item→', item.name || item.key);
   recomputePlayerTotals(state);
   save?.();
-  const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.name || item.key, slot: slotKey };
+  const payload = {
+    key: item.key,
+    name: item.name || item.key,
+    typeKey: item.typeKey,
+    classKey: item.classKey,
+    slot: slotKey,
+  };
   if (slotKey === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
   return payload;
 }
@@ -74,7 +79,13 @@ export function unequip(slot, state = S) {
   console.log('[equip]', 'slot→', slot, 'item→', 'none');
   recomputePlayerTotals(state);
   save?.();
-  const payload = { key: 'fist', name: 'Fists', slot };
+  const payload = {
+    key: 'fist',
+    name: 'Fists',
+    typeKey: 'fist',
+    classKey: 'fist',
+    slot,
+  };
   if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
   return payload;
 }

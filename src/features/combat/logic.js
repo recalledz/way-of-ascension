@@ -80,18 +80,27 @@ export function applyWeaponDamage(profile = {}, weapon = WEAPONS.fist, attacker 
   for (const key of w.modifiers || []) {
     const mod = MODIFIERS[key];
     if (!mod) continue;
-    if (mod.lane === 'damage' && typeof mod.value === 'number') {
+    const lane = typeof mod.lane === 'string' ? mod.lane : '';
+    if (lane === 'damage' && typeof mod.value === 'number') {
       result.phys *= 1 + mod.value;
       for (const k in result.elems) result.elems[k] *= 1 + mod.value;
-    } else if (mod.lane === 'physPct' && typeof mod.value === 'number') {
+    } else if (lane === 'physPct' && typeof mod.value === 'number') {
       result.phys *= 1 + mod.value;
-    } else if (mod.lane === 'physFlat' && mod.range) {
+    } else if (lane === 'physFlat' && mod.range) {
       const avg = (mod.range.min + mod.range.max) / 2;
       result.phys += avg;
-    } else if (mod.element && mod.lane.endsWith('Pct') && typeof mod.value === 'number') {
+    } else if (
+      mod.element &&
+      lane.endsWith('Pct') &&
+      typeof mod.value === 'number'
+    ) {
       const elem = mod.element;
       result.elems[elem] = (result.elems[elem] || 0) * (1 + mod.value);
-    } else if (mod.element && mod.lane.endsWith('Flat') && mod.range) {
+    } else if (
+      mod.element &&
+      lane.endsWith('Flat') &&
+      mod.range
+    ) {
       const elem = mod.element;
       const avg = (mod.range.min + mod.range.max) / 2;
       result.elems[elem] = (result.elems[elem] || 0) + avg;
