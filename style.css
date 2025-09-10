@@ -5194,10 +5194,14 @@ html.reduce-motion .log-sheet{transition:none;}
 }
 
 .notification {
-  margin: 0 0 5px;
-  padding: 6px;
-  background: var(--parchment-light);
-  border: 1px solid #c8b68c;
+  margin: 0 0 4px;
+  padding: 4px 8px 4px 18px;
+  background: linear-gradient(90deg,
+    rgba(216, 165, 82, 0.6) 0px,
+    rgba(216, 165, 82, 0.1) 12px,
+    var(--parchment-light) 12px,
+    var(--parchment-light) 100%);
+  border: none;
   font-size: 0.9rem;
   cursor: pointer;
   position: relative;
