@@ -1,4 +1,5 @@
 import { generateWeapon } from '../logic.js';
+import { WEAPON_TYPES } from './weaponTypes.js';
 
 function defaultAnimationsForType(typeKey) {
   switch (typeKey) {
@@ -30,51 +31,34 @@ function defaultAnimationsForType(typeKey) {
   }
 }
 
-function toLegacy(key, item){
-  return {
-    key,
-    displayName: item.name,
-    quality: item.quality,
-    modifiers: [...(item.modifiers || [])],
-    rarity: item.rarity,
-    slot: 'mainhand',
-    typeKey: item.typeKey,
-    classKey: item.classKey,
-    base: {
-      phys: { min: item.base.phys.min, max: item.base.phys.max },
-      rate: item.base.rate,
-      elems: { ...item.base.elems }
-    },
-    tags: [...item.tags],
-    reqs: { realmMin: 1, proficiencyMin: 0 },
-    abilityKeys: [...item.abilityKeys],
-    stats: item.stats ? { ...item.stats } : undefined,
-    animations: defaultAnimationsForType(item.typeKey),
-  };
-}
-
 const FIST = {
   key: 'fist',
-  displayName: 'Fists',
+  name: 'Fists',
+  type: 'weapon',
+  slot: 'mainhand',
   typeKey: 'fist',
   classKey: 'fist',
   quality: 'basic',
-  modifiers: [],
   rarity: 'normal',
-  slot: 'mainhand',
+  modifiers: [],
   base: { phys: { min: 1, max: 3 }, rate: 1.0, elems: {} },
-  tags: ['melee'],
-  reqs: { realmMin: 0, proficiencyMin: 0 },
+  tags: ['physical'],
   abilityKeys: ['seventyFive'],
   animations: defaultAnimationsForType('fist'),
 };
 
 const PALM_WRAPS = {
-  ...FIST,
   key: 'palmWraps',
-  displayName: 'Palm Wraps',
+  name: 'Palm Wraps',
+  type: 'weapon',
+  slot: 'mainhand',
   typeKey: 'palm',
   classKey: 'palm',
+  quality: 'basic',
+  rarity: 'normal',
+  modifiers: [],
+  base: { phys: { min: 1, max: 3 }, rate: 1.0, elems: {} },
+  tags: ['physical'],
   abilityKeys: ['palmStrike'],
   stats: {
     stunBuildMult: 0.3,
@@ -86,31 +70,85 @@ const PALM_WRAPS = {
 export const WEAPONS = {
   fist: FIST,
   palmWraps: PALM_WRAPS,
-  ironStraightSword: toLegacy('ironStraightSword', generateWeapon({ typeKey: 'straightSword', materialKey: 'iron', qualityKey: 'basic' })),
-  crudeDagger: toLegacy('crudeDagger', generateWeapon({ typeKey: 'crudeDagger', materialKey: 'iron', qualityKey: 'basic' })),
-  crudeRapier: toLegacy('crudeRapier', generateWeapon({ typeKey: 'crudeRapier', materialKey: 'iron', qualityKey: 'basic' })),
-  crudeHammer: toLegacy('crudeHammer', generateWeapon({ typeKey: 'crudeHammer', materialKey: 'bronze', qualityKey: 'basic' })),
-  crudeBludgeon: toLegacy('crudeBludgeon', generateWeapon({ typeKey: 'crudeBludgeon', materialKey: 'bronze', qualityKey: 'basic' })),
-  crudeAxe: toLegacy('crudeAxe', generateWeapon({ typeKey: 'crudeAxe', materialKey: 'iron', qualityKey: 'basic' })),
-  bronzeSpear: toLegacy('bronzeSpear', generateWeapon({ typeKey: 'spear', materialKey: 'bronze', qualityKey: 'basic' })),
-  dimFocus: toLegacy('dimFocus', generateWeapon({ typeKey: 'dimFocus', materialKey: 'spiritwood', qualityKey: 'basic' })),
-  starFocus: toLegacy('starFocus', generateWeapon({ typeKey: 'starFocus', materialKey: 'spiritwood', qualityKey: 'basic' })),
-  crudeKnuckles: toLegacy('crudeKnuckles', generateWeapon({ typeKey: 'crudeKnuckles', materialKey: 'iron', qualityKey: 'basic' })),
-  crudeNunchaku: toLegacy('crudeNunchaku', generateWeapon({ typeKey: 'crudeNunchaku', materialKey: 'spiritwood', qualityKey: 'basic' })),
-  tameNunchaku: toLegacy('tameNunchaku', generateWeapon({ typeKey: 'tameNunchaku', materialKey: 'spiritwood', qualityKey: 'basic' })),
+  straightSword: {
+    key: 'straightSword',
+    ...generateWeapon({ typeKey: 'straightSword', materialKey: 'iron', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('straightSword'),
+  },
+  crudeDagger: {
+    key: 'crudeDagger',
+    ...generateWeapon({ typeKey: 'crudeDagger', materialKey: 'iron', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeDagger'),
+  },
+  crudeRapier: {
+    key: 'crudeRapier',
+    ...generateWeapon({ typeKey: 'crudeRapier', materialKey: 'iron', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeRapier'),
+  },
+  crudeHammer: {
+    key: 'crudeHammer',
+    ...generateWeapon({ typeKey: 'crudeHammer', materialKey: 'bronze', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeHammer'),
+  },
+  crudeBludgeon: {
+    key: 'crudeBludgeon',
+    ...generateWeapon({ typeKey: 'crudeBludgeon', materialKey: 'bronze', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeBludgeon'),
+  },
+  crudeAxe: {
+    key: 'crudeAxe',
+    ...generateWeapon({ typeKey: 'crudeAxe', materialKey: 'iron', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeAxe'),
+  },
+  spear: {
+    key: 'spear',
+    ...generateWeapon({ typeKey: 'spear', materialKey: 'bronze', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('spear'),
+  },
+  dimFocus: {
+    key: 'dimFocus',
+    ...generateWeapon({ typeKey: 'dimFocus', materialKey: 'spiritwood', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('dimFocus'),
+  },
+  starFocus: {
+    key: 'starFocus',
+    ...generateWeapon({ typeKey: 'starFocus', materialKey: 'spiritwood', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('starFocus'),
+  },
+  crudeKnuckles: {
+    key: 'crudeKnuckles',
+    ...generateWeapon({ typeKey: 'crudeKnuckles', materialKey: 'iron', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeKnuckles'),
+  },
+  crudeNunchaku: {
+    key: 'crudeNunchaku',
+    ...generateWeapon({ typeKey: 'crudeNunchaku', materialKey: 'spiritwood', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('crudeNunchaku'),
+  },
+  tameNunchaku: {
+    key: 'tameNunchaku',
+    ...generateWeapon({ typeKey: 'tameNunchaku', materialKey: 'spiritwood', qualityKey: 'basic' }),
+    animations: defaultAnimationsForType('tameNunchaku'),
+  },
 };
 
 const FIST_BASE_MAX = FIST.base.phys.max;
-export const WEAPON_FLAGS = Object.fromEntries(
-  Object.keys(WEAPONS).map(key => [key, true])
-);
+export const WEAPON_FLAGS = {
+  fist: true,
+  palmWraps: true,
+  ...Object.fromEntries(Object.keys(WEAPON_TYPES).map(key => [key, true])),
+};
 
-export const WEAPON_CONFIG = Object.fromEntries(
-  Object.entries(WEAPONS).map(([key, weapon]) => [
-    key,
-    {
-      damageMultiplier: (weapon.base?.phys.max ?? FIST_BASE_MAX) / FIST_BASE_MAX,
-      proficiencyBase: 0,
-    },
-  ])
-);
+export const WEAPON_CONFIG = {
+  fist: { damageMultiplier: FIST.base.phys.max / FIST_BASE_MAX, proficiencyBase: 0 },
+  palmWraps: { damageMultiplier: PALM_WRAPS.base.phys.max / FIST_BASE_MAX, proficiencyBase: 0 },
+  ...Object.fromEntries(
+    Object.entries(WEAPON_TYPES).map(([key, type]) => [
+      key,
+      {
+        damageMultiplier: (type.base?.max ?? FIST_BASE_MAX) / FIST_BASE_MAX,
+        proficiencyBase: 0,
+      },
+    ])
+  ),
+};
