@@ -27,8 +27,8 @@
   --card-gap: 8px;
   --dot-size: 8px;
   --row-h: 48px;
-  --slotS: clamp(48px, 15vw, 60px);
-  --slotM: clamp(68px, 20vw, 84px);
+  --slotS: clamp(38px, 12vw, 48px);
+  --slotM: clamp(54px, 16vw, 67px);
   --slotL-w: calc(var(--slotM) * 1.6);
   --slotL-h: calc(var(--slotM) * 2);
   --slot-pad: 8px;
@@ -2219,9 +2219,15 @@ html.reduce-motion .shield-shimmer{animation:none;}
 
 /* Gear Slots */
 .equip-slots {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 8px;
+  grid-template-columns: auto auto auto auto;
+  grid-template-areas:
+    ". head ring1 ring2"
+    "weapon body talisman1 talisman2"
+    ". foot . ."
+    ". food . .";
+  justify-content: center;
 }
 
 .gear-slot {
@@ -2263,6 +2269,16 @@ html.reduce-motion .shield-shimmer{animation:none;}
 .gear-slot .slot-icon.placeholder {
   opacity: 0.4;
 }
+
+#slot-mainhand { grid-area: weapon; }
+#slot-head { grid-area: head; }
+#slot-body { grid-area: body; }
+#slot-foot { grid-area: foot; }
+#slot-ring1 { grid-area: ring1; }
+#slot-ring2 { grid-area: ring2; }
+#slot-talisman1 { grid-area: talisman1; }
+#slot-talisman2 { grid-area: talisman2; }
+#slot-food { grid-area: food; }
 
 .gear-slot .slot-empty-label {
   font-size: 10px;
