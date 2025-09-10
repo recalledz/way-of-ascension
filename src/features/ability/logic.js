@@ -78,7 +78,7 @@ function resolveRockSling(state) {
     attacks: [
       { amount: damage, type: 'earth', target: state.adventure.currentEnemy },
     ],
-    stun: { mult: 0.2 },
+    stunBuildPct: 20,
   };
 }
 

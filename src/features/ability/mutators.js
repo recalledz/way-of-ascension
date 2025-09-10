@@ -4,6 +4,7 @@ import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { processAttack, applyStatus, applyAilment } from '../combat/mutators.js';
+import { addStunPercent } from '../../engine/combat/stun.js';
 import { performAttack } from '../combat/attack.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
@@ -156,10 +157,19 @@ function applyAbilityResult(abilityKey, res, state) {
       applyAilment(attackerCtx, target, key, power, now, state);
     }
 
-    if (res.stun) {
+    if (res.stunBuildPct) {
+      const stunBuildPct = res.stunBuildPct * (1 + (mods?.stunPct || 0) / 100);
+      addStunPercent(target.stun, stunBuildPct, { attackerStats, targetStats });
+    } else if (res.stun) {
       const mult = (res.stun.mult || 0) * (1 + (mods?.stunPct || 0) / 100);
-      const stunAttackerStats = { ...attackerStats, stunDurationMult: (attackerStats.stunDurationMult || 0) + (mult - 1) };
-      applyStatus(target, 'stun', 1, state, { attackerStats: stunAttackerStats, targetStats });
+      const stunAttackerStats = {
+        ...attackerStats,
+        stunDurationMult: (attackerStats.stunDurationMult || 0) + (mult - 1),
+      };
+      applyStatus(target, 'stun', 1, state, {
+        attackerStats: stunAttackerStats,
+        targetStats,
+      });
     }
     if (res.healOnHit && totalDealt > 0) {
       const healed = Math.min(res.healOnHit, state.hpMax - state.hp);
