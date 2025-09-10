@@ -3,8 +3,12 @@ import { generateWeapon } from '../features/weaponGeneration/logic.js';
 import { WEAPON_TYPES } from '../features/weaponGeneration/data/weaponTypes.js';
 import { WEAPON_ICONS } from '../features/weaponGeneration/data/weaponIcons.js';
 
+function createWeapon(typeKey) {
+  return generateWeapon({ typeKey });
+}
+
 function renderOption(key) {
-  const sample = generateWeapon({ typeKey: key });
+  const sample = createWeapon(key);
   const icon = WEAPON_ICONS[sample.classKey];
   return `
     <button class="weapon-option" data-key="${key}">
@@ -42,7 +46,7 @@ export function showWeaponSelectOverlay(state) {
   overlay.querySelectorAll('.weapon-option').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-key');
-      const weapon = generateWeapon({ typeKey: key });
+      const weapon = createWeapon(key);
       const id = addToInventory(weapon, state);
       const item = state.inventory.find(it => it.id === id);
       equipItem(item, 'mainhand', state);

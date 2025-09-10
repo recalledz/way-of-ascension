@@ -24,12 +24,34 @@ export const LOOT_TABLES = {
   // existing zones…
 };
 
-import { WEAPONS } from '../../weaponGeneration/data/weapons.js';
+import { WEAPON_TYPES } from '../../weaponGeneration/data/weaponTypes.js';
+import { generateWeapon } from '../../weaponGeneration/logic.js';
+
+function parseWeaponKey(item) {
+  const typeKey = Object.keys(WEAPON_TYPES).find(k => item.endsWith(k));
+  if (!typeKey) return null;
+  const materialKey = item.slice(0, item.length - typeKey.length) || undefined;
+  return { typeKey, materialKey };
+}
+
 export const WEAPON_LOOT_TABLE = Object.fromEntries(
   Object.values(LOOT_TABLES)
     .flat()
-    .filter(entry => WEAPONS[entry.item])
-    .map(entry => [entry.item, (entry.weight || 0) / 100])
+    .map(entry => {
+      const info = parseWeaponKey(entry.item);
+      if (!info) return null;
+      const { typeKey, materialKey } = info;
+      return [
+        entry.item,
+        {
+          weight: (entry.weight || 0) / 100,
+          typeKey,
+          materialKey,
+          create: () => generateWeapon({ typeKey, materialKey }),
+        },
+      ];
+    })
+    .filter(Boolean)
 );
 
 // TODO: derive weapon tables for additional zones
