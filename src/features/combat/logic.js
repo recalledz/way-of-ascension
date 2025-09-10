@@ -1,5 +1,5 @@
 import { initHp } from '../../shared/utils/hp.js';
-import { WEAPONS, WEAPON_CONFIG } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
+import { FIST } from '../weaponGeneration/data/weapons.js';
 import { onPhysicalHit } from '../../engine/combat/stun.js';
 import { MODIFIERS } from '../gearGeneration/data/modifiers.js';
 
@@ -62,15 +62,14 @@ export function initializeFight(enemy) {
   return { enemyHP, enemyMax, atk, armor };
 }
 
-export function applyWeaponDamage(profile = {}, weapon = WEAPONS.fist, attacker = {}, typeMults = {}) {
+export function applyWeaponDamage(profile = {}, weapon = FIST, attacker = {}, typeMults = {}) {
   const result = {
     phys: Number(profile.phys) || 0,
     elems: { ...(profile.elems || {}) },
   };
 
-  const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
-  const config = WEAPON_CONFIG[w.key] || {};
-  const baseMult = config.damageMultiplier ?? 1;
+  const w = weapon || FIST;
+  const baseMult = (w.base?.phys.max ?? FIST.base.phys.max) / FIST.base.phys.max;
 
   result.phys *= baseMult;
   for (const k in result.elems) {
@@ -88,10 +87,10 @@ export function applyWeaponDamage(profile = {}, weapon = WEAPONS.fist, attacker 
     } else if (mod.lane === 'physFlat' && mod.range) {
       const avg = (mod.range.min + mod.range.max) / 2;
       result.phys += avg;
-    } else if (mod.element && mod.lane.endsWith('Pct') && typeof mod.value === 'number') {
+    } else if (mod.element && mod.lane?.endsWith('Pct') && typeof mod.value === 'number') {
       const elem = mod.element;
       result.elems[elem] = (result.elems[elem] || 0) * (1 + mod.value);
-    } else if (mod.element && mod.lane.endsWith('Flat') && mod.range) {
+    } else if (mod.element && mod.lane?.endsWith('Flat') && mod.range) {
       const elem = mod.element;
       const avg = (mod.range.min + mod.range.max) / 2;
       result.elems[elem] = (result.elems[elem] || 0) + avg;
@@ -132,7 +131,7 @@ export function applyResists(damage, element, target) {
   return dmg * (1 - resist);
 }
 
-export function processAttack(profile, weapon, options = {}) {
+export function processAttack(profile, weapon = FIST, options = {}) {
   const {
     target,
     onDamage,
@@ -146,7 +145,7 @@ export function processAttack(profile, weapon, options = {}) {
     tempMult = 1,
   } = options;
 
-  const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
+  const w = weapon || FIST;
   const scaled = applyWeaponDamage(profile, w, attacker, typeMults);
 
   const stats = w?.stats || {};

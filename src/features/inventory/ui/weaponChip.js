@@ -1,5 +1,5 @@
 import { on } from '../../../shared/events.js';
-import { WEAPON_FLAGS, WEAPONS } from '../../weaponGeneration/data/weapons.js';
+import { WEAPON_FLAGS } from '../../weaponGeneration/data/weapons.js';
 
 const weaponFeatureEnabled = Object.keys(WEAPON_FLAGS).some(w => w !== 'fist' && WEAPON_FLAGS[w]);
 
@@ -21,7 +21,7 @@ export function initializeWeaponChip(initial = { key: 'fist', name: 'Fists' }) {
 
 export function updateWeaponChip(payload = { key: 'fist', name: 'Fists' }) {
   if (!weaponFeatureEnabled) return;
-  const name = payload.name || WEAPONS[payload.key]?.displayName || payload.key || 'Fists';
+  const name = payload.name || payload.key || 'Fists';
   const el = document.getElementById('weaponName');
   if (el) el.textContent = name;
   const hud = document.getElementById('currentWeapon');

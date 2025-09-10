@@ -5,8 +5,8 @@ import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getAbilitySlots, getAbilityDamage } from '../ability/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
-import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
-import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
+import { rollLoot, toLootTableKey } from '../loot/logic.js';
+import { WEAPON_TYPES } from '../weaponGeneration/data/weaponTypes.js';
 import { rollGearDropForZone } from '../gearGeneration/selectors.js';
 import { addToInventory } from '../inventory/mutators.js';
 import { ABILITIES } from '../ability/data/abilities.js';
@@ -574,7 +574,7 @@ export function updateAdventureCombat() {
       playerAttackRate *= S.lightningStep.attackSpeedMult;
     }
     const weapon = getEquippedWeapon(S);
-    console.log('[weapon]', weapon.key); // WEAPONS-INTEGRATION
+    console.log('[weapon]', weapon.typeKey);
     const now = Date.now();
     if (S.lightningStep && S.lightningStep.expiresAt <= now) {
       delete S.lightningStep;
@@ -884,14 +884,14 @@ function defeatEnemy() {
   const area = zone?.areas?.[S.adventure.currentArea];
   const lootEntries = enemy.loot ? Object.entries(enemy.loot) : [];
   lootEntries.forEach(([item, qty]) => {
-    addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'material', qty, source: area?.name });
+    addSessionLoot({ key: item, type: WEAPON_TYPES[item] ? 'weapon' : 'material', qty, source: area?.name });
   });
 
   if (enemy.drops) {
     const dropMult = 1 + (S.gearBonuses?.dropRateMult || 0);
     Object.entries(enemy.drops).forEach(([item, chance]) => {
       if (Math.random() < Math.min(1, chance * dropMult)) {
-        addSessionLoot({ key: item, type: WEAPONS[item] ? 'weapon' : 'material', qty: 1, source: area?.name });
+        addSessionLoot({ key: item, type: WEAPON_TYPES[item] ? 'weapon' : 'material', qty: 1, source: area?.name });
         lootEntries.push([item, 1]);
       }
     });
@@ -907,11 +907,11 @@ function defeatEnemy() {
     log(msg, 'good');
   }
 
-  if (S.flags?.weaponsEnabled) { // WEAPONS-INTEGRATION
+  if (S.flags?.weaponsEnabled) {
     const tableKey = toLootTableKey(area?.id || zone?.id);
     const drop = rollLoot(tableKey);
     if (drop) {
-      addSessionLoot({ key: drop, type: WEAPONS[drop] ? 'weapon' : 'material', qty: 1, source: area?.name });
+      addSessionLoot({ key: drop, type: WEAPON_TYPES[drop] ? 'weapon' : 'material', qty: 1, source: area?.name });
       lootEntries.push([drop, 1]);
     }
 
@@ -1514,7 +1514,7 @@ export function updateActivityAdventure() {
   setText('zonesUnlocked', S.adventure.zonesUnlocked);
   {
     const equipped = getEquippedWeapon(S);
-    setText('currentWeapon', equipped?.displayName || 'Fists'); // WEAPONS-INTEGRATION
+    setText('currentWeapon', equipped?.name || 'Fists');
   }
   const atkPreview = calculatePlayerCombatAttack(S);
   const baseAttack = Math.round(

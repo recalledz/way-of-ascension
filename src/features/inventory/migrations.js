@@ -1,4 +1,6 @@
-import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { generateWeapon } from '../weaponGeneration/logic.js';
+import { WEAPON_TYPES } from '../weaponGeneration/data/weaponTypes.js';
+import { FIST, PALM_WRAPS, defaultAnimationsForType } from '../weaponGeneration/data/weapons.js';
 import { GEAR_BASES } from '../gearGeneration/data/gearBases.js';
 
 export const migrations = [
@@ -68,7 +70,7 @@ export const migrations = [
     const hasPalmWraps = save.inventory.some(it => (typeof it === 'string' ? it === 'palmWraps' : it.key === 'palmWraps'));
     const equippedPalm = typeof save.equipment?.mainhand === 'object' && save.equipment.mainhand?.key === 'palmWraps';
     if (!hasPalmWraps && !equippedPalm) {
-      save.inventory.push({ id: Date.now() + Math.random(), key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' });
+      save.inventory.push({ id: Date.now() + Math.random(), ...PALM_WRAPS });
     }
   },
   save => {
@@ -77,37 +79,64 @@ export const migrations = [
   },
   save => {
     if (!Array.isArray(save.inventory)) save.inventory = [];
-    save.inventory.forEach(it => {
-      if (it && typeof it === 'object' && !it.name && it.key) {
-        it.name =
-          WEAPONS[it.key]?.displayName ||
-          GEAR_BASES[it.key]?.displayName ||
-          it.key;
+    save.inventory.forEach((it, idx) => {
+      if (it && typeof it === 'object' && it.type === 'weapon') {
+        const key = it.key || it.typeKey;
+        if (key && !it.base) {
+          if (key === 'palmWraps') save.inventory[idx] = { ...PALM_WRAPS, id: it.id || Date.now() + Math.random() };
+          else if (key === 'fist') save.inventory[idx] = { ...FIST, id: it.id || Date.now() + Math.random() };
+          else if (WEAPON_TYPES[key]) {
+            const w = generateWeapon({ typeKey: key, qualityKey: 'basic' });
+            w.animations = defaultAnimationsForType(key);
+            save.inventory[idx] = { ...w, id: it.id || Date.now() + Math.random() };
+          }
+        } else {
+          const type = WEAPON_TYPES[key];
+          if (type) {
+            it.name = it.name || type.displayName || key;
+            it.typeKey = type.key;
+            it.classKey = type.classKey;
+            if (it.key) delete it.key;
+          }
+        }
+      } else if (it && typeof it === 'object' && !it.name && it.key) {
+        it.name = GEAR_BASES[it.key]?.displayName || it.key;
       }
     });
     if (save.equipment && typeof save.equipment === 'object') {
-      Object.values(save.equipment).forEach(it => {
-        if (it && typeof it === 'object' && !it.name && it.key) {
-          it.name =
-            WEAPONS[it.key]?.displayName ||
-            GEAR_BASES[it.key]?.displayName ||
-            it.key;
+      Object.entries(save.equipment).forEach(([slot, it]) => {
+        if (it && typeof it === 'object' && it.type === 'weapon') {
+          const key = it.key || it.typeKey;
+          if (key && !it.base) {
+            if (key === 'palmWraps') save.equipment[slot] = { ...PALM_WRAPS };
+            else if (key === 'fist') save.equipment[slot] = { ...FIST };
+            else if (WEAPON_TYPES[key]) {
+              const w = generateWeapon({ typeKey: key, qualityKey: 'basic' });
+              w.animations = defaultAnimationsForType(key);
+              save.equipment[slot] = { ...w };
+            }
+          } else {
+            const type = WEAPON_TYPES[key];
+            if (type) {
+              it.name = it.name || type.displayName || key;
+              it.typeKey = type.key;
+              it.classKey = type.classKey;
+              if (it.key) delete it.key;
+            }
+          }
+        } else if (it && typeof it === 'object' && !it.name && it.key) {
+          it.name = GEAR_BASES[it.key]?.displayName || it.key;
         }
       });
     }
     const hasPalmWraps = save.inventory.some(it =>
-      typeof it === 'string' ? it === 'palmWraps' : it.key === 'palmWraps'
+      typeof it === 'string' ? it === 'palmWraps' : it.typeKey === 'palm'
     );
     const equippedPalm =
       typeof save.equipment?.mainhand === 'object' &&
-      save.equipment.mainhand?.key === 'palmWraps';
+      save.equipment.mainhand?.typeKey === 'palm';
     if (!hasPalmWraps && !equippedPalm) {
-      save.inventory.push({
-        id: Date.now() + Math.random(),
-        key: 'palmWraps',
-        name: 'Palm Wraps',
-        type: 'weapon'
-      });
+      save.inventory.push({ id: Date.now() + Math.random(), ...PALM_WRAPS });
     }
   }
 ];
