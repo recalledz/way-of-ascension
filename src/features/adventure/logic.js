@@ -457,24 +457,110 @@ export function updateBattleDisplay() {
   }
 }
 
+const ABILITY_ICON_MAP = {
+  'pointy-sword': '🗡️',
+  'game-icons:mighty-force': '💥',
+  'game-icons:fireball': '🔥',
+};
+
+function renderAbilityIcon(icon) {
+  if (ABILITY_ICON_MAP[icon]) return ABILITY_ICON_MAP[icon];
+  return icon.includes(':')
+    ? `<iconify-icon icon="${icon}" aria-hidden="true"></iconify-icon>`
+    : icon;
+}
+
+let currentAbilityTooltip = null;
+let tooltipFromTouch = false;
+
+function hideAbilityTooltip() {
+  if (currentAbilityTooltip) {
+    currentAbilityTooltip.remove();
+    currentAbilityTooltip = null;
+  }
+  tooltipFromTouch = false;
+}
+
+function showAbilityTooltip(anchor, html) {
+  hideAbilityTooltip();
+  const tooltip = document.createElement('div');
+  tooltip.className = 'item-tooltip';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'tooltip-close';
+  closeBtn.textContent = '✖';
+  closeBtn.onclick = hideAbilityTooltip;
+  tooltip.appendChild(closeBtn);
+
+  const content = document.createElement('div');
+  content.className = 'tooltip-content';
+  content.innerHTML = html;
+  tooltip.appendChild(content);
+
+  document.body.appendChild(tooltip);
+  const rect = anchor.getBoundingClientRect();
+  const tRect = tooltip.getBoundingClientRect();
+  let left = rect.right + 8;
+  let top = rect.top + rect.height / 2 - tRect.height / 2;
+  if (left + tRect.width > window.innerWidth - 8) left = rect.left - tRect.width - 8;
+  if (left < 8) left = 8;
+  if (top < 8) top = 8;
+  if (top + tRect.height > window.innerHeight - 8) top = window.innerHeight - tRect.height - 8;
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+  currentAbilityTooltip = tooltip;
+}
+
+function abilityDetailsHTML(key) {
+  const def = ABILITIES[key];
+  if (!def) return '';
+  const weapon = getEquippedWeapon(S);
+  const mods = S.abilityMods?.[key] || {};
+  const isSpell = def.tags?.includes('spell');
+  const speedMult =
+    isSpell && weapon.classKey === 'focus'
+      ? getWeaponProficiencyBonuses(S).speedMult
+      : 1;
+  const castTimeMs = Math.round(
+    def.castTimeMs *
+      (1 + (mods.castTimePct || 0) / 100) /
+      (1 + (S.astralTreeBonuses?.castSpeedPct || 0) / 100) /
+      speedMult
+  );
+  const cooldownMs = Math.round(
+    def.cooldownMs *
+      (1 + (mods.cooldownPct || 0) / 100) *
+      (1 + (S.astralTreeBonuses?.cooldownPct || 0) / 100) /
+      speedMult
+  );
+  const dmg = getAbilityDamage(key, S);
+  const rows = [];
+  rows.push(`<div class="stat-row"><span class="label">Qi Cost</span><span class="value">${def.costQi}</span></div>`);
+  if (castTimeMs > 0)
+    rows.push(`<div class="stat-row"><span class="label">Cast</span><span class="value">${(castTimeMs / 1000).toFixed(2)}s</span></div>`);
+  rows.push(`<div class="stat-row"><span class="label">Cooldown</span><span class="value">${(cooldownMs / 1000).toFixed(2)}s</span></div>`);
+  if (dmg !== null)
+    rows.push(`<div class="stat-row"><span class="label">Damage</span><span class="value">${dmg}</span></div>`);
+  const rawIcon = renderAbilityIcon(def.icon);
+  const iconHtml = rawIcon.includes('iconify-icon')
+    ? rawIcon.replace('<iconify-icon', '<iconify-icon class="weapon-icon"')
+    : `<span class="weapon-icon">${rawIcon}</span>`;
+  const header = `<div class="tooltip-header">${iconHtml}<span class="tooltip-name">${def.displayName}</span></div>`;
+  const core = `<div class="tooltip-core">${rows.join('')}</div>`;
+  const desc = def.description ? `<div class="tooltip-implicit">${def.description}</div>` : '';
+  const footer = def.tags?.length
+    ? `<div class="tooltip-footer"><div class="tags">Tags: ${def.tags.join(', ')}</div></div>`
+    : '';
+  return header + core + desc + footer;
+}
+
 let lastAbilityHTML = '';
 export function updateAbilityBar() {
   const bar = document.getElementById('abilityBar');
   if (!bar) return;
+  hideAbilityTooltip();
   const slots = getAbilitySlots(S);
   const weapon = getEquippedWeapon(S);
-  const iconMap = {
-    'pointy-sword': '🗡️',
-    'game-icons:mighty-force': '💥',
-    'game-icons:fireball': '🔥',
-  };
-
-  const renderIcon = (icon) => {
-    if (iconMap[icon]) return iconMap[icon];
-    return icon.includes(':')
-      ? `<iconify-icon icon="${icon}" aria-hidden="true"></iconify-icon>`
-      : icon;
-  };
   let html = '';
   const slotData = [];
   slots.forEach((slot, i) => {
@@ -501,18 +587,13 @@ export function updateAbilityBar() {
           (1 + (S.astralTreeBonuses?.cooldownPct || 0) / 100) /
           speedMult
       );
-      const cdSec = cooldownMs / 1000;
-      const ctSec = castTimeMs / 1000;
-      let title = `${def.displayName} — Cost ${def.costQi} Qi`;
-      if (castTimeMs > 0) title += `, Cast ${ctSec}s`;
-      title += `, CD ${cdSec}s`;
       let content = `
         <div class="ability-title">
           <div class="ability-name">${def.displayName}</div>
           ${dmgLine}
           ${castLine}
         </div>
-        <div class="ability-icon">${renderIcon(def.icon)}</div>
+        <div class="ability-icon">${renderAbilityIcon(def.icon)}</div>
         <div class="qi-badge">${def.costQi} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
@@ -522,7 +603,7 @@ export function updateAbilityBar() {
       const classes = ['ability-card'];
       if (slot.cooldownRemainingMs > 0) classes.push('cooling');
       if (slot.insufficientQi) classes.push('insufficient');
-      html += `<div class="${classes.join(' ')}" data-slot="${i + 1}" title="${title}">${content}</div>`;
+      html += `<div class="${classes.join(' ')}" data-slot="${i + 1}">${content}</div>`;
       slotData.push({ abilityKey: slot.abilityKey });
     } else {
       html += `<div class="ability-card empty" data-slot="${i + 1}">
@@ -540,7 +621,64 @@ export function updateAbilityBar() {
   Array.from(bar.children).forEach((card, i) => {
     const data = slotData[i];
     if (data.abilityKey) {
+        let pressTimer;
+        let longPress = false;
+        const showTip = () => {
+          longPress = true;
+          tooltipFromTouch = true;
+          showAbilityTooltip(card, abilityDetailsHTML(data.abilityKey));
+        };
+      card.addEventListener('mouseenter', () => {
+        tooltipFromTouch = false;
+        showAbilityTooltip(card, abilityDetailsHTML(data.abilityKey));
+      });
+      card.addEventListener('mouseleave', () => {
+        if (!tooltipFromTouch) hideAbilityTooltip();
+      });
+        card.addEventListener(
+          'touchstart',
+          (e) => {
+            e.preventDefault();
+            longPress = false;
+            pressTimer = setTimeout(showTip, 500);
+          },
+          { passive: false }
+        );
+      card.addEventListener(
+        'touchmove',
+        (e) => {
+          clearTimeout(pressTimer);
+          e.preventDefault();
+        },
+        { passive: false }
+      );
+      card.addEventListener(
+        'touchend',
+        (e) => {
+          clearTimeout(pressTimer);
+          e.preventDefault();
+          if (longPress) {
+            longPress = false;
+            return;
+          }
+          hideAbilityTooltip();
+          if (tryCastAbility(data.abilityKey)) {
+            S.qi -= ABILITIES[data.abilityKey].costQi;
+            flashAbilityCard(i + 1);
+            updateAbilityBar();
+          } else {
+            shakeAbilityCard(i + 1);
+          }
+        },
+        { passive: false }
+      );
+      card.addEventListener('contextmenu', (e) => e.preventDefault());
       card.addEventListener('click', () => {
+        if (tooltipFromTouch) {
+          tooltipFromTouch = false;
+          return;
+        }
+        hideAbilityTooltip();
         if (tryCastAbility(data.abilityKey)) {
           S.qi -= ABILITIES[data.abilityKey].costQi;
           flashAbilityCard(i + 1);
