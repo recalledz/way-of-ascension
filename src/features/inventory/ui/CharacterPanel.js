@@ -191,12 +191,6 @@ function renderEquipment() {
       el.setAttribute('aria-label', `${s.label} empty`);
     }
   });
-  const armorEl = document.getElementById('armorVal');
-  if (armorEl) armorEl.textContent = S.stats?.armor || 0;
-  const accEl = document.getElementById('accuracyVal');
-  if (accEl) accEl.textContent = S.stats?.accuracy || 0;
-  const dodgeEl = document.getElementById('dodgeVal');
-  if (dodgeEl) dodgeEl.textContent = S.stats?.dodge || 0;
 }
 
 function weaponDetailsHTML(item) {
