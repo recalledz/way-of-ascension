@@ -88,10 +88,20 @@ export function applyWeaponDamage(profile = {}, weapon = WEAPONS.fist, attacker 
     } else if (mod.lane === 'physFlat' && mod.range) {
       const avg = (mod.range.min + mod.range.max) / 2;
       result.phys += avg;
-    } else if (mod.element && mod.lane.endsWith('Pct') && typeof mod.value === 'number') {
+    } else if (
+      mod.element &&
+      typeof mod.lane === 'string' &&
+      mod.lane.endsWith('Pct') &&
+      typeof mod.value === 'number'
+    ) {
       const elem = mod.element;
       result.elems[elem] = (result.elems[elem] || 0) * (1 + mod.value);
-    } else if (mod.element && mod.lane.endsWith('Flat') && mod.range) {
+    } else if (
+      mod.element &&
+      typeof mod.lane === 'string' &&
+      mod.lane.endsWith('Flat') &&
+      mod.range
+    ) {
       const elem = mod.element;
       const avg = (mod.range.min + mod.range.max) / 2;
       result.elems[elem] = (result.elems[elem] || 0) + avg;
