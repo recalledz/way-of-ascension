@@ -40,10 +40,6 @@ const SLOT_PLACEHOLDERS = {
   talisman1: GEAR_ICONS.talisman,
   talisman2: GEAR_ICONS.talisman,
   food: GEAR_ICONS.food,
-  food2: GEAR_ICONS.food,
-  food3: GEAR_ICONS.food,
-  food4: GEAR_ICONS.food,
-  food5: GEAR_ICONS.food,
 };
 
 const ELEMENT_ICONS = {
@@ -129,11 +125,7 @@ function renderEquipment() {
     { key: 'ring2', label: 'Ring 2' },
     { key: 'talisman1', label: 'Talisman 1' },
     { key: 'talisman2', label: 'Talisman 2' },
-    { key: 'food', label: 'Food' },
-    { key: 'food2', label: 'Food' },
-    { key: 'food3', label: 'Food' },
-    { key: 'food4', label: 'Food' },
-    { key: 'food5', label: 'Food' }
+    { key: 'food', label: 'Food' }
   ];
   slots.forEach(s => {
     const el = document.getElementById(`slot-${s.key}`);
@@ -167,7 +159,7 @@ function renderEquipment() {
       }
       const unequipBtn = document.createElement('button');
       unequipBtn.className = 'unequip-chip';
-      unequipBtn.textContent = '×';
+      unequipBtn.textContent = 'Unequip';
       unequipBtn.onclick = evt => { evt.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
       el.appendChild(unequipBtn);
       const infoBtn = document.createElement('button');
