@@ -1,5 +1,18 @@
 import { S, save } from '../../../shared/state.js';
 import { recomputePlayerTotals } from '../../inventory/logic.js';
+import { mountMiningUI } from '../../mining/ui/miningDisplay.js';
+import { mountGatheringUI } from '../../gathering/ui/gatheringDisplay.js';
+import { mountPhysiqueUI } from '../../physique/ui/physiqueDisplay.js';
+import { mountTrainingGameUI as mountPhysiqueTrainingUI } from '../../physique/ui/trainingGame.js';
+import { mountAgilityUI } from '../../agility/ui/agilityDisplay.js';
+import { mountAgilityTrainingUI } from '../../agility/ui/trainingGame.js';
+import { mountCatchingUI } from '../../catching/ui/catchingDisplay.js';
+import { mountMindReadingUI } from '../../mind/ui/mindReadingTab.js';
+import {
+  updateActivitySelectors,
+  renderActiveActivity,
+} from '../../activity/ui/activityUI.js';
+import { configReport, featureFlags } from '../../../config.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
@@ -8,6 +21,7 @@ const STORAGE_KEY = 'astralTreeAllocated';
 // ever appearing. Use the actual root id instead: 4054 corresponds to
 // the 'max Qi +50' node seen on load.
 const START_NODES = new Set([4054]);
+const STARTING_NOTABLES = [4060, 4061, 4062];
 
 const BASIC_ROTATION = [
   { desc: '+2% Foundation Gain', bonus: { foundationGainPct: 2 } },
@@ -92,6 +106,45 @@ const BOOLEAN_LABELS = {
   summonTaunt: 'Summons Taunt on first hit',
   stunImmuneShield: 'Stun Immune with Qi Shield',
   thresholdFury: 'Threshold Fury',
+};
+
+const ACTIVITY_META = {
+  mining: {
+    icon: 'mdi:pickaxe',
+    infoId: 'miningInfo',
+    fillId: 'miningSelectorFill',
+    textId: 'miningProgressText',
+  },
+  gathering: {
+    icon: 'mdi:leaf',
+    infoId: 'gatheringInfo',
+    fillId: 'gatheringSelectorFill',
+    textId: 'gatheringProgressText',
+  },
+  physique: {
+    icon: 'mdi:arm-flex',
+    infoId: 'physiqueInfo',
+    fillId: 'physiqueSelectorFill',
+    textId: 'physiqueProgressTextSidebar',
+  },
+  agility: {
+    icon: 'mdi:run-fast',
+    infoId: 'agilityInfo',
+    fillId: 'agilitySelectorFill',
+    textId: 'agilityProgressTextSidebar',
+  },
+  catching: {
+    icon: 'mdi:butterfly-outline',
+    infoId: 'catchingLevel',
+    fillId: 'catchingProgressFill',
+    textId: 'catchingProgressTextSidebar',
+  },
+  forging: {
+    icon: 'mdi:anvil',
+    infoId: 'forgingLevelSidebar',
+    fillId: 'forgingProgressFillSidebar',
+    textId: 'forgingProgressTextSidebar',
+  },
 };
 
 function renderAstralTreeTotals() {
@@ -198,6 +251,93 @@ function saveAllocations(set) {
   save();
 }
 
+function attachActivityHandler(id, activity) {
+  Promise.all([
+    import('../../activity/mutators.js'),
+    import('../../activity/ui/activityUI.js'),
+  ]).then(([mutators, activityUI]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const { selectActivity } = mutators;
+    const { updateActivitySelectors, renderActiveActivity } = activityUI;
+    el.addEventListener('click', () => {
+      selectActivity(S, activity);
+      updateActivitySelectors(S);
+      renderActiveActivity(S);
+    });
+  });
+}
+
+function ensureActivityTab(activity, label) {
+  const id = `${activity}Selector`;
+  const container = document.getElementById('levelingActivities');
+  if (!container || document.getElementById(id)) return;
+  const meta = ACTIVITY_META[activity] || {};
+  const item = document.createElement('div');
+  item.className = 'activity-item leveling-tab';
+  item.id = id;
+  item.dataset.activity = activity;
+  const iconHTML = meta.icon
+    ? `<iconify-icon icon="${meta.icon}" class="ui-icon"></iconify-icon>`
+    : '';
+  const levelHTML = meta.infoId ? `<div class="activity-level" id="${meta.infoId}"></div>` : '';
+  const progressFill = meta.fillId
+    ? `<div class="progress-fill" id="${meta.fillId}"></div>`
+    : '';
+  const progressText = meta.textId
+    ? `<div class="progress-text" id="${meta.textId}"></div>`
+    : '';
+  const progressHTML = meta.fillId
+    ? `<div class="activity-progress-bar">${progressFill}${progressText}</div>`
+    : '';
+  item.innerHTML = `
+      <div class="activity-header">
+        <div class="activity-icon">${iconHTML}</div>
+        <div class="activity-info">
+          <div class="activity-name">${label}</div>
+          ${levelHTML}
+        </div>
+      </div>
+      ${progressHTML}
+    `;
+  container.appendChild(item);
+  attachActivityHandler(id, activity);
+}
+
+function enableFeatures(keys) {
+  const { flags } = configReport();
+  keys.forEach(k => {
+    featureFlags[k] = true;
+    const flagKey = 'FEATURE_' + k.toUpperCase();
+    if (flags[flagKey]) flags[flagKey].parsedValue = true;
+  });
+}
+
+function unlockStartingActivities(id) {
+  if (id === 4060) {
+    enableFeatures(['mining', 'physique']);
+    ensureActivityTab('mining', 'Mining');
+    ensureActivityTab('physique', 'Physique');
+    mountMiningUI(S);
+    mountPhysiqueUI(S);
+    mountPhysiqueTrainingUI(S);
+  } else if (id === 4061) {
+    enableFeatures(['gathering', 'mind']);
+    ensureActivityTab('gathering', 'Gathering');
+    mountGatheringUI(S);
+    mountMindReadingUI(S);
+  } else if (id === 4062) {
+    enableFeatures(['agility', 'catching']);
+    ensureActivityTab('agility', 'Agility');
+    ensureActivityTab('catching', 'Catching');
+    mountAgilityUI(S);
+    mountAgilityTrainingUI(S);
+    mountCatchingUI(S);
+  }
+  updateActivitySelectors(S);
+  renderActiveActivity(S);
+}
+
 export function mountAstralTreeUI() {
   const openBtn = document.getElementById('openAstralTree');
   const overlay = document.getElementById('astralSkillTreeOverlay');
@@ -300,6 +440,9 @@ async function buildTree() {
         refreshClasses();
         animateEdge(parentId, n.id);
         hideTooltip();
+        if (STARTING_NOTABLES.includes(n.id)) {
+          unlockStartingActivities(n.id);
+        }
       });
       tooltip.appendChild(document.createElement('br'));
       tooltip.appendChild(btn);
@@ -481,6 +624,9 @@ async function buildTree() {
   });
 
   const allocated = loadAllocations();
+  STARTING_NOTABLES.forEach(id => {
+    if (allocated.has(id)) unlockStartingActivities(id);
+  });
   S.astralTreeBonuses = {};
   allocated.forEach(id => applyEffects(id, manifest));
   renderAstralTreeTotals();
@@ -595,13 +741,15 @@ function isAllocatable(id, allocated, adj, manifest) {
 
 function applyEffects(id, manifest) {
   const info = manifest[id];
-  if (!info || !info.bonus) return;
+  if (!info) return;
   const bonuses = S.astralTreeBonuses || (S.astralTreeBonuses = {});
-  for (const [k, v] of Object.entries(info.bonus)) {
-    if (typeof v === 'number') {
-      bonuses[k] = (bonuses[k] || 0) + v;
-    } else if (typeof v === 'boolean') {
-      bonuses[k] = bonuses[k] || v;
+  if (info.bonus) {
+    for (const [k, v] of Object.entries(info.bonus)) {
+      if (typeof v === 'number') {
+        bonuses[k] = (bonuses[k] || 0) + v;
+      } else if (typeof v === 'boolean') {
+        bonuses[k] = bonuses[k] || v;
+      }
     }
   }
   renderAstralTreeTotals();
