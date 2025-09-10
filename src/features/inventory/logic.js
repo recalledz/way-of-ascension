@@ -65,7 +65,12 @@ export function canEquip(item, slot = null, state = {}) {
       if (item.slot === 'head' || item.slot === 'body') return { slot: item.slot };
       break;
     case 'food':
-      return { slot: 'food' };
+      if (slot && /^food[1-5]$/.test(slot)) return { slot };
+      for (let i = 1; i <= 5; i++) {
+        const key = `food${i}`;
+        if (!state.equipment?.[key]) return { slot: key };
+      }
+      return { slot: 'food1' };
     case 'foot':
       return { slot: 'foot' };
     case 'ring':
