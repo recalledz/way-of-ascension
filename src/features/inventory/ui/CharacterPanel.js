@@ -493,6 +493,7 @@ function setupGearTabs() {
         content.classList.add('active');
         content.style.display = 'block';
         if (tabName === 'gearAbilities') renderAbilitySlots();
+        else if (tabName === 'gearStats') renderStats();
       }
     };
   });
