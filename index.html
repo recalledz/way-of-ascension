@@ -77,34 +77,34 @@
           <div class="status-metric">
             <div class="status-row">
               <div class="status-label"><iconify-icon icon="mdi:cards-heart" width="16"></iconify-icon> HP</div>
+              <div class="status-bar hp-bar">
+                <div class="fill" id="hpFill"></div>
+                <svg class="shield-overlay" viewBox="0 0 100 8" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="shieldGradient">
+                      <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+                      <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
+                      <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                    </linearGradient>
+                  </defs>
+                  <mask id="hpMask">
+                    <rect id="hpMaskRect" x="0" y="0" width="100%" height="100%" fill="#fff" />
+                  </mask>
+                  <rect id="shieldFill" class="shield-fill" x="0" y="0" width="0" height="100%" mask="url(#hpMask)" />
+                  <rect class="shield-shimmer" x="0" y="0" width="100%" height="100%" mask="url(#hpMask)" fill="url(#shieldGradient)" />
+                </svg>
+              </div>
               <div class="status-value"><span id="hpVal">100</span>/<span id="hpMax">100</span></div>
-            </div>
-            <div class="status-bar hp-bar">
-              <div class="fill" id="hpFill"></div>
-              <svg class="shield-overlay" viewBox="0 0 100 8" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="shieldGradient">
-                    <stop offset="0%" stop-color="rgba(255,255,255,0)" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
-                  </linearGradient>
-                </defs>
-                <mask id="hpMask">
-                  <rect id="hpMaskRect" x="0" y="0" width="100%" height="100%" fill="#fff" />
-                </mask>
-                <rect id="shieldFill" class="shield-fill" x="0" y="0" width="0" height="100%" mask="url(#hpMask)" />
-                <rect class="shield-shimmer" x="0" y="0" width="100%" height="100%" mask="url(#hpMask)" fill="url(#shieldGradient)" />
-              </svg>
             </div>
             <span id="hpA11y" class="sr-only">HP 100/100, Shield 0/0</span>
           </div>
           <div class="status-metric">
             <div class="status-row">
               <div class="status-label"><iconify-icon icon="mdi:yin-yang" width="16"></iconify-icon> Qi</div>
+              <div class="status-bar qi-bar">
+                <div class="qi-fill" id="qiFill"></div>
+              </div>
               <div class="status-value"><span id="qiVal">0</span>/<span id="qiCap">100</span></div>
-            </div>
-            <div class="status-bar qi-bar">
-              <div class="qi-fill" id="qiFill"></div>
             </div>
           </div>
         </div>
