@@ -27,12 +27,12 @@
   --card-gap: 8px;
   --dot-size: 8px;
   --row-h: 48px;
-  --slotS: clamp(38px, 12vw, 48px);
-  --slotM: clamp(54px, 16vw, 67px);
+  --slotS: clamp(26px, 8vw, 34px);
+  --slotM: clamp(38px, 11vw, 47px);
   --slotL-w: calc(var(--slotM) * 1.6);
   --slotL-h: calc(var(--slotM) * 2);
-  --slot-pad: 8px;
-  --slot-radius: 8px;
+  --slot-pad: 6px;
+  --slot-radius: 6px;
   --outline-stroke: 1.5px;
   
   /* STYLE-GUIDE-UPDATE: Stage-specific colors for cultivation */
@@ -2222,12 +2222,13 @@ html.reduce-motion .shield-shimmer{animation:none;}
 .equip-slots {
   display: grid;
   gap: 8px;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto auto auto;
   grid-template-areas:
-    ". head ring1 ring2"
-    "weapon body talisman1 talisman2"
-    ". foot . ."
-    ". food . .";
+    ". head ring1"
+    "weapon body ring2"
+    ". foot talisman1"
+    ". . talisman2"
+    "food . .";
   justify-content: center;
 }
 
@@ -2242,8 +2243,8 @@ html.reduce-motion .shield-shimmer{animation:none;}
   border-radius: var(--slot-radius);
   padding: var(--slot-pad);
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 31px;
+  min-height: 31px;
   cursor: pointer;
   color: var(--ink);
 }
@@ -2282,7 +2283,7 @@ html.reduce-motion .shield-shimmer{animation:none;}
 #slot-food { grid-area: food; }
 
 .gear-slot .slot-empty-label {
-  font-size: 10px;
+  font-size: 7px;
   margin-top: 4px;
 }
 
