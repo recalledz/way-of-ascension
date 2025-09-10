@@ -159,7 +159,9 @@ function renderEquipment() {
       }
       const unequipBtn = document.createElement('button');
       unequipBtn.className = 'unequip-chip';
-      unequipBtn.textContent = 'Unequip';
+      unequipBtn.textContent = '×';
+      unequipBtn.setAttribute('aria-label', 'Unequip');
+      unequipBtn.title = 'Unequip';
       unequipBtn.onclick = evt => { evt.stopPropagation(); unequip(s.key); renderEquipmentPanel(); };
       el.appendChild(unequipBtn);
       const infoBtn = document.createElement('button');

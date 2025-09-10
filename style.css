@@ -2221,14 +2221,23 @@ html.reduce-motion .shield-shimmer{animation:none;}
 /* Gear Slots */
 .equip-slots {
   display: grid;
-  gap: 8px;
+  column-gap: 8px;
+  row-gap: 2px;
   grid-template-columns: auto auto auto;
   grid-template-areas:
     ". head ring1"
     "weapon body ring2"
     ". foot talisman1"
-    "food . talisman2";
+    ". . talisman2";
   justify-content: center;
+}
+
+.consumable-slots {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, var(--slotS));
+  gap: 4px;
+  justify-content: start;
 }
 
 .gear-slot {
@@ -2279,7 +2288,11 @@ html.reduce-motion .shield-shimmer{animation:none;}
 #slot-ring2 { grid-area: ring2; }
 #slot-talisman1 { grid-area: talisman1; }
 #slot-talisman2 { grid-area: talisman2; }
-#slot-food { grid-area: food; }
+
+#slot-head,
+#slot-foot {
+  width: var(--slotL-w);
+}
 
 .gear-slot .slot-empty-label {
   font-size: 10px;
@@ -2288,10 +2301,13 @@ html.reduce-motion .shield-shimmer{animation:none;}
 
 .gear-slot .unequip-chip {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
   font-size: 12px;
-  padding: 2px 4px;
+  line-height: 16px;
   border: none;
   border-radius: 4px;
   background: var(--ink);
