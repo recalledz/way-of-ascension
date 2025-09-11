@@ -1,5 +1,4 @@
-import { WEAPONS } from '../weaponGeneration/data/weapons.js';
-import { GEAR_BASES } from '../gearGeneration/data/gearBases.js';
+// removed reliance on weapon/gear maps for migration
 
 export const migrations = [
   save => {
@@ -24,20 +23,56 @@ export const migrations = [
       if (Array.isArray(legacy.weapons)) {
         legacy.weapons.forEach(w => {
           const key = w.key || w;
-          save.inventory.push({ id: Date.now() + Math.random(), key, type: 'weapon' });
+          save.inventory.push({
+            id: Date.now() + Math.random(),
+            key,
+            type: 'weapon',
+            name: w.name || key,
+            typeKey: w.typeKey || key,
+            classKey: w.classKey || w.typeKey || key,
+          });
         });
       }
       if (Array.isArray(legacy.armor)) {
         legacy.armor.forEach(a => {
           const key = a.key || a;
-          save.inventory.push({ id: Date.now() + Math.random(), key, type: 'armor', slot: a.slot });
+          save.inventory.push({
+            id: Date.now() + Math.random(),
+            key,
+            type: 'armor',
+            slot: a.slot,
+            name: a.name || key,
+            typeKey: a.typeKey || key,
+            classKey: a.classKey || a.typeKey || key,
+          });
         });
       }
     }
     if (!save.equipment || typeof save.equipment !== 'object') {
-      save.equipment = { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, foot: null, ring1: null, ring2: null, talisman1: null, talisman2: null, food1: null, food2: null, food3: null, food4: null, food5: null };
+      save.equipment = {
+        mainhand: { key: 'fist', type: 'weapon', name: 'Fists', typeKey: 'fist', classKey: 'fist' },
+        head: null,
+        body: null,
+        foot: null,
+        ring1: null,
+        ring2: null,
+        talisman1: null,
+        talisman2: null,
+        food1: null,
+        food2: null,
+        food3: null,
+        food4: null,
+        food5: null,
+      };
     } else {
-      if (!save.equipment.mainhand) save.equipment.mainhand = { key: 'fist', type: 'weapon' };
+      if (!save.equipment.mainhand)
+        save.equipment.mainhand = {
+          key: 'fist',
+          type: 'weapon',
+          name: 'Fists',
+          typeKey: 'fist',
+          classKey: 'fist',
+        };
       if (typeof save.equipment.head === 'undefined') save.equipment.head = null;
       if (typeof save.equipment.body === 'undefined') {
         if (typeof save.equipment.torso !== 'undefined') {
@@ -75,7 +110,14 @@ export const migrations = [
     const hasPalmWraps = save.inventory.some(it => (typeof it === 'string' ? it === 'palmWraps' : it.key === 'palmWraps'));
     const equippedPalm = typeof save.equipment?.mainhand === 'object' && save.equipment.mainhand?.key === 'palmWraps';
     if (!hasPalmWraps && !equippedPalm) {
-      save.inventory.push({ id: Date.now() + Math.random(), key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' });
+      save.inventory.push({
+        id: Date.now() + Math.random(),
+        key: 'palmWraps',
+        name: 'Palm Wraps',
+        type: 'weapon',
+        typeKey: 'palm',
+        classKey: 'palm',
+      });
     }
   },
   save => {
@@ -85,20 +127,18 @@ export const migrations = [
   save => {
     if (!Array.isArray(save.inventory)) save.inventory = [];
     save.inventory.forEach(it => {
-      if (it && typeof it === 'object' && !it.name && it.key) {
-        it.name =
-          WEAPONS[it.key]?.displayName ||
-          GEAR_BASES[it.key]?.displayName ||
-          it.key;
+      if (it && typeof it === 'object') {
+        if (!it.name && it.key) it.name = it.key;
+        if (!it.typeKey) it.typeKey = it.type || it.key;
+        if (!it.classKey) it.classKey = it.class || it.typeKey || it.key;
       }
     });
     if (save.equipment && typeof save.equipment === 'object') {
       Object.values(save.equipment).forEach(it => {
-        if (it && typeof it === 'object' && !it.name && it.key) {
-          it.name =
-            WEAPONS[it.key]?.displayName ||
-            GEAR_BASES[it.key]?.displayName ||
-            it.key;
+        if (it && typeof it === 'object') {
+          if (!it.name && it.key) it.name = it.key;
+          if (!it.typeKey) it.typeKey = it.type || it.key;
+          if (!it.classKey) it.classKey = it.class || it.typeKey || it.key;
         }
       });
     }
@@ -113,7 +153,9 @@ export const migrations = [
         id: Date.now() + Math.random(),
         key: 'palmWraps',
         name: 'Palm Wraps',
-        type: 'weapon'
+        type: 'weapon',
+        typeKey: 'palm',
+        classKey: 'palm',
       });
     }
   }
