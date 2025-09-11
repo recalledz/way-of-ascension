@@ -456,7 +456,7 @@ export function tryBreakthrough(){
 
   const minTime = 3;
   const maxTimeBase = 10 + (S.realm.tier * 10);
-  const mindReduction = (S.stats.mind - 10) * 0.02;
+  const mindReduction = (S.attributes.mind - 10) * 0.02;
   const maxTime = Math.max(minTime + 1, maxTimeBase * (1 - mindReduction));
 
   const duration = minTime + Math.random() * (maxTime - minTime);

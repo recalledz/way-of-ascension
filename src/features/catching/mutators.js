@@ -15,7 +15,7 @@ export function startCatch(state, zi, ai){
   const stage = ai + 1;
   const chance = Math.pow(0.5, stage);
   const baseMinutes = 10 + 5 * stage;
-  const agility = state.stats?.agility || 0;
+  const agility = state.attributes?.agility || 0;
   const duration = baseMinutes * 60_000 * Math.max(0, 1 - 0.04 * agility);
   const icon = getCatchingIcon(area.enemy);
   root.nets -= 1;

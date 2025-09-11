@@ -31,13 +31,14 @@ export function recomputePlayerTotals(player) {
       dropRateMult += item.bonuses.dropRateMult || 0;
     }
   }
-  player.stats = player.stats || {};
+  player.derivedStats = player.derivedStats || {};
   const baseArmor = calcBaseArmor(player);
-  player.stats.armor = armor + baseArmor;
-  player.stats.accuracy = ACCURACY_BASE + accuracy;
-  player.stats.dodge = DODGE_BASE + dodge;
+  player.derivedStats.armor = armor + baseArmor;
+  player.derivedStats.accuracy = ACCURACY_BASE + accuracy;
+  player.derivedStats.dodge = DODGE_BASE + dodge;
   player.shield = player.shield || { current: 0, max: 0 };
-  const mind = player.stats.mind || 0;
+  player.attributes = player.attributes || {};
+  const mind = player.attributes.mind || 0;
   const shieldMult = 1 + mind * 0.06;
   player.shield.max = Math.round(shieldMax * shieldMult);
   // Fully refresh the player's Qi shield whenever equipment changes so that

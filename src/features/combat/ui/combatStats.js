@@ -5,13 +5,13 @@ import { fmt } from '../../../shared/utils/number.js';
 
 export function updateCombatStats(state = S) {
   setText('atkVal', calcAtk(state));
-  setText('armorVal', state.stats?.armor || 0);
-  setText('accuracyVal', state.stats?.accuracy || 0);
-  setText('dodgeVal', state.stats?.dodge || 0);
+  setText('armorVal', state.derivedStats?.armor || 0);
+  setText('accuracyVal', state.derivedStats?.accuracy || 0);
+  setText('dodgeVal', state.derivedStats?.dodge || 0);
   setText('atkVal2', calcAtk(state));
-  setText('armorVal2', state.stats?.armor || 0);
-  setText('accuracyVal2', state.stats?.accuracy || 0);
-  setText('dodgeVal2', state.stats?.dodge || 0);
+  setText('armorVal2', state.derivedStats?.armor || 0);
+  setText('accuracyVal2', state.derivedStats?.accuracy || 0);
+  setText('dodgeVal2', state.derivedStats?.dodge || 0);
 
   // HP & Shield HUD (moved here to avoid duplicate updates in ui/index.js)
   setText('hpVal', fmt(state.hp));

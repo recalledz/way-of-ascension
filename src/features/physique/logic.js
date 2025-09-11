@@ -9,8 +9,8 @@ function slice(state){
  * Returns HP bonus and additional carry capacity.
  */
 export function getPhysiqueEffects(state){
-  const root = state.stats ? state : { stats: { physique: 10 } };
-  const current = root.stats.physique || 10;
+  const root = state.attributes ? state : { attributes: { physique: 10 } };
+  const current = root.attributes.physique || 10;
   const hpBonus = Math.floor(current * 3);
   const carryCapacity = current;
   const maxStamina = current * 10;

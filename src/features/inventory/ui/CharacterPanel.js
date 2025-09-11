@@ -93,7 +93,8 @@ export function renderEquipmentPanel() {
 }
 
 function renderStats() {
-  if (!S.stats) return;
+  const stats = { ...S.attributes, ...S.derivedStats };
+  if (!stats) return;
   const defs = [
     { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
     { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
@@ -115,7 +116,7 @@ function renderStats() {
   defs.forEach(d => {
     const el = document.getElementById(`stat-${d.id}`);
     if (!el) return;
-    const val = d.value ? d.value() : (S.stats[d.stat] ?? 0);
+    const val = d.value ? d.value() : (stats[d.stat] ?? 0);
     el.textContent = d.format ? d.format(val) : val;
   });
 }

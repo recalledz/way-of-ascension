@@ -52,7 +52,7 @@ export function renderMindMainTab(rootEl, state) {
   rootEl.appendChild(card);
 
   // Mind attribute breakdown
-  const mindAttr = state.stats?.mind ?? 0;
+  const mindAttr = state.attributes?.mind ?? 0;
   const mindPoints = state.mind.level; // each level grants one point
   const attrCard = document.createElement('div');
   attrCard.className = 'card';

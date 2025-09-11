@@ -87,7 +87,7 @@ function applyAbilityResult(abilityKey, res, state) {
   const logs = state.adventure?.combatLog;
   const mods = state.abilityMods?.[abilityKey];
   const weapon = getEquippedWeapon(state);
-  const attackerStats = mergeStats(state.stats, weapon?.stats);
+  const attackerStats = mergeStats({ ...state.attributes, ...state.derivedStats }, weapon?.stats);
   const attacks = res.attacks || (res.attack ? [res.attack] : []);
   if (attacks.length) {
     const { target } = attacks[0];
@@ -98,7 +98,7 @@ function applyAbilityResult(abilityKey, res, state) {
 
     if (!isSpell) {
       const enemyDodge = (target?.stats?.dodge ?? target?.dodge ?? 0) + DODGE_BASE;
-      const hitP = chanceToHit(state.stats?.accuracy || 0, enemyDodge);
+      const hitP = chanceToHit(state.derivedStats?.accuracy || 0, enemyDodge);
       if (Math.random() >= hitP) {
         logs?.push(`Your ${ability.displayName} missed!`);
         return;
@@ -121,7 +121,7 @@ function applyAbilityResult(abilityKey, res, state) {
           mult *= getWeaponProficiencyBonuses(state).damageMult;
         }
         const { spellPowerMult } = getStatEffects(state);
-        const spellDamage = state.stats?.spellDamage || 0;
+        const spellDamage = state.derivedStats?.spellDamage || 0;
         const spellTreeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
         mult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
       } else {

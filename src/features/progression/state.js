@@ -30,7 +30,7 @@ export const progressionState = {
   pills: { ward: 0, meridian_opening_dan: 0 },
   breakthroughBonus: 0,
   breakthroughChanceMult: 1,
-  stats: {
+  attributes: {
     physique: 10,
     mind: 10,
     agility: 10,
@@ -39,6 +39,8 @@ export const progressionState = {
     attackSpeed: 1.0,
     cooldownReduction: 0,
     adventureSpeed: 1.0,
+  },
+  derivedStats: {
     armor: 0,
     accuracy: ACCURACY_BASE,
     dodge: DODGE_BASE,

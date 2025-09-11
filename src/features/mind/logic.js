@@ -4,6 +4,7 @@
 // mutate state and are easily unit testable.
 
 import { unlockRecipe } from '../alchemy/mutators.js';
+import { isAttributeStat } from '../../shared/utils/stats.js';
 
 export function calcFromProficiency(profXp) {
   return Math.max(0, profXp) * 0.25;
@@ -93,7 +94,8 @@ export function applyManualEffects(player, manual, level) {
   const effects = manual?.effects?.[level - 1];
   if (!effects) return;
 
-  player.stats = player.stats || {};
+  player.attributes = player.attributes || {};
+  player.derivedStats = player.derivedStats || {};
   player.manualAbilityKeys = player.manualAbilityKeys || [];
   player.availableAbilityKeys = player.availableAbilityKeys || [];
   player.abilityMods = player.abilityMods || {};
@@ -124,15 +126,19 @@ export function applyManualEffects(player, manual, level) {
     if (key === 'unlockAbility' || key === 'abilityMods' || key === 'unlockRecipe') continue;
     if (key.endsWith('Pct')) {
       const stat = key.slice(0, -3);
-      if (stat in player.stats) {
-        player.stats[stat] = (player.stats[stat] || 0) * (1 + val / 100);
+      if (stat in player.attributes) {
+        player.attributes[stat] = (player.attributes[stat] || 0) * (1 + val / 100);
+      } else if (stat in player.derivedStats) {
+        player.derivedStats[stat] = (player.derivedStats[stat] || 0) * (1 + val / 100);
       } else if (stat in player) {
         player[stat] = (player[stat] || 0) * (1 + val / 100);
       } else {
-        player.stats[key] = (player.stats[key] || 0) + val;
+        player.derivedStats[stat] = (player.derivedStats[stat] || 0) + val;
       }
-    } else if (key in player.stats) {
-      player.stats[key] = (player.stats[key] || 0) + val;
+    } else if (isAttributeStat(key)) {
+      player.attributes[key] = (player.attributes[key] || 0) + val;
+    } else if (key in player.derivedStats) {
+      player.derivedStats[key] = (player.derivedStats[key] || 0) + val;
     } else {
       player[key] = (player[key] || 0) + val;
     }

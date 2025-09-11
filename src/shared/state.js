@@ -26,7 +26,7 @@ export function loadSave(){
 
 export const defaultState = () => {
   const { hp: enemyHP, hpMax: enemyMaxHP } = initHp(0);
-  const stats = {
+  const attributes = {
     physique: 10,        // Physical power
     mind: 10,            // Spell power, alchemy, learning speed
     agility: 10,         // Weapon handling, dodge
@@ -35,6 +35,8 @@ export const defaultState = () => {
     attackSpeed: 1.0,    // Base attack speed multiplier
     cooldownReduction: 0, // Cooldown reduction percentage
     adventureSpeed: 1.0, // Adventure/exploration speed multiplier
+  };
+  const derivedStats = {
     armor: 0,           // Total armor from gear and bonuses
     accuracy: ACCURACY_BASE,        // Chance to hit with attacks
     dodge: DODGE_BASE,          // Chance to avoid attacks
@@ -44,7 +46,7 @@ export const defaultState = () => {
     ccResist: 0,                // Resistance to crowd control duration
     stunBuildTakenReduction: 0  // Reduction to stun build taken
   };
-  const baseHP = 100 + stats.physique * 3;
+  const baseHP = 100 + attributes.physique * 3;
   return {
   ver: SAVE_VERSION,
   time:0,
@@ -64,7 +66,8 @@ export const defaultState = () => {
   atkBase:5, armorBase:2, tempAtk:0, tempArmor:0, breakthroughBonus:0,
   breakthroughChanceMult:1,
   // Expanded Stat System
-  stats,
+  attributes,
+  derivedStats,
   disciples:1,
   gather:{herbs:0, ore:0, wood:0},
   yieldMult:{herbs:0, ore:0, wood:0},
