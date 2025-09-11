@@ -5,6 +5,9 @@ import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
 import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
 import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
+import { usePill } from '../../alchemy/mutators.js';
+import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
+import { PILL_LINES } from '../../alchemy/data/pills.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -292,6 +295,24 @@ function foodDetailsHTML(item) {
   return header + core + footer;
 }
 
+function pillDetailsHTML(item) {
+  const recipe = ALCHEMY_RECIPES[item.key];
+  if (!recipe) return item.name || item.key;
+  const eff = recipe.effects || {};
+  let effect = '';
+  if (eff.qiRestorePct) effect = `Restores ${eff.qiRestorePct}% Qi`;
+  else if (eff.stats) {
+    effect = Object.entries(eff.stats)
+      .map(([stat, val]) => `+${val} ${stat}`)
+      .join(', ');
+  } else if (eff.status === 'pill_body_t1') effect = 'Boosts attack and armor for 30s';
+  else if (eff.status === 'pill_breakthrough_t1') effect = '+10% breakthrough success for 60s';
+  else if (eff.status === 'pill_meridian_opening_t1') effect = '+20% breakthrough chance for 30s';
+  const header = `<div class="tooltip-header"><span class="tooltip-name">${recipe.name}</span></div>`;
+  const core = effect ? `<div class="tooltip-core">${effect}</div>` : '';
+  return header + core;
+}
+
 let currentTooltip = null;
 
 function hideItemTooltip() {
@@ -339,6 +360,8 @@ function showDetails(item, evt) {
     html = gearDetailsHTML(item);
   } else if (item.type === 'food') {
     html = foodDetailsHTML(item);
+  } else if (item.type === 'pill') {
+    html = pillDetailsHTML(item);
   } else {
     html = item.name || item.key;
   }
@@ -410,6 +433,20 @@ function createInventoryRow(item) {
     detailsBtn.textContent = 'Details';
     detailsBtn.onclick = (e) => showDetails(item, e);
     act.appendChild(detailsBtn);
+  } else if (item.type === 'pill') {
+    const useBtn = document.createElement('button');
+    useBtn.className = 'btn small';
+    useBtn.textContent = 'Use';
+    useBtn.onclick = () => {
+      const res = usePill(S, item.key, 1);
+      if (res.ok) renderEquipmentPanel();
+    };
+    act.appendChild(useBtn);
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'btn small';
+    detailsBtn.textContent = 'Details';
+    detailsBtn.onclick = (e) => showDetails(item, e);
+    act.appendChild(detailsBtn);
   }
   row.appendChild(act);
   if (slotFilter && !canEquipToSlot(item, slotFilter)) row.classList.add('muted');
@@ -442,6 +479,19 @@ function renderInventory({ dismissTooltip = false } = {}) {
   if (!list) return;
   list.innerHTML = '';
   const items = (S.inventory || []).filter(it => it.type !== 'material' && (currentFilter === 'all' || it.type === currentFilter));
+  if (currentFilter === 'all' || currentFilter === 'pill') {
+    Object.entries(S.pills || {}).forEach(([key, qty]) => {
+      if (qty > 0) {
+        items.push({
+          id: `pill-${key}`,
+          type: 'pill',
+          key,
+          name: PILL_LINES[key]?.name || key,
+          qty,
+        });
+      }
+    });
+  }
   items.forEach(it => list.appendChild(createInventoryRow(it)));
   const filterBtns = document.querySelectorAll('#inventoryFilters button');
   filterBtns.forEach(btn => {
