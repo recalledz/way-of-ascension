@@ -43,6 +43,7 @@ import { log } from "../shared/utils/dom.js";
 import { mountTutorialBox } from "../ui/tutorialBox.js";
 import { mountNotificationTray } from "../ui/notifications.js";
 import { mountAbilityTutorialPopup } from "../ui/tutorialPopups.js";
+import { renderEquipmentPanel } from "./inventory/ui/CharacterPanel.js";
 
 
 // Example placeholder for later:
@@ -272,6 +273,23 @@ export function debugFeatureVisibility(state) {
   return result;
 }
 
+function autoConsumeFood(state) {
+  if (state.hp >= state.hpMax) return;
+  for (let i = 1; i <= 5; i++) {
+    const slot = `food${i}`;
+    const item = state.equipment?.[slot];
+    if (item) {
+      const heal = item.heal || 0;
+      state.hp = Math.min(state.hpMax, state.hp + heal);
+      if (state.adventure) state.adventure.playerHP = state.hp;
+      item.qty = (item.qty || 1) - 1;
+      if (item.qty <= 0) state.equipment[slot] = null;
+      renderEquipmentPanel?.();
+      break;
+    }
+  }
+}
+
 export function runAllFeatureTicks(state, stepMs) {
   const stepSec = stepMs / 1000;
   tickAbilityCooldowns(stepMs);
@@ -295,6 +313,12 @@ export function runAllFeatureTicks(state, stepMs) {
   advanceForging(state);
   advanceCatching(state);
   tickAlchemy(state, stepMs);
+
+  state.foodTimer = (state.foodTimer || 0) + stepMs;
+  if (state.foodTimer >= 20000) {
+    state.foodTimer -= 20000;
+    autoConsumeFood(state);
+  }
 
   const physSessionEnd = tickPhysiqueTraining(state);
   if (physSessionEnd) {

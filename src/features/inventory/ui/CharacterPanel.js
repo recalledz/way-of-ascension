@@ -284,6 +284,15 @@ function gearDetailsHTML(item) {
   return header + core + imbue + modsHtml + footer;
 }
 
+function foodDetailsHTML(item) {
+  const name = item.name || item.key;
+  const heal = item.heal || 0;
+  const header = `<div class="tooltip-header"><span class="tooltip-name">${name}</span></div>`;
+  const core = `<div class="tooltip-core"><div class="stat-row"><span class="label">Heal</span><span class="value">${heal} HP</span></div></div>`;
+  const footer = item.desc ? `<div class="tooltip-footer">${item.desc}</div>` : '';
+  return header + core + footer;
+}
+
 let currentTooltip = null;
 
 function hideItemTooltip() {
@@ -329,6 +338,8 @@ function showDetails(item, evt) {
     html = weaponDetailsHTML(item);
   } else if (['armor', 'foot', 'ring', 'talisman'].includes(item.type)) {
     html = gearDetailsHTML(item);
+  } else if (item.type === 'food') {
+    html = foodDetailsHTML(item);
   } else {
     html = item.name || item.key;
   }
@@ -345,9 +356,9 @@ function createInventoryRow(item) {
   if (element) {
     row.style.backgroundColor = ELEMENT_BG_COLORS[element] || '';
   }
-  const icon = item.type === 'weapon'
+  const icon = item.icon || (item.type === 'weapon'
     ? WEAPON_ICONS[item.classKey]
-    : GEAR_ICONS[item.slot || item.type];
+    : GEAR_ICONS[item.slot || item.type]);
   const rarity = item.rarity;
   const rarityColor = RARITY_COLORS[rarity] || '';
   const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
@@ -370,7 +381,7 @@ function createInventoryRow(item) {
       useBtn.className = 'btn small';
       useBtn.textContent = 'Eat';
       useBtn.onclick = () => {
-        const heal = item.key === 'cookedMeat' ? 40 : 20;
+        const heal = item.heal || 0;
         S.hp = Math.min(S.hpMax, (S.hp || 0) + heal);
         item.qty = (item.qty || 1) - 1;
         if (item.qty <= 0) removeFromInventory(item.id);

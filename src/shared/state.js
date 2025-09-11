@@ -60,7 +60,7 @@ export const defaultState = () => {
   autoFillShieldFromQi: true,
   stunBar: 0, // STATUS-REFORM player stun accumulation
   realm: { tier: 0, stage: 1 },
-  wood:0, spiritWood:0, cores:0, iron:0, oreDust:0, herbs:0, aromaticHerb:0,
+  wood:0, spiritWood:0, cores:0, iron:0, oreDust:0, herbs:0, aromaticHerb:0, meat:0, cookedMeat:0,
   pills:{qi:0, body:0, ward:0, meridian_opening_dan:0, insight:0},
   atkBase:5, armorBase:2, tempAtk:0, tempArmor:0, breakthroughBonus:0,
   breakthroughChanceMult:1,
@@ -148,6 +148,7 @@ export const defaultState = () => {
   junk: [],
   gearBonuses: {},
   sessionLoot: [], // EQUIP-CHAR-UI
+  foodTimer: 0,
   flags: { weaponsEnabled: true },
   cultivation: {
     talent: 1.0, // Base cultivation talent multiplier
@@ -235,6 +236,32 @@ recalculateBuildingBonuses(S);
     configurable: true
   });
   if (initial > 0) S[key] = initial; // populate inventory if save had values
+});
+
+// Map food resources into inventory items with healing effects
+[
+  ['meat', { type: 'food', heal: 20, name: 'Raw Meat', desc: 'Restores 20 HP' }],
+  ['cookedMeat', { type: 'food', heal: 40, name: 'Cooked Meat', desc: 'Restores 40 HP' }]
+].forEach(([key, meta]) => {
+  const initial = S[key] || 0;
+  Object.defineProperty(S, key, {
+    get() {
+      return S.inventory?.find(it => it.key === key)?.qty || 0;
+    },
+    set(val) {
+      S.inventory = S.inventory || [];
+      const item = S.inventory.find(it => it.key === key);
+      if (val <= 0) {
+        if (item) S.inventory.splice(S.inventory.indexOf(item), 1);
+        return;
+      }
+      if (item) item.qty = val;
+      else S.inventory.push({ id: key, key, ...meta, qty: val });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  if (initial > 0) S[key] = initial;
 });
 
 export function save(){
