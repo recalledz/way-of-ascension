@@ -28,6 +28,7 @@ All attribute levels grant **+1% talent**.
 | Physique | +3 HP, +1 carry capacity |
 | Mind | +1% Qi Shield refill efficiency, +6% Qi Shield capacity |
 | Agility | +2% dodge chance |
+| Comprehension | +4% learning speed, +5% foundation gain (per point above 10) |
 
 ## Physique-Derived Bonuses
 - **HP**: `Physique * 3` additional maximum HP.
