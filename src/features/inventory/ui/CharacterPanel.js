@@ -1,10 +1,12 @@
 import { S, save } from '../../../shared/state.js';
 import { WEAPON_ICONS } from '../../weaponGeneration/data/weaponIcons.js';
-import { equipItem, unequip, removeFromInventory, moveToJunk } from '../mutators.js';
+import { equipItem, unequip, removeFromInventory, moveToJunk, usePill } from '../mutators.js';
 import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
 import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
 import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
+import { PILL_LINES } from '../../alchemy/data/pills.js';
+import { inspectPillResistance } from '../../alchemy/selectors.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -87,6 +89,7 @@ export function renderEquipmentPanel() {
   renderJunk();
   renderStats();
   renderAbilitySlots();
+  renderPills();
 }
 
 function renderStats() {
@@ -486,6 +489,63 @@ function renderJunk() {
   items.forEach(it => list.appendChild(createJunkRow(it)));
 }
 
+function renderPills() {
+  const tempList = document.getElementById('tempPillsList');
+  const permList = document.getElementById('permPillsList');
+  if (!tempList || !permList) return;
+  tempList.innerHTML = '';
+  permList.innerHTML = '';
+  const outputs = S.alchemy?.outputs || {};
+  Object.keys(outputs).forEach(lineKey => {
+    const out = outputs[lineKey];
+    if (out.type !== 'pill') return;
+    const meta = PILL_LINES[lineKey] || { name: lineKey, class: 'temporary' };
+    const tiers = out.tiers && Object.keys(out.tiers).length ? out.tiers : { 1: out.qty };
+    Object.entries(tiers).forEach(([tierStr, qty]) => {
+      const tier = Number(tierStr);
+      if (qty <= 0) return;
+      const li = document.createElement('li');
+      li.className = 'pill-entry';
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = meta.name;
+      const tierSpan = document.createElement('span');
+      tierSpan.className = 'chip';
+      tierSpan.textContent = `T${tier}`;
+      const qtySpan = document.createElement('span');
+      qtySpan.textContent = `x${qty}`;
+      li.append(nameSpan, tierSpan, qtySpan);
+      if (lineKey === 'meridian_opening_dan') {
+        const inst = S.statuses?.pill_meridian_opening_t1;
+        if (inst) {
+          const timerSpan = document.createElement('span');
+          timerSpan.className = 'chip pill-timer';
+          timerSpan.textContent = `${Math.ceil(inst.duration)}s`;
+          if (inst.duration <= 3) timerSpan.classList.add('pulse');
+          li.appendChild(timerSpan);
+        }
+      }
+      const useBtn = document.createElement('button');
+      useBtn.textContent = 'Use';
+      useBtn.className = 'btn small';
+      useBtn.addEventListener('click', () => {
+        const res = usePill(S, lineKey, tier);
+        if (res.ok) renderPills();
+      });
+      li.appendChild(useBtn);
+      if (meta.class === 'permanent') {
+        const info = inspectPillResistance(lineKey, tier, S);
+        if (info) {
+          li.title = `rp ${info.rp.toFixed(1)}/${info.rpCap}\ncur ${info.effectiveMultiplier.toFixed(2)}\nnext ${info.nextGain.toFixed(2)}`;
+        }
+      }
+      const targetList = meta.class === 'permanent' ? permList : tempList;
+      targetList.appendChild(li);
+    });
+  });
+  document.getElementById('noTempPills').style.display = tempList.children.length ? 'none' : '';
+  document.getElementById('noPermPills').style.display = permList.children.length ? 'none' : '';
+}
+
 export function setupEquipmentTab() {
   renderEquipmentPanel();
   setupGearTabs();
@@ -508,6 +568,7 @@ function setupGearTabs() {
         content.style.display = 'block';
         if (tabName === 'gearAbilities') renderAbilitySlots();
         else if (tabName === 'gearStats') renderStats();
+        else if (tabName === 'gearPills') renderPills();
       }
     };
   });
