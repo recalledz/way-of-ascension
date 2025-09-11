@@ -100,7 +100,6 @@ function renderStats() {
     { id: 'physique', stat: 'physique' },
     { id: 'mind', stat: 'mind' },
     { id: 'agility', stat: 'agility' },
-    { id: 'dexterity', stat: 'dexterity' },
     { id: 'comprehension', stat: 'comprehension' },
     { id: 'accuracy', stat: 'accuracy' },
     { id: 'dodge', stat: 'dodge' },

@@ -12,7 +12,6 @@
 | Physique | 10 |
 | Mind | 10 |
 | Agility | 10 |
-| Dexterity | 10 |
 | Comprehension | 10 |
 | Critical Chance | 5% |
 | Attack Speed | 1.0× |

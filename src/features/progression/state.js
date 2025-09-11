@@ -34,7 +34,6 @@ export const progressionState = {
     physique: 10,
     mind: 10,
     agility: 10,
-    dexterity: 10,
     comprehension: 10,
     criticalChance: 0.05,
     attackSpeed: 1.0,

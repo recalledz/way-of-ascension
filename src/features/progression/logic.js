@@ -138,7 +138,6 @@ export function calcArmor(state = progressionState){
 export function getStatEffects(state = progressionState) {
   const stats = state.stats || {};
   const mind = Number(stats.mind) || 10;
-  const dex = Number(stats.dexterity) || 10;
   const comp = Number(stats.comprehension) || 10;
   const crit = Number(stats.criticalChance) || 0;
   const atkSpd = Number(stats.attackSpeed) || 0;
@@ -148,16 +147,16 @@ export function getStatEffects(state = progressionState) {
     spellPowerMult: 1 + (mind - 10) * 0.06,
     alchemySuccessMult: 1 + (mind - 10) * 0.04,
     learningSpeedMult: 1 + (mind - 10) * 0.05,
-    attackSpeedMult: 1 + (dex - 10) * 0.04,
-    cooldownReductionBonus: (dex - 10) * 0.02,
-    craftingSpeedMult: 1 + (dex - 10) * 0.03,
-    adventureSpeedMult: 1 + (dex - 10) * 0.03,
+    attackSpeedMult: 1,
+    cooldownReductionBonus: 0,
+    craftingSpeedMult: 1,
+    adventureSpeedMult: 1,
     foundationGainMult: 1 + (comp - 10) * 0.05,
     learningSpeedMult2: 1 + (comp - 10) * 0.04,
-    totalCritChance: crit + (dex - 10) * 0.005,
-    totalAttackSpeed: atkSpd * (1 + (dex - 10) * 0.04),
-    totalCooldownReduction: cdRed + (dex - 10) * 0.02,
-    totalAdventureSpeed: advSpd * (1 + (dex - 10) * 0.03)
+    totalCritChance: crit,
+    totalAttackSpeed: atkSpd,
+    totalCooldownReduction: cdRed,
+    totalAdventureSpeed: advSpd
   };
 }
 
@@ -191,11 +190,9 @@ export function calculatePlayerCombatAttack(state = progressionState) {
 
 export function calculatePlayerAttackRate(state = progressionState) {
   const baseRate = 1.0;
-  const dex = Number(state.stats?.dexterity) || 10;
   const attackSpeedBonus = Number(state.stats?.attackSpeed) || 0;
   const speedMult = Number(getWeaponProficiencyBonuses(state).speedMult) || 1;
-  const dexterityBonus = (dex - 10) * 0.05;
-  return (baseRate + dexterityBonus + attackSpeedBonus / 100) * speedMult;
+  return (baseRate + attackSpeedBonus / 100) * speedMult;
 }
 
 export function breakthroughChance(state = progressionState){
