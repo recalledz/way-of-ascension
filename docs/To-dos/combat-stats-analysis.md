@@ -3,9 +3,9 @@
 ## Current Implementation Status (v1.2.0)
 
 ### ✅ Core Combat Stats (Implemented)
-- **Critical Chance** - `S.stats.criticalChance` (base 0.05, scales with dexterity)
-- **Attack Speed** - `S.stats.attackSpeed` (base 1.0, scales with dexterity)
-- **Cooldown Reduction** - `S.stats.cooldownReduction` (scales with dexterity)
+- **Critical Chance** - `S.stats.criticalChance` (base 0.05)
+- **Attack Speed** - `S.stats.attackSpeed` (base 1.0)
+- **Cooldown Reduction** - `S.stats.cooldownReduction`
 - **Defense** - `calcDef()` function with realm bonuses
 - **Adventure Speed** - `S.stats.adventureSpeed` for exploration
 
@@ -47,12 +47,6 @@ const damageMultiplier = isCritical ? 1.5 : 1.0; // Base 1.5x crit damage
 ```
 
 ## Attribute Integration
-
-### Dexterity
-- **Attack Speed**: +4% per point
-- **Critical Chance**: +0.5% per point
-- **Dodge**: +0.3% per point
-- **Accuracy**: +0.4% per point
 
 ### Mind
 - **Spell Power**: +6% per point

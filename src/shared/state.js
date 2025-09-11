@@ -30,7 +30,6 @@ export const defaultState = () => {
     physique: 10,        // Physical power
     mind: 10,            // Spell power, alchemy, learning speed
     agility: 10,         // Weapon handling, dodge
-    dexterity: 10,       // Attack speed, cooldowns, crafting, adventure speed
     comprehension: 10,   // Foundation gain, learning speed
     criticalChance: 0.05, // Base critical hit chance
     attackSpeed: 1.0,    // Base attack speed multiplier

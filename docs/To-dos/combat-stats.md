@@ -2,9 +2,9 @@
 
 ## ✅ Implemented Stats
 
-* **Critical Chance** - `S.stats.criticalChance` (base 0.05, scales with dexterity)
-* **Attack Speed** - `S.stats.attackSpeed` (base 1.0, scales with dexterity)
-* **Cooldown Reduction** - `S.stats.cooldownReduction` (scales with dexterity)
+* **Critical Chance** - `S.stats.criticalChance` (base 0.05)
+* **Attack Speed** - `S.stats.attackSpeed` (base 1.0)
+* **Cooldown Reduction** - `S.stats.cooldownReduction`
 * **Defense** - `calcDef()` function with realm bonuses
 * **Adventure Speed** - `S.stats.adventureSpeed` for exploration speed
 
@@ -36,6 +36,6 @@
 - **Status Effects**: Chance to apply based on attacker's stats vs target's resistances
 
 ## 📊 Scaling Factors
-- Primary attributes (Strength, Dexterity, etc.) affect different stats
+- Primary attributes (Physique, Mind, Agility, etc.) affect different stats
 - Equipment and manuals provide flat or percentage bonuses
 - Some stats have diminishing returns at higher values
