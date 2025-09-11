@@ -1,4 +1,4 @@
-import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { WEAPON_TYPES } from '../weaponGeneration/data/weaponTypes.js';
 
 export const migrations = [
   save => {
@@ -18,8 +18,7 @@ export const migrations = [
     if (save.proficiency && typeof save.proficiency === 'object') {
       const converted = {};
       for (const [key, val] of Object.entries(save.proficiency)) {
-        const weapon = WEAPONS[key];
-        const classKey = weapon?.classKey || key;
+        const classKey = WEAPON_TYPES[key]?.classKey || key;
         converted[classKey] = (converted[classKey] || 0) + val;
       }
       save.proficiency = converted;

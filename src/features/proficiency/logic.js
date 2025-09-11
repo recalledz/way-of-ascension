@@ -1,23 +1,29 @@
-import { WEAPONS } from '../weaponGeneration/data/weapons.js';
+import { WEAPON_TYPES } from '../weaponGeneration/data/weaponTypes.js';
 
 // Proficiency is stored on the player state as an object: { [weaponClass]: number }
-function resolveKey(key) {
-  const weapon = WEAPONS[key];
-  return weapon?.classKey || key;
+function resolveClassKey(target) {
+  if (typeof target === 'string') {
+    return WEAPON_TYPES[target]?.classKey || target;
+  }
+  if (target && typeof target === 'object') {
+    return target.classKey || WEAPON_TYPES[target.typeKey]?.classKey || target.typeKey;
+  }
+  return target;
 }
 
 export function calculateProficiencyXP(enemyMaxHP) {
   return Math.max(1, Math.ceil(enemyMaxHP / 30));
 }
 
-export function gainProficiency(key, amount, state) {
+export function gainProficiency(weapon, amount, state) {
   state.proficiency = state.proficiency || {};
-  const classKey = resolveKey(key);
+  const classKey = resolveClassKey(weapon);
+  if (!classKey) return;
   state.proficiency[classKey] = (state.proficiency[classKey] || 0) + amount;
 }
 
-export function getProficiency(key, state) {
-  const classKey = resolveKey(key);
+export function getProficiency(weapon, state) {
+  const classKey = resolveClassKey(weapon);
   const value = (state.proficiency && state.proficiency[classKey]) || 0;
   // Soft cap: returns multiplier >1 but growth slows down
   const bonus = 1 + Math.pow(value, 0.6) * 0.01;
