@@ -13,6 +13,10 @@ export const inventoryState = {
     ring2: null,
     talisman1: null,
     talisman2: null,
-    food: null,
+    food1: null,
+    food2: null,
+    food3: null,
+    food4: null,
+    food5: null,
   },
 };
