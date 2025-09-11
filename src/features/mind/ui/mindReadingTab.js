@@ -81,7 +81,7 @@ function showManualPopup(manual, S) {
         <button class="btn small ghost close-btn">×</button>
       </div>
       <div class="manual-meta">${manual.category} • Req Level ${manual.reqLevel}</div>
-      ${renderSpeedInfo(manual, S.stats)}
+      ${renderSpeedInfo(manual, S.attributes)}
       ${renderEffects(manual)}
       <div class="manual-actions">
         <button class="btn small add-btn">Add to Queue</button>
@@ -132,7 +132,7 @@ function buildQueueItems(S) {
     const m = getManual(id);
     if (m) {
       const rec = S.mind.manualProgress[id] || { xp: 0, level: 0 };
-      const speed = calcManualSpeedDetails(m, S.stats).mult;
+      const speed = calcManualSpeedDetails(m, S.attributes).mult;
       const needed = m.baseTimeSec * m.levelTimeMult[rec.level] * m.xpRate;
       const xpRate = m.xpRate * speed;
       const eta = (needed - rec.xp) / xpRate;

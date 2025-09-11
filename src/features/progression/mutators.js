@@ -32,10 +32,12 @@ export function advanceRealm(state = progressionState) {
     result.statMsg = `ATK +${realmBonus * 2}, Armor +${realmBonus}, HP +25%`;
 
     state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
-    state.stats = state.stats || {
+    state.attributes = state.attributes || {
       physique: 10, mind: 10, agility: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: ACCURACY_BASE, dodge: DODGE_BASE
+    };
+    state.derivedStats = state.derivedStats || {
+      armor: 0, accuracy: ACCURACY_BASE, dodge: DODGE_BASE,
     };
 
     state.cultivation.talent += 0.15;
@@ -43,11 +45,11 @@ export function advanceRealm(state = progressionState) {
     result.extraMsg = `Talent +15%, Comprehension +10%, Foundation Mult +8%`;
 
     const realmStatPoints = 3 + state.realm.tier;
-    state.stats.physique += Math.ceil(realmStatPoints * 0.3);
-    state.stats.mind += Math.ceil(realmStatPoints * 0.25);
-    state.stats.agility += Math.ceil(realmStatPoints * 0.25);
-    state.stats.comprehension += Math.ceil(realmStatPoints * 0.2);
-    state.stats.criticalChance += 0.01;
+    state.attributes.physique += Math.ceil(realmStatPoints * 0.3);
+    state.attributes.mind += Math.ceil(realmStatPoints * 0.25);
+    state.attributes.agility += Math.ceil(realmStatPoints * 0.25);
+    state.attributes.comprehension += Math.ceil(realmStatPoints * 0.2);
+    state.attributes.criticalChance += 0.01;
 
     const powerGain = currentRealm.power / REALMS[oldRealm].power;
     log?.(`Realm breakthrough! Power increased by ${powerGain.toFixed(1)}x! ATK +${realmBonus * 2}, Armor +${realmBonus}, HP +25%`, 'good');
@@ -61,10 +63,12 @@ export function advanceRealm(state = progressionState) {
     result.statMsg = `ATK +${stageBonus}, Armor +${Math.floor(stageBonus * 0.7)}, HP +8%`;
 
     state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
-    state.stats = state.stats || {
+    state.attributes = state.attributes || {
       physique: 10, mind: 10, agility: 10, comprehension: 10,
       criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0,
-      armor: 0, accuracy: ACCURACY_BASE, dodge: DODGE_BASE
+    };
+    state.derivedStats = state.derivedStats || {
+      armor: 0, accuracy: ACCURACY_BASE, dodge: DODGE_BASE,
     };
 
     state.cultivation.talent += 0.03;
@@ -73,13 +77,13 @@ export function advanceRealm(state = progressionState) {
     const stageStatPoints = 1 + Math.floor(state.realm.tier * 0.5);
     const statDistribution = Math.random();
     if (statDistribution < 0.4) {
-      state.stats.physique += stageStatPoints;
+      state.attributes.physique += stageStatPoints;
     } else if (statDistribution < 0.7) {
-      state.stats.comprehension += stageStatPoints;
+      state.attributes.comprehension += stageStatPoints;
     } else if (statDistribution < 0.85) {
-      state.stats.mind += stageStatPoints;
+      state.attributes.mind += stageStatPoints;
     } else {
-      state.stats.agility += stageStatPoints;
+      state.attributes.agility += stageStatPoints;
     }
 
     log?.(`Stage breakthrough! ATK +${stageBonus}, Armor +${Math.floor(stageBonus * 0.7)}, HP +8%`, 'good');

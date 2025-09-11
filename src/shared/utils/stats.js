@@ -9,3 +9,18 @@ export function mergeStats(base = {}, ...mods) {
   }
   return out;
 }
+
+export const ATTRIBUTE_KEYS = new Set([
+  'physique',
+  'mind',
+  'agility',
+  'comprehension',
+  'criticalChance',
+  'attackSpeed',
+  'cooldownReduction',
+  'adventureSpeed',
+]);
+
+export function isAttributeStat(stat) {
+  return ATTRIBUTE_KEYS.has(stat);
+}

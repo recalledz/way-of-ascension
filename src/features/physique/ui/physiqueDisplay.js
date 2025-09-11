@@ -11,7 +11,7 @@ function render(state){
   setText('physiqueLevel', `Level ${getPhysiqueLevel(state)}`);
   setFill('physiqueProgressFill', getPhysiqueExp(state) / getPhysiqueExpMax(state));
   const bonuses = getPhysiqueBonuses(state);
-  setText('currentPhysiqueStat', state.stats?.physique || 10);
+  setText('currentPhysiqueStat', state.attributes?.physique || 10);
   setText('physiqueHpStat', `+${bonuses.hpBonus}`);
   setText('physiqueCarryStat', `+${bonuses.carryCapacity}`);
   setText('physiqueMaxStaminaStat', `${bonuses.maxStamina}`);

@@ -50,7 +50,7 @@ export function inspectPillResistance(lineKey, tier = 1, state = S) {
 export function getSuccessBonus(state = S) {
   const building = getBuildingBonuses(state).alchemySuccess || 0;
   const level = getAlchemyLevel(state) * LEVEL_SUCCESS_BONUS;
-  const mind = (state.stats?.mind || 10) - 10;
+  const mind = (state.attributes?.mind || 10) - 10;
   return building + level + mind * 0.04;
 }
 

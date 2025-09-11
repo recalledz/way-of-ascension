@@ -325,7 +325,7 @@ export function updateBattleDisplay() {
 
   // Calculate physical mitigation against the strongest enemy in the current zone
   let mitPct = 0;
-  const armor = S.stats?.armor || 0;
+  const armor = S.derivedStats?.armor || 0;
   const zone = ZONES[S.adventure.currentZone];
   if (armor > 0 && zone?.areas?.length) {
     let maxEnemyAtk = 0;
@@ -761,9 +761,9 @@ export function updateAdventureCombat() {
     if (!S.currentCast && now - S.adventure.lastPlayerAttack >= (1000 / playerAttackRate)) {
       S.adventure.lastPlayerAttack = now;
       const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
-      const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
+      const hitP = chanceToHit(S.derivedStats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
-        const critChance = S.stats?.criticalChance || 0;
+        const critChance = S.attributes?.criticalChance || 0;
         const isCrit = Math.random() < critChance;
         const critMult = isCrit ? 2 : 1;
         const profile = {
@@ -888,7 +888,7 @@ export function updateAdventureCombat() {
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         S.adventure.lastEnemyAttack = now;
         const enemyAcc = S.adventure.currentEnemy?.stats?.accuracy ?? S.adventure.currentEnemy?.accuracy ?? 0;
-        const playerDodge = S.stats?.dodge || 0;
+        const playerDodge = S.derivedStats?.dodge || 0;
         const hitP = chanceToHit(enemyAcc, playerDodge);
         if (Math.random() < hitP) {
           const critChance = S.adventure.currentEnemy?.stats?.criticalChance ?? S.adventure.currentEnemy?.criticalChance ?? 0;
@@ -1689,10 +1689,10 @@ export function updateActivityAdventure() {
   const enemyData = currentArea ? ENEMY_DATA[currentArea.enemy] : null;
   if (enemyData) {
     const enemyDodge = (enemyData.stats?.dodge ?? enemyData.dodge ?? 0) + DODGE_BASE;
-    const hitP = chanceToHit(S.stats?.accuracy || 0, enemyDodge);
+    const hitP = chanceToHit(S.derivedStats?.accuracy || 0, enemyDodge);
     setText('hitChance', `${Math.round(hitP * 100)}%`);
     const enemyAcc = enemyData.stats?.accuracy ?? enemyData.accuracy ?? 0;
-    const evadeP = 1 - chanceToHit(enemyAcc, S.stats?.dodge || 0);
+    const evadeP = 1 - chanceToHit(enemyAcc, S.derivedStats?.dodge || 0);
     setText('evadeChance', `${Math.round(evadeP * 100)}%`);
   } else {
     setText('hitChance', '--');

@@ -1,4 +1,5 @@
 import { S, save } from '../../shared/state.js';
+import { isAttributeStat } from '../../shared/utils/stats.js';
 import { alchemyState } from './state.js';
 import { getSuccessBonus } from './selectors.js';
 import { qCap, clamp } from '../progression/selectors.js';
@@ -103,12 +104,17 @@ export function usePill(root, type, tier = 1) {
     const res = alch.resistance?.[type] || { rp: 0, rpCap: resDef.rpCap };
     let { rp } = res;
     if (rp < resDef.rpCap) {
-      const stats = recipe.effects?.stats || {};
-      root.stats = root.stats || {};
-      for (const [stat, val] of Object.entries(stats)) {
+    const stats = recipe.effects?.stats || {};
+    root.attributes = root.attributes || {};
+    root.derivedStats = root.derivedStats || {};
+    for (const [stat, val] of Object.entries(stats)) {
         const gain = val / (1 + rp);
-        root.stats[stat] = (root.stats[stat] || 0) + gain;
-      }
+        if (isAttributeStat(stat)) {
+          root.attributes[stat] = (root.attributes[stat] || 0) + gain;
+        } else {
+          root.derivedStats[stat] = (root.derivedStats[stat] || 0) + gain;
+        }
+    }
     }
     const rpGain = resDef.baseRp * (resDef.tierWeight ?? 1);
     rp = Math.min(rp + rpGain, resDef.rpCap);

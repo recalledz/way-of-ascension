@@ -12,9 +12,9 @@ export function addPhysiqueExp(amount, state = physiqueState){
     p.exp -= p.expMax;
     p.level++;
     p.expMax = Math.floor(p.expMax * 1.4);
-    if(state.stats){
-      state.stats.physique = (state.stats.physique || 10) + 1;
-      p.maxStamina = (state.stats.physique || 10) * 10;
+    if(state.attributes){
+      state.attributes.physique = (state.attributes.physique || 10) + 1;
+      p.maxStamina = (state.attributes.physique || 10) * 10;
       p.stamina = Math.min(p.stamina || 0, p.maxStamina);
       state.hpMax = (state.hpMax || 0) + 3;
       state.hp = Math.min(state.hpMax, (state.hp || 0) + 3);
@@ -47,7 +47,7 @@ export function trainPhysique(state = physiqueState){
     return { message: 'You must be training physique to use the training dummy!', type: 'bad' };
   }
   const baseExp = 5 + Math.floor(Math.random() * 10);
-  const expGain = Math.floor(baseExp * (1 + ((root.stats?.physique || 10) - 10) * 0.1));
+  const expGain = Math.floor(baseExp * (1 + ((root.attributes?.physique || 10) - 10) * 0.1));
   addPhysiqueExp(expGain, state);
   return { message: `Training session complete! +${expGain} physique exp`, type: 'good' };
 }

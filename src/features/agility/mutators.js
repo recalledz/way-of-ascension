@@ -14,11 +14,12 @@ export function addAgilityExp(amount, state = agilityState){
     p.exp -= p.expMax;
     p.level++;
     p.expMax = Math.floor(p.expMax * 1.4);
-    if(state.stats){
-      state.stats.agility = (state.stats.agility || 10) + 1;
+    if(state.attributes){
+      state.attributes.agility = (state.attributes.agility || 10) + 1;
       const { accuracyBonus, dodgeBonus } = getAgilityEffects(state);
-      state.stats.accuracy = ACCURACY_BASE + accuracyBonus;
-      state.stats.dodge = DODGE_BASE + dodgeBonus;
+      state.derivedStats = state.derivedStats || {};
+      state.derivedStats.accuracy = ACCURACY_BASE + accuracyBonus;
+      state.derivedStats.dodge = DODGE_BASE + dodgeBonus;
     }
   }
   return p.exp;
@@ -110,7 +111,7 @@ export function tickAgilityTraining(state = agilityState){
       return endTrainingSession(state);
     }
   }else{
-    regenAgilityStamina(0.03 * (1 + (state.stats?.agility || 10) * 0.1), state);
+    regenAgilityStamina(0.03 * (1 + (state.attributes?.agility || 10) * 0.1), state);
   }
   return null;
 }

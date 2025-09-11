@@ -5,7 +5,7 @@ import { buildObstacleCourse } from '../mutators.js';
 
 function render(state){
   const bonuses = getAgilityBonuses(state);
-  setText('currentAgilityStat', state.stats?.agility || 10);
+  setText('currentAgilityStat', state.attributes?.agility || 10);
   setText('agilityAccuracyStat', `+${bonuses.accuracyBonus}`);
   setText('agilityDodgeStat', `+${bonuses.dodgeBonus}`);
   setText('agilityForgeSpeedStat', `+${Math.floor((bonuses.forgeSpeed - 1) * 100)}%`);

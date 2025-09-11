@@ -5,8 +5,8 @@ function slice(state){
 }
 
 export function getAgilityEffects(state){
-  const root = state.stats ? state : { stats: { agility: 10 } };
-  const current = root.stats.agility || 10;
+  const root = state.attributes ? state : { attributes: { agility: 10 } };
+  const current = root.attributes.agility || 10;
   const accuracyBonus = Math.floor(current * 2);
   const dodgeBonus = Math.floor(current * 0.5);
   const forgeSpeed = 1 + current * 0.02;

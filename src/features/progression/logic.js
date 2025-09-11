@@ -82,7 +82,7 @@ export function foundationGainPerSec(state = progressionState){
       buildingMult: 1.0
     };
   }
-  const comprehensionMult = 1 + (state.stats.comprehension - 10) * 0.05;
+  const comprehensionMult = 1 + (state.attributes.comprehension - 10) * 0.05;
   const cultivationMult = state.cultivation.talent * comprehensionMult * state.cultivation.foundationMult;
   const lawBonuses = getLawBonuses(state);
   const lawMult = lawBonuses.foundationMult || 1;
@@ -136,7 +136,7 @@ export function calcArmor(state = progressionState){
 }
 
 export function getStatEffects(state = progressionState) {
-  const stats = state.stats || {};
+  const stats = state.attributes || {};
   const mind = Number(stats.mind) || 10;
   const comp = Number(stats.comprehension) || 10;
   const crit = Number(stats.criticalChance) || 0;
@@ -190,7 +190,7 @@ export function calculatePlayerCombatAttack(state = progressionState) {
 
 export function calculatePlayerAttackRate(state = progressionState) {
   const baseRate = 1.0;
-  const attackSpeedBonus = Number(state.stats?.attackSpeed) || 0;
+  const attackSpeedBonus = Number(state.attributes?.attackSpeed) || 0;
   const speedMult = Number(getWeaponProficiencyBonuses(state).speedMult) || 1;
   return (baseRate + attackSpeedBonus / 100) * speedMult;
 }
