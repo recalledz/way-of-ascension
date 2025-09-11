@@ -908,15 +908,25 @@
                 <div class="stat"><span>Coin</span><span id="stat-coin">0</span></div>
               </div>
           </div>
-          <div class="card">
+          <div class="card" id="inventoryCard">
             <h4>Inventory</h4>
-            <div id="inventoryFilters" class="filters">
-              <button class="btn small" data-filter="all">All</button>
-              <button class="btn small" data-filter="weapon">Weapons</button>
-              <button class="btn small" data-filter="armor">Armor</button>
-              <button class="btn small" data-filter="food">Food</button>
+            <div class="inventory-tabs">
+              <button class="inventory-tab-btn active" data-tab="inventoryItems">Items</button>
+              <button class="inventory-tab-btn" data-tab="inventoryPills">Pills</button>
             </div>
-            <div class="inventory-list" id="inventoryList"></div>
+            <div id="inventoryItems" class="inventory-tab-content" style="">
+              <div id="inventoryFilters" class="filters">
+                <button class="btn small" data-filter="all">All</button>
+                <button class="btn small" data-filter="weapon">Weapons</button>
+                <button class="btn small" data-filter="armor">Armor</button>
+                <button class="btn small" data-filter="food">Food</button>
+              </div>
+              <div class="inventory-list" id="inventoryList"></div>
+            </div>
+            <div id="inventoryPills" class="inventory-tab-content" style="display:none;">
+              <ul id="pillInventoryList"></ul>
+              <p class="muted" id="noPills" style="display:none;">No pills yet</p>
+            </div>
           </div>
           <div class="card">
             <h4>Materials</h4>
@@ -1122,8 +1132,7 @@
           <button class="alchemy-subtab active" data-subtab="recipe-book">Recipe Book</button>
           <button class="alchemy-subtab" data-subtab="lab">Lab</button>
           <button class="alchemy-subtab" data-subtab="coalesce">Coalesce</button>
-          <button class="alchemy-subtab" data-subtab="pill-inventory">Pill Inventory</button>
-        </div>
+          </div>
 
         <div id="recipe-book" class="alchemy-subtab-content">
           <div class="cards">
@@ -1175,22 +1184,7 @@
             <div class="card"><p class="muted">Coalesce coming soon...</p></div>
           </div>
         </div>
-
-        <div id="pill-inventory" class="alchemy-subtab-content" style="display:none;">
-          <div class="cards">
-            <div class="card">
-              <h4>Temporary Pills</h4>
-              <ul id="tempPillsList"></ul>
-              <p class="muted" id="noTempPills" style="display:none;">No pills yet <button class="btn small ghost pill-open-recipes">Recipe Book</button></p>
-            </div>
-            <div class="card">
-              <h4>Permanent Pills</h4>
-              <ul id="permPillsList"></ul>
-              <p class="muted" id="noPermPills" style="display:none;">No pills yet <button class="btn small ghost pill-open-recipes">Recipe Book</button></p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
       <section id="activity-mind" class="activity-content" style="display:none;">
         <div class="mind-tabs">

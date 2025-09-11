@@ -5,6 +5,8 @@ import { recomputePlayerTotals } from '../logic.js';
 import { ABILITIES } from '../../ability/data/abilities.js';
 import { MODIFIERS } from '../../gearGeneration/data/modifiers.js';
 import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
+import { usePill } from '../../alchemy/mutators.js';
+import { PILL_LINES } from '../../alchemy/data/pills.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -83,6 +85,7 @@ export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
   renderInventory();
+  renderPills();
   renderMaterials();
   renderJunk();
   renderStats();
@@ -486,9 +489,81 @@ function renderJunk() {
   items.forEach(it => list.appendChild(createJunkRow(it)));
 }
 
+function renderPills() {
+  const list = document.getElementById('pillInventoryList');
+  const emptyMsg = document.getElementById('noPills');
+  if (!list || !emptyMsg) return;
+  list.innerHTML = '';
+  const outputs = S.alchemy?.outputs || {};
+  Object.keys(outputs).forEach(lineKey => {
+    const out = outputs[lineKey];
+    if (out.type !== 'pill') return;
+    const meta = PILL_LINES[lineKey] || { name: lineKey, class: 'temporary' };
+    const tiers = out.tiers && Object.keys(out.tiers).length ? out.tiers : { 1: out.qty };
+    Object.entries(tiers).forEach(([tierStr, qty]) => {
+      const tier = Number(tierStr);
+      if (qty <= 0) return;
+      const li = document.createElement('li');
+      li.className = 'pill-entry';
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = meta.name;
+      const tierSpan = document.createElement('span');
+      tierSpan.className = 'chip';
+      tierSpan.textContent = `T${tier}`;
+      const qtySpan = document.createElement('span');
+      qtySpan.textContent = `x${qty}`;
+      li.append(nameSpan, tierSpan, qtySpan);
+      if (lineKey === 'meridian_opening_dan') {
+        const inst = S.statuses?.pill_meridian_opening_t1;
+        if (inst) {
+          const timerSpan = document.createElement('span');
+          timerSpan.className = 'chip pill-timer';
+          timerSpan.textContent = `${Math.ceil(inst.duration)}s`;
+          if (inst.duration <= 3) timerSpan.classList.add('pulse');
+          li.appendChild(timerSpan);
+        }
+      }
+      const useBtn = document.createElement('button');
+      useBtn.textContent = 'Use';
+      useBtn.className = 'btn small';
+      useBtn.addEventListener('click', () => {
+        const res = usePill(S, lineKey, tier);
+        if (res.ok) renderEquipmentPanel();
+      });
+      li.appendChild(useBtn);
+      if (meta.class === 'permanent') {
+        li.title = `Permanent pill`;
+      }
+      list.appendChild(li);
+    });
+  });
+  emptyMsg.style.display = list.children.length ? 'none' : '';
+}
+
+function setupInventoryTabs() {
+  const tabButtons = document.querySelectorAll('#inventoryCard .inventory-tab-btn');
+  tabButtons.forEach(button => {
+    button.onclick = () => {
+      const tabName = button.dataset.tab;
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('#inventoryCard .inventory-tab-content').forEach(panel => {
+        panel.style.display = 'none';
+      });
+      button.classList.add('active');
+      const panel = document.getElementById(tabName);
+      if (panel) {
+        panel.style.display = '';
+        if (tabName === 'inventoryPills') renderPills();
+        else renderInventory({ dismissTooltip: true });
+      }
+    };
+  });
+}
+
 export function setupEquipmentTab() {
   renderEquipmentPanel();
   setupGearTabs();
+  setupInventoryTabs();
 }
 
 function setupGearTabs() {
