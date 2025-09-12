@@ -138,20 +138,25 @@ export function processAttack(profile, weapon, options = {}) {
     onDamage,
     attacker,
     nowMs,
-    typeMults = {},
-    globalMult = 1,
-    treeMult = 1,
-    proficiencyMult = 1,
-    manualMult = 1,
-    tempMult = 1,
+    astralPct = {},
+    manualPct = {},
+    gearPct = {},
+    globalPct = 0,
+    critChance = 0,
+    critMult = 1,
+    attackSpeed,
+    attackSpeedPct = 0,
+    hitChance = 1,
   } = options;
 
   const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
-  const scaled = applyWeaponDamage(profile, w, attacker, typeMults);
+  // Base weapon damage without attacker modifiers
+  const scaled = applyWeaponDamage(profile, w);
 
   const stats = w?.stats || {};
+  const weaponPct = {};
   if (typeof stats.physDamagePct === 'number') {
-    scaled.phys *= 1 + stats.physDamagePct;
+    weaponPct.physical = (weaponPct.physical || 0) + stats.physDamagePct;
   }
   if (typeof stats.damageTransferPct === 'number') {
     const elem = stats.damageTransferElement;
@@ -162,38 +167,81 @@ export function processAttack(profile, weapon, options = {}) {
     }
   }
 
-  const baseDamageMult = 1 + ((attacker?.stats?.damagePct || 0) / 100);
-  const physDamageMult = 1 + ((attacker?.stats?.physDamagePct || 0) / 100);
-  scaled.phys *= baseDamageMult * physDamageMult;
+  const bucketAdd = (bucket, key, val) => {
+    if (!val) return;
+    bucket[key] = (bucket[key] || 0) + val;
+  };
+  const bucketGet = (bucket, key) => (bucket?.all || 0) + (bucket?.[key] || 0);
+
+  // Gear-based bonuses from attacker stats
+  const gear = { ...gearPct };
+  const atkStats = attacker?.stats || {};
+  const globalGear = (atkStats.damagePct || 0) / 100;
+  if (globalGear) gear.all = (gear.all || 0) + globalGear;
+  const physGear = (atkStats.physDamagePct || 0) / 100;
+  if (physGear) bucketAdd(gear, 'physical', physGear);
   for (const elem in scaled.elems) {
-    scaled.elems[elem] *= baseDamageMult;
+    const key = `${elem}DamagePct`;
+    const val = (atkStats[key] || 0) / 100;
+    if (val) bucketAdd(gear, elem, val);
   }
+  const classMult =
+    (attacker?.stats?.[`${w.classKey}DamageMult`] ||
+      attacker?.[`${w.classKey}DamageMult`] ||
+      1) *
+    (attacker?.stats?.[`${w.typeKey}DamageMult`] ||
+      attacker?.[`${w.typeKey}DamageMult`] ||
+      1);
+  const classPct = classMult - 1;
+  if (classPct) gear.all = (gear.all || 0) + classPct;
 
   const components = { phys: 0, elems: {} };
+  const allElems = new Set(['physical', ...Object.keys(scaled.elems)]);
+  const critFactor = 1 + critChance * (critMult - 1);
 
-  if (scaled.phys > 0) {
-    let amt = applyArmor(scaled.phys, Number(target?.stats?.armor ?? target?.armor ?? 0) || 0);
-    amt = routeDamageThroughQiShield(amt, target);
-    components.phys = Math.max(0, Math.round(amt));
-    if (components.phys > 0) {
-      onPhysicalHit(attacker, target, components.phys, nowMs || Date.now());
+  for (const elem of allElems) {
+    const base = elem === 'physical' ? scaled.phys : scaled.elems[elem] || 0;
+    if (base <= 0) {
+      if (elem !== 'physical') components.elems[elem] = 0;
+      continue;
     }
-  }
-
-  for (const [elem, val] of Object.entries(scaled.elems)) {
-    let amt = applyResists(val, elem, target);
-    amt = routeDamageThroughQiShield(amt, target);
-    components.elems[elem] = Math.max(0, Math.round(amt));
+    const dmg =
+      base *
+      (1 + bucketGet(weaponPct, elem === 'physical' ? 'physical' : elem)) *
+      (1 + bucketGet(gear, elem === 'physical' ? 'physical' : elem)) *
+      (1 + bucketGet(astralPct, elem === 'physical' ? 'physical' : elem)) *
+      (1 + bucketGet(manualPct, elem === 'physical' ? 'physical' : elem));
+    let afterCrit = dmg * critFactor;
+    if (elem === 'physical') {
+      let amt = applyArmor(
+        afterCrit,
+        Number(target?.stats?.armor ?? target?.armor ?? 0) || 0
+      );
+      amt = routeDamageThroughQiShield(amt, target);
+      amt = Math.max(0, Math.round(amt));
+      components.phys = amt;
+      if (amt > 0 && hitChance >= 1) {
+        onPhysicalHit(attacker, target, amt, nowMs || Date.now());
+      }
+    } else {
+      let amt = applyResists(afterCrit, elem, target);
+      amt = routeDamageThroughQiShield(amt, target);
+      amt = Math.max(0, Math.round(amt));
+      components.elems[elem] = amt;
+    }
   }
 
   let total = components.phys;
   for (const v of Object.values(components.elems)) total += v;
 
-  total = Math.round(
-    total * globalMult * treeMult * proficiencyMult * manualMult * tempMult
-  );
+  const aps =
+    attackSpeed !== undefined
+      ? attackSpeed
+      : (w?.base?.rate || 1) * (1 + (attackSpeedPct + (atkStats.attackRatePct || 0)) / 100);
 
-  if (typeof onDamage === 'function') onDamage(total, components);
+  total = Math.round(total * (1 + globalPct) * aps * hitChance);
+
+  if (typeof onDamage === 'function' && hitChance >= 1) onDamage(total, components);
 
   return { total, components };
 }

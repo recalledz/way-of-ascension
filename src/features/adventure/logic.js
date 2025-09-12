@@ -782,15 +782,17 @@ export function updateAdventureCombat() {
           profile.elems.metal = (profile.elems.metal || 0) + profile.phys;
           profile.phys = 0;
         }
-        const typeMults = {};
+        const astralPct = {};
         if (profile.phys > 0) {
-          typeMults.physical =
-            1 + (S.astralTreeBonuses?.physicalDamagePct || 0) / 100;
+          astralPct.physical =
+            (S.astralTreeBonuses?.physicalDamagePct || 0) / 100;
         }
         for (const elem of Object.keys(profile.elems)) {
           const key = `${elem}DamagePct`;
-          typeMults[elem] = 1 + (S.astralTreeBonuses?.[key] || 0) / 100;
+          astralPct[elem] = (S.astralTreeBonuses?.[key] || 0) / 100;
         }
+        const manualPct = {};
+        if (externalMult !== 1) manualPct.all = externalMult - 1;
         const { total: dealt, components } = processAttack(
           profile,
           weapon,
@@ -798,8 +800,12 @@ export function updateAdventureCombat() {
             attacker: S,
             target: S.adventure.currentEnemy,
             nowMs: now,
-            typeMults,
-            globalMult: externalMult * critMult,
+            astralPct,
+            manualPct,
+            critChance: isCrit ? 1 : 0,
+            critMult,
+            attackSpeed: 1,
+            hitChance: 1,
           },
           S
         );
@@ -902,7 +908,15 @@ export function updateAdventureCombat() {
           const { total: taken, components } = processAttack(
             profile,
             undefined,
-            { attacker: S.adventure.currentEnemy, target: S, nowMs: now },
+            {
+              attacker: S.adventure.currentEnemy,
+              target: S,
+              nowMs: now,
+              critChance: isCrit ? 1 : 0,
+              critMult: 2,
+              attackSpeed: 1,
+              hitChance: 1,
+            },
             S
           );
           const parts = [];
