@@ -793,6 +793,9 @@ export function updateAdventureCombat() {
         }
         const manualPct = {};
         if (externalMult !== 1) manualPct.all = externalMult - 1;
+        const gearPct = {};
+        const profBonus = getWeaponProficiencyBonuses(S).damageMult - 1;
+        if (profBonus) gearPct.all = profBonus;
         const { total: dealt, components } = processAttack(
           profile,
           weapon,
@@ -802,6 +805,7 @@ export function updateAdventureCombat() {
             nowMs: now,
             astralPct,
             manualPct,
+            gearPct,
             critChance: isCrit ? 1 : 0,
             critMult,
             attackSpeed: 1,

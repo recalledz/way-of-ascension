@@ -171,29 +171,18 @@ export function calculatePlayerCombatAttack(state = progressionState) {
     elems[elem] = (range.min + range.max) / 2;
   }
 
-  const profMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
-  const lawMult = getLawBonuses(state).atk || 1;
-  const realm = REALMS[state.realm.tier] || { atk: 1 };
-  const stageMult = 1 + (state.realm.stage - 1) * 0.08;
-  const realmMult = (realm.atk || 1) * stageMult;
-  const karmaMult = 1 + (Number(karmaAtkBonus(state)) || 0) / 100;
-
-  const totalMult = profMult * lawMult * realmMult * karmaMult;
-
-  const phys = basePhys * totalMult;
-  const scaledElems = {};
-  for (const [elem, val] of Object.entries(elems)) {
-    scaledElems[elem] = val * totalMult;
-  }
-
-  return { phys, elems: scaledElems };
+  return { phys: basePhys, elems };
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {
-  const baseRate = 1.0;
-  const attackSpeedBonus = Number(state.attributes?.attackSpeed) || 0;
-  const speedMult = Number(getWeaponProficiencyBonuses(state).speedMult) || 1;
-  return (baseRate + attackSpeedBonus / 100) * speedMult;
+  const weapon = getEquippedWeapon(state);
+  const baseRate = weapon?.base?.rate || 1;
+  const attr = Number(state.attributes?.attackSpeed) || 0;
+  const gear = Number(state.gearBonuses?.attackRatePct || state.gearBonuses?.attackSpeedPct || 0);
+  const astral = Number(state.astralTreeBonuses?.attackSpeedPct || 0);
+  const profMult = Number(getWeaponProficiencyBonuses(state).speedMult) || 1;
+  const totalPct = attr + gear + astral + (profMult - 1) * 100;
+  return baseRate * (1 + totalPct / 100);
 }
 
 export function breakthroughChance(state = progressionState){
