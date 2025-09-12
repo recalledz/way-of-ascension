@@ -133,11 +133,23 @@ function applyAbilityResult(abilityKey, res, state) {
         type === 'physical'
           ? { phys: amount, elems: {} }
           : { phys: 0, elems: { [type]: amount } };
-      const typeMults = { [type === 'physical' ? 'physical' : type]: treeMult };
+      const astralPct = { [type === 'physical' ? 'physical' : type]: treeMult - 1 };
+      const manualPct = {};
+      if (mult !== 1) manualPct.all = mult - 1;
       const { total: dealt, components } = processAttack(
         profile,
         weapon,
-        { target: atkTarget, attacker: state, nowMs: now, typeMults, globalMult: mult },
+        {
+          target: atkTarget,
+          attacker: state,
+          nowMs: now,
+          astralPct,
+          manualPct,
+          critChance: 0,
+          critMult: 1,
+          attackSpeed: 1,
+          hitChance: 1,
+        },
         state
       );
       totalDealt += dealt;
