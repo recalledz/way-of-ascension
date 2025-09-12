@@ -82,7 +82,8 @@ export function foundationGainPerSec(state = progressionState){
       buildingMult: 1.0
     };
   }
-  const comprehensionMult = 1 + (state.attributes.comprehension - 10) * 0.05;
+  const comp = Number(state.attributes?.comprehension ?? 10);
+  const comprehensionMult = 1 + (comp - 10) * 0.05;
   const cultivationMult = state.cultivation.talent * comprehensionMult * state.cultivation.foundationMult;
   const lawBonuses = getLawBonuses(state);
   const lawMult = lawBonuses.foundationMult || 1;
