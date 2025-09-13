@@ -116,9 +116,11 @@ function applyAbilityResult(abilityKey, res, state) {
       }
 
       let treeMult = 1;
+      const gearPct = {};
       if (isSpell) {
         if (weapon.classKey === 'focus') {
-          mult *= getWeaponProficiencyBonuses(state).damageMult;
+          const profBonus = getWeaponProficiencyBonuses(state).damageMult - 1;
+          if (profBonus) gearPct.all = profBonus;
         }
         const { spellPowerMult } = getStatEffects(state);
         const spellDamage = state.derivedStats?.spellDamage || 0;
@@ -145,6 +147,7 @@ function applyAbilityResult(abilityKey, res, state) {
           nowMs: now,
           astralPct,
           manualPct,
+          gearPct,
           critChance: 0,
           critMult: 1,
           attackSpeed: 1,
@@ -212,7 +215,11 @@ function applyAbilityResult(abilityKey, res, state) {
       state.qi = state.qiMax || state.qi || 0;
     }
   }
-  if (abilityKey === 'lightningStep' || abilityKey === 'fireball') {
+  if (
+    abilityKey === 'lightningStep' ||
+    abilityKey === 'fireball' ||
+    abilityKey === 'palmStrike'
+  ) {
     emit('ABILITY:FX', { abilityKey });
   }
 }
