@@ -8,9 +8,8 @@ import { addStunPercent } from '../../engine/combat/stun.js';
 import { performAttack } from '../combat/attack.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
-import { getStatEffects } from '../progression/selectors.js';
+import { getStatEffects, calculatePlayerAttackSnapshot, qCap } from '../progression/selectors.js';
 import { emit } from '../../shared/events.js';
-import { qCap } from '../progression/selectors.js';
 
 export function tryCastAbility(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
@@ -106,38 +105,32 @@ function applyAbilityResult(abilityKey, res, state) {
     }
 
     let totalDealt = 0;
+    const snap = state.adventure?.playerAttackSnapshot || calculatePlayerAttackSnapshot(state);
     for (const atk of attacks) {
       const { type, target: atkTarget } = atk;
       let amount = atk.amount;
 
-      let mult = 1;
+      let globalMult = 1;
       if (mods?.damagePct) {
-        mult *= 1 + mods.damagePct / 100;
-      }
-
-      let treeMult = 1;
-      const gearPct = {};
-      if (isSpell) {
-        if (weapon.classKey === 'focus') {
-          const profBonus = getWeaponProficiencyBonuses(state).damageMult - 1;
-          if (profBonus) gearPct.all = profBonus;
-        }
-        const { spellPowerMult } = getStatEffects(state);
-        const spellDamage = state.derivedStats?.spellDamage || 0;
-        const spellTreeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
-        mult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
-      } else {
-        const bonusKey = type === 'physical' ? 'physicalDamagePct' : `${type}DamagePct`;
-        treeMult = 1 + (state.astralTreeBonuses?.[bonusKey] || 0) / 100;
+        globalMult *= 1 + mods.damagePct / 100;
       }
 
       const profile =
         type === 'physical'
           ? { phys: amount, elems: {} }
           : { phys: 0, elems: { [type]: amount } };
-      const astralPct = { [type === 'physical' ? 'physical' : type]: treeMult - 1 };
-      const manualPct = {};
-      if (mult !== 1) manualPct.all = mult - 1;
+
+      const gearPct = { ...snap.gearPct };
+      if (isSpell) {
+        if (weapon.classKey !== 'focus') delete gearPct.all;
+        const { spellPowerMult } = getStatEffects(state);
+        const spellDamage = state.derivedStats?.spellDamage || 0;
+        const spellTreeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+        globalMult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
+      }
+
+      const globalPct = snap.globalPct + (globalMult - 1);
+
       const { total: dealt, components } = processAttack(
         profile,
         weapon,
@@ -145,9 +138,9 @@ function applyAbilityResult(abilityKey, res, state) {
           target: atkTarget,
           attacker: state,
           nowMs: now,
-          astralPct,
-          manualPct,
+          astralPct: snap.astralPct,
           gearPct,
+          globalPct,
           critChance: 0,
           critMult: 1,
           attackSpeed: 1,

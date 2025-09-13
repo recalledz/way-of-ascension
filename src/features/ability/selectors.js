@@ -2,8 +2,7 @@ import { S } from '../../shared/state.js';
 import { ABILITIES } from './data/abilities.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { resolveAbilityHit } from './logic.js';
-import { getStatEffects } from '../progression/selectors.js';
-import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
+import { getStatEffects, calculatePlayerAttackSnapshot } from '../progression/selectors.js';
 
 export function getAbilityCooldowns(state = S) {
   return state.abilityCooldowns || {};
@@ -46,17 +45,28 @@ export function getAbilityDamage(abilityKey, state = S) {
   const res = resolveAbilityHit(abilityKey, state);
   const attacks = res?.attacks || (res?.attack ? [res.attack] : []);
   if (!attacks.length) return null;
-  let amount = attacks.reduce((sum, a) => sum + a.amount, 0);
   const mods = state.abilityMods?.[abilityKey] || {};
-  if (mods.damagePct) amount = Math.round(amount * (1 + mods.damagePct / 100));
-  if (ability.tags?.includes('spell')) {
-    if (getEquippedWeapon(state).classKey === 'focus') {
-      amount = Math.round(amount * getWeaponProficiencyBonuses(state).damageMult);
+  const snap = calculatePlayerAttackSnapshot(state);
+  const weapon = getEquippedWeapon(state);
+  const isSpell = ability.tags?.includes('spell');
+  let total = 0;
+  for (const atk of attacks) {
+    let amt = atk.amount;
+    let globalMult = 1;
+    if (mods.damagePct) globalMult *= 1 + mods.damagePct / 100;
+    const gearPct = { ...snap.gearPct };
+    if (isSpell) {
+      if (weapon.classKey !== 'focus') delete gearPct.all;
+      const { spellPowerMult } = getStatEffects(state);
+      const spellDamage = state.derivedStats?.spellDamage || 0;
+      const spellTreeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
+      globalMult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
     }
-    const { spellPowerMult } = getStatEffects(state);
-    const spellDamage = state.derivedStats?.spellDamage || 0;
-    const treeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
-    amount = Math.round(amount * spellPowerMult * (1 + spellDamage / 100) * treeMult);
+    const elem = atk.type;
+    const astral = snap.astralPct[elem === 'physical' ? 'physical' : elem] || 0;
+    const gear = (gearPct[elem] || 0) + (gearPct.all || 0);
+    amt *= (1 + astral) * (1 + gear);
+    total += amt * globalMult;
   }
-  return amount;
+  return Math.round(total * (1 + snap.globalPct));
 }

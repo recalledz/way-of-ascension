@@ -13,6 +13,7 @@ import {
   calcArmor as calcCalcArmor,
   getStatEffects as calcStatEffects,
   calculatePlayerCombatAttack as calcPlayerCombatAttack,
+  calculatePlayerAttackSnapshot as calcPlayerAttackSnapshot,
   calculatePlayerAttackRate as calcPlayerAttackRate,
   breakthroughChance as calcBreakthroughChance,
 } from './logic.js';
@@ -57,6 +58,20 @@ export function calcArmor(state = progressionState) {
 
 export function getStatEffects(state = progressionState) {
   return calcStatEffects(state);
+}
+
+export function calculatePlayerAttackSnapshot(state = progressionState) {
+  const snap = calcPlayerAttackSnapshot(state);
+  const mult = getTunable('combat.damageMult', 1);
+  return {
+    ...snap,
+    profile: {
+      phys: snap.profile.phys * mult,
+      elems: Object.fromEntries(
+        Object.entries(snap.profile.elems).map(([k, v]) => [k, v * mult])
+      ),
+    },
+  };
 }
 
 export function calculatePlayerCombatAttack(state = progressionState) {
