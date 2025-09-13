@@ -2,7 +2,7 @@
 
 // Recalculate derived player stats based on equipped items
 import { ACCURACY_BASE, DODGE_BASE } from '../combat/hit.js';
-import { calcArmor as calcBaseArmor } from '../progression/selectors.js';
+import { calcArmor } from '../progression/selectors.js';
 export function recomputePlayerTotals(player) {
   let armor = 0;
   let accuracy = 0;
@@ -94,8 +94,7 @@ export function recomputePlayerTotals(player) {
   player.gearDamagePct = damagePct;
 
   player.derivedStats = player.derivedStats || {};
-  const baseArmor = calcBaseArmor(player);
-  player.derivedStats.armor = armor + baseArmor;
+  player.derivedStats.armor = calcArmor(player);
   player.derivedStats.accuracy = ACCURACY_BASE + accuracy;
   player.derivedStats.dodge = DODGE_BASE + dodge;
   player.resists = resists;
