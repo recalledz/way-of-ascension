@@ -105,12 +105,14 @@ const flagNames = [
   'FEATURE_CATCHING',
   'FEATURE_LAW',
   'FEATURE_MIND',
+  'DEV_SHOW_PP',
 ];
 
 const flags = {};
 for (const name of flagNames) {
   const fallback =
     name === 'TUTORIALS_ENABLED' ? !isProd :
+    name === 'DEV_SHOW_PP' ? false :
     name.startsWith('FEATURE_') ? false :
     undefined;
   flags[name] = readFlag(name, fallback);
@@ -141,6 +143,7 @@ const wantDevUnlock =
   isPreview ||
   String(envDevUnlock).toLowerCase() === 'all';
 export const devUnlockPreset = wantDevUnlock ? 'all' : envDevUnlock;
+export const devShowPP = flags.DEV_SHOW_PP.parsedValue;
 
 // When unlocking everything for dev/preview builds, force all feature flags on
 if (wantDevUnlock) {
