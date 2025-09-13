@@ -1038,6 +1038,7 @@ Paths added:
 
 ### Engine (`src/engine/`)
 - `src/engine/combat/stun.js` – Handles stun accumulation, decay, and status application.
+- `src/engine/pp.js` – Computes offensive, defensive, and total power points for the player.
 
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.
