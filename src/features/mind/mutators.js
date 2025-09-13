@@ -4,6 +4,8 @@ import { getManual } from './data/manuals.js';
 import { getTalismanRecipe } from './data/talismans.js';
 import { getTalisman as getTalismanItem } from '../talismans/data/talismans.js';
 import { addToInventory } from '../inventory/mutators.js';
+import { computePP, gatherDefense } from '../../engine/pp.js';
+import { logPPEvent } from '../../engine/ppLog.js';
 import {
   calcFromProficiency,
   calcFromManual,
@@ -43,9 +45,11 @@ export function debugLevelManual(S) {
   if (!manual) return false;
   const rec = S.mind.manualProgress[id] || { xp: 0, level: 0 };
   if (rec.level >= manual.maxLevel) return false;
+  const before = computePP(S, gatherDefense(S));
   rec.level += 1;
   rec.xp = 0;
   applyManualEffects(S, manual, rec.level);
+  logPPEvent(S, 'manual-level', { manualId: id, level: rec.level, before });
   if (rec.level >= manual.maxLevel) {
     stopReading(S);
   }
@@ -92,8 +96,10 @@ export function onTick(S, dt) {
   const needed = manual.baseTimeSec * manual.levelTimeMult[rec.level] * manual.xpRate;
   if (rec.xp >= needed) {
     rec.xp -= needed;
+    const before = computePP(S, gatherDefense(S));
     rec.level += 1;
     applyManualEffects(S, manual, rec.level);
+    logPPEvent(S, 'manual-level', { manualId: id, level: rec.level, before });
     if (rec.level >= manual.maxLevel) {
       stopReading(S);
     }

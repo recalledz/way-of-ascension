@@ -19,6 +19,7 @@ import { mountAllFeatureUIs } from '../../index.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import { renderPillIcons } from '../../alchemy/ui/pillIcons.js';
 import { computePP, breakthroughPPSnapshot, gatherDefense, W_O } from '../../../engine/pp.js';
+import { logPPEvent } from '../../../engine/ppLog.js';
 
 let pendingAstralUnlock = false;
 
@@ -506,9 +507,9 @@ export function updateBreakthrough() {
     if(Math.random() < ch) {
       S.qi = 0;
       S.foundation = 0;
-      let beforePP;
-      if (devShowPP) beforePP = computePP(S, gatherDefense(S));
+      const beforePP = computePP(S, gatherDefense(S));
       const info = advanceRealm(S);
+      logPPEvent(S, 'realm-breakthrough', { before: beforePP, realm: { ...S.realm } });
       if (devShowPP && beforePP) {
         const afterPP = computePP(S, gatherDefense(S));
         const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
