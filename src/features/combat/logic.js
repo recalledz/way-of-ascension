@@ -138,9 +138,7 @@ export function processAttack(profile, weapon, options = {}) {
     onDamage,
     attacker,
     nowMs,
-    astralPct = {},
-    manualPct = {},
-    gearPct = {},
+    pct = {},
     globalPct = 0,
     critChance = 0,
     critMult = 1,
@@ -167,33 +165,7 @@ export function processAttack(profile, weapon, options = {}) {
     }
   }
 
-  const bucketAdd = (bucket, key, val) => {
-    if (!val) return;
-    bucket[key] = (bucket[key] || 0) + val;
-  };
   const bucketGet = (bucket, key) => (bucket?.all || 0) + (bucket?.[key] || 0);
-
-  // Gear-based bonuses from attacker stats
-  const gear = { ...gearPct };
-  const atkStats = attacker?.stats || {};
-  const globalGear = (atkStats.damagePct || 0) / 100;
-  if (globalGear) gear.all = (gear.all || 0) + globalGear;
-  const physGear = (atkStats.physDamagePct || 0) / 100;
-  if (physGear) bucketAdd(gear, 'physical', physGear);
-  for (const elem in scaled.elems) {
-    const key = `${elem}DamagePct`;
-    const val = (atkStats[key] || 0) / 100;
-    if (val) bucketAdd(gear, elem, val);
-  }
-  const classMult =
-    (attacker?.stats?.[`${w.classKey}DamageMult`] ||
-      attacker?.[`${w.classKey}DamageMult`] ||
-      1) *
-    (attacker?.stats?.[`${w.typeKey}DamageMult`] ||
-      attacker?.[`${w.typeKey}DamageMult`] ||
-      1);
-  const classPct = classMult - 1;
-  if (classPct) gear.all = (gear.all || 0) + classPct;
 
   const components = { phys: 0, elems: {} };
   const allElems = new Set(['physical', ...Object.keys(scaled.elems)]);
@@ -208,9 +180,7 @@ export function processAttack(profile, weapon, options = {}) {
     const dmg =
       base *
       (1 + bucketGet(weaponPct, elem === 'physical' ? 'physical' : elem)) *
-      (1 + bucketGet(gear, elem === 'physical' ? 'physical' : elem)) *
-      (1 + bucketGet(astralPct, elem === 'physical' ? 'physical' : elem)) *
-      (1 + bucketGet(manualPct, elem === 'physical' ? 'physical' : elem));
+      (1 + bucketGet(pct, elem === 'physical' ? 'physical' : elem));
     let afterCrit = dmg * critFactor;
     if (elem === 'physical') {
       let amt = applyArmor(
@@ -237,7 +207,7 @@ export function processAttack(profile, weapon, options = {}) {
   const aps =
     attackSpeed !== undefined
       ? attackSpeed
-      : (w?.base?.rate || 1) * (1 + (attackSpeedPct + (atkStats.attackRatePct || 0)) / 100);
+      : (w?.base?.rate || 1) * (1 + attackSpeedPct / 100);
 
   total = Math.round(total * (1 + globalPct) * aps * hitChance);
 

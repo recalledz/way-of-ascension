@@ -367,6 +367,7 @@ way-of-ascension/
 ├── src/features/automation/selectors.js
 ├── src/features/automation/state.js
 ├── src/features/combat/index.js
+├── src/features/combat/snapshot.js
 ├── src/features/karma/index.js
 ├── src/features/law/index.js
 ├── src/features/mining/index.js
@@ -948,6 +949,7 @@ Paths added:
 - `src/features/automation/selectors.js` – automation selectors
 - `src/features/automation/state.js` – automation state slice
 - `src/features/combat/ui/floatingText.js` – floating combat text renderer
+- `src/features/combat/snapshot.js` – builds player attack snapshots
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
@@ -1042,6 +1044,7 @@ Paths added:
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.
 - `src/features/combat/mutators.js` – Stateful combat helpers (`initializeFight`, `processAttack`, `applyStatus`).
+- `src/features/combat/snapshot.js` – Builds player attack snapshots (weapon flats, % buckets, crit).
 - `src/features/combat/state.js` – Shape of combat-related state values (enemy HP, stun bars).
 - `src/features/combat/selectors.js` – Accessors for combat state like enemy HP and stun bars.
 - `src/features/combat/attack.js` – Applies status effects and stun bar changes when attacks land.
@@ -1054,6 +1057,8 @@ Paths added:
 
 #### `src/features/combat/data/ailments.js` - Ailment Definitions
 **Purpose**: Enumerates poison, burn, chill and other ailments with durations, stack limits and effect callbacks.
+#### `src/features/combat/snapshot.js` - Player Attack Snapshot Builder
+**Purpose**: Aggregates weapon flats, crit data and damage percentage buckets from player stats for reuse in combat.
 **When to modify**: Add new ailments or adjust existing damage-over-time and debuff behaviour.
 
 ### Karma Feature (`src/features/karma/`)

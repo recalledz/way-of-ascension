@@ -14,6 +14,7 @@ import { performAttack } from '../combat/attack.js'; // STATUS-REFORM
 import { tickStunDecay, initStun, STUN_THRESHOLD, DECAY_PER_SECOND } from '../../engine/combat/stun.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
+import { buildPlayerSnapshot } from '../combat/snapshot.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
 import { on, emit } from '../../shared/events.js';
@@ -770,39 +771,23 @@ export function updateAdventureCombat() {
       const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
       const hitP = chanceToHit(S.derivedStats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
-        const critChance = S.attributes?.criticalChance || 0;
-        const isCrit = Math.random() < critChance;
-        const critMult = isCrit ? 2 : 1;
+        const snapshot = S.adventure.playerSnapshot || buildPlayerSnapshot(S);
+        const weapon = snapshot.weapon;
         const profile = {
-          phys: S.adventure.playerAtkProfile?.phys || 0,
-          elems: { ...(S.adventure.playerAtkProfile?.elems || {}) },
+          phys: snapshot.profile.phys,
+          elems: { ...snapshot.profile.elems },
         };
-        let externalMult = 1;
+        let globalPct = snapshot.globalPct || 0;
         if (S.lightningStep) {
-          externalMult *= S.lightningStep.damageMult;
+          globalPct += S.lightningStep.damageMult - 1;
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
-        }
-        if (S.lightningStep) {
           profile.elems.metal = (profile.elems.metal || 0) + profile.phys;
           profile.phys = 0;
         }
-        const astralPct = {};
-        if (profile.phys > 0) {
-          astralPct.physical =
-            (S.astralTreeBonuses?.physicalDamagePct || 0) / 100;
-        }
-        for (const elem of Object.keys(profile.elems)) {
-          const key = `${elem}DamagePct`;
-          astralPct[elem] = (S.astralTreeBonuses?.[key] || 0) / 100;
-        }
-        const manualPct = {};
-        if (externalMult !== 1) manualPct.all = externalMult - 1;
-        const gearPct = {};
-        const profBonus = getWeaponProficiencyBonuses(S).damageMult - 1;
-        if (profBonus) gearPct.all = profBonus;
+        const isCrit = Math.random() < snapshot.critChance;
         const { total: dealt, components } = processAttack(
           profile,
           weapon,
@@ -810,11 +795,10 @@ export function updateAdventureCombat() {
             attacker: S,
             target: S.adventure.currentEnemy,
             nowMs: now,
-            astralPct,
-            manualPct,
-            gearPct,
+            pct: snapshot.pct,
+            globalPct,
             critChance: isCrit ? 1 : 0,
-            critMult,
+            critMult: snapshot.critMult,
             attackSpeed: 1,
             hitChance: 1,
           },
@@ -923,6 +907,8 @@ export function updateAdventureCombat() {
               attacker: S.adventure.currentEnemy,
               target: S,
               nowMs: now,
+              pct: {},
+              globalPct: 0,
               critChance: isCrit ? 1 : 0,
               critMult: 2,
               attackSpeed: 1,
@@ -1253,7 +1239,8 @@ export function startBossCombat() {
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
-  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
+  S.adventure.playerSnapshot = buildPlayerSnapshot(S);
+  S.adventure.playerAtkProfile = S.adventure.playerSnapshot.profile;
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
@@ -1302,7 +1289,8 @@ export function startAdventureCombat() {
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
-  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
+  S.adventure.playerSnapshot = buildPlayerSnapshot(S);
+  S.adventure.playerAtkProfile = S.adventure.playerSnapshot.profile;
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = S.adventure.combatLog || [];
@@ -1365,7 +1353,8 @@ function startDungeonEncounter() {
   S.adventure.enemyHP = h.enemyHP;
   S.adventure.enemyMaxHP = h.enemyMax;
   S.adventure.playerHP = Math.round(S.hp);
-  S.adventure.playerAtkProfile = calculatePlayerCombatAttack(S);
+  S.adventure.playerSnapshot = buildPlayerSnapshot(S);
+  S.adventure.playerAtkProfile = S.adventure.playerSnapshot.profile;
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
   S.adventure.combatLog = [`Entering ${dungeon.name} - Floor ${ds.floor + 1}`];
