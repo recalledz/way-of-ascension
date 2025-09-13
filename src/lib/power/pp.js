@@ -10,8 +10,10 @@ export function Snapshot(opts = {}) {
     armor = 0,
     aps = 1,
     hp = 0,
+    op = 0,
+    dp = 0,
   } = opts;
-  return { weapon, nonWeaponFlat, critChance, critMult, globalPct, armor, aps, hp };
+  return { weapon, nonWeaponFlat, critChance, critMult, globalPct, armor, aps, hp, op, dp };
 }
 
 export function armorDR(damage, armor) {
@@ -23,7 +25,7 @@ export function idleDPS(snap) {
   let total = 0;
   for (const el of DamageElements) {
     const base = snap.weapon[el] || 0;
-    const afterCrit = base * crit;
+    const afterCrit = base * crit * (1 + snap.op);
     const afterDefense = armorDR(afterCrit, snap.armor);
     total += afterDefense;
   }
@@ -31,7 +33,7 @@ export function idleDPS(snap) {
 }
 
 export function ehp(snap) {
-  return snap.hp + snap.armor;
+  return (snap.hp + snap.armor) * (1 + snap.dp);
 }
 
 export const dpsDelta = (base, mod) => (mod - base) / base;

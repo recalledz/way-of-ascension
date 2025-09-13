@@ -145,6 +145,7 @@ function applyAbilityResult(abilityKey, res, state) {
           critMult: 1,
           attackSpeed: 1,
           hitChance: 1,
+          opTotal: snap.power?.opFromCult || 0,
         },
         state
       );

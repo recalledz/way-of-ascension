@@ -104,36 +104,39 @@ export function powerMult(state = progressionState){
   return realmPower * stageMult;
 }
 
-export function calcAtk(state = progressionState){
+export function getCultivationPower(state = progressionState) {
   const tier = state?.realm?.tier ?? 0;
   const stage = state?.realm?.stage ?? 1;
+  let pulseOP = 0;
+  let pulseDP = 0;
+  for (let i = 0; i <= tier; i++) {
+    const r = REALMS[i];
+    if (!r) continue;
+    pulseOP += r.breakthroughPulseOP || 0;
+    pulseDP += r.breakthroughPulseDP || 0;
+  }
   const realm = REALMS[tier] || {};
-  const baseAtk = Number(realm.atk) || 0;
-  const stageBonus = Math.floor(baseAtk * (stage - 1) * 0.08);
+  const stageOP = (realm.opPerStagePct || 0) * (stage - 1);
+  const stageDP = (realm.dpPerStagePct || 0) * (stage - 1);
+  return { op: pulseOP + stageOP, dp: pulseDP + stageDP };
+}
+
+export function calcAtk(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const profMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
   const base = Number(state.atkBase) || 0;
   const temp = Number(state.tempAtk) || 0;
   const karma = Number(karmaAtkBonus(state)) || 0;
-  return Math.floor((base + temp + baseAtk + stageBonus + karma) * profMult * (lawBonuses.atk || 1));
+  return Math.floor((base + temp + karma) * profMult * (lawBonuses.atk || 1));
 }
 
 export function calcArmor(state = progressionState){
-  const tier = state?.realm?.tier ?? 0;
-  const stage = state?.realm?.stage ?? 1;
-  const realm = REALMS[tier] || {};
-  const baseArmor = Number(realm.armor) || 0;
-  const stageBonus = Math.floor(baseArmor * (stage - 1) * 0.08);
   const lawBonuses = getLawBonuses(state);
   const base = Number(state.armorBase) || 0;
   const temp = Number(state.tempArmor) || 0;
   const karma = Number(karmaArmorBonus(state)) || 0;
   const astral = 1 + (state.astralTreeBonuses?.armorPct || 0) / 100;
-  return Math.floor(
-    (base + temp + baseArmor + stageBonus + karma) *
-      (lawBonuses.armor || 1) *
-      astral
-  );
+  return Math.floor((base + temp + karma) * (lawBonuses.armor || 1) * astral);
 }
 
 export function getStatEffects(state = progressionState) {
@@ -194,7 +197,9 @@ export function calculatePlayerAttackSnapshot(state = progressionState) {
   const critChance = baseCrit + gearCrit;
   const critMult = 2 * (1 + (state.gearStats?.critMult || 0));
 
-  return { profile, astralPct, gearPct, critChance, critMult, globalPct: 0 };
+  const power = getCultivationPower(state);
+
+  return { profile, astralPct, gearPct, critChance, critMult, globalPct: 0, power: { opFromCult: power.op, dpFromCult: power.dp } };
 }
 
 export function calculatePlayerAttackRate(state = progressionState) {

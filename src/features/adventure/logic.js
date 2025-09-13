@@ -800,6 +800,7 @@ export function updateAdventureCombat() {
             critMult: snap.critMult,
             attackSpeed: 1,
             hitChance: 1,
+            opTotal: snap.power?.opFromCult || 0,
           },
           S
         );
@@ -899,6 +900,7 @@ export function updateAdventureCombat() {
             phys: enemyDamage,
             elems: { ...(S.adventure.currentEnemy.attackElems || {}) },
           };
+          const snap = S.adventure.playerAttackSnapshot || calculatePlayerAttackSnapshot(S);
           const { total: taken, components } = processAttack(
             profile,
             undefined,
@@ -910,6 +912,7 @@ export function updateAdventureCombat() {
               critMult: 2,
               attackSpeed: 1,
               hitChance: 1,
+              targetDpTotal: snap.power?.dpFromCult || 0,
             },
             S
           );

@@ -11,6 +11,7 @@ import {
   powerMult as calcPowerMult,
   calcAtk as calcCalcAtk,
   calcArmor as calcCalcArmor,
+  getCultivationPower as calcCultivationPower,
   getStatEffects as calcStatEffects,
   calculatePlayerCombatAttack as calcPlayerCombatAttack,
   calculatePlayerAttackSnapshot as calcPlayerAttackSnapshot,
@@ -54,6 +55,10 @@ export function calcAtk(state = progressionState) {
 
 export function calcArmor(state = progressionState) {
   return calcCalcArmor(state);
+}
+
+export function getCultivationPower(state = progressionState) {
+  return calcCultivationPower(state);
 }
 
 export function getStatEffects(state = progressionState) {

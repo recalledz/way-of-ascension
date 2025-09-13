@@ -147,6 +147,8 @@ export function processAttack(profile, weapon, options = {}) {
     attackSpeed,
     attackSpeedPct = 0,
     hitChance = 1,
+    opTotal = 0,
+    targetDpTotal = 0,
   } = options;
 
   const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
@@ -211,13 +213,14 @@ export function processAttack(profile, weapon, options = {}) {
       (1 + bucketGet(gear, elem === 'physical' ? 'physical' : elem)) *
       (1 + bucketGet(astralPct, elem === 'physical' ? 'physical' : elem)) *
       (1 + bucketGet(manualPct, elem === 'physical' ? 'physical' : elem));
-    let afterCrit = dmg * critFactor;
+    let afterCrit = dmg * critFactor * (1 + opTotal);
     if (elem === 'physical') {
       let amt = applyArmor(
         afterCrit,
         Number(target?.stats?.armor ?? target?.armor ?? 0) || 0
       );
       amt = routeDamageThroughQiShield(amt, target);
+      amt = amt / (1 + targetDpTotal);
       amt = Math.max(0, Math.round(amt));
       components.phys = amt;
       if (amt > 0 && hitChance >= 1) {
@@ -226,6 +229,7 @@ export function processAttack(profile, weapon, options = {}) {
     } else {
       let amt = applyResists(afterCrit, elem, target);
       amt = routeDamageThroughQiShield(amt, target);
+      amt = amt / (1 + targetDpTotal);
       amt = Math.max(0, Math.round(amt));
       components.elems[elem] = amt;
     }
