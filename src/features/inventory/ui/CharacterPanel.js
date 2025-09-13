@@ -10,6 +10,9 @@ import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
 import { computePP } from '../../../engine/pp.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
+import { qiCostPerShield, QI_PER_SHIELD_BASE } from '../../combat/logic.js';
+import { getAgilityBonuses } from '../../agility/selectors.js';
+import { getLawBonuses } from '../../progression/logic.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -160,6 +163,51 @@ const STAT_INFO = {
     desc: 'Speed of exploration.',
     calc: 'Base 1× modified by stats, gear and effects',
   },
+  qiShieldEfficiency: {
+    name: 'Qi Shield Efficiency',
+    desc: 'Shield gained per point of Qi when refilling.',
+    calc: 'Base 100% +1% per Mind level',
+  },
+  qiCostReduction: {
+    name: 'Qi Cost Reduction',
+    desc: 'Reduces Qi cost of abilities.',
+    calc: 'Bonuses from gear, manuals and laws',
+  },
+  forgeSpeed: {
+    name: 'Forge Speed',
+    desc: 'Speeds up forging time.',
+    calc: 'Base 0% +2% per Agility level',
+  },
+  spellDamage: {
+    name: 'Spell Damage',
+    desc: 'Increases damage dealt by spells.',
+    calc: 'Bonuses from manuals, gear and astral tree',
+  },
+  stunBuildMult: {
+    name: 'Stun Strength',
+    desc: 'Increases stun build applied to enemies.',
+    calc: 'Bonuses from gear and effects',
+  },
+  stunDurationMult: {
+    name: 'Stun Duration',
+    desc: 'Increases duration of stuns you inflict.',
+    calc: 'Bonuses from gear and effects',
+  },
+  stunResist: {
+    name: 'Stun Resist',
+    desc: 'Reduces duration of stuns you receive.',
+    calc: 'Bonuses from gear and effects',
+  },
+  ccResist: {
+    name: 'CC Resist',
+    desc: 'Reduces duration of crowd control effects.',
+    calc: 'Bonuses from gear and effects',
+  },
+  stunBuildTakenReduction: {
+    name: 'Stun Build Reduction',
+    desc: 'Reduces stun build you take.',
+    calc: 'Bonuses from gear and effects',
+  },
   coin: {
     name: 'Coin',
     desc: 'Currency used for purchases.',
@@ -260,6 +308,24 @@ function renderStats() {
     { id: 'attackSpeed', stat: 'attackSpeed', format: v => v.toFixed(2) },
     { id: 'cooldownReduction', stat: 'cooldownReduction', format: v => `${Math.round(v * 100)}%` },
     { id: 'adventureSpeed', stat: 'adventureSpeed', format: v => v.toFixed(2) },
+    { id: 'qiShieldEfficiency', value: () => {
+      const mind = S.attributes?.mind || 0;
+      const cost = qiCostPerShield(mind);
+      return QI_PER_SHIELD_BASE / cost;
+    }, format: v => `${(v * 100).toFixed(0)}%` },
+    { id: 'qiCostReduction', value: () => {
+      const pct = S.derivedStats?.qiCost || 0;
+      const lawMult = getLawBonuses(S).qiCost || 1;
+      const total = (1 + pct / 100) * lawMult;
+      return 1 - total;
+    }, format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'forgeSpeed', value: () => getAgilityBonuses(S).forgeSpeed - 1, format: v => `${(v * 100).toFixed(0)}%` },
+    { id: 'spellDamage', value: () => S.derivedStats?.spellDamage || 0, format: v => `${v.toFixed(1)}%` },
+    { id: 'stunBuildMult', stat: 'stunBuildMult', format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'stunDurationMult', stat: 'stunDurationMult', format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'stunResist', stat: 'stunResist', format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'ccResist', stat: 'ccResist', format: v => `${(v * 100).toFixed(1)}%` },
+    { id: 'stunBuildTakenReduction', stat: 'stunBuildTakenReduction', format: v => `${(v * 100).toFixed(1)}%` },
     { id: 'coin', value: () => S.coin || 0 }
   ];
   defs.forEach(d => {
