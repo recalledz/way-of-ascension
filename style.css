@@ -2218,6 +2218,50 @@ html.reduce-motion .shield-shimmer{animation:none;}
   display: block;
 }
 
+/* Settings Tabs */
+.settings-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--accent);
+}
+
+.settings-tab-btn {
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  font-family: 'Trajan Pro', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.settings-tab-btn:hover {
+  background: rgba(139, 69, 19, 0.05);
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.settings-tab-btn.active {
+  background: transparent;
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.settings-tab-content {
+  display: none;
+}
+
+.settings-tab-content.active {
+  display: block;
+}
+
 /* Gear Slots */
 .equip-slots {
   display: grid;

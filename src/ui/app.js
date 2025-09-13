@@ -35,6 +35,7 @@ import { renderMindMainTab, setupMindTabs } from '../features/mind/ui/mindMainTa
 import { renderMindReadingTab } from '../features/mind/ui/mindReadingTab.js';
 import { renderMindPuzzlesTab } from '../features/mind/ui/mindPuzzlesTab.js';
 import { renderMindStatsTab } from '../features/mind/ui/mindStatsTab.js';
+import { setupSettingsTabs, updateSettingsStats } from '../features/settings/ui/settingsDisplay.js';
 import { updateQiAndFoundation } from '../features/progression/ui/qiDisplay.js';
 import { updateCombatStats } from '../features/combat/ui/combatStats.js';
 import { updateAdventureProgress, mountAdventureControls } from '../features/adventure/ui/adventureDisplay.js';
@@ -224,6 +225,8 @@ function updateAll(){
   renderMindStatsTab(document.getElementById('mindStatsTab'), S);
   renderMindPuzzlesTab(document.getElementById('mindPuzzlesTab'), S);
 
+  updateSettingsStats();
+
   emit('RENDER');
 }
 
@@ -388,6 +391,7 @@ function enableLayoutDebug() {
     setupAdventureTabs();
     setupMindTabs();
     setupEquipmentTab(); // EQUIP-CHAR-UI
+    setupSettingsTabs();
     // Ensure derived stats like Qi shield are initialized based on equipped gear
     recomputePlayerTotals(S);
     mountDiagnostics(S);
