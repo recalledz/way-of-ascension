@@ -1,4 +1,4 @@
-import { calcAtk, calcArmor, calculatePlayerAttackSnapshot } from '../features/progression/logic.js';
+import { calcArmor, calculatePlayerAttackSnapshot } from '../features/progression/logic.js';
 import { REALMS } from '../features/progression/data/realms.js';
 
 /**
@@ -22,9 +22,12 @@ export function computePP(state) {
     opp += dmg * (1 + combinePct(elem));
   }
   opp *= 1 + (snap.critChance || 0) * ((snap.critMult || 1) - 1);
-  opp += calcAtk(state);
 
-  const dpp = state.derivedStats?.armor ?? calcArmor(state);
+  opp *= 1 + (snap.power?.opFromCult || 0);
+
+  const baseArmor = state.derivedStats?.armor ?? calcArmor(state);
+  const baseHP = state.hpMax || state.hp || 0;
+  const dpp = (baseHP + baseArmor) * (1 + (snap.power?.dpFromCult || 0));
   const pp = opp + dpp;
   return { opp, dpp, pp };
 }

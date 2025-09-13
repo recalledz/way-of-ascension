@@ -68,5 +68,6 @@ export function getAbilityDamage(abilityKey, state = S) {
     amt *= (1 + astral) * (1 + gear);
     total += amt * globalMult;
   }
-  return Math.round(total * (1 + snap.globalPct));
+  const op = snap.power?.opFromCult || 0;
+  return Math.round(total * (1 + snap.globalPct) * (1 + op));
 }
