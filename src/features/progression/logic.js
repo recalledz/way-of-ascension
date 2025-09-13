@@ -124,10 +124,9 @@ export function getCultivationPower(state = progressionState) {
 export function calcAtk(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const profMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
-  const base = Number(state.atkBase) || 0;
-  const temp = Number(state.tempAtk) || 0;
-  const karma = Number(karmaAtkBonus(state)) || 0;
-  return Math.floor((base + temp + karma) * profMult * (lawBonuses.atk || 1));
+  const profile = calculatePlayerCombatAttack(state);
+  const base = profile.phys + Object.values(profile.elems || {}).reduce((a, b) => a + b, 0);
+  return Math.floor(base * profMult * (lawBonuses.atk || 1));
 }
 
 export function calcArmor(state = progressionState){
@@ -167,7 +166,9 @@ export function getStatEffects(state = progressionState) {
 export function calculatePlayerCombatAttack(state = progressionState) {
   const weapon = getEquippedWeapon(state);
   const physBase = weapon?.base?.phys || { min: 0, max: 0 };
-  const basePhys = (physBase.min + physBase.max) / 2;
+  const temp = Number(state.tempAtk) || 0;
+  const karma = Number(karmaAtkBonus(state)) || 0;
+  const basePhys = (physBase.min + physBase.max) / 2 + temp + karma;
 
   const elems = {};
   for (const [elem, range] of Object.entries(weapon?.base?.elems || {})) {

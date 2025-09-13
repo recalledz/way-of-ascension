@@ -53,13 +53,11 @@ export function breakthroughPPSnapshot(state) {
     sim.realm.tier++;
     sim.realm.stage = 1;
     const realmBonus = Math.max(1, Math.floor(sim.realm.tier * 1.5));
-    sim.atkBase += realmBonus * 2;
     sim.armorBase += realmBonus;
   } else {
     // Stage advancement
     sim.realm.stage++;
     const stageBonus = Math.max(1, Math.floor((sim.realm.tier + 1) * 0.5));
-    sim.atkBase += stageBonus;
     sim.armorBase += Math.floor(stageBonus * 0.7);
   }
 

@@ -25,11 +25,10 @@ export function advanceRealm(state = progressionState) {
 
   if (wasRealmAdvancement) {
     const realmBonus = Math.max(1, Math.floor(state.realm.tier * 1.5));
-    state.atkBase += realmBonus * 2;
     state.armorBase += realmBonus;
     state.hpMax += Math.floor(state.hpMax * 0.25);
     state.hp = state.hpMax;
-    result.statMsg = `ATK +${realmBonus * 2}, Armor +${realmBonus}, HP +25%`;
+    result.statMsg = `Armor +${realmBonus}, HP +25%`;
 
     state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
     state.attributes = state.attributes || {
@@ -52,15 +51,14 @@ export function advanceRealm(state = progressionState) {
     state.attributes.criticalChance += 0.01;
 
     const powerGain = currentRealm.power / REALMS[oldRealm].power;
-    log?.(`Realm breakthrough! Power increased by ${powerGain.toFixed(1)}x! ATK +${realmBonus * 2}, Armor +${realmBonus}, HP +25%`, 'good');
+    log?.(`Realm breakthrough! Power increased by ${powerGain.toFixed(1)}x! Armor +${realmBonus}, HP +25%`, 'good');
     log?.(`Cultivation enhanced! Talent +15%, Comprehension +10%, Foundation Mult +8%`, 'good');
   } else {
     const stageBonus = Math.max(1, Math.floor((state.realm.tier + 1) * 0.5));
-    state.atkBase += stageBonus;
     state.armorBase += Math.floor(stageBonus * 0.7);
     state.hpMax += Math.floor(state.hpMax * 0.08);
     state.hp = Math.min(state.hpMax, state.hp + Math.floor(state.hpMax * 0.5));
-    result.statMsg = `ATK +${stageBonus}, Armor +${Math.floor(stageBonus * 0.7)}, HP +8%`;
+    result.statMsg = `Armor +${Math.floor(stageBonus * 0.7)}, HP +8%`;
 
     state.cultivation = state.cultivation || { talent: 1.0, foundationMult: 1.0, pillMult: 1.0, buildingMult: 1.0 };
     state.attributes = state.attributes || {
@@ -86,7 +84,7 @@ export function advanceRealm(state = progressionState) {
       state.attributes.agility += stageStatPoints;
     }
 
-    log?.(`Stage breakthrough! ATK +${stageBonus}, Armor +${Math.floor(stageBonus * 0.7)}, HP +8%`, 'good');
+    log?.(`Stage breakthrough! Armor +${Math.floor(stageBonus * 0.7)}, HP +8%`, 'good');
     log?.(`Cultivation improved! Talent +3%, Comprehension +2%`, 'good');
   }
 
