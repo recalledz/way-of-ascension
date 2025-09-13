@@ -185,12 +185,14 @@ export function calculatePlayerAttackSnapshot(state = progressionState) {
     }
   }
 
-  const gearPct = {};
+  const gearPct = { ...(state.gearDamagePct || {}) };
   const profBonus = getWeaponProficiencyBonuses(state).damageMult - 1;
-  if (profBonus) gearPct.all = profBonus;
+  if (profBonus) gearPct.all = (gearPct.all || 0) + profBonus;
 
-  const critChance = Number(state.attributes?.criticalChance) || 0;
-  const critMult = 2;
+  const baseCrit = Number(state.attributes?.criticalChance) || 0;
+  const gearCrit = Number(state.gearStats?.critChance) || 0;
+  const critChance = baseCrit + gearCrit;
+  const critMult = 2 * (1 + (state.gearStats?.critMult || 0));
 
   return { profile, astralPct, gearPct, critChance, critMult, globalPct: 0 };
 }
