@@ -4502,6 +4502,7 @@ tr:last-child td {
 .combat-hud .qi-bar{height:8px;margin:0}
 .combat-hud .health-text,.combat-hud .qi-text{font-size:.65rem}
 .combat-hud .enemy-name{font-size:.75rem;font-weight:600}
+.combat-hud .enemy-power{font-size:.7rem}
 .combat-hud .player-name{font-size:.75rem;font-weight:600}
 .status-ailments{display:flex;gap:4px;margin-top:2px}
 .status-ailments .ailment{position:relative;width:20px;height:20px;font-size:16px;line-height:20px}
