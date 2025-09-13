@@ -8,6 +8,7 @@ import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
+import { computePP } from '../../../engine/pp.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -81,6 +82,30 @@ const IMPLICIT_STAT_LABELS = {
   damageTransferPct: 'Damage Transfer',
   physDamagePct: 'Physical Damage',
 };
+
+function computeItemPPDelta(item, state = S) {
+  const slot = item.type === 'weapon' ? 'mainhand' : item.slot || item.type;
+  if (!slot) return null;
+  const temp = JSON.parse(JSON.stringify(state));
+  recomputePlayerTotals(temp);
+  const prev = computePP(temp);
+  temp.equipment = temp.equipment || {};
+  temp.equipment[slot] = { ...item };
+  recomputePlayerTotals(temp);
+  const next = computePP(temp);
+  return {
+    opp: next.opp - prev.opp,
+    dpp: next.dpp - prev.dpp,
+    pp: next.pp - prev.pp,
+  };
+}
+
+function ppDeltaHtml(item) {
+  const delta = computeItemPPDelta(item);
+  if (!delta) return '';
+  const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
+  return `<div class="pp-delta">PP Δ: ${fmt(delta.pp)} (O${fmt(delta.opp)} / D${fmt(delta.dpp)})</div>`;
+}
 
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
@@ -211,6 +236,7 @@ function weaponDetailsHTML(item) {
   const rarityColor = RARITY_COLORS[item.rarity] || '';
   const name = w.name;
   const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
+  const delta = ppDeltaHtml(item);
 
   const phys = w.base?.phys || { min: 0, max: 0 };
   const elems = w.base?.elems || {};
@@ -253,7 +279,7 @@ function weaponDetailsHTML(item) {
   const tags = (w.tags || []).join(', ');
   const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
 
-  return header + core + imbue + implicitHtml + modsHtml + footer;
+  return header + delta + core + imbue + implicitHtml + modsHtml + footer;
 }
 
 function gearDetailsHTML(item) {
@@ -262,6 +288,7 @@ function gearDetailsHTML(item) {
   const name = item.name || item.key;
   const icon = GEAR_ICONS[item.slot || item.type];
   const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
+  const delta = ppDeltaHtml(item);
 
   const coreLines = [];
   if (item.protection?.armor) coreLines.push({ label: 'Armor', value: item.protection.armor });
@@ -284,7 +311,7 @@ function gearDetailsHTML(item) {
   const reqProf = item.reqs?.proficiencyMin ?? 0;
   const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
 
-  return header + core + imbue + modsHtml + footer;
+  return header + delta + core + imbue + modsHtml + footer;
 }
 
 function foodDetailsHTML(item) {
