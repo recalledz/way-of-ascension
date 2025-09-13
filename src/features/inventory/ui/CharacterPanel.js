@@ -158,7 +158,7 @@ function renderStats() {
         return Math.round(p.phys + Object.values(p.elems).reduce((a, b) => a + b, 0));
       },
     },
-    { id: 'armorBase', value: () => S.armorBase },
+    { id: 'armorEquip', value: () => S.gearStats?.armor || 0 },
     { id: 'armor', stat: 'armor' },
     { id: 'physique', stat: 'physique' },
     { id: 'mind', stat: 'mind' },

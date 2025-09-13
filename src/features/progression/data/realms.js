@@ -1,7 +1,6 @@
 //cap = max QI
 //fcap = max foundation
 //baseRegen = qi regen per second
-//armor = base armor
 //bt = base breakthrough chance
 //power = base power
 export const REALMS = [
@@ -11,7 +10,6 @@ export const REALMS = [
     cap: 100,
     fcap: 60,
     baseRegen: 1,
-    armor: 1,
     bt: 0.60,
     power: 1,
     opPerStagePct: 0.01,
@@ -25,7 +23,6 @@ export const REALMS = [
     cap: 300,
     fcap: 150,
     baseRegen: 2,
-    armor: 2,
     bt: 0.55,
     power: 3,
     opPerStagePct: 0.012,
@@ -39,7 +36,6 @@ export const REALMS = [
     cap: 800,
     fcap: 400,
     baseRegen: 3,
-    armor: 4,
     bt: 0.50,
     power: 8,
     opPerStagePct: 0.015,
@@ -53,7 +49,6 @@ export const REALMS = [
     cap: 2000,
     fcap: 1100,
     baseRegen: 5,
-    armor: 8,
     bt: 0.45,
     power: 20,
     opPerStagePct: 0.018,
@@ -67,7 +62,6 @@ export const REALMS = [
     cap: 7000,
     fcap: 3000,
     baseRegen: 8,
-    armor: 16,
     bt: 0.40,
     power: 50,
     opPerStagePct: 0.02,
@@ -81,7 +75,6 @@ export const REALMS = [
     cap: 20000,
     fcap: 8000,
     baseRegen: 12,
-    armor: 28,
     bt: 0.35,
     power: 120,
     opPerStagePct: 0.022,
@@ -95,7 +88,6 @@ export const REALMS = [
     cap: 60000,
     fcap: 25000,
     baseRegen: 18,
-    armor: 50,
     bt: 0.30,
     power: 300,
     opPerStagePct: 0.025,
@@ -109,7 +101,6 @@ export const REALMS = [
     cap: 180000,
     fcap: 80000,
     baseRegen: 25,
-    armor: 85,
     bt: 0.25,
     power: 750,
     opPerStagePct: 0.028,
@@ -123,7 +114,6 @@ export const REALMS = [
     cap: 500000,
     fcap: 250000,
     baseRegen: 35,
-    armor: 140,
     bt: 0.20,
     power: 1800,
     opPerStagePct: 0.03,
@@ -137,7 +127,6 @@ export const REALMS = [
     cap: 1500000,
     fcap: 800000,
     baseRegen: 50,
-    armor: 250,
     bt: 0.15,
     power: 4500,
     opPerStagePct: 0.035,

@@ -123,11 +123,12 @@ export function getCultivationPower(state = progressionState) {
 
 export function calcArmor(state = progressionState){
   const lawBonuses = getLawBonuses(state);
-  const base = Number(state.armorBase) || 0;
+  const gear = Number(state.gearStats?.armor) || 0;
   const temp = Number(state.tempArmor) || 0;
   const karma = Number(karmaArmorBonus(state)) || 0;
+  const base = gear + temp + karma;
   const astral = 1 + (state.astralTreeBonuses?.armorPct || 0) / 100;
-  return Math.floor((base + temp + karma) * (lawBonuses.armor || 1) * astral);
+  return Math.floor(base * (lawBonuses.armor || 1) * astral);
 }
 
 export function getStatEffects(state = progressionState) {
