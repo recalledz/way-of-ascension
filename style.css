@@ -2782,6 +2782,7 @@ html.reduce-motion .shield-shimmer{animation:none;}
 
 /* STYLE-GUIDE-UPDATE: Parchment stat text */
 .stat{display:flex; justify-content:space-between; font-size:13px; margin:8px 0; color:var(--ink); position:relative; z-index:1;}
+.stat.clickable{cursor:help;}
 .row{display:flex; gap:10px; flex-wrap:wrap}
 /* STYLE-GUIDE-UPDATE: Parchment button styles */
 .btn{

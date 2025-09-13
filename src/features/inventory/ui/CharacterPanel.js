@@ -10,6 +10,7 @@ import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
 import { computePP } from '../../../engine/pp.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
+import { ACCURACY_BASE, DODGE_BASE } from '../../combat/hit.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -134,6 +135,141 @@ function ppDeltaHtml(item) {
   return `<div class="pp-delta">PP Δ: ${fmt(delta.pp)} (O${fmt(delta.opp)} / D${fmt(delta.dpp)})</div>`;
 }
 
+function statBreakdown(key) {
+  let base = 0;
+  let total = 0;
+  if (key === 'accuracy') {
+    base = ACCURACY_BASE;
+    total = S.derivedStats?.accuracy ?? base;
+  } else if (key === 'dodge') {
+    base = DODGE_BASE;
+    total = S.derivedStats?.dodge ?? base;
+  } else {
+    base = S.attributes?.[key] ?? 0;
+    total = base + (S.derivedStats?.[key] ?? 0);
+  }
+  const bonus = total - base;
+  return [
+    { label: 'Base', value: base },
+    { label: 'Bonus', value: bonus },
+    { label: 'Total', value: total }
+  ];
+}
+
+const STAT_DETAILS = {
+  hp: {
+    name: 'HP',
+    desc: 'Health points. Reaching 0 results in defeat.',
+    lines: () => {
+      const base = 100 + (S.attributes?.physique || 0) * 3;
+      const bonus = (S.hpMax || 0) - base;
+      return [
+        { label: 'Base', value: base },
+        { label: 'Bonus', value: bonus },
+        { label: 'Max', value: S.hpMax || 0 }
+      ];
+    }
+  },
+  shield: {
+    name: 'Shield',
+    desc: 'Absorbs damage before HP.',
+    lines: () => [
+      { label: 'Current', value: S.shield?.current || 0 },
+      { label: 'Max', value: S.shield?.max || 0 }
+    ]
+  },
+  attack: {
+    name: 'Attack',
+    desc: 'Damage dealt per basic attack.',
+    lines: () => {
+      const p = calculatePlayerAttackSnapshot(S).profile;
+      const lines = [ { label: 'Physical', value: Math.round(p.phys) } ];
+      for (const [elem, val] of Object.entries(p.elems)) {
+        if (val) lines.push({ label: elem.charAt(0).toUpperCase() + elem.slice(1), value: Math.round(val) });
+      }
+      return lines;
+    }
+  },
+  armorEquip: {
+    name: 'Equipment Armor',
+    desc: 'Armor granted from equipped gear.',
+    lines: () => [ { label: 'Total', value: S.gearStats?.armor || 0 } ]
+  },
+  armor: {
+    name: 'Armor',
+    desc: 'Reduces incoming physical damage.',
+    lines: () => statBreakdown('armor')
+  },
+  physique: {
+    name: 'Physique',
+    desc: '+3 HP and +1 carry per level.',
+    lines: () => statBreakdown('physique')
+  },
+  mind: {
+    name: 'Mind',
+    desc: 'Improves spell power and manual speed.',
+    lines: () => statBreakdown('mind')
+  },
+  agility: {
+    name: 'Agility',
+    desc: 'Improves attack speed and travel speed.',
+    lines: () => statBreakdown('agility')
+  },
+  comprehension: {
+    name: 'Comprehension',
+    desc: 'Improves breakthrough chances and learning.',
+    lines: () => statBreakdown('comprehension')
+  },
+  accuracy: {
+    name: 'Accuracy',
+    desc: 'Chance to hit enemies. Opposed by their dodge.',
+    lines: () => statBreakdown('accuracy')
+  },
+  dodge: {
+    name: 'Dodge',
+    desc: 'Chance to avoid incoming attacks.',
+    lines: () => statBreakdown('dodge')
+  },
+  criticalChance: {
+    name: 'Crit Chance',
+    desc: 'Chance for attacks to deal double damage.',
+    lines: () => statBreakdown('criticalChance')
+  },
+  attackSpeed: {
+    name: 'Attack Speed',
+    desc: 'Attacks per second. Base 1.0.',
+    lines: () => statBreakdown('attackSpeed')
+  },
+  cooldownReduction: {
+    name: 'Cooldown Reduction',
+    desc: 'Reduces ability cooldowns.',
+    lines: () => statBreakdown('cooldownReduction')
+  },
+  adventureSpeed: {
+    name: 'Adventure Speed',
+    desc: 'Increases speed of adventure progress.',
+    lines: () => statBreakdown('adventureSpeed')
+  },
+  coin: {
+    name: 'Coin',
+    desc: 'Currency used for purchases.',
+    lines: () => [ { label: 'Total', value: S.coin || 0 } ]
+  }
+};
+
+function statDetailsHTML(id) {
+  const def = STAT_DETAILS[id];
+  if (!def) return '';
+  const lines = def.lines ? def.lines() : [];
+  const linesHtml = lines.map(l => `<div class="stat-row"><span class="label">${l.label}</span><span class="value">${l.value}</span></div>`).join('');
+  return `<div class="tooltip-header"><span class="tooltip-name">${def.name}</span></div><div class="tooltip-core">${def.desc ? `<p>${def.desc}</p>` : ''}${linesHtml}</div>`;
+}
+
+function showStatDetails(id, anchor) {
+  const html = statDetailsHTML(id);
+  if (html) showItemTooltip(anchor, html);
+}
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -177,6 +313,22 @@ function renderStats() {
     if (!el) return;
     const val = d.value ? d.value() : (stats[d.stat] ?? 0);
     el.textContent = d.format ? d.format(val) : val;
+    const row = el.parentElement;
+    if (row) {
+      row.classList.add('clickable');
+      row.tabIndex = 0;
+      row.setAttribute('role', 'button');
+      row.onclick = evt => {
+        evt.stopPropagation();
+        showStatDetails(d.id, row);
+      };
+      row.onkeydown = evt => {
+        if (evt.key === 'Enter' || evt.key === ' ') {
+          evt.preventDefault();
+          row.click();
+        }
+      };
+    }
   });
 }
 
