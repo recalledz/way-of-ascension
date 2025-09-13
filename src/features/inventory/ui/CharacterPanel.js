@@ -9,6 +9,7 @@ import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
 import { computePP } from '../../../engine/pp.js';
+import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -83,6 +84,22 @@ const IMPLICIT_STAT_LABELS = {
   physDamagePct: 'Physical Damage',
 };
 
+const EQUIP_SLOTS = [
+  { key: 'mainhand', label: 'Weapon' },
+  { key: 'head', label: 'Head' },
+  { key: 'body', label: 'Body' },
+  { key: 'foot', label: 'Feet' },
+  { key: 'ring1', label: 'Ring 1' },
+  { key: 'ring2', label: 'Ring 2' },
+  { key: 'talisman1', label: 'Talisman 1' },
+  { key: 'talisman2', label: 'Talisman 2' },
+  { key: 'food1', label: 'Food 1' },
+  { key: 'food2', label: 'Food 2' },
+  { key: 'food3', label: 'Food 3' },
+  { key: 'food4', label: 'Food 4' },
+  { key: 'food5', label: 'Food 5' },
+];
+
 function computeItemPPDelta(item, state = S) {
   const slot = item.type === 'weapon' ? 'mainhand' : item.slot || item.type;
   if (!slot) return null;
@@ -100,6 +117,16 @@ function computeItemPPDelta(item, state = S) {
   };
 }
 
+function computePreviewSnapshot(item) {
+  const slot = item.type === 'weapon' ? 'mainhand' : item.slot || item.type;
+  if (!slot) return null;
+  const temp = JSON.parse(JSON.stringify(S));
+  temp.equipment = temp.equipment || {};
+  temp.equipment[slot] = { ...item };
+  recomputePlayerTotals(temp);
+  return calculatePlayerAttackSnapshot(temp);
+}
+
 function ppDeltaHtml(item) {
   const delta = computeItemPPDelta(item);
   if (!delta) return '';
@@ -110,6 +137,7 @@ function ppDeltaHtml(item) {
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
+  renderSlotPPSummary();
   renderInventory();
   renderMaterials();
   renderJunk();
@@ -147,22 +175,7 @@ function renderStats() {
 }
 
 function renderEquipment() {
-  const slots = [
-    { key: 'mainhand', label: 'Weapon' },
-    { key: 'head', label: 'Head' },
-    { key: 'body', label: 'Body' },
-    { key: 'foot', label: 'Feet' },
-    { key: 'ring1', label: 'Ring 1' },
-    { key: 'ring2', label: 'Ring 2' },
-    { key: 'talisman1', label: 'Talisman 1' },
-    { key: 'talisman2', label: 'Talisman 2' },
-    { key: 'food1', label: 'Food 1' },
-    { key: 'food2', label: 'Food 2' },
-    { key: 'food3', label: 'Food 3' },
-    { key: 'food4', label: 'Food 4' },
-    { key: 'food5', label: 'Food 5' }
-  ];
-  slots.forEach(s => {
+  EQUIP_SLOTS.forEach(s => {
     const el = document.getElementById(`slot-${s.key}`);
     if (!el) return;
     const item = S.equipment[s.key];
@@ -228,7 +241,27 @@ function renderEquipment() {
   });
 }
 
+function renderSlotPPSummary() {
+  const summaryEl = document.getElementById('ppSlotSummary');
+  if (!summaryEl) return;
+  const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
+  const lines = [];
+  EQUIP_SLOTS.forEach(s => {
+    const item = S.equipment[s.key];
+    if (!item) return;
+    const base = JSON.parse(JSON.stringify(S));
+    base.equipment = base.equipment || {};
+    delete base.equipment[s.key];
+    const delta = computeItemPPDelta(item, base);
+    if (delta) {
+      lines.push(`<div>${s.label}: ${fmt(delta.pp)} (O${fmt(delta.opp)} / D${fmt(delta.dpp)})</div>`);
+    }
+  });
+  summaryEl.innerHTML = lines.join('');
+}
+
 function weaponDetailsHTML(item) {
+  S.previewAttackSnapshot = computePreviewSnapshot(item);
   const w = item;
   if (!w) return '';
   const icon = w.classKey ? WEAPON_ICONS[w.classKey] : null;
@@ -283,6 +316,7 @@ function weaponDetailsHTML(item) {
 }
 
 function gearDetailsHTML(item) {
+  S.previewAttackSnapshot = computePreviewSnapshot(item);
   const stars = QUALITY_STARS[item.quality] || '';
   const rarityColor = RARITY_COLORS[item.rarity] || '';
   const name = item.name || item.key;

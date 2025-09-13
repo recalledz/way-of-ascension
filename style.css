@@ -5338,3 +5338,9 @@ html.reduce-motion .log-sheet{transition:none;}
 #journalEntries li.current .checkmark {
   color: var(--core-primary);
 }
+
+.pp-slot-summary {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
