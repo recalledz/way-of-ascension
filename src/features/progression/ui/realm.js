@@ -18,7 +18,7 @@ import { isProd, devShowPP } from '../../../config.js';
 import { mountAllFeatureUIs } from '../../index.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import { renderPillIcons } from '../../alchemy/ui/pillIcons.js';
-import { computePP, breakthroughPPSnapshot, W_O, W_D } from '../../../engine/pp.js';
+import { computePP, breakthroughPPSnapshot, gatherDefense, W_O } from '../../../engine/pp.js';
 
 let pendingAstralUnlock = false;
 
@@ -507,15 +507,15 @@ export function updateBreakthrough() {
       S.qi = 0;
       S.foundation = 0;
       let beforePP;
-      if (devShowPP) beforePP = computePP(S);
+      if (devShowPP) beforePP = computePP(S, gatherDefense(S));
       const info = advanceRealm(S);
       if (devShowPP && beforePP) {
-        const afterPP = computePP(S);
+        const afterPP = computePP(S, gatherDefense(S));
         const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
         const opp = afterPP.OPP - beforePP.OPP;
         const dpp = afterPP.DPP - beforePP.DPP;
-        const prevTotal = W_O * beforePP.OPP + W_D * beforePP.DPP;
-        const nextTotal = W_O * afterPP.OPP + W_D * afterPP.DPP;
+        const prevTotal = W_O * beforePP.OPP + beforePP.DPP;
+        const nextTotal = W_O * afterPP.OPP + afterPP.DPP;
         const pp = nextTotal - prevTotal;
         console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Breakthrough`);
       }

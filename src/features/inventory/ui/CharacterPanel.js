@@ -8,7 +8,7 @@ import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
-import { computePP, getCurrentPP, W_O, W_D } from '../../../engine/pp.js';
+import { computePP, getCurrentPP, gatherDefense, W_O } from '../../../engine/pp.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
 import { qiCostPerShield, QI_PER_SHIELD_BASE } from '../../combat/logic.js';
 import { getAgilityBonuses } from '../../agility/selectors.js';
@@ -236,13 +236,13 @@ function computeItemPPDelta(item, state = S) {
   if (!slot) return null;
   const temp = JSON.parse(JSON.stringify(state));
   recomputePlayerTotals(temp);
-  const prev = computePP(temp);
-  const prevTotal = W_O * prev.OPP + W_D * prev.DPP;
+  const prev = computePP(temp, gatherDefense(temp));
+  const prevTotal = W_O * prev.OPP + prev.DPP;
   temp.equipment = temp.equipment || {};
   temp.equipment[slot] = { ...item };
   recomputePlayerTotals(temp);
-  const next = computePP(temp);
-  const nextTotal = W_O * next.OPP + W_D * next.DPP;
+  const next = computePP(temp, gatherDefense(temp));
+  const nextTotal = W_O * next.OPP + next.DPP;
   return {
     opp: next.OPP - prev.OPP,
     dpp: next.DPP - prev.DPP,
