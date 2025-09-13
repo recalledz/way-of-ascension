@@ -25,6 +25,8 @@ import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
 import { renderPillIcons } from '../alchemy/ui/pillIcons.js';
+import { getCurrentPP, gatherDefense } from '../../engine/pp.js';
+import { enemyPP, enemyEHP } from '../../engine/enemyPP.js';
 import {
   playSlashArc,
   playThrustLine,
@@ -71,6 +73,29 @@ const ENEMY_RARITY_COLORS = {
 
 function rarityFromAffixCount(count) {
   return RARITY_NAMES[Math.min(count, RARITY_NAMES.length - 1)];
+}
+
+const TARGET_TTK = 11; // seconds to kill enemy
+const TARGET_TTF = 50; // seconds for enemy to defeat player
+
+function tuneEnemyStats(enemy, playerDps, playerEhp) {
+  if (playerDps > 0) {
+    const hpScale = (playerDps * TARGET_TTK) / 100;
+    enemy.hpMax = (enemy.hpMax || enemy.hp || 0) * hpScale;
+    enemy.hp = (enemy.hp || enemy.hpMax) * hpScale;
+  }
+  if (playerEhp > 0) {
+    const atkScale = playerEhp / TARGET_TTF;
+    enemy.attack *= atkScale;
+  }
+  return enemy;
+}
+
+function powerColor(epp, playerPP) {
+  const ratio = epp / (playerPP || 1);
+  if (ratio > 1.1) return '#f87171';
+  if (ratio < 0.9) return '#4ade80';
+  return '#fbbf24';
 }
 
 const loggedResistTypes = new Set();
@@ -347,18 +372,23 @@ export function updateBattleDisplay() {
   const mitEl = document.getElementById('playerMitigation');
   if (mitEl) mitEl.title = `Mit: ${Math.round(mitPct * 100)}%`;
   if (S.adventure.inCombat && S.adventure.currentEnemy) {
-    const enemy = S.adventure.currentEnemy;
-    const enemyHP = S.adventure.enemyHP || 0;
-    const enemyMaxHP = S.adventure.enemyMaxHP || 0;
-    const nameEl = document.getElementById('enemyName');
-    if (nameEl) {
-      const rarity = enemy.rarity || 'normal';
-      const prefix = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
-      const color = ENEMY_RARITY_COLORS[rarity];
-      const inner = `${prefix}${enemy.name || 'Unknown Enemy'}`;
-      nameEl.innerHTML = color ? `<span class="rarity-${rarity}">${inner}</span>` : inner;
-    }
-    setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
+      const enemy = S.adventure.currentEnemy;
+      const enemyHP = S.adventure.enemyHP || 0;
+      const enemyMaxHP = S.adventure.enemyMaxHP || 0;
+      const nameEl = document.getElementById('enemyName');
+      if (nameEl) {
+        const rarity = enemy.rarity || 'normal';
+        const prefix = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
+        const color = ENEMY_RARITY_COLORS[rarity];
+        const inner = `${prefix}${enemy.name || 'Unknown Enemy'}`;
+        nameEl.innerHTML = color ? `<span class="rarity-${rarity}">${inner}</span>` : inner;
+      }
+      const powerEl = document.getElementById('enemyPower');
+      if (powerEl) {
+        powerEl.textContent = `Enemy Power: ${Math.round(enemy.EPP || 0)}`;
+        powerEl.style.color = powerColor(enemy.EPP || 0, getCurrentPP(S).PP);
+      }
+      setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
     const enemyAtkEl = document.getElementById('enemyAttack');
     if (enemyAtkEl) enemyAtkEl.title = `ATK: ${Math.round(enemy.attack || 0)}`;
     const enemyRateEl = document.getElementById('enemyAttackRate');
@@ -426,11 +456,13 @@ export function updateBattleDisplay() {
       if (statuses.stunImmune) info.push('stunImmune active');
       stunBarEl.title = info.join('\n');
     }
-  } else {
-    setText('enemyName', 'Select an area to begin');
-    setText('enemyHealthText', '--/--');
-    const enemyAtkEl = document.getElementById('enemyAttack');
-    if (enemyAtkEl) enemyAtkEl.title = 'ATK: --';
+    } else {
+      setText('enemyName', 'Select an area to begin');
+      setText('enemyHealthText', '--/--');
+      const powerEl = document.getElementById('enemyPower');
+      if (powerEl) { powerEl.textContent = 'Enemy Power: --'; powerEl.style.color = ''; }
+      const enemyAtkEl = document.getElementById('enemyAttack');
+      if (enemyAtkEl) enemyAtkEl.title = 'ATK: --';
     const enemyRateEl = document.getElementById('enemyAttackRate');
     if (enemyRateEl) enemyRateEl.title = 'Rate: --/s';
     const enemyMitEl = document.getElementById('enemyMitigation');
@@ -1219,25 +1251,41 @@ export function startBossCombat() {
   const affixCount = applyRandomAffixes(h); // Apply twice for more challenge
   const rarity = rarityFromAffixCount(affixCount);
 
+  let enemyObj = {
+    ...bossData,
+    type: originalType,
+    attack: h.eAtk,
+    armor: h.eArmor,
+    hpMax: h.enemyMax,
+    hp: h.enemyHP,
+    attackRate: bossData.attackRate,
+    resists: bossData.resists || {},
+  };
+  const playerPower = getCurrentPP(S);
+  const dp = gatherDefense(S);
+  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
+  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
+  const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = true;
   S.adventure.currentEnemy = {
-    ...bossData,
-    type: originalType,
-    attack: Math.round(h.eAtk),
-    armor: Math.round(h.eArmor),
+    ...enemyObj,
+    attack: Math.round(enemyObj.attack),
+    armor: Math.round(enemyObj.armor),
     regen: h.regen,
     affixes: h.affixes,
     rarity,
-    hpMax: h.enemyMax,
-    hp: h.enemyHP
+    EPP: pow.EPP,
+    E_OPP: pow.E_OPP,
+    E_DPP: pow.E_DPP,
   };
   initStun(S.adventure.currentEnemy);
   initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
   S.adventure.playerStunBar = S.stun.value;
-  S.adventure.enemyHP = h.enemyHP;
-  S.adventure.enemyMaxHP = h.enemyMax;
+  S.adventure.enemyHP = enemyObj.hp;
+  S.adventure.enemyMaxHP = enemyObj.hpMax;
   S.adventure.playerHP = Math.round(S.hp);
   S.adventure.playerAttackSnapshot = calculatePlayerAttackSnapshot(S);
   S.adventure.lastPlayerAttack = 0;
@@ -1268,25 +1316,41 @@ export function startAdventureCombat() {
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
   const affixCount = applyRandomAffixes(h);
   const rarity = rarityFromAffixCount(affixCount);
+  let enemyObj = {
+    ...enemyData,
+    type: enemyType,
+    attack: h.eAtk,
+    armor: h.eArmor,
+    hpMax: h.enemyMax,
+    hp: h.enemyHP,
+    attackRate: enemyData.attackRate,
+    resists: enemyData.resists || {},
+  };
+  const playerPower = getCurrentPP(S);
+  const dp = gatherDefense(S);
+  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
+  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
+  const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = false;
   S.adventure.currentEnemy = {
-    ...enemyData,
-    type: enemyType,
-    attack: Math.round(h.eAtk),
-    armor: Math.round(h.eArmor),
+    ...enemyObj,
+    attack: Math.round(enemyObj.attack),
+    armor: Math.round(enemyObj.armor),
     regen: h.regen,
     affixes: h.affixes,
     rarity,
-    hpMax: h.enemyMax,
-    hp: h.enemyHP
+    EPP: pow.EPP,
+    E_OPP: pow.E_OPP,
+    E_DPP: pow.E_DPP,
   };
   initStun(S.adventure.currentEnemy);
   initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
   S.adventure.playerStunBar = S.stun.value;
-  S.adventure.enemyHP = h.enemyHP;
-  S.adventure.enemyMaxHP = h.enemyMax;
+  S.adventure.enemyHP = enemyObj.hp;
+  S.adventure.enemyMaxHP = enemyObj.hpMax;
   S.adventure.playerHP = Math.round(S.hp);
   S.adventure.playerAttackSnapshot = calculatePlayerAttackSnapshot(S);
   S.adventure.lastPlayerAttack = 0;
@@ -1331,25 +1395,41 @@ function startDungeonEncounter() {
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
   const affixCount = applyRandomAffixes(h);
   const rarity = rarityFromAffixCount(affixCount);
+  let enemyObj = {
+    ...enemyData,
+    type: enemyType,
+    attack: h.eAtk,
+    armor: h.eArmor,
+    hpMax: h.enemyMax,
+    hp: h.enemyHP,
+    attackRate: enemyData.attackRate,
+    resists: enemyData.resists || {},
+  };
+  const playerPower = getCurrentPP(S);
+  const dp = gatherDefense(S);
+  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
+  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
+  const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = !!floor.boss;
   S.adventure.currentEnemy = {
-    ...enemyData,
-    type: enemyType,
-    attack: Math.round(h.eAtk),
-    armor: Math.round(h.eArmor),
+    ...enemyObj,
+    attack: Math.round(enemyObj.attack),
+    armor: Math.round(enemyObj.armor),
     regen: h.regen,
     affixes: h.affixes,
     rarity,
-    hpMax: h.enemyMax,
-    hp: h.enemyHP
+    EPP: pow.EPP,
+    E_OPP: pow.E_OPP,
+    E_DPP: pow.E_DPP,
   };
   initStun(S.adventure.currentEnemy);
   initStun(S);
   S.adventure.enemyStunBar = S.adventure.currentEnemy.stun.value;
   S.adventure.playerStunBar = S.stun.value;
-  S.adventure.enemyHP = h.enemyHP;
-  S.adventure.enemyMaxHP = h.enemyMax;
+  S.adventure.enemyHP = enemyObj.hp;
+  S.adventure.enemyMaxHP = enemyObj.hpMax;
   S.adventure.playerHP = Math.round(S.hp);
   S.adventure.playerAttackSnapshot = calculatePlayerAttackSnapshot(S);
   S.adventure.lastPlayerAttack = 0;
