@@ -12,7 +12,7 @@ import {
   updateActivitySelectors,
   renderActiveActivity,
 } from '../../activity/ui/activityUI.js';
-import { computePP } from '../../../engine/pp.js';
+import { computePP, W_O, W_D } from '../../../engine/pp.js';
 import { configReport, featureFlags, devShowPP } from '../../../config.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
@@ -437,9 +437,11 @@ async function buildTree() {
       }
       const after = computePP(sim);
       const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
+      const beforePP = W_O * before.OPP + W_D * before.DPP;
+      const afterPP = W_O * after.OPP + W_D * after.DPP;
       lines.push(
-        `DEV:PP ${fmt(after.opp - before.opp)}/${fmt(after.dpp - before.dpp)}/${fmt(
-          after.pp - before.pp
+        `DEV:PP ${fmt(after.OPP - before.OPP)}/${fmt(after.DPP - before.DPP)}/${fmt(
+          afterPP - beforePP
         )}`
       );
     }
@@ -471,9 +473,11 @@ async function buildTree() {
         if (devShowPP && beforePP) {
           const afterPP = computePP(S);
           const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
+          const prevTotal = W_O * beforePP.OPP + W_D * beforePP.DPP;
+          const nextTotal = W_O * afterPP.OPP + W_D * afterPP.DPP;
           console.log(
-            `DEV:PP ${fmt(afterPP.opp - beforePP.opp)}/${fmt(afterPP.dpp - beforePP.dpp)}/${fmt(
-              afterPP.pp - beforePP.pp
+            `DEV:PP ${fmt(afterPP.OPP - beforePP.OPP)}/${fmt(afterPP.DPP - beforePP.DPP)}/${fmt(
+              nextTotal - prevTotal
             )}`
           );
         }

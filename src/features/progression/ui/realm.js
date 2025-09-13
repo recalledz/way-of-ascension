@@ -18,7 +18,7 @@ import { isProd, devShowPP } from '../../../config.js';
 import { mountAllFeatureUIs } from '../../index.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import { renderPillIcons } from '../../alchemy/ui/pillIcons.js';
-import { computePP, breakthroughPPSnapshot } from '../../../engine/pp.js';
+import { computePP, breakthroughPPSnapshot, W_O, W_D } from '../../../engine/pp.js';
 
 let pendingAstralUnlock = false;
 
@@ -85,9 +85,9 @@ export function updateActivityCultivation() {
 
   if (devShowPP) {
     const snap = breakthroughPPSnapshot(S);
-    const fmt = v => `${v.pp.toFixed(1)} (O${v.opp.toFixed(1)} / D${v.dpp.toFixed(1)})`;
+    const fmt = v => `${v.PP.toFixed(1)} (O${v.OPP.toFixed(1)} / D${v.DPP.toFixed(1)})`;
     const fmtDiff = v =>
-      `${v.pp >= 0 ? '+' : ''}${v.pp.toFixed(1)} (O${v.opp >= 0 ? '+' : ''}${v.opp.toFixed(1)} / D${v.dpp >= 0 ? '+' : ''}${v.dpp.toFixed(1)})`;
+      `${v.PP >= 0 ? '+' : ''}${v.PP.toFixed(1)} (O${v.OPP >= 0 ? '+' : ''}${v.OPP.toFixed(1)} / D${v.DPP >= 0 ? '+' : ''}${v.DPP.toFixed(1)})`;
     setText('ppCurrentActivity', fmt(snap.before));
     setText('ppPostActivity', fmt(snap.after));
     setText('ppDiffActivity', fmtDiff(snap.diff));
@@ -512,9 +512,11 @@ export function updateBreakthrough() {
       if (devShowPP && beforePP) {
         const afterPP = computePP(S);
         const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
-        const opp = afterPP.opp - beforePP.opp;
-        const dpp = afterPP.dpp - beforePP.dpp;
-        const pp = afterPP.pp - beforePP.pp;
+        const opp = afterPP.OPP - beforePP.OPP;
+        const dpp = afterPP.DPP - beforePP.DPP;
+        const prevTotal = W_O * beforePP.OPP + W_D * beforePP.DPP;
+        const nextTotal = W_O * afterPP.OPP + W_D * afterPP.DPP;
+        const pp = nextTotal - prevTotal;
         console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Breakthrough`);
       }
       log('Breakthrough succeeded! Realm advanced.', 'good');
