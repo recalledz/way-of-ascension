@@ -14,10 +14,11 @@ import {
 } from '../selectors.js';
 import { advanceRealm } from '../mutators.js';
 import { qs, setText, log } from '../../../shared/utils/dom.js';
-import { isProd } from '../../../config.js';
+import { isProd, devShowPP } from '../../../config.js';
 import { mountAllFeatureUIs } from '../../index.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import { renderPillIcons } from '../../alchemy/ui/pillIcons.js';
+import { computePP, breakthroughPPSnapshot } from '../../../engine/pp.js';
 
 let pendingAstralUnlock = false;
 
@@ -81,6 +82,21 @@ export function updateActivityCultivation() {
   setText('astralInsightMini', `Insight: ${Math.round(S.astralPoints || 0)}`);
   setText('btChanceActivity', (breakthroughChance(S) * 100).toFixed(1) + '%');
   setText('powerMultActivity', powerMult(S).toFixed(1) + 'x');
+
+  if (devShowPP) {
+    const snap = breakthroughPPSnapshot(S);
+    const fmt = v => `${v.pp.toFixed(1)} (O${v.opp.toFixed(1)} / D${v.dpp.toFixed(1)})`;
+    const fmtDiff = v =>
+      `${v.pp >= 0 ? '+' : ''}${v.pp.toFixed(1)} (O${v.opp >= 0 ? '+' : ''}${v.opp.toFixed(1)} / D${v.dpp >= 0 ? '+' : ''}${v.dpp.toFixed(1)})`;
+    setText('ppCurrentActivity', fmt(snap.before));
+    setText('ppPostActivity', fmt(snap.after));
+    setText('ppDiffActivity', fmtDiff(snap.diff));
+    const el = document.getElementById('breakthroughPPDev');
+    if (el) el.style.display = 'block';
+  } else {
+    const el = document.getElementById('breakthroughPPDev');
+    if (el) el.style.display = 'none';
+  }
 
   // Update qi fill bar in silhouette
   const qiFillSilhouette = document.getElementById('qiFillSilhouette');
@@ -490,7 +506,17 @@ export function updateBreakthrough() {
     if(Math.random() < ch) {
       S.qi = 0;
       S.foundation = 0;
+      let beforePP;
+      if (devShowPP) beforePP = computePP(S);
       const info = advanceRealm(S);
+      if (devShowPP && beforePP) {
+        const afterPP = computePP(S);
+        const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
+        const opp = afterPP.opp - beforePP.opp;
+        const dpp = afterPP.dpp - beforePP.dpp;
+        const pp = afterPP.pp - beforePP.pp;
+        console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Breakthrough`);
+      }
       log('Breakthrough succeeded! Realm advanced.', 'good');
       showBreakthroughResult(true, info);
       mountAllFeatureUIs(S);
