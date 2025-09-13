@@ -1,13 +1,16 @@
 import { calcArmor, calculatePlayerAttackSnapshot } from '../features/progression/logic.js';
 import { REALMS } from '../features/progression/data/realms.js';
 
+export const W_O = 0.6;
+export const W_D = 0.4;
+
 /**
  * Basic player power calculations. OPP (Offensive Power Points) and DPP
  * (Defensive Power Points) are derived from the player's current attack and
  * armor values. PP represents the total power.
  *
  * @param {object} state Player or global state object
- * @returns {{ opp: number, dpp: number, pp: number }}
+ * @returns {{ OPP: number, DPP: number }}
  */
 export function computePP(state) {
   const snap = calculatePlayerAttackSnapshot(state);
@@ -17,19 +20,18 @@ export function computePP(state) {
     (snap.astralPct?.[elem] || 0) +
     (snap.globalPct || 0);
 
-  let opp = snap.profile.phys * (1 + combinePct('physical'));
+  let OPP = snap.profile.phys * (1 + combinePct('physical'));
   for (const [elem, dmg] of Object.entries(snap.profile.elems || {})) {
-    opp += dmg * (1 + combinePct(elem));
+    OPP += dmg * (1 + combinePct(elem));
   }
-  opp *= 1 + (snap.critChance || 0) * ((snap.critMult || 1) - 1);
+  OPP *= 1 + (snap.critChance || 0) * ((snap.critMult || 1) - 1);
 
-  opp *= 1 + (snap.power?.opFromCult || 0);
+  OPP *= 1 + (snap.power?.opFromCult || 0);
 
   const baseArmor = state.derivedStats?.armor ?? calcArmor(state);
   const baseHP = state.hpMax || state.hp || 0;
-  const dpp = (baseHP + baseArmor) * (1 + (snap.power?.dpFromCult || 0));
-  const pp = opp + dpp;
-  return { opp, dpp, pp };
+  const DPP = (baseHP + baseArmor) * (1 + (snap.power?.dpFromCult || 0));
+  return { OPP, DPP };
 }
 
 /**
@@ -38,10 +40,11 @@ export function computePP(state) {
  * Offensive/Defensive/total Power Points.
  *
  * @param {object} state Player state
- * @returns {{ before:{opp:number,dpp:number,pp:number}, after:{opp:number,dpp:number,pp:number}, diff:{opp:number,dpp:number,pp:number} }}
+ * @returns {{ before:{OPP:number,DPP:number,PP:number}, after:{OPP:number,DPP:number,PP:number}, diff:{OPP:number,DPP:number,PP:number} }}
  */
 export function breakthroughPPSnapshot(state) {
   const before = computePP(state);
+  const beforePP = W_O * before.OPP + W_D * before.DPP;
 
   // Deep clone relevant pieces to simulate the breakthrough
   const sim = JSON.parse(JSON.stringify(state));
@@ -58,11 +61,16 @@ export function breakthroughPPSnapshot(state) {
   }
 
   const after = computePP(sim);
+  const afterPP = W_O * after.OPP + W_D * after.DPP;
   const diff = {
-    opp: after.opp - before.opp,
-    dpp: after.dpp - before.dpp,
-    pp: after.pp - before.pp,
+    OPP: after.OPP - before.OPP,
+    DPP: after.DPP - before.DPP,
+    PP: afterPP - beforePP,
   };
 
-  return { before, after, diff };
+  return {
+    before: { ...before, PP: beforePP },
+    after: { ...after, PP: afterPP },
+    diff,
+  };
 }

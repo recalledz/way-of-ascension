@@ -8,7 +8,7 @@ import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
-import { computePP } from '../../../engine/pp.js';
+import { computePP, W_O, W_D } from '../../../engine/pp.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
 
 // Consolidated equipment/inventory panel
@@ -189,14 +189,16 @@ function computeItemPPDelta(item, state = S) {
   const temp = JSON.parse(JSON.stringify(state));
   recomputePlayerTotals(temp);
   const prev = computePP(temp);
+  const prevTotal = W_O * prev.OPP + W_D * prev.DPP;
   temp.equipment = temp.equipment || {};
   temp.equipment[slot] = { ...item };
   recomputePlayerTotals(temp);
   const next = computePP(temp);
+  const nextTotal = W_O * next.OPP + W_D * next.DPP;
   return {
-    opp: next.opp - prev.opp,
-    dpp: next.dpp - prev.dpp,
-    pp: next.pp - prev.pp,
+    opp: next.OPP - prev.OPP,
+    dpp: next.DPP - prev.DPP,
+    pp: nextTotal - prevTotal,
   };
 }
 
