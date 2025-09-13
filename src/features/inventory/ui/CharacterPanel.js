@@ -84,6 +84,89 @@ const IMPLICIT_STAT_LABELS = {
   physDamagePct: 'Physical Damage',
 };
 
+const STAT_INFO = {
+  hp: {
+    name: 'HP',
+    desc: 'Hit points. You die when this reaches 0.',
+    calc: '100 base + Physique × 3 + bonuses from gear and effects',
+  },
+  shield: {
+    name: 'Shield',
+    desc: 'Qi shield that absorbs damage before HP.',
+    calc: 'Base 0 scaled by Mind and other bonuses',
+  },
+  attack: {
+    name: 'Attack',
+    desc: 'Average damage dealt per hit.',
+    calc: 'Weapon damage plus bonuses from attributes, gear, proficiency and effects',
+  },
+  armorEquip: {
+    name: 'Equipment Armor',
+    desc: 'Armor provided by equipped gear.',
+    calc: 'Sum of armor values from gear',
+  },
+  armor: {
+    name: 'Armor',
+    desc: 'Reduces physical damage taken.',
+    calc: 'Equipment armor + temporary bonuses + karma, modified by laws and astral tree',
+  },
+  accuracy: {
+    name: 'Accuracy',
+    desc: 'Chance to hit enemies.',
+    calc: 'Base accuracy plus gear bonuses',
+  },
+  dodge: {
+    name: 'Dodge',
+    desc: 'Chance to avoid enemy attacks.',
+    calc: 'Base dodge plus bonuses from Agility and gear',
+  },
+  physique: {
+    name: 'Physique',
+    desc: 'Increases HP and carry capacity.',
+    calc: '+3 HP and +1 carry capacity per level',
+  },
+  mind: {
+    name: 'Mind',
+    desc: 'Boosts Qi shield efficiency and learning.',
+    calc: '+1% shield refill efficiency and +6% shield capacity per level',
+  },
+  agility: {
+    name: 'Agility',
+    desc: 'Improves dodge chance.',
+    calc: '+2% dodge chance per level',
+  },
+  comprehension: {
+    name: 'Comprehension',
+    desc: 'Increases learning speed and foundation gain.',
+    calc: '+4% learning speed and +5% foundation gain per point above 10',
+  },
+  criticalChance: {
+    name: 'Crit Chance',
+    desc: 'Chance for attacks to deal double damage.',
+    calc: 'Base 5% plus bonuses from gear and effects',
+  },
+  attackSpeed: {
+    name: 'Attack Speed',
+    desc: 'Number of attacks per second.',
+    calc: 'Weapon base rate modified by attack speed bonuses',
+  },
+  cooldownReduction: {
+    name: 'Cooldown Reduction',
+    desc: 'Reduces ability cooldowns.',
+    calc: 'Base 0% plus bonuses from stats, gear and effects',
+  },
+  adventureSpeed: {
+    name: 'Adventure Speed',
+    desc: 'Speed of exploration.',
+    calc: 'Base 1× modified by stats, gear and effects',
+  },
+  coin: {
+    name: 'Coin',
+    desc: 'Currency used for purchases.',
+    calc: 'Earned from activities and defeated enemies',
+  },
+};
+
 const EQUIP_SLOTS = [
   { key: 'mainhand', label: 'Weapon' },
   { key: 'head', label: 'Head' },
@@ -134,6 +217,13 @@ function ppDeltaHtml(item) {
   return `<div class="pp-delta">PP Δ: ${fmt(delta.pp)} (O${fmt(delta.opp)} / D${fmt(delta.dpp)})</div>`;
 }
 
+function statTooltipHTML(info) {
+  const lines = [];
+  if (info.desc) lines.push(`<div class="stat-row">${info.desc}</div>`);
+  if (info.calc) lines.push(`<div class="stat-row"><em>${info.calc}</em></div>`);
+  return `<div class="tooltip-header"><span class="tooltip-name">${info.name}</span></div><div class="tooltip-core">${lines.join('')}</div>`;
+}
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -177,6 +267,21 @@ function renderStats() {
     if (!el) return;
     const val = d.value ? d.value() : (stats[d.stat] ?? 0);
     el.textContent = d.format ? d.format(val) : val;
+    const row = el.parentElement;
+    const info = STAT_INFO[d.id];
+    if (row && info && !row.dataset.tooltipBound) {
+      row.dataset.tooltipBound = '1';
+      row.setAttribute('role', 'button');
+      row.tabIndex = 0;
+      row.style.cursor = 'pointer';
+      row.onclick = () => showItemTooltip(row, statTooltipHTML(info));
+      row.onkeydown = evt => {
+        if (evt.key === 'Enter' || evt.key === ' ') {
+          evt.preventDefault();
+          row.click();
+        }
+      };
+    }
   });
 }
 
