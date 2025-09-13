@@ -13,6 +13,7 @@ import {
   renderActiveActivity,
 } from '../../activity/ui/activityUI.js';
 import { computePP, gatherDefense, W_O } from '../../../engine/pp.js';
+import { logPPEvent } from '../../../engine/ppLog.js';
 import { configReport, featureFlags, devShowPP } from '../../../config.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
@@ -457,8 +458,7 @@ async function buildTree() {
         const info2 = manifest[n.id];
         if ((S.astralPoints || 0) < (info2?.cost || 0)) return;
         const parentId = (adj[n.id] || []).find(id => allocated.has(id));
-        let beforePP;
-        if (devShowPP) beforePP = computePP(S, gatherDefense(S));
+        const beforePP = computePP(S, gatherDefense(S));
         S.astralPoints -= info2.cost;
         allocated.add(n.id);
         applyEffects(n.id, manifest);
@@ -470,6 +470,7 @@ async function buildTree() {
         if (STARTING_NOTABLES.includes(n.id)) {
           unlockStartingActivities(n.id);
         }
+        logPPEvent(S, 'astral-node', { node: n.id, before: beforePP });
         if (devShowPP && beforePP) {
           const afterPP = computePP(S, gatherDefense(S));
           const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);

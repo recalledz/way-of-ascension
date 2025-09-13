@@ -3,6 +3,7 @@ import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 import { emit } from '../../shared/events.js';
 import { recomputePlayerTotals, canEquip } from './logic.js';
 import { computePP, gatherDefense, W_O } from '../../engine/pp.js';
+import { logPPEvent } from '../../engine/ppLog.js';
 import { devShowPP } from '../../config.js';
 export { usePill } from '../alchemy/mutators.js'; // deprecated shim
 
@@ -72,6 +73,7 @@ export function equipItem(item, slot = null, state = S) {
     const pp = nextTotal - prevTotal;
     console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Equip ${slotKey}`);
   }
+  logPPEvent(state, 'equip', { slot: slotKey, itemKey: item.key, before: prevPP });
   save?.();
   const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.name || item.key, slot: slotKey };
   if (slotKey === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
@@ -97,6 +99,7 @@ export function unequip(slot, state = S) {
     const pp = nextTotal - prevTotal;
     console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Unequip ${slot}`);
   }
+  logPPEvent(state, 'unequip', { slot, itemKey: key, before: prevPP });
   save?.();
   const payload = { key: 'fist', name: 'Fists', slot };
   if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);

@@ -2,6 +2,8 @@ import { S } from '../../shared/state.js';
 import { log } from '../../shared/utils/dom.js';
 import { getAgilityEffects } from '../agility/logic.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
+import { computePP, gatherDefense } from '../../engine/pp.js';
+import { logPPEvent } from '../../engine/ppLog.js';
 
 export function getForgingTime(tier, state = S) {
   const baseMinutes = tier === 0 ? 1 : Math.pow(3, tier + 1);
@@ -41,6 +43,7 @@ export function advanceForging(state = S) {
   const job = state.forging.current;
   job.time -= 1;
   if (job.time <= 0) {
+    const before = computePP(state, gatherDefense(state));
     const item = state.inventory?.find(it => String(it.id) === job.itemId);
     if (item) {
       item.element = job.element;
@@ -54,6 +57,7 @@ export function advanceForging(state = S) {
       state.forging.expMax = Math.floor(state.forging.expMax * 1.2);
       log?.(`Forging level up! Level ${state.forging.level}`, 'good');
     }
+    logPPEvent(state, 'forging-upgrade', { itemId: item?.id, type: 'tier', before });
     state.forging.current = null;
     if (state.activities) state.activities.forging = false;
   }
@@ -71,6 +75,8 @@ export function imbueItem(itemId, element, state = S) {
   }
   state.wood -= woodCost;
   state.stones -= stoneCost;
+  const before = computePP(state, gatherDefense(state));
   item.imbuement = { element, tier: tier + 1 };
   log?.(`Imbued ${item.name || item.id} with ${element} to tier ${tier + 1}`, 'good');
+  logPPEvent(state, 'forging-upgrade', { itemId: item.id, type: 'imbue', element, before });
 }

@@ -9,6 +9,7 @@ import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
 import { computePP, getCurrentPP, gatherDefense, W_O } from '../../../engine/pp.js';
+import { downloadPPLogCSV } from '../../../engine/ppLog.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
 import { qiCostPerShield, QI_PER_SHIELD_BASE } from '../../combat/logic.js';
 import { getAgilityBonuses } from '../../agility/selectors.js';
@@ -294,6 +295,8 @@ export function renderEquipmentPanel() {
   renderMaterials();
   renderJunk();
   renderStats();
+  const dlBtn = document.getElementById('downloadPPLogBtn');
+  if (dlBtn) dlBtn.onclick = () => downloadPPLogCSV(S);
   renderAbilitySlots();
 }
 
