@@ -2,6 +2,8 @@ import { S, save } from '../../shared/state.js';
 import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 import { emit } from '../../shared/events.js';
 import { recomputePlayerTotals, canEquip } from './logic.js';
+import { computePP } from '../../engine/pp.js';
+import { devShowPP } from '../../config.js';
 export { usePill } from '../alchemy/mutators.js'; // deprecated shim
 
 export function addToInventory(item, state = S) {
@@ -51,6 +53,7 @@ export function equipItem(item, slot = null, state = S) {
   const info = canEquip(item, slot, state);
   if (!info) return false;
   const slotKey = info.slot;
+  const prevPP = computePP(state);
   const existing = state.equipment[slotKey];
   const existingKey = typeof existing === 'string' ? existing : existing?.key;
   if (existingKey && existingKey !== 'fist') addToInventory(existing, state);
@@ -59,6 +62,14 @@ export function equipItem(item, slot = null, state = S) {
   removeFromInventory(id, state);
   console.log('[equip]', 'slot→', slotKey, 'item→', item.key);
   recomputePlayerTotals(state);
+  const nextPP = computePP(state);
+  if (devShowPP) {
+    const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
+    const opp = nextPP.opp - prevPP.opp;
+    const dpp = nextPP.dpp - prevPP.dpp;
+    const pp = nextPP.pp - prevPP.pp;
+    console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Equip ${slotKey}`);
+  }
   save?.();
   const payload = { key: item.key, name: WEAPONS[item.key]?.displayName || item.name || item.key, slot: slotKey };
   if (slotKey === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
@@ -68,11 +79,20 @@ export function equipItem(item, slot = null, state = S) {
 export function unequip(slot, state = S) {
   const item = state.equipment[slot];
   if (!item) return;
+  const prevPP = computePP(state);
   const key = typeof item === 'string' ? item : item.key;
   if (key !== 'fist') addToInventory(item, state);
   state.equipment[slot] = null;
   console.log('[equip]', 'slot→', slot, 'item→', 'none');
   recomputePlayerTotals(state);
+  const nextPP = computePP(state);
+  if (devShowPP) {
+    const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
+    const opp = nextPP.opp - prevPP.opp;
+    const dpp = nextPP.dpp - prevPP.dpp;
+    const pp = nextPP.pp - prevPP.pp;
+    console.log(`PP Δ: ${fmt(pp)} (O${fmt(opp)} / D${fmt(dpp)}) — source: Unequip ${slot}`);
+  }
   save?.();
   const payload = { key: 'fist', name: 'Fists', slot };
   if (slot === 'mainhand') emit('INVENTORY:MAINHAND_CHANGED', payload);
