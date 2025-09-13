@@ -107,6 +107,26 @@ function ppDeltaHtml(item) {
   return `<div class="pp-delta">PP Δ: ${fmt(delta.pp)} (O${fmt(delta.opp)} / D${fmt(delta.dpp)})</div>`;
 }
 
+function computeItemPPSnapshot(item, state = S) {
+  const slot = item.type === 'weapon' ? 'mainhand' : item.slot || item.type;
+  if (!slot) return null;
+  const temp = JSON.parse(JSON.stringify(state));
+  recomputePlayerTotals(temp);
+  const prev = computePP(temp);
+  temp.equipment = temp.equipment || {};
+  temp.equipment[slot] = { ...item };
+  recomputePlayerTotals(temp);
+  const next = computePP(temp);
+  return { prev, next };
+}
+
+function ppPreviewHtml(item) {
+  const snap = computeItemPPSnapshot(item);
+  if (!snap) return '';
+  const fmt = n => n.toFixed(2);
+  return `<div class="pp-preview">Preview PP: ${fmt(snap.next.pp)} (O${fmt(snap.next.opp)} / D${fmt(snap.next.dpp)})</div>`;
+}
+
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
   renderEquipment();
@@ -226,6 +246,19 @@ function renderEquipment() {
       el.setAttribute('aria-label', `${s.label} empty`);
     }
   });
+
+  const summaryEl = document.getElementById('ppSlotSummary');
+  if (summaryEl) {
+    const fmt = n => n.toFixed(2);
+    summaryEl.innerHTML = slots.map(s => {
+      const item = S.equipment[s.key];
+      if (!item) return `<div class="pp-slot-row"><span class="label">${s.label}</span><span class="value">0</span></div>`;
+      const base = JSON.parse(JSON.stringify(S));
+      if (base.equipment) delete base.equipment[s.key];
+      const delta = computeItemPPDelta(item, base);
+      return `<div class="pp-slot-row"><span class="label">${s.label}</span><span class="value">${fmt(delta.pp)} (O${fmt(delta.opp)} / D${fmt(delta.dpp)})</span></div>`;
+    }).join('');
+  }
 }
 
 function weaponDetailsHTML(item) {
@@ -237,6 +270,7 @@ function weaponDetailsHTML(item) {
   const name = w.name;
   const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
   const delta = ppDeltaHtml(item);
+  const preview = ppPreviewHtml(item);
 
   const phys = w.base?.phys || { min: 0, max: 0 };
   const elems = w.base?.elems || {};
@@ -279,7 +313,7 @@ function weaponDetailsHTML(item) {
   const tags = (w.tags || []).join(', ');
   const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
 
-  return header + delta + core + imbue + implicitHtml + modsHtml + footer;
+  return header + delta + preview + core + imbue + implicitHtml + modsHtml + footer;
 }
 
 function gearDetailsHTML(item) {
@@ -289,6 +323,7 @@ function gearDetailsHTML(item) {
   const icon = GEAR_ICONS[item.slot || item.type];
   const header = `<div class="tooltip-header">${icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>` : ''}<span class="tooltip-name" style="color:${rarityColor}">${stars ? stars + ' ' : ''}${name}</span></div>`;
   const delta = ppDeltaHtml(item);
+  const preview = ppPreviewHtml(item);
 
   const coreLines = [];
   if (item.protection?.armor) coreLines.push({ label: 'Armor', value: item.protection.armor });
@@ -311,7 +346,7 @@ function gearDetailsHTML(item) {
   const reqProf = item.reqs?.proficiencyMin ?? 0;
   const footer = `<div class="tooltip-footer"><div class="req">Req: Realm ${reqRealm} • Prof ${reqProf}</div>${tags ? `<div class="tags">Tags: ${tags}</div>` : ''}</div>`;
 
-  return header + delta + core + imbue + modsHtml + footer;
+  return header + delta + preview + core + imbue + modsHtml + footer;
 }
 
 function foodDetailsHTML(item) {
