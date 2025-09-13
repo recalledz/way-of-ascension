@@ -5344,3 +5344,7 @@ html.reduce-motion .log-sheet{transition:none;}
   font-size: 0.85rem;
   line-height: 1.4;
 }
+
+#ppAvgDisplay {
+  display: block;
+}
