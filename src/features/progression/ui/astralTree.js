@@ -12,7 +12,8 @@ import {
   updateActivitySelectors,
   renderActiveActivity,
 } from '../../activity/ui/activityUI.js';
-import { configReport, featureFlags } from '../../../config.js';
+import { computePP } from '../../../engine/pp.js';
+import { configReport, featureFlags, devShowPP } from '../../../config.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
@@ -421,6 +422,28 @@ async function buildTree() {
     const info = manifest[n.id] || {};
     const lines = info.effects ? [...info.effects] : [];
     lines.push(`Cost: ${info.cost ?? '-'}`);
+
+    if (devShowPP) {
+      const before = computePP(S);
+      const sim = { ...S, astralTreeBonuses: { ...(S.astralTreeBonuses || {}) } };
+      if (info.bonus) {
+        for (const [k, v] of Object.entries(info.bonus)) {
+          if (typeof v === 'number') {
+            sim.astralTreeBonuses[k] = (sim.astralTreeBonuses[k] || 0) + v;
+          } else if (typeof v === 'boolean') {
+            sim.astralTreeBonuses[k] = sim.astralTreeBonuses[k] || v;
+          }
+        }
+      }
+      const after = computePP(sim);
+      const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
+      lines.push(
+        `DEV:PP ${fmt(after.opp - before.opp)}/${fmt(after.dpp - before.dpp)}/${fmt(
+          after.pp - before.pp
+        )}`
+      );
+    }
+
     tooltip.innerHTML = lines.join('<br>');
 
     if (isAllocatable(n.id, allocated, adj, manifest)) {
@@ -432,6 +455,8 @@ async function buildTree() {
         const info2 = manifest[n.id];
         if ((S.astralPoints || 0) < (info2?.cost || 0)) return;
         const parentId = (adj[n.id] || []).find(id => allocated.has(id));
+        let beforePP;
+        if (devShowPP) beforePP = computePP(S);
         S.astralPoints -= info2.cost;
         allocated.add(n.id);
         applyEffects(n.id, manifest);
@@ -442,6 +467,15 @@ async function buildTree() {
         hideTooltip();
         if (STARTING_NOTABLES.includes(n.id)) {
           unlockStartingActivities(n.id);
+        }
+        if (devShowPP && beforePP) {
+          const afterPP = computePP(S);
+          const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
+          console.log(
+            `DEV:PP ${fmt(afterPP.opp - beforePP.opp)}/${fmt(afterPP.dpp - beforePP.dpp)}/${fmt(
+              afterPP.pp - beforePP.pp
+            )}`
+          );
         }
       });
       tooltip.appendChild(document.createElement('br'));
