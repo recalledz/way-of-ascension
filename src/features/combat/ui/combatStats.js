@@ -1,14 +1,18 @@
 import { S } from '../../../shared/state.js';
-import { calcAtk } from '../../progression/selectors.js';
+import { calculatePlayerCombatAttack } from '../../progression/selectors.js';
 import { setText, setFill } from '../../../shared/utils/dom.js';
 import { fmt } from '../../../shared/utils/number.js';
 
 export function updateCombatStats(state = S) {
-  setText('atkVal', calcAtk(state));
+  const profile = calculatePlayerCombatAttack(state);
+  const totalAtk = Math.round(
+    profile.phys + Object.values(profile.elems || {}).reduce((a, b) => a + b, 0)
+  );
+  setText('atkVal', totalAtk);
   setText('armorVal', state.derivedStats?.armor || 0);
   setText('accuracyVal', state.derivedStats?.accuracy || 0);
   setText('dodgeVal', state.derivedStats?.dodge || 0);
-  setText('atkVal2', calcAtk(state));
+  setText('atkVal2', totalAtk);
   setText('armorVal2', state.derivedStats?.armor || 0);
   setText('accuracyVal2', state.derivedStats?.accuracy || 0);
   setText('dodgeVal2', state.derivedStats?.dodge || 0);

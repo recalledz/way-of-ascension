@@ -9,7 +9,6 @@ import {
   foundationGainPerSec as calcFoundationGain,
   foundationGainPerMeditate as calcFoundationGainMeditate,
   powerMult as calcPowerMult,
-  calcAtk as calcCalcAtk,
   calcArmor as calcCalcArmor,
   getCultivationPower as calcCultivationPower,
   getStatEffects as calcStatEffects,
@@ -47,10 +46,6 @@ export function foundationGainPerMeditate(state = progressionState) {
 
 export function powerMult(state = progressionState) {
   return calcPowerMult(state);
-}
-
-export function calcAtk(state = progressionState) {
-  return calcCalcAtk(state);
 }
 
 export function calcArmor(state = progressionState) {
