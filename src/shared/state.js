@@ -13,6 +13,7 @@ import { catchingState } from '../features/catching/state.js';
 import { sideLocationState } from '../features/sideLocations/state.js';
 import { tutorialState } from '../features/tutorial/state.js';
 import { alchemyState } from '../features/alchemy/state.js';
+import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 
 export function loadSave(){
   try{
@@ -145,8 +146,22 @@ export const defaultState = () => {
   // Combat Proficiency
   proficiency: {},
 
-  equipment: { mainhand: { key: 'fist', type: 'weapon' }, head: null, body: null, foot: null, ring1: null, ring2: null, talisman1: null, talisman2: null, food1: null, food2: null, food3: null, food4: null, food5: null }, // EQUIP-CHAR-UI
-  inventory: [{ id: 'palmWraps', key: 'palmWraps', name: 'Palm Wraps', type: 'weapon' }],
+  equipment: {
+    mainhand: { ...WEAPONS.fist },
+    head: null,
+    body: null,
+    foot: null,
+    ring1: null,
+    ring2: null,
+    talisman1: null,
+    talisman2: null,
+    food1: null,
+    food2: null,
+    food3: null,
+    food4: null,
+    food5: null,
+  }, // EQUIP-CHAR-UI
+  inventory: [{ id: 'palmWraps', ...WEAPONS.palmWraps }],
   junk: [],
   gearBonuses: {},
   sessionLoot: [], // EQUIP-CHAR-UI
