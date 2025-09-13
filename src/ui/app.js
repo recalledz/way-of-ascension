@@ -51,6 +51,7 @@ import { meditate } from '../features/progression/mutators.js';
 import { sellJunk } from '../features/inventory/mutators.js';
 import { usePill } from '../features/alchemy/mutators.js';
 import { initSideLocations } from '../features/sideLocations/logic.js';
+import { initPPRolling, getAverages } from '../engine/ppHistory.js';
 
 let controller;
 
@@ -190,6 +191,10 @@ function initUI(){
 function updateAll(){
   updateRealmUI();
   updateQiAndFoundation();
+
+  const avgs = getAverages(S);
+  setText('ppAvgHour', fmt(avgs.lastHour));
+  setText('ppAvgAll', fmt(avgs.sinceStart));
 
   // HP/Shield & combat stats are rendered by updateCombatStats()
   updateCombatStats();
@@ -403,6 +408,7 @@ function enableLayoutDebug() {
     updateAll();
     log('Welcome, cultivator.');
     // Own the loop via GameController (fixed 1000ms for now)
+    initPPRolling(S);
     controller = new GameController(S, 1000).setFrame(frame);
     controller.start();
     setInterval(() => {

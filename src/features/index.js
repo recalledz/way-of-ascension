@@ -44,6 +44,7 @@ import { mountTutorialBox } from "../ui/tutorialBox.js";
 import { mountNotificationTray } from "../ui/notifications.js";
 import { mountAbilityTutorialPopup } from "../ui/tutorialPopups.js";
 import { renderEquipmentPanel } from "./inventory/ui/CharacterPanel.js";
+import { tickPPSampler } from "../engine/ppHistory.js";
 
 
 // Example placeholder for later:
@@ -353,5 +354,6 @@ export function runAllFeatureTicks(state, stepMs) {
   if (state.activities.adventure && state.adventure && state.adventure.inCombat) {
     updateAdventureCombat();
   }
+  tickPPSampler(state);
 }
 
