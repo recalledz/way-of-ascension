@@ -1180,17 +1180,30 @@
 
       <section id="activity-settings" class="activity-content tab-content" style="display:none;">
         <h2>⚙️ Settings</h2>
-        <div class="cards">
-          <div class="card">
-            <div class="settings-buttons">
-              <button class="btn small ghost" id="saveBtn">💾 Save</button>
-              <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
-              <button class="btn small ghost" id="importBtn">⬆️ Import</button>
-              <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
+        <div class="settings-tabs tab-bar">
+          <button class="settings-tab-btn active" data-tab="general">General</button>
+          <button class="settings-tab-btn" data-tab="stats">Statistics</button>
+        </div>
+        <div id="generalSettingsTab" class="settings-tab-content tab-content active">
+          <div class="cards">
+            <div class="card">
+              <div class="settings-buttons">
+                <button class="btn small ghost" id="saveBtn">💾 Save</button>
+                <button class="btn small ghost" id="exportBtn">⬇️ Export</button>
+                <button class="btn small ghost" id="importBtn">⬆️ Import</button>
+                <button class="btn small warn" id="resetBtn" title="Hard reset">♻️ Reset</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="chip" id="reduceMotionChip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
             </div>
           </div>
-          <div class="card">
-            <div class="chip" id="reduceMotionChip">Reduce Motion: <input type="checkbox" id="reduceMotionToggle"></div>
+        </div>
+        <div id="statsSettingsTab" class="settings-tab-content tab-content" style="display:none;">
+          <div class="cards">
+            <div class="card">
+              <div class="stat"><span>Time since game start</span><span id="timeSinceStart">0s</span></div>
+            </div>
           </div>
         </div>
       </section>

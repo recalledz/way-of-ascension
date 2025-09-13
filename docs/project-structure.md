@@ -403,6 +403,7 @@ way-of-ascension/
 ├── src/features/alchemy/consumableEffects.js
 ├── src/features/alchemy/data/pills.js
 ├── src/features/alchemy/test.js
+├── src/features/settings/ui/settingsDisplay.js
 ├── src/features/tutorial/steps.js
 └── style.css
 ```
@@ -1259,6 +1260,9 @@ Paths added:
  - `src/features/mind/index.js` – Mind feature descriptor.
 - `src/features/astralTree/index.js` – Astral Tree feature descriptor.
 - `src/features/law/index.js` – Law feature descriptor.
+
+### Settings Feature (`src/features/settings/`)
+- `src/features/settings/ui/settingsDisplay.js` – Handles Settings tab navigation and displays session statistics.
 
 ## Tutorial Feature
 
