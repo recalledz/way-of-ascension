@@ -1,4 +1,4 @@
-import { calcAtk, calcArmor } from '../features/progression/logic.js';
+import { calcAtk, calcArmor, calculatePlayerAttackSnapshot } from '../features/progression/logic.js';
 import { REALMS } from '../features/progression/data/realms.js';
 
 /**
@@ -10,8 +10,21 @@ import { REALMS } from '../features/progression/data/realms.js';
  * @returns {{ opp: number, dpp: number, pp: number }}
  */
 export function computePP(state) {
-  const opp = calcAtk(state);
-  const dpp = calcArmor(state);
+  const snap = calculatePlayerAttackSnapshot(state);
+  const combinePct = elem =>
+    (snap.gearPct?.all || 0) +
+    (snap.gearPct?.[elem] || 0) +
+    (snap.astralPct?.[elem] || 0) +
+    (snap.globalPct || 0);
+
+  let opp = snap.profile.phys * (1 + combinePct('physical'));
+  for (const [elem, dmg] of Object.entries(snap.profile.elems || {})) {
+    opp += dmg * (1 + combinePct(elem));
+  }
+  opp *= 1 + (snap.critChance || 0) * ((snap.critMult || 1) - 1);
+  opp += calcAtk(state);
+
+  const dpp = state.derivedStats?.armor ?? calcArmor(state);
   const pp = opp + dpp;
   return { opp, dpp, pp };
 }
