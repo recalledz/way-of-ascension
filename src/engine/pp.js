@@ -35,6 +35,21 @@ export function computePP(state) {
 }
 
 /**
+ * Convenience selector for current total power points.
+ *
+ * @param {object} state Player or global state object
+ * @returns {{ PP:number, OPP:number, DPP:number }}
+ */
+export function getCurrentPP(state) {
+  const { OPP, DPP } = computePP(state);
+  return {
+    OPP,
+    DPP,
+    PP: W_O * OPP + W_D * DPP,
+  };
+}
+
+/**
  * Create a snapshot of current and post-breakthrough power points.
  * Simulates the next realm/stage advancement and compares the resulting
  * Offensive/Defensive/total Power Points.

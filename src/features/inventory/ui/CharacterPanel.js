@@ -8,7 +8,7 @@ import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
-import { computePP, W_O, W_D } from '../../../engine/pp.js';
+import { computePP, getCurrentPP, W_O, W_D } from '../../../engine/pp.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
 import { qiCostPerShield, QI_PER_SHIELD_BASE } from '../../combat/logic.js';
 import { getAgilityBonuses } from '../../agility/selectors.js';
@@ -276,6 +276,18 @@ function statTooltipHTML(info) {
 
 export function renderEquipmentPanel() {
   recomputePlayerTotals(S);
+  const { PP, OPP, DPP } = getCurrentPP(S);
+  const header = document.querySelector('#activity-character .card h4');
+  let ppEl = document.getElementById('currentPP');
+  if (!ppEl && header) {
+    ppEl = document.createElement('div');
+    ppEl.id = 'currentPP';
+    header.insertAdjacentElement('afterend', ppEl);
+  }
+  if (ppEl) {
+    const fmt = n => n.toFixed(2);
+    ppEl.textContent = `Power: ${fmt(PP)} (O ${fmt(OPP)} / D ${fmt(DPP)})`;
+  }
   renderEquipment();
   renderSlotPPSummary();
   renderInventory();
