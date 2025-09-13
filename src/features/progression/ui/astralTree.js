@@ -326,6 +326,7 @@ function unlockStartingActivities(id) {
   } else if (id === 4061) {
     enableFeatures(['gathering', 'mind']);
     ensureActivityTab('gathering', 'Gathering');
+    ensureActivityTab('mind', 'Mind');
     mountGatheringUI(S);
     mountMindReadingUI(S);
   } else if (id === 4062) {

@@ -188,6 +188,7 @@ export function mountAllFeatureUIs(state) {
     ensure('levelingActivities', 'agilitySelector', 'agility', 'Agility');
     ensure('levelingActivities', 'miningSelector', 'mining', 'Mining');
     ensure('levelingActivities', 'gatheringSelector', 'gathering', 'Gathering');
+    ensure('levelingActivities', 'mindSelector', 'mind', 'Mind');
     ensure('levelingActivities', 'forgingSelector', 'forging', 'Forging');
     ensure('levelingActivities', 'catchingSelector', 'catching', 'Catching');
     ensure('managementActivities', 'adventureSelector', 'adventure', 'Adventure');
@@ -217,7 +218,10 @@ export function mountAllFeatureUIs(state) {
   }
   if (flags.FEATURE_CATCHING?.parsedValue && vis.catching.visible) mountCatchingUI(state);
   if (flags.FEATURE_LAW?.parsedValue && vis.law.visible) mountLawDisplay(state);
-  if (flags.FEATURE_MIND?.parsedValue && vis.mind.visible) mountMindReadingUI(state);
+  if (flags.FEATURE_MIND?.parsedValue && vis.mind.visible) {
+    ensure('levelingActivities', 'mindSelector', 'mind', 'Mind');
+    mountMindReadingUI(state);
+  }
   if (vis.astralTree.visible) mountAstralTreeUI(state);
 
   // mountWeaponGenUI?.(state);
