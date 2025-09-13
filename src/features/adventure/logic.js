@@ -14,6 +14,7 @@ import { performAttack } from '../combat/attack.js'; // STATUS-REFORM
 import { tickStunDecay, initStun, STUN_THRESHOLD, DECAY_PER_SECOND } from '../../engine/combat/stun.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
+import { buildAttackSnapshot } from '../combat/snapshot.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
 import { on, emit } from '../../shared/events.js';
@@ -763,36 +764,24 @@ export function updateAdventureCombat() {
       const enemyDodge = (S.adventure.currentEnemy?.stats?.dodge ?? S.adventure.currentEnemy?.dodge ?? 0) + DODGE_BASE;
       const hitP = chanceToHit(S.derivedStats?.accuracy || 0, enemyDodge);
       if (Math.random() < hitP) {
-        const critChance = S.attributes?.criticalChance || 0;
-        const isCrit = Math.random() < critChance;
-        const critMult = isCrit ? 2 : 1;
-        const profile = {
-          phys: S.adventure.playerAtkProfile?.phys || 0,
-          elems: { ...(S.adventure.playerAtkProfile?.elems || {}) },
-        };
-        let externalMult = 1;
+        const snap = buildAttackSnapshot(S);
+        const profile = { phys: snap.profile.phys, elems: { ...snap.profile.elems } };
+        let globalMult = 1 + snap.globalPct;
+        const catPct = { ...snap.catPct };
         if (S.lightningStep) {
-          externalMult *= S.lightningStep.damageMult;
+          globalMult *= S.lightningStep.damageMult;
           const cd = S.abilityCooldowns?.lightningStep || 0;
           if (cd > 0) {
             S.abilityCooldowns.lightningStep = Math.max(0, cd - 1_000);
           }
-        }
-        if (S.lightningStep) {
           profile.elems.metal = (profile.elems.metal || 0) + profile.phys;
           profile.phys = 0;
+          catPct.metal = (S.astralTreeBonuses?.metalDamagePct || 0) / 100;
         }
-        const astralPct = {};
-        if (profile.phys > 0) {
-          astralPct.physical =
-            (S.astralTreeBonuses?.physicalDamagePct || 0) / 100;
-        }
-        for (const elem of Object.keys(profile.elems)) {
-          const key = `${elem}DamagePct`;
-          astralPct[elem] = (S.astralTreeBonuses?.[key] || 0) / 100;
-        }
-        const manualPct = {};
-        if (externalMult !== 1) manualPct.all = externalMult - 1;
+        const isCrit = Math.random() < snap.critChance;
+        const critMult = isCrit ? snap.critMult : 1;
+        const critChance = isCrit ? 1 : 0;
+        const globalPct = globalMult - 1;
         const { total: dealt, components } = processAttack(
           profile,
           weapon,
@@ -800,9 +789,9 @@ export function updateAdventureCombat() {
             attacker: S,
             target: S.adventure.currentEnemy,
             nowMs: now,
-            astralPct,
-            manualPct,
-            critChance: isCrit ? 1 : 0,
+            catPct,
+            globalPct,
+            critChance,
             critMult,
             attackSpeed: 1,
             hitChance: 1,

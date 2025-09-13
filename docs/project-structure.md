@@ -1041,6 +1041,7 @@ Paths added:
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.
 - `src/features/combat/mutators.js` – Stateful combat helpers (`initializeFight`, `processAttack`, `applyStatus`).
+- `src/features/combat/snapshot.js` – Builds attack snapshots (weapon flats, category buckets, crit, global %).
 - `src/features/combat/state.js` – Shape of combat-related state values (enemy HP, stun bars).
 - `src/features/combat/selectors.js` – Accessors for combat state like enemy HP and stun bars.
 - `src/features/combat/attack.js` – Applies status effects and stun bar changes when attacks land.

@@ -138,8 +138,7 @@ export function processAttack(profile, weapon, options = {}) {
     onDamage,
     attacker,
     nowMs,
-    astralPct = {},
-    manualPct = {},
+    catPct = {},
     gearPct = {},
     globalPct = 0,
     critChance = 0,
@@ -205,12 +204,12 @@ export function processAttack(profile, weapon, options = {}) {
       if (elem !== 'physical') components.elems[elem] = 0;
       continue;
     }
+    const key = elem === 'physical' ? 'physical' : elem;
     const dmg =
       base *
-      (1 + bucketGet(weaponPct, elem === 'physical' ? 'physical' : elem)) *
-      (1 + bucketGet(gear, elem === 'physical' ? 'physical' : elem)) *
-      (1 + bucketGet(astralPct, elem === 'physical' ? 'physical' : elem)) *
-      (1 + bucketGet(manualPct, elem === 'physical' ? 'physical' : elem));
+      (1 + bucketGet(weaponPct, key)) *
+      (1 + bucketGet(gear, key)) *
+      (1 + bucketGet(catPct, key));
     let afterCrit = dmg * critFactor;
     if (elem === 'physical') {
       let amt = applyArmor(

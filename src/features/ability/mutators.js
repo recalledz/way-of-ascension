@@ -4,6 +4,7 @@ import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { processAttack, applyStatus, applyAilment } from '../combat/mutators.js';
+import { buildAttackSnapshot } from '../combat/snapshot.js';
 import { addStunPercent } from '../../engine/combat/stun.js';
 import { performAttack } from '../combat/attack.js';
 import { mergeStats } from '../../shared/utils/stats.js';
@@ -115,7 +116,6 @@ function applyAbilityResult(abilityKey, res, state) {
         mult *= 1 + mods.damagePct / 100;
       }
 
-      let treeMult = 1;
       if (isSpell) {
         if (weapon.classKey === 'focus') {
           mult *= getWeaponProficiencyBonuses(state).damageMult;
@@ -124,18 +124,22 @@ function applyAbilityResult(abilityKey, res, state) {
         const spellDamage = state.derivedStats?.spellDamage || 0;
         const spellTreeMult = 1 + (state.astralTreeBonuses?.spellDamagePct || 0) / 100;
         mult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
-      } else {
-        const bonusKey = type === 'physical' ? 'physicalDamagePct' : `${type}DamagePct`;
-        treeMult = 1 + (state.astralTreeBonuses?.[bonusKey] || 0) / 100;
       }
 
       const profile =
         type === 'physical'
           ? { phys: amount, elems: {} }
           : { phys: 0, elems: { [type]: amount } };
-      const astralPct = { [type === 'physical' ? 'physical' : type]: treeMult - 1 };
-      const manualPct = {};
-      if (mult !== 1) manualPct.all = mult - 1;
+
+      const snap = buildAttackSnapshot(state);
+      const catPct = {};
+      if (!isSpell) {
+        const key = type === 'physical' ? 'physical' : type;
+        catPct[key] = snap.catPct[key] || 0;
+      }
+      let globalMult = (1 + snap.globalPct) * mult;
+      const globalPct = globalMult - 1;
+
       const { total: dealt, components } = processAttack(
         profile,
         weapon,
@@ -143,8 +147,8 @@ function applyAbilityResult(abilityKey, res, state) {
           target: atkTarget,
           attacker: state,
           nowMs: now,
-          astralPct,
-          manualPct,
+          catPct,
+          globalPct,
           critChance: 0,
           critMult: 1,
           attackSpeed: 1,
