@@ -174,6 +174,27 @@ export function calculatePlayerCombatAttack(state = progressionState) {
   return { phys: basePhys, elems };
 }
 
+export function calculatePlayerAttackSnapshot(state = progressionState) {
+  const profile = calculatePlayerCombatAttack(state);
+
+  const astralPct = {};
+  for (const [key, val] of Object.entries(state.astralTreeBonuses || {})) {
+    if (key.endsWith('DamagePct')) {
+      const elem = key === 'physicalDamagePct' ? 'physical' : key.replace('DamagePct', '');
+      astralPct[elem] = (val || 0) / 100;
+    }
+  }
+
+  const gearPct = {};
+  const profBonus = getWeaponProficiencyBonuses(state).damageMult - 1;
+  if (profBonus) gearPct.all = profBonus;
+
+  const critChance = Number(state.attributes?.criticalChance) || 0;
+  const critMult = 2;
+
+  return { profile, astralPct, gearPct, critChance, critMult, globalPct: 0 };
+}
+
 export function calculatePlayerAttackRate(state = progressionState) {
   const weapon = getEquippedWeapon(state);
   const baseRate = weapon?.base?.rate || 1;
