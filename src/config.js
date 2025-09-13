@@ -112,7 +112,7 @@ const flags = {};
 for (const name of flagNames) {
   const fallback =
     name === 'TUTORIALS_ENABLED' ? !isProd :
-    name === 'DEV_SHOW_PP' ? false :
+    name === 'DEV_SHOW_PP' ? !isProd :
     name.startsWith('FEATURE_') ? false :
     undefined;
   flags[name] = readFlag(name, fallback);
