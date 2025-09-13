@@ -116,5 +116,22 @@ export const migrations = [
         type: 'weapon'
       });
     }
+  },
+  save => {
+    const fillWeapon = it => {
+      if (it && typeof it === 'object' && it.type === 'weapon') {
+        const def = WEAPONS[it.key];
+        if (def && !it.base) {
+          const { id, qty } = it;
+          Object.assign(it, { ...def, id, qty });
+        }
+      }
+    };
+    if (Array.isArray(save.inventory)) save.inventory.forEach(fillWeapon);
+    if (save.equipment && typeof save.equipment === 'object') {
+      Object.keys(save.equipment).forEach(slot => {
+        fillWeapon(save.equipment[slot]);
+      });
+    }
   }
 ];
