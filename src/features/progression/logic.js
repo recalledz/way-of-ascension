@@ -3,7 +3,7 @@ import { LAWS } from './data/laws.js';
 import { progressionState } from './state.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
-import { karmaQiRegenBonus, karmaAtkBonus, karmaArmorBonus } from '../karma/logic.js';
+import { karmaQiRegenBonus, karmaArmorBonus } from '../karma/logic.js';
 import { getSuccessBonus as getAlchemySuccessBonus } from '../alchemy/selectors.js';
 import { getCookingSuccessBonus } from '../cooking/selectors.js';
 export const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
@@ -121,15 +121,6 @@ export function getCultivationPower(state = progressionState) {
   return { op: pulseOP + stageOP, dp: pulseDP + stageDP };
 }
 
-export function calcAtk(state = progressionState){
-  const lawBonuses = getLawBonuses(state);
-  const profMult = Number(getWeaponProficiencyBonuses(state).damageMult) || 1;
-  const base = Number(state.atkBase) || 0;
-  const temp = Number(state.tempAtk) || 0;
-  const karma = Number(karmaAtkBonus(state)) || 0;
-  return Math.floor((base + temp + karma) * profMult * (lawBonuses.atk || 1));
-}
-
 export function calcArmor(state = progressionState){
   const lawBonuses = getLawBonuses(state);
   const base = Number(state.armorBase) || 0;
@@ -167,7 +158,7 @@ export function getStatEffects(state = progressionState) {
 export function calculatePlayerCombatAttack(state = progressionState) {
   const weapon = getEquippedWeapon(state);
   const physBase = weapon?.base?.phys || { min: 0, max: 0 };
-  const basePhys = (physBase.min + physBase.max) / 2;
+  const basePhys = (physBase.min + physBase.max) / 2 + (state.tempAtk || 0);
 
   const elems = {};
   for (const [elem, range] of Object.entries(weapon?.base?.elems || {})) {

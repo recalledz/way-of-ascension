@@ -492,7 +492,7 @@ Merges base stats with modifier objects.
 **Key Functions**:
 - `qCap()`, `qiRegenPerSec()` - Qi system calculations
 - `fCap()`, `foundationGainPerSec()` - Foundation system
-- `calcAtk()`, `calcDef()` - Combat calculations
+- `calculatePlayerCombatAttack()`, `calcArmor()` - Combat calculations
 - `getLawBonuses()` - Law system bonuses
 - `getStatEffects()` - Stat system effects
 
@@ -641,7 +641,7 @@ export function runMigrations(save) {
 **Structure**:
 ```javascript
 export const REALMS = [
-  { name: 'Mortal', cap: 100, fcap: 50, baseRegen: 1, atk: 1, def: 1, power: 1, bt: 0.8 },
+  { name: 'Mortal', cap: 100, fcap: 50, baseRegen: 1, armor: 1, power: 1, bt: 0.8 },
   // ... more realms
 ];
 ```
@@ -817,7 +817,7 @@ function updateAll() {
 
 #### `src/features/progression/logic.js` - Progression Calculations
 **Purpose**: Core formulas for cultivation and combat stats.
-**Key Functions**: `fCap(state)`, `calcAtk(state)`, `breakthroughChance(state)`.
+**Key Functions**: `fCap(state)`, `calculatePlayerCombatAttack(state)`, `breakthroughChance(state)`.
 
 #### `src/features/progression/insight.js` - Insight Gain Tick
 **Purpose**: Computes Insight accumulation each tick based on Foundation gain and current activity.

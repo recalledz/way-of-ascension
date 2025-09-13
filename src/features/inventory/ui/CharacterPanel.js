@@ -151,7 +151,13 @@ function renderStats() {
   const defs = [
     { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
     { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
-    { id: 'atkBase', value: () => S.atkBase },
+    {
+      id: 'attack',
+      value: () => {
+        const p = calculatePlayerAttackSnapshot(S).profile;
+        return Math.round(p.phys + Object.values(p.elems).reduce((a, b) => a + b, 0));
+      },
+    },
     { id: 'armorBase', value: () => S.armorBase },
     { id: 'armor', stat: 'armor' },
     { id: 'physique', stat: 'physique' },
