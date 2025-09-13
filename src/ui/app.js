@@ -18,6 +18,7 @@ import { ensureLaws } from '../features/progression/migrations.js';
 import { qs, setText, setFill, log } from '../shared/utils/dom.js';
 import { fmt } from '../shared/utils/number.js';
 import { emit } from '../shared/events.js';
+import { getAverages } from '../engine/ppHistory.js';
 import { setupAdventureTabs, updateAbilityBar } from '../features/adventure/logic.js';
 import { updateCookingSidebar } from '../features/cooking/ui/cookingDisplay.js';
 import {
@@ -187,6 +188,13 @@ function initUI(){
   updateAll();
 }
 
+function updatePPAverages() {
+  const el = qs('#ppAverages');
+  if (!el) return;
+  const { lastHour, sinceStart } = getAverages(S);
+  el.textContent = `PP avg (1h): ${fmt(lastHour)} | since start: ${fmt(sinceStart)}`;
+}
+
 function updateAll(){
   updateRealmUI();
   updateQiAndFoundation();
@@ -215,6 +223,8 @@ function updateAll(){
   updateResourceDisplay();
 
   updateCatchingUI(S);
+
+  updatePPAverages();
 
   // Disciples
 

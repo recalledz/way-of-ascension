@@ -32,6 +32,7 @@ import { advanceCatching } from "./catching/logic.js";
 import { tickPhysiqueTraining } from "./physique/mutators.js";
 import { tickAgilityTraining } from "./agility/mutators.js";
 import { tickAlchemy } from "./alchemy/logic.js";
+import { tickPPSampler } from "../engine/ppHistory.js";
 import { isAutoMeditate, isAutoAdventure } from "./automation/selectors.js";
 import { startActivity } from "./activity/mutators.js";
 import { tickInsight } from "./progression/insight.js";
@@ -292,6 +293,7 @@ function autoConsumeFood(state) {
 
 export function runAllFeatureTicks(state, stepMs) {
   const stepSec = stepMs / 1000;
+  tickPPSampler(state);
   tickAbilityCooldowns(stepMs);
   mindOnTick(state, stepSec);
 
