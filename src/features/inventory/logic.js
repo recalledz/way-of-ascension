@@ -12,6 +12,13 @@ export function recomputePlayerTotals(player) {
   let breakthroughBonus = 0;
   let qiRegenMult = 0;
   let dropRateMult = 0;
+  let attackSpeedPct = 0;
+  let critChance = 0;
+  let critMult = 0;
+  let hpBonus = 0;
+  const resists = {};
+  const damagePct = {};
+
   const equipped = Object.values(player.equipment || {});
   for (const item of equipped) {
     if (!item) continue;
@@ -19,23 +26,79 @@ export function recomputePlayerTotals(player) {
       armor += item.protection.armor || 0;
       dodge += item.protection.dodge || 0;
       shieldMax += item.protection.qiShield || 0;
+      if (item.protection.resists) {
+        for (const [elem, val] of Object.entries(item.protection.resists)) {
+          resists[elem] = (resists[elem] || 0) + val;
+        }
+      }
     }
     if (item.offense) accuracy += item.offense.accuracy || 0;
     if (item.shield?.max) shieldMax += item.shield.max; // legacy support
-    if (item.stats?.accuracy) accuracy += item.stats.accuracy; // legacy support
-    if (item.stats?.dodge) dodge += item.stats.dodge; // legacy support
+    if (item.stats) {
+      if (item.stats.accuracy) accuracy += item.stats.accuracy; // legacy support
+      if (item.stats.dodge) dodge += item.stats.dodge; // legacy support
+      if (item.stats.hp) hpBonus += item.stats.hp;
+      if (item.stats.hpMax) hpBonus += item.stats.hpMax;
+      if (item.stats.attackSpeedPct) attackSpeedPct += item.stats.attackSpeedPct;
+      if (item.stats.attackRatePct) attackSpeedPct += item.stats.attackRatePct;
+      if (item.stats.criticalChance) critChance += item.stats.criticalChance;
+      if (item.stats.critChancePct) critChance += item.stats.critChancePct / 100;
+      if (item.stats.critDamagePct) critMult += item.stats.critDamagePct / 100;
+      if (item.stats.critMult) critMult += item.stats.critMult;
+      for (const [k, v] of Object.entries(item.stats)) {
+        if (k.endsWith('DamagePct')) {
+          const elem = k === 'physicalDamagePct' ? 'physical' : k.replace('DamagePct', '');
+          damagePct[elem] = (damagePct[elem] || 0) + v / 100;
+        } else if (k.endsWith('ResistPct')) {
+          const elem = k.replace('ResistPct', '');
+          resists[elem] = (resists[elem] || 0) + v / 100;
+        }
+      }
+    }
     if (item.bonuses) {
       foundationMult += item.bonuses.foundationMult || 0;
       breakthroughBonus += item.bonuses.breakthroughBonus || 0;
       qiRegenMult += item.bonuses.qiRegenMult || 0;
       dropRateMult += item.bonuses.dropRateMult || 0;
+      attackSpeedPct += item.bonuses.attackRatePct || item.bonuses.attackSpeedPct || 0;
+      if (typeof item.bonuses.critChance === 'number') critChance += item.bonuses.critChance;
+      if (typeof item.bonuses.critChancePct === 'number')
+        critChance += item.bonuses.critChancePct / 100;
+      if (typeof item.bonuses.critDamagePct === 'number')
+        critMult += item.bonuses.critDamagePct / 100;
+      if (typeof item.bonuses.critMult === 'number') critMult += item.bonuses.critMult;
+      if (typeof item.bonuses.hp === 'number') hpBonus += item.bonuses.hp;
+      if (typeof item.bonuses.hpMax === 'number') hpBonus += item.bonuses.hpMax;
+      for (const [k, v] of Object.entries(item.bonuses)) {
+        if (k.endsWith('DamagePct')) {
+          const elem = k === 'physicalDamagePct' ? 'physical' : k.replace('DamagePct', '');
+          damagePct[elem] = (damagePct[elem] || 0) + v / 100;
+        } else if (k.endsWith('ResistPct')) {
+          const elem = k.replace('ResistPct', '');
+          resists[elem] = (resists[elem] || 0) + v / 100;
+        }
+      }
     }
   }
+
+  player.gearStats = {
+    armor,
+    accuracy,
+    dodge,
+    hp: hpBonus,
+    attackSpeedPct,
+    critChance,
+    critMult,
+    resists,
+  };
+  player.gearDamagePct = damagePct;
+
   player.derivedStats = player.derivedStats || {};
   const baseArmor = calcBaseArmor(player);
   player.derivedStats.armor = armor + baseArmor;
   player.derivedStats.accuracy = ACCURACY_BASE + accuracy;
   player.derivedStats.dodge = DODGE_BASE + dodge;
+  player.resists = resists;
   player.shield = player.shield || { current: 0, max: 0 };
   player.attributes = player.attributes || {};
   const mind = player.attributes.mind || 0;
@@ -53,6 +116,7 @@ export function recomputePlayerTotals(player) {
     breakthroughBonus,
     qiRegenMult,
     dropRateMult,
+    attackRatePct: attackSpeedPct,
   };
 }
 
