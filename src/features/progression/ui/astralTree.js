@@ -12,8 +12,15 @@ import {
   updateActivitySelectors,
   renderActiveActivity,
 } from '../../activity/ui/activityUI.js';
-import { computePP, W_O, W_D } from '../../../engine/pp.js';
+import { computePP, W_O } from '../../../engine/pp.js';
 import { configReport, featureFlags, devShowPP } from '../../../config.js';
+
+const getPPInputs = s => ({
+  dodge: s.derivedStats?.dodge || 0,
+  qiRegenPct: (s.qiRegenMult || 0) + (s.gearBonuses?.qiRegenMult || 0),
+  maxQiPct: ((s.astralTreeBonuses?.maxQiPct || 0) / 100) + (s.qiCapMult || 0),
+  resists: s.resists || {},
+});
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
@@ -424,7 +431,7 @@ async function buildTree() {
     lines.push(`Cost: ${info.cost ?? '-'}`);
 
     if (devShowPP) {
-      const before = computePP(S);
+      const before = computePP(S, getPPInputs(S));
       const sim = { ...S, astralTreeBonuses: { ...(S.astralTreeBonuses || {}) } };
       if (info.bonus) {
         for (const [k, v] of Object.entries(info.bonus)) {
@@ -435,10 +442,10 @@ async function buildTree() {
           }
         }
       }
-      const after = computePP(sim);
+      const after = computePP(sim, getPPInputs(sim));
       const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
-      const beforePP = W_O * before.OPP + W_D * before.DPP;
-      const afterPP = W_O * after.OPP + W_D * after.DPP;
+      const beforePP = W_O * before.OPP + before.DPP;
+      const afterPP = W_O * after.OPP + after.DPP;
       lines.push(
         `DEV:PP ${fmt(after.OPP - before.OPP)}/${fmt(after.DPP - before.DPP)}/${fmt(
           afterPP - beforePP
@@ -458,7 +465,7 @@ async function buildTree() {
         if ((S.astralPoints || 0) < (info2?.cost || 0)) return;
         const parentId = (adj[n.id] || []).find(id => allocated.has(id));
         let beforePP;
-        if (devShowPP) beforePP = computePP(S);
+        if (devShowPP) beforePP = computePP(S, getPPInputs(S));
         S.astralPoints -= info2.cost;
         allocated.add(n.id);
         applyEffects(n.id, manifest);
@@ -471,10 +478,10 @@ async function buildTree() {
           unlockStartingActivities(n.id);
         }
         if (devShowPP && beforePP) {
-          const afterPP = computePP(S);
+          const afterPP = computePP(S, getPPInputs(S));
           const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
-          const prevTotal = W_O * beforePP.OPP + W_D * beforePP.DPP;
-          const nextTotal = W_O * afterPP.OPP + W_D * afterPP.DPP;
+          const prevTotal = W_O * beforePP.OPP + beforePP.DPP;
+          const nextTotal = W_O * afterPP.OPP + afterPP.DPP;
           console.log(
             `DEV:PP ${fmt(afterPP.OPP - beforePP.OPP)}/${fmt(afterPP.DPP - beforePP.DPP)}/${fmt(
               nextTotal - prevTotal

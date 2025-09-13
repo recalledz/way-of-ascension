@@ -2,9 +2,16 @@ import { S, save } from '../../shared/state.js';
 import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 import { emit } from '../../shared/events.js';
 import { recomputePlayerTotals, canEquip } from './logic.js';
-import { computePP, W_O, W_D } from '../../engine/pp.js';
+import { computePP, W_O } from '../../engine/pp.js';
 import { devShowPP } from '../../config.js';
 export { usePill } from '../alchemy/mutators.js'; // deprecated shim
+
+const getPPInputs = s => ({
+  dodge: s.derivedStats?.dodge || 0,
+  qiRegenPct: (s.qiRegenMult || 0) + (s.gearBonuses?.qiRegenMult || 0),
+  maxQiPct: ((s.astralTreeBonuses?.maxQiPct || 0) / 100) + (s.qiCapMult || 0),
+  resists: s.resists || {},
+});
 
 export function addToInventory(item, state = S) {
   state.inventory = state.inventory || [];
@@ -53,8 +60,8 @@ export function equipItem(item, slot = null, state = S) {
   const info = canEquip(item, slot, state);
   if (!info) return false;
   const slotKey = info.slot;
-  const prevPP = computePP(state);
-  const prevTotal = W_O * prevPP.OPP + W_D * prevPP.DPP;
+  const prevPP = computePP(state, getPPInputs(state));
+  const prevTotal = W_O * prevPP.OPP + prevPP.DPP;
   const existing = state.equipment[slotKey];
   const existingKey = typeof existing === 'string' ? existing : existing?.key;
   if (existingKey && existingKey !== 'fist') addToInventory(existing, state);
@@ -63,8 +70,8 @@ export function equipItem(item, slot = null, state = S) {
   removeFromInventory(id, state);
   console.log('[equip]', 'slot→', slotKey, 'item→', item.key);
   recomputePlayerTotals(state);
-  const nextPP = computePP(state);
-  const nextTotal = W_O * nextPP.OPP + W_D * nextPP.DPP;
+  const nextPP = computePP(state, getPPInputs(state));
+  const nextTotal = W_O * nextPP.OPP + nextPP.DPP;
   if (devShowPP) {
     const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
     const opp = nextPP.OPP - prevPP.OPP;
@@ -81,15 +88,15 @@ export function equipItem(item, slot = null, state = S) {
 export function unequip(slot, state = S) {
   const item = state.equipment[slot];
   if (!item) return;
-  const prevPP = computePP(state);
-  const prevTotal = W_O * prevPP.OPP + W_D * prevPP.DPP;
+  const prevPP = computePP(state, getPPInputs(state));
+  const prevTotal = W_O * prevPP.OPP + prevPP.DPP;
   const key = typeof item === 'string' ? item : item.key;
   if (key !== 'fist') addToInventory(item, state);
   state.equipment[slot] = null;
   console.log('[equip]', 'slot→', slot, 'item→', 'none');
   recomputePlayerTotals(state);
-  const nextPP = computePP(state);
-  const nextTotal = W_O * nextPP.OPP + W_D * nextPP.DPP;
+  const nextPP = computePP(state, getPPInputs(state));
+  const nextTotal = W_O * nextPP.OPP + nextPP.DPP;
   if (devShowPP) {
     const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
     const opp = nextPP.OPP - prevPP.OPP;

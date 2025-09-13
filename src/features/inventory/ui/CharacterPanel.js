@@ -8,11 +8,18 @@ import { GEAR_ICONS } from '../../gearGeneration/data/gearIcons.js';
 import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
-import { computePP, W_O, W_D } from '../../../engine/pp.js';
+import { computePP, W_O } from '../../../engine/pp.js';
 import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
 import { qiCostPerShield, QI_PER_SHIELD_BASE } from '../../combat/logic.js';
 import { getAgilityBonuses } from '../../agility/selectors.js';
 import { getLawBonuses } from '../../progression/logic.js';
+
+const getPPInputs = s => ({
+  dodge: s.derivedStats?.dodge || 0,
+  qiRegenPct: (s.qiRegenMult || 0) + (s.gearBonuses?.qiRegenMult || 0),
+  maxQiPct: ((s.astralTreeBonuses?.maxQiPct || 0) / 100) + (s.qiCapMult || 0),
+  resists: s.resists || {},
+});
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -236,13 +243,13 @@ function computeItemPPDelta(item, state = S) {
   if (!slot) return null;
   const temp = JSON.parse(JSON.stringify(state));
   recomputePlayerTotals(temp);
-  const prev = computePP(temp);
-  const prevTotal = W_O * prev.OPP + W_D * prev.DPP;
+  const prev = computePP(temp, getPPInputs(temp));
+  const prevTotal = W_O * prev.OPP + prev.DPP;
   temp.equipment = temp.equipment || {};
   temp.equipment[slot] = { ...item };
   recomputePlayerTotals(temp);
-  const next = computePP(temp);
-  const nextTotal = W_O * next.OPP + W_D * next.DPP;
+  const next = computePP(temp, getPPInputs(temp));
+  const nextTotal = W_O * next.OPP + next.DPP;
   return {
     opp: next.OPP - prev.OPP,
     dpp: next.DPP - prev.DPP,

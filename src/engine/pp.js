@@ -1,5 +1,13 @@
 import { calcArmor, calculatePlayerAttackSnapshot } from '../features/progression/logic.js';
 import { REALMS } from '../features/progression/data/realms.js';
+import {
+  drFromArmor,
+  dEhpFromHP,
+  dEhpFromDodge,
+  dEhpFromRes,
+  dEhpFromQiRegenPct,
+  dEhpFromMaxQiPct,
+} from '../lib/power/ehp.js';
 
 export const W_O = 0.6;
 export const W_D = 0.4;
@@ -12,7 +20,7 @@ export const W_D = 0.4;
  * @param {object} state Player or global state object
  * @returns {{ OPP: number, DPP: number }}
  */
-export function computePP(state) {
+export function computePP(state, opts = {}) {
   const snap = calculatePlayerAttackSnapshot(state);
   const combinePct = elem =>
     (snap.gearPct?.all || 0) +
@@ -28,9 +36,24 @@ export function computePP(state) {
 
   OPP *= 1 + (snap.power?.opFromCult || 0);
 
-  const baseArmor = state.derivedStats?.armor ?? calcArmor(state);
-  const baseHP = state.hpMax || state.hp || 0;
-  const DPP = (baseHP + baseArmor) * (1 + (snap.power?.dpFromCult || 0));
+  const baseArmor = opts.armor ?? state.derivedStats?.armor ?? calcArmor(state);
+  const baseHP = opts.hp ?? state.hpMax || state.hp || 0;
+  const dodge = opts.dodge ?? state.derivedStats?.dodge || 0;
+  const resists = opts.resists ?? state.resists || {};
+  const qiRegenPct = opts.qiRegenPct ?? (state.qiRegenMult || 0) + (state.gearBonuses?.qiRegenMult || 0);
+  const maxQiPct = opts.maxQiPct ?? ((state.astralTreeBonuses?.maxQiPct || 0) / 100) + (state.qiCapMult || 0);
+
+  let dpp = 0;
+  dpp += dEhpFromHP(baseHP);
+  const armorDR = drFromArmor(baseArmor);
+  dpp += dEhpFromRes(armorDR);
+  dpp += dEhpFromDodge(dodge / 100);
+  for (const val of Object.values(resists)) {
+    dpp += dEhpFromRes(val);
+  }
+  dpp += dEhpFromQiRegenPct(qiRegenPct);
+  dpp += dEhpFromMaxQiPct(maxQiPct);
+  const DPP = dpp * 100 * W_D;
   return { OPP, DPP };
 }
 
@@ -44,7 +67,7 @@ export function computePP(state) {
  */
 export function breakthroughPPSnapshot(state) {
   const before = computePP(state);
-  const beforePP = W_O * before.OPP + W_D * before.DPP;
+  const beforePP = W_O * before.OPP + before.DPP;
 
   // Deep clone relevant pieces to simulate the breakthrough
   const sim = JSON.parse(JSON.stringify(state));
@@ -61,7 +84,7 @@ export function breakthroughPPSnapshot(state) {
   }
 
   const after = computePP(sim);
-  const afterPP = W_O * after.OPP + W_D * after.DPP;
+  const afterPP = W_O * after.OPP + after.DPP;
   const diff = {
     OPP: after.OPP - before.OPP,
     DPP: after.DPP - before.DPP,
