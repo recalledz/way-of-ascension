@@ -6,6 +6,7 @@ import { log } from '../../shared/utils/dom.js';
 import { canLearnSkill } from './logic.js';
 import { clamp, fCap, foundationGainPerMeditate } from './selectors.js';
 import { unlockRecipe } from '../alchemy/mutators.js';
+import { logPPEvent } from '../../engine/ppLog.js';
 
 export function advanceRealm(state = progressionState) {
   const wasRealmAdvancement = state.realm.stage > REALMS[state.realm.tier].stages;
@@ -86,6 +87,7 @@ export function advanceRealm(state = progressionState) {
 
   checkLawUnlocks(state);
   awardLawPoints(state);
+  logPPEvent(state, 'realm_breakthrough', { type: result.type, realm: state.realm.tier, stage: state.realm.stage });
   return result;
 }
 

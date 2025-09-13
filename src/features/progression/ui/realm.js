@@ -19,6 +19,7 @@ import { mountAllFeatureUIs } from '../../index.js';
 import { startActivity as startActivityMut, stopActivity as stopActivityMut } from '../../activity/mutators.js';
 import { renderPillIcons } from '../../alchemy/ui/pillIcons.js';
 import { computePP, breakthroughPPSnapshot, gatherDefense, W_O } from '../../../engine/pp.js';
+import { downloadPPLogCSV } from '../../../engine/ppLog.js';
 
 let pendingAstralUnlock = false;
 
@@ -555,5 +556,8 @@ export function initRealmUI(){
   const astralBackdrop = astralOverlay?.querySelector('.modal-backdrop');
   if (closeAstralBtn) closeAstralBtn.addEventListener('click', hideAstralTreeUnlockOverlay);
   if (astralBackdrop) astralBackdrop.addEventListener('click', hideAstralTreeUnlockOverlay);
+
+  const ppLogBtn = qs('#downloadPPLogBtn');
+  if (ppLogBtn) ppLogBtn.addEventListener('click', () => downloadPPLogCSV(S));
 }
 

@@ -188,6 +188,7 @@ export const defaultState = () => {
   sideLocations: structuredClone(sideLocationState),
   tutorial: structuredClone(tutorialState),
   notifications: [],
+  ppLog: [],
   };
 };
 

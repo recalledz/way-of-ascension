@@ -14,6 +14,7 @@ import {
 } from '../../activity/ui/activityUI.js';
 import { computePP, gatherDefense, W_O } from '../../../engine/pp.js';
 import { configReport, featureFlags, devShowPP } from '../../../config.js';
+import { logPPEvent } from '../../../engine/ppLog.js';
 
 const STORAGE_KEY = 'astralTreeAllocated';
 // Starting nodes must match the roots in the astral_tree.json dataset
@@ -462,6 +463,7 @@ async function buildTree() {
         S.astralPoints -= info2.cost;
         allocated.add(n.id);
         applyEffects(n.id, manifest);
+        logPPEvent(S, 'astral_node', { node: n.id });
         saveAllocations(allocated);
         updateInsight();
         refreshClasses();

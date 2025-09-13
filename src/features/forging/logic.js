@@ -2,6 +2,7 @@ import { S } from '../../shared/state.js';
 import { log } from '../../shared/utils/dom.js';
 import { getAgilityEffects } from '../agility/logic.js';
 import { getBuildingBonuses } from '../sect/selectors.js';
+import { logPPEvent } from '../../engine/ppLog.js';
 
 export function getForgingTime(tier, state = S) {
   const baseMinutes = tier === 0 ? 1 : Math.pow(3, tier + 1);
@@ -46,6 +47,7 @@ export function advanceForging(state = S) {
       item.element = job.element;
       item.tier = job.targetTier;
       log?.(`Finished forging ${item.name || item.id} to tier ${item.tier}`, 'good');
+      logPPEvent(state, 'forging_upgrade', { itemId: item.id || job.itemId, tier: item.tier });
     }
     state.forging.exp += 10;
     while (state.forging.exp >= state.forging.expMax) {

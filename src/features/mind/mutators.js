@@ -13,6 +13,7 @@ import {
   applyManualEffects,
 } from './logic.js';
 import { on } from '../../shared/events.js';
+import { logPPEvent } from '../../engine/ppLog.js';
 
 export function awardFromProficiency(S, profXp) {
   const add = calcFromProficiency(profXp);
@@ -46,6 +47,7 @@ export function debugLevelManual(S) {
   rec.level += 1;
   rec.xp = 0;
   applyManualEffects(S, manual, rec.level);
+  logPPEvent(S, 'manual_level', { manualId: id, level: rec.level });
   if (rec.level >= manual.maxLevel) {
     stopReading(S);
   }
@@ -94,6 +96,7 @@ export function onTick(S, dt) {
     rec.xp -= needed;
     rec.level += 1;
     applyManualEffects(S, manual, rec.level);
+    logPPEvent(S, 'manual_level', { manualId: id, level: rec.level });
     if (rec.level >= manual.maxLevel) {
       stopReading(S);
     }
