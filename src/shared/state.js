@@ -57,6 +57,7 @@ export const defaultState = () => {
   foundation: 0,
   astralPoints: 50,
   coin: 0,
+  ppHistory: { samples: [], startedAt: 0, lastAt: 0 },
   ...initHp(baseHP),
   shield: { current: 0, max: 0 },
   autoFillShieldFromQi: true,
