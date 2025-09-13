@@ -70,6 +70,7 @@ way-of-ascension/
 │   ├── data/
 │   │   └── status.ts
 │   ├── engine/
+│   │   ├── pp.js
 │   │   └── combat/
 │   │       └── stun.js
 │   ├── features/
@@ -405,6 +406,12 @@ way-of-ascension/
 ├── src/features/alchemy/test.js
 ├── src/features/settings/ui/settingsDisplay.js
 ├── src/features/tutorial/steps.js
+├── src/lib/
+│   ├── index.js
+│   └── power/
+│       ├── index.js
+│       ├── pp.js
+│       └── pp.test.js
 └── style.css
 ```
 
@@ -1039,6 +1046,12 @@ Paths added:
 ### Engine (`src/engine/`)
 - `src/engine/combat/stun.js` – Handles stun accumulation, decay, and status application.
 - `src/engine/pp.js` – Computes offensive, defensive, and total power points for the player.
+
+### Library (`src/lib/`)
+- `src/lib/index.js` – Entry point for shared libraries.
+- `src/lib/power/index.js` – Exports power calculation utilities.
+- `src/lib/power/pp.js` – Power point calculation helpers.
+- `src/lib/power/pp.test.js` – Tests for power point calculations.
 
 ### Combat Feature (`src/features/combat/`)
 - `src/features/combat/logic.js` – Core combat calculations such as armor mitigation and shield handling.

@@ -25,7 +25,7 @@ export function computePP(state) {
 
   opp *= 1 + (snap.power?.opFromCult || 0);
 
-  const baseArmor = state.derivedStats?.armor ?? calcArmor(state);
+  const baseArmor = state.derivedStats?.armor ?? calcArmor(state, state.gearStats?.armor || 0);
   const baseHP = state.hpMax || state.hp || 0;
   const dpp = (baseHP + baseArmor) * (1 + (snap.power?.dpFromCult || 0));
   const pp = opp + dpp;
@@ -54,13 +54,11 @@ export function breakthroughPPSnapshot(state) {
     sim.realm.stage = 1;
     const realmBonus = Math.max(1, Math.floor(sim.realm.tier * 1.5));
     sim.atkBase += realmBonus * 2;
-    sim.armorBase += realmBonus;
   } else {
     // Stage advancement
     sim.realm.stage++;
     const stageBonus = Math.max(1, Math.floor((sim.realm.tier + 1) * 0.5));
     sim.atkBase += stageBonus;
-    sim.armorBase += Math.floor(stageBonus * 0.7);
   }
 
   const after = computePP(sim);

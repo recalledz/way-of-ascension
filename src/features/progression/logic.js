@@ -130,13 +130,12 @@ export function calcAtk(state = progressionState){
   return Math.floor((base + temp + karma) * profMult * (lawBonuses.atk || 1));
 }
 
-export function calcArmor(state = progressionState){
+export function calcArmor(state = progressionState, gearArmor = 0){
   const lawBonuses = getLawBonuses(state);
-  const base = Number(state.armorBase) || 0;
   const temp = Number(state.tempArmor) || 0;
   const karma = Number(karmaArmorBonus(state)) || 0;
   const astral = 1 + (state.astralTreeBonuses?.armorPct || 0) / 100;
-  return Math.floor((base + temp + karma) * (lawBonuses.armor || 1) * astral);
+  return Math.floor((gearArmor + temp + karma) * (lawBonuses.armor || 1) * astral);
 }
 
 export function getStatEffects(state = progressionState) {

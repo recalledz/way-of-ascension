@@ -22,7 +22,6 @@ export const progressionState = {
     },
   },
   atkBase: 5,
-  armorBase: 2,
   tempAtk: 0,
   tempArmor: 0,
     alchemy: { successBonus: 0 },

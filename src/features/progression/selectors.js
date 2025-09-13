@@ -53,8 +53,8 @@ export function calcAtk(state = progressionState) {
   return calcCalcAtk(state);
 }
 
-export function calcArmor(state = progressionState) {
-  return calcCalcArmor(state);
+export function calcArmor(state = progressionState, gearArmor = 0) {
+  return calcCalcArmor(state, gearArmor);
 }
 
 export function getCultivationPower(state = progressionState) {
