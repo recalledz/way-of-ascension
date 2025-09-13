@@ -115,12 +115,11 @@ function applyAbilityResult(abilityKey, res, state) {
         mult *= 1 + mods.damagePct / 100;
       }
 
-      let treeMult = 1;
-      const gearPct = {};
+      const pct = {};
       if (isSpell) {
         if (weapon.classKey === 'focus') {
           const profBonus = getWeaponProficiencyBonuses(state).damageMult - 1;
-          if (profBonus) gearPct.all = profBonus;
+          if (profBonus) pct.all = (pct.all || 0) + profBonus;
         }
         const { spellPowerMult } = getStatEffects(state);
         const spellDamage = state.derivedStats?.spellDamage || 0;
@@ -128,16 +127,17 @@ function applyAbilityResult(abilityKey, res, state) {
         mult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
       } else {
         const bonusKey = type === 'physical' ? 'physicalDamagePct' : `${type}DamagePct`;
-        treeMult = 1 + (state.astralTreeBonuses?.[bonusKey] || 0) / 100;
+        const treePct = (state.astralTreeBonuses?.[bonusKey] || 0) / 100;
+        pct[type === 'physical' ? 'physical' : type] = treePct;
+        const profBonus = getWeaponProficiencyBonuses(state).damageMult - 1;
+        if (profBonus) pct.all = (pct.all || 0) + profBonus;
       }
 
       const profile =
         type === 'physical'
           ? { phys: amount, elems: {} }
           : { phys: 0, elems: { [type]: amount } };
-      const astralPct = { [type === 'physical' ? 'physical' : type]: treeMult - 1 };
-      const manualPct = {};
-      if (mult !== 1) manualPct.all = mult - 1;
+      const globalPct = mult - 1;
       const { total: dealt, components } = processAttack(
         profile,
         weapon,
@@ -145,9 +145,8 @@ function applyAbilityResult(abilityKey, res, state) {
           target: atkTarget,
           attacker: state,
           nowMs: now,
-          astralPct,
-          manualPct,
-          gearPct,
+          pct,
+          globalPct,
           critChance: 0,
           critMult: 1,
           attackSpeed: 1,
