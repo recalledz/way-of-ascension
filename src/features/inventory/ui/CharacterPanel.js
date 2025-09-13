@@ -9,7 +9,7 @@ import { usePill } from '../../alchemy/mutators.js';
 import { ALCHEMY_RECIPES } from '../../alchemy/data/recipes.js';
 import { PILL_LINES } from '../../alchemy/data/pills.js';
 import { computePP } from '../../../engine/pp.js';
-import { calculatePlayerAttackSnapshot } from '../../progression/selectors.js';
+import { calculatePlayerAttackSnapshot, calcAtk } from '../../progression/selectors.js';
 
 // Consolidated equipment/inventory panel
 let currentFilter = 'all';
@@ -151,7 +151,7 @@ function renderStats() {
   const defs = [
     { id: 'hp', value: () => `${S.hp}/${S.hpMax}` },
     { id: 'shield', value: () => `${S.shield?.current || 0}/${S.shield?.max || 0}` },
-    { id: 'atkBase', value: () => S.atkBase },
+    { id: 'atkBase', value: () => Math.round(calcAtk(S)) },
     { id: 'armorBase', value: () => S.armorBase },
     { id: 'armor', stat: 'armor' },
     { id: 'physique', stat: 'physique' },
