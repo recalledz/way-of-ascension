@@ -73,7 +73,9 @@ way-of-ascension/
 │   │   ├── combat/
 │   │   │   └── stun.js
 │   │   ├── enemyPP.js
-│   │   └── pp.js
+│   │   ├── pp.js
+│   │   ├── ppHistory.js
+│   │   └── ppLog.js
 │   ├── lib/
 │   │   ├── index.js
 │   │   └── power/
@@ -1049,6 +1051,8 @@ Paths added:
 - `src/engine/combat/stun.js` – Handles stun accumulation, decay, and status application.
 - `src/engine/pp.js` – Computes offensive, defensive, and total power points for the player.
 - `src/engine/enemyPP.js` – Enemy-focused power helpers mirroring player PP formulas.
+- `src/engine/ppHistory.js` – Maintains rolling PP samples for hourly and overall averages.
+- `src/engine/ppLog.js` – Logs PP events and supports downloading the log as CSV.
 
 ### Shared Library (`src/lib/`)
 - `src/lib/index.js` – Root exports for shared helper modules.
