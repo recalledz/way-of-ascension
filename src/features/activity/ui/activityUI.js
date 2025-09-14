@@ -9,6 +9,7 @@ import { fCap, qCap } from "../../progression/selectors.js";
 import { getBuildingLevel } from "../../sect/selectors.js";
 import { fmt } from "../../../shared/utils/number.js";
 import { configReport } from "../../../config.js";
+import { xpProgress as mindXpProgress } from "../../mind/index.js";
 
 export function mountActivityUI(root) {
   const handle = name => {
@@ -26,6 +27,7 @@ export function mountActivityUI(root) {
   document.getElementById('agilitySelector')?.addEventListener('click', () => handle('agility'));
   document.getElementById('miningSelector')?.addEventListener('click', () => handle('mining'));
   document.getElementById('gatheringSelector')?.addEventListener('click', () => handle('gathering'));
+  document.getElementById('mindSelector')?.addEventListener('click', () => handle('mind'));
   document.getElementById('adventureSelector')?.addEventListener('click', () => handle('adventure'));
   document.getElementById('sectSelector')?.addEventListener('click', () => handle('sect'));
   document.getElementById('librarySelector')?.addEventListener('click', () => handle('library'));
@@ -70,6 +72,7 @@ export function updateActivitySelectors(root) {
   root.agility  ??= { level: 1, exp: 0, expMax: 100 };
   root.mining   ??= { level: 1, exp: 0, expMax: 100 };
   root.gathering ??= { level: 1, exp: 0, expMax: 100 };
+  root.mind ??= { level: 1, xp: 0 };
   root.catching ??= { level: 1, exp: 0, expMax: 100 };
 
   const kitchenBuilt = getBuildingLevel('kitchen', root) > 0;
@@ -171,6 +174,21 @@ export function updateActivitySelectors(root) {
     if (gatheringText) gatheringText.textContent = `${fmt(root.gathering.exp)} / ${fmt(root.gathering.expMax)}`;
   }
 
+  // Mind
+  const mindSel = document.getElementById('mindSelector');
+  const mindFill = document.getElementById('mindSelectorFill');
+  const mindInfo = document.getElementById('mindInfo');
+  mindSel?.classList.toggle('active', selected === 'mind');
+  mindSel?.classList.toggle('running', root.activities?.mind);
+  if (mindFill && mindInfo) {
+    const prog = mindXpProgress(root.mind.xp || 0);
+    const expPct = (prog.current / prog.next) * 100;
+    mindFill.style.width = `${expPct}%`;
+    mindInfo.textContent = root.activities?.mind ? 'Training...' : `Level ${root.mind.level}`;
+    const mindText = document.getElementById('mindProgressTextSidebar');
+    if (mindText) mindText.textContent = `${fmt(prog.current)} / ${fmt(prog.next)}`;
+  }
+
   // Catching
   const catchSel = document.getElementById('catchingSelector');
   const catchFill = document.getElementById('catchingProgressFill');
@@ -216,6 +234,7 @@ export function updateCurrentTaskDisplay(root) {
     physique: 'Physique Training',
     mining: 'Mining',
     gathering: 'Gathering',
+    mind: 'Mind Training',
     forging: 'Forging',
     agility: 'Agility Training',
     adventure: 'Adventuring',

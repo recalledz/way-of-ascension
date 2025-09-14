@@ -109,6 +109,12 @@ const activityMeta = {
     fillId: 'gatheringSelectorFill',
     textId: 'gatheringProgressText'
   },
+  mind: {
+    icon: 'mdi:brain',
+    infoId: 'mindInfo',
+    fillId: 'mindSelectorFill',
+    textId: 'mindProgressTextSidebar'
+  },
   forging: {
     icon: 'mdi:anvil',
     infoId: 'forgingLevelSidebar',
