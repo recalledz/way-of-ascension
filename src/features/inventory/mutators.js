@@ -2,7 +2,7 @@ import { S, save } from '../../shared/state.js';
 import { WEAPONS } from '../weaponGeneration/data/weapons.js';
 import { emit } from '../../shared/events.js';
 import { recomputePlayerTotals, canEquip } from './logic.js';
-import { computePP, gatherDefense, W_O } from '../../engine/pp.js';
+import { computePP, gatherDefense, W_O, W_D } from '../../engine/pp.js';
 import { logPPEvent } from '../../engine/ppLog.js';
 import { devShowPP } from '../../config.js';
 export { usePill } from '../alchemy/mutators.js'; // deprecated shim
@@ -55,7 +55,7 @@ export function equipItem(item, slot = null, state = S) {
   if (!info) return false;
   const slotKey = info.slot;
   const prevPP = computePP(state, gatherDefense(state));
-  const prevTotal = W_O * prevPP.OPP + prevPP.DPP;
+  const prevTotal = W_O * prevPP.OPP + W_D * prevPP.DPP;
   const existing = state.equipment[slotKey];
   const existingKey = typeof existing === 'string' ? existing : existing?.key;
   if (existingKey && existingKey !== 'fist') addToInventory(existing, state);
@@ -65,7 +65,7 @@ export function equipItem(item, slot = null, state = S) {
   console.log('[equip]', 'slot→', slotKey, 'item→', item.key);
   recomputePlayerTotals(state);
   const nextPP = computePP(state, gatherDefense(state));
-  const nextTotal = W_O * nextPP.OPP + nextPP.DPP;
+  const nextTotal = W_O * nextPP.OPP + W_D * nextPP.DPP;
   if (devShowPP) {
     const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
     const opp = nextPP.OPP - prevPP.OPP;
@@ -84,14 +84,14 @@ export function unequip(slot, state = S) {
   const item = state.equipment[slot];
   if (!item) return;
   const prevPP = computePP(state, gatherDefense(state));
-  const prevTotal = W_O * prevPP.OPP + prevPP.DPP;
+  const prevTotal = W_O * prevPP.OPP + W_D * prevPP.DPP;
   const key = typeof item === 'string' ? item : item.key;
   if (key !== 'fist') addToInventory(item, state);
   state.equipment[slot] = null;
   console.log('[equip]', 'slot→', slot, 'item→', 'none');
   recomputePlayerTotals(state);
   const nextPP = computePP(state, gatherDefense(state));
-  const nextTotal = W_O * nextPP.OPP + nextPP.DPP;
+  const nextTotal = W_O * nextPP.OPP + W_D * nextPP.DPP;
   if (devShowPP) {
     const fmt = n => (n >= 0 ? '+' : '') + n.toFixed(2);
     const opp = nextPP.OPP - prevPP.OPP;

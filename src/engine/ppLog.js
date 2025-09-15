@@ -1,4 +1,4 @@
-import { computePP, gatherDefense, W_O } from './pp.js';
+import { computePP, gatherDefense, W_O, W_D } from './pp.js';
 
 /**
  * Log a Power Points event. `meta.before` can include a pre-change
@@ -12,10 +12,10 @@ export function logPPEvent(state, kind, meta = {}) {
   if (!state) return;
   const before = meta.before;
   const after = computePP(state, gatherDefense(state));
-  const afterTotal = W_O * after.OPP + after.DPP;
+  const afterTotal = W_O * after.OPP + W_D * after.DPP;
   let diff;
   if (before) {
-    const beforeTotal = W_O * before.OPP + before.DPP;
+    const beforeTotal = W_O * before.OPP + W_D * before.DPP;
     diff = {
       OPP: after.OPP - before.OPP,
       DPP: after.DPP - before.DPP,
