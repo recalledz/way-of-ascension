@@ -2,7 +2,7 @@
 export const ENEMY_DATA = {
   // === PEACEFUL FOREST (Starting Zone) ===
   // Low-level creatures for beginners
-  'Forest Rabbit': { 
+  'Forest Rabbit': {
     name: 'Forest Rabbit',
     hp: 45,
     attack: 3,
@@ -11,28 +11,28 @@ export const ENEMY_DATA = {
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 2, wood: 1 }
   },
-  'Wild Boar': { 
+  'Wild Boar': {
     name: 'Wild Boar',
-    hp: 75,
-    attack: 5,
+    hp: 51.7,
+    attack: 4.48,
     accuracy: 50,
     attackRate: 0.9,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { stones: 4, ore: 1 } 
+    loot: { stones: 4, ore: 1 }
   },
-  'River Frog': { 
+  'River Frog': {
     name: 'River Frog',
-    hp: 60,
-    attack: 4,
+    hp: 59.5,
+    attack: 4.11,
     accuracy: 50,
     attackRate: 1.1,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 3, wood: 1 }
   },
-  'Honey Bee': { 
+  'Honey Bee': {
     name: 'Honey Bee',
-    hp: 36,
-    attack: 5,
+    hp: 68.4,
+    attack: 3.37,
     accuracy: 50,
     attackRate: 1.5,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
@@ -42,37 +42,37 @@ export const ENEMY_DATA = {
 
   // === ENCHANTED GROVE ===
   // Magical forest creatures with nature-based loot
-  'Tree Sprite': { 
+  'Tree Sprite': {
     name: 'Tree Sprite',
-    hp: 90,
-    attack: 6,
+    hp: 78.7,
+    attack: 5.66,
     accuracy: 55,
     attackRate: 1.0,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { wood: 4 }
   },
-  'Stone Lizard': { 
+  'Stone Lizard': {
     name: 'Stone Lizard',
-    hp: 120,
-    attack: 7,
+    hp: 90.5,
+    attack: 7.93,
     accuracy: 55,
     attackRate: 0.8,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { stones: 5, ore: 2 } 
+    loot: { stones: 5, ore: 2 }
   },
-  'Water Snake': { 
+  'Water Snake': {
     name: 'Water Snake',
-    hp: 84,
-    attack: 8,
+    hp: 104.1,
+    attack: 5.93,
     accuracy: 55,
     attackRate: 1.2,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { wood: 2, venom: 1 }
   },
-  'Grass Wolf': { 
+  'Grass Wolf': {
     name: 'Grass Wolf',
-    hp: 150,
-    attack: 10,
+    hp: 119.7,
+    attack: 7.96,
     accuracy: 55,
     attackRate: 1.0,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
@@ -82,19 +82,19 @@ export const ENEMY_DATA = {
 
   // === ANCIENT RUINS ===
   // Guardians and spirits protecting old secrets
-  'Ruin Guardian': { 
+  'Ruin Guardian': {
     name: 'Ruin Guardian',
-    hp: 240,
-    attack: 15,
+    hp: 137.7,
+    attack: 12.73,
     accuracy: 60,
     attackRate: 0.7,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { ore: 3, ancientRelic: 1 } 
+    loot: { ore: 3, ancientRelic: 1 }
   },
-  'Forest Spirit': { 
+  'Forest Spirit': {
     name: 'Forest Spirit',
-    hp: 360,
-    attack: 20,
+    hp: 949.8,
+    attack: 33.28,
     accuracy: 60,
     attackRate: 0.9,
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
