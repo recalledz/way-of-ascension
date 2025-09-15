@@ -79,15 +79,26 @@ const TARGET_TTK = 11; // seconds to kill enemy
 const TARGET_TTF = 50; // seconds for enemy to defeat player
 
 function tuneEnemyStats(enemy, playerDps, playerEhp) {
+  const baseHp = enemy.hpMax ?? enemy.hp ?? 0;
+  const baseAttack = enemy.attack ?? 0;
+
   if (playerDps > 0) {
-    const hpScale = (playerDps * TARGET_TTK) / 100;
-    enemy.hpMax = (enemy.hpMax || enemy.hp || 0) * hpScale;
-    enemy.hp = (enemy.hp || enemy.hpMax) * hpScale;
+    const targetHp = playerDps * TARGET_TTK;
+    const finalHp = Math.max(baseHp, targetHp);
+    enemy.hpMax = finalHp;
+    enemy.hp = finalHp;
+  } else {
+    enemy.hpMax = baseHp;
+    enemy.hp = baseHp;
   }
+
   if (playerEhp > 0) {
-    const atkScale = playerEhp / TARGET_TTF;
-    enemy.attack *= atkScale;
+    const scaledAttack = baseAttack * (playerEhp / TARGET_TTF);
+    enemy.attack = Math.max(baseAttack, scaledAttack);
+  } else {
+    enemy.attack = baseAttack;
   }
+
   return enemy;
 }
 
