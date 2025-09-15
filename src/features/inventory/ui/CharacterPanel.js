@@ -72,6 +72,12 @@ const ELEMENT_COLORS = {
   fire: '#ff4500'
 };
 
+// Basic icons for raw materials displayed in the inventory
+const MATERIAL_ICONS = {
+  wood: '🪵',
+  stones: '🪨',
+};
+
 const IMPLICIT_STAT_LABELS = {
   accuracy: 'Accuracy',
   criticalChance: 'Critical Chance',
@@ -636,13 +642,20 @@ function createInventoryRow(item) {
   }
   const icon = item.icon || (item.type === 'weapon'
     ? WEAPON_ICONS[item.classKey]
-    : GEAR_ICONS[item.slot || item.type]);
+    : item.type === 'material'
+      ? MATERIAL_ICONS[item.key]
+      : GEAR_ICONS[item.slot || item.type]);
   const rarity = item.rarity;
   const rarityColor = RARITY_COLORS[rarity] || '';
   const rarityPrefix = rarity && rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
   const displayName = rarityPrefix + (item.name || item.key);
   const stars = QUALITY_STARS[item?.quality] || '';
-  const baseNameHtml = icon ? `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon> ${displayName}` : displayName;
+  const iconHtml = icon
+    ? item.type === 'material'
+      ? `<span class="weapon-icon">${icon}</span>`
+      : `<iconify-icon icon="${icon}" class="weapon-icon"></iconify-icon>`
+    : '';
+  const baseNameHtml = iconHtml ? `${iconHtml} ${displayName}` : displayName;
   const coloredNameHtml = rarityColor ? `<span style="color:${rarityColor}">${baseNameHtml}</span>` : baseNameHtml;
   const nameHtml = stars ? `${stars} ${coloredNameHtml}` : coloredNameHtml;
   row.innerHTML = `<span class="inv-name">${nameHtml}</span> <span class="inv-qty">${item.qty || 1}</span>`;
