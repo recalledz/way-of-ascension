@@ -45,7 +45,7 @@ way-of-ascension/
 │   │   ├── Palms-and-fists.md
 │   │   ├── status-effects.md
 │   │   ├── ui-improvements.md
-│   │   ├── weapons-guidlines.md
+│   │   ├── weapons-guidelines.md
 │   │   └── stats-to-implement.md
 │   ├── ai-verification-protocol.md
 │   ├── balance-protocol.md
