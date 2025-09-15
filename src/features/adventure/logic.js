@@ -75,6 +75,20 @@ function rarityFromAffixCount(count) {
   return RARITY_NAMES[Math.min(count, RARITY_NAMES.length - 1)];
 }
 
+function getCurrentAdventureStage() {
+  if (!S.adventure) return 1;
+  const { currentArea, selectedArea } = S.adventure;
+  const indices = [currentArea, selectedArea]
+    .map(v => (typeof v === 'number' ? v : Number.parseInt(v, 10)))
+    .filter(n => Number.isFinite(n));
+  const areaIndex = indices.length ? Math.max(...indices) : 0;
+  return areaIndex + 1;
+}
+
+function shouldRollAdventureAffixes() {
+  return getCurrentAdventureStage() > 3;
+}
+
 const TARGET_TTK = 11; // seconds to kill enemy
 const TARGET_TTF = 50; // seconds for enemy to defeat player
 
@@ -1257,9 +1271,12 @@ export function startBossCombat() {
   const { enemyHP, enemyMax, atk, armor } = initializeFight(bossData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
 
-  // Bosses get more affixes
-  applyRandomAffixes(h);
-  const affixCount = applyRandomAffixes(h); // Apply twice for more challenge
+  // Bosses get more affixes once the player is deep enough into adventure
+  let affixCount = 0;
+  if (shouldRollAdventureAffixes()) {
+    applyRandomAffixes(h);
+    affixCount = applyRandomAffixes(h); // Apply twice for more challenge
+  }
   const rarity = rarityFromAffixCount(affixCount);
 
   let enemyObj = {
@@ -1325,7 +1342,10 @@ export function startAdventureCombat() {
   }
   const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
-  const affixCount = applyRandomAffixes(h);
+  let affixCount = 0;
+  if (shouldRollAdventureAffixes()) {
+    affixCount = applyRandomAffixes(h);
+  }
   const rarity = rarityFromAffixCount(affixCount);
   let enemyObj = {
     ...enemyData,
@@ -1404,7 +1424,10 @@ function startDungeonEncounter() {
   const enemyData = { ...base, hp: base.hp * 2, attack: base.attack * 2, element: dungeon.element };
   const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
-  const affixCount = applyRandomAffixes(h);
+  let affixCount = 0;
+  if (shouldRollAdventureAffixes()) {
+    affixCount = applyRandomAffixes(h);
+  }
   const rarity = rarityFromAffixCount(affixCount);
   let enemyObj = {
     ...enemyData,
