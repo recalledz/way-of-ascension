@@ -446,40 +446,97 @@ S = {
   // Core progression
   ver: SAVE_VERSION,
   time: 0,
-  qi: 100, qiMax: 100, qiRegenPerSec: 1,
+  qi: 100,
+  qiMax: 100,
+  qiRegenPerSec: 1,
+  qiCapMult: 0,
+  qiRegenMult: 0,
   foundation: 0,
   realm: { tier: 0, stage: 1 },
-  
+
   // Resources
-  stones: 0, herbs: 0, ore: 0, wood: 0, cores: 0,
-  pills: { qi: 0, body: 0, ward: 0 },
-  
+  wood: 0,
+  spiritWood: 0,
+  cores: 0,
+  iron: 0,
+  oreDust: 0,
+  herbs: 0,
+  aromaticHerb: 0,
+  meat: 0,
+  cookedMeat: 0,
+  pills: { qi: 0, body: 0, ward: 0, meridian_opening_dan: 0, insight: 0 },
+
   // Stats system
-  stats: {
-    physique: 10, mind: 10, agility: 10, comprehension: 10,
-    criticalChance: 0.05, attackSpeed: 1.0, cooldownReduction: 0, adventureSpeed: 1.0
+  attributes: {
+    physique: 10,
+    mind: 10,
+    agility: 10,
+    comprehension: 10,
+    criticalChance: 0.05,
+    attackSpeed: 1.0,
+    cooldownReduction: 0,
+    adventureSpeed: 1.0,
   },
-  
+
   // Activity system (only one active at a time)
   activities: {
-    cultivation: false, physique: false, mining: false, adventure: false, cooking: false
+    cultivation: false,
+    physique: false,
+    agility: false,
+    mining: false,
+    gathering: false,
+    adventure: false,
+    cooking: false,
+    alchemy: false,
+    forging: false,
+    catching: false,
   },
-  
+
   // Activity data containers
-  physique: { level: 1, exp: 0, expMax: 100, stamina: 100, maxStamina: 100 },
-  mining: { level: 1, exp: 0, expMax: 100, unlockedResources: ['stones'], selectedResource: 'stones', resourcesGained: 0 },
+  physique: structuredClone(physiqueState),
+  agility: structuredClone(agilityState),
+  mining: structuredClone(miningState),
+  gathering: structuredClone(gatheringState),
+  forging: structuredClone(forgingState),
+  catching: structuredClone(catchingState),
+  cooking: { level: 1, exp: 0, expMax: 100, successBonus: 0 },
   adventure: { /* adventure state */ },
-  
+
   // Systems
-  alchemy: { level: 1, xp: 0, queue: [], maxSlots: 1, successBonus: 0, unlocked: false, knownRecipes: ['qi'] },
+  alchemy: {
+    level: 1,
+    exp: 0,
+    expMax: 100,
+    lab: {
+      baseSlots: 2,
+      slots: 2,
+      activeJobs: [],
+      queue: [],
+      paused: false,
+    },
+    knownRecipes: { qi: true, body: true, ward: true },
+    recipeStats: {},
+    outputs: {},
+    resistance: {},
+    settings: { qiDrainEnabled: false },
+  },
+  cultivation: {
+    talent: 1.0,
+    foundationMult: 1.0,
+    pillMult: 1.0,
+    buildingMult: 1.0,
+  },
   laws: { selected: null, unlocked: [], points: 0, trees: { sword: {}, formation: {}, alchemy: {} } },
-  buildings: {}, // Building levels: {building_key: level}
-  buildingBonuses: { /* calculated bonuses */ },
-  
+  sect: structuredClone(sectState),
+  sideLocations: structuredClone(sideLocationState),
+  tutorial: structuredClone(tutorialState),
+
   // Auto systems
-  auto: { meditate: true, adventure: false }
+  auto: { meditate: false, adventure: false }
 }
 ```
+
+> **Cultivation automation:** The `auto.meditate` flag (toggled by the UI's autoMeditate control) now defaults to `false`, so brand-new saves require you to start meditating manually before automation kicks in.
 
 **When to modify**: Add new state properties, modify save structure, add migration logic
 
@@ -1029,6 +1086,7 @@ Paths added:
 
 #### `src/features/automation/state.js` - Automation State
 **Purpose**: Defines default automation flags and provides `initialState()`.
+**Defaults**: `{ meditate: false, adventure: false }` – auto-meditate starts disabled so cultivation must be manually triggered on fresh saves.
 **Key Exports**: `automationState`, `initialState()`.
 
 #### `src/features/automation/logic.js` - Automation Logic
@@ -1170,6 +1228,31 @@ Paths added:
 - `src/features/alchemy/ui/pillIcons.js` – Renders active pill timers as icons.
 - `src/features/alchemy/consumableEffects.js` – Applies status effects when consuming pills and handles exclusivity.
 - `src/features/alchemy/test.js` – Unit tests covering alchemy selectors and mutators.
+
+**State Snapshot (`src/features/alchemy/state.js`)**:
+
+```javascript
+export const alchemyState = {
+  level: 1,
+  exp: 0,
+  expMax: 100,
+  lab: {
+    baseSlots: 2,
+    slots: 2,
+    activeJobs: [],
+    queue: [],
+    paused: false,
+  },
+  knownRecipes: { qi: true, body: true, ward: true },
+  recipeStats: {},
+  outputs: {},
+  resistance: {},
+  settings: { qiDrainEnabled: false },
+};
+```
+
+- `lab.activeJobs` stores batches currently brewing while `lab.queue` holds pending recipes waiting for an open slot.
+- Fresh saves unlock Qi, Body, and Ward pill recipes (`knownRecipes`) so players start with multiple brewing options.
 
 ### Cooking Feature (`src/features/cooking/`)
 - `src/features/cooking/state.js` – Cooking level, experience, and success bonus.
