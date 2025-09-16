@@ -26,7 +26,7 @@ import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
 import { renderPillIcons } from '../alchemy/ui/pillIcons.js';
-import { getCurrentPP, gatherDefense } from '../../engine/pp.js';
+import { computePP, getCurrentPP, gatherDefense } from '../../engine/pp.js';
 import { enemyPP, enemyEHP } from '../../engine/enemyPP.js';
 import {
   playSlashArc,
@@ -1323,7 +1323,9 @@ export function startBossCombat() {
   const playerPower = getCurrentPP(S);
   const dp = gatherDefense(S);
   const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const playerDps = Number.isFinite(playerPower?.dps)
+    ? playerPower.dps
+    : computePP(S, dp).dps || 0;
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1391,7 +1393,9 @@ export function startAdventureCombat() {
   const playerPower = getCurrentPP(S);
   const dp = gatherDefense(S);
   const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const playerDps = Number.isFinite(playerPower?.dps)
+    ? playerPower.dps
+    : computePP(S, dp).dps || 0;
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1473,7 +1477,9 @@ function startDungeonEncounter() {
   const playerPower = getCurrentPP(S);
   const dp = gatherDefense(S);
   const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const playerDps = Number.isFinite(playerPower?.dps)
+    ? playerPower.dps
+    : computePP(S, dp).dps || 0;
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
