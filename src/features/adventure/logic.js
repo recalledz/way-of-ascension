@@ -25,8 +25,9 @@ import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
 import { renderPillIcons } from '../alchemy/ui/pillIcons.js';
-import { getCurrentPP, gatherDefense } from '../../engine/pp.js';
+import { getCurrentPP, gatherDefense, W_O, W_D } from '../../engine/pp.js';
 import { enemyPP, enemyEHP } from '../../engine/enemyPP.js';
+import { BASELINE_HP, BASELINE_DPS, getBaselinePowerMetrics } from '../../engine/baseline.js';
 import {
   playSlashArc,
   playThrustLine,
@@ -77,24 +78,63 @@ function rarityFromAffixCount(count) {
 
 const TARGET_TTK = 11; // seconds to kill enemy
 const TARGET_TTF = 50; // seconds for enemy to defeat player
+const POWER_COLOR_THRESHOLD = 40;
 
-function tuneEnemyStats(enemy, playerDps, playerEhp) {
-  if (playerDps > 0) {
-    const hpScale = (playerDps * TARGET_TTK) / 100;
-    enemy.hpMax = (enemy.hpMax || enemy.hp || 0) * hpScale;
-    enemy.hp = (enemy.hp || enemy.hpMax) * hpScale;
-  }
-  if (playerEhp > 0) {
-    const atkScale = playerEhp / TARGET_TTF;
-    enemy.attack *= atkScale;
-  }
-  return enemy;
+function getPlayerCombatPower(state = S) {
+  const playerPower = getCurrentPP(state);
+  const defense = gatherDefense(state);
+  const fallbackEhp = enemyEHP({
+    hpMax: defense.hp,
+    armor: defense.armor,
+    dodge: Math.max(0, (defense.dodge || 0) - DODGE_BASE),
+    resists: defense.resists,
+    qiRegenPct: defense.qiRegenPct,
+    maxQiPct: defense.maxQiPct,
+  });
+  const rawStats = playerPower.raw || {};
+  const rawDps = rawStats.dps ?? (rawStats.damagePerHit ?? 0) * (rawStats.attackRate ?? 0);
+  const playerDps = Number.isFinite(rawDps) ? rawDps : 0;
+  const playerEhp = Number.isFinite(rawStats.ehp)
+    ? rawStats.ehp
+    : (Number.isFinite(fallbackEhp) ? fallbackEhp : 0);
+  return { playerPower, playerDps, playerEhp };
 }
 
-function powerColor(epp, playerPP) {
-  const ratio = epp / (playerPP || 1);
-  if (ratio > 1.1) return '#f87171';
-  if (ratio < 0.9) return '#4ade80';
+function tuneEnemyStats(enemy, playerDps, playerEhp) {
+  const baseHpMax = enemy.hpMax ?? enemy.hp ?? 0;
+  const baseHp = enemy.hp ?? baseHpMax;
+  const hpScaleRaw = Number.isFinite(playerDps) && playerDps > 0 && BASELINE_HP > 0
+    ? (playerDps * TARGET_TTK) / BASELINE_HP
+    : 1;
+  const hpScale = Number.isFinite(hpScaleRaw) && hpScaleRaw > 0 ? hpScaleRaw : 1;
+  const scaledHpMax = baseHpMax * hpScale;
+  const scaledHp = baseHp * hpScale;
+  enemy.hpMax = Number.isFinite(scaledHpMax) && scaledHpMax > 0 ? scaledHpMax : baseHpMax;
+  enemy.hp = Number.isFinite(scaledHp) && scaledHp > 0 ? scaledHp : baseHp;
+
+  const baseAttack = enemy.attack ?? 0;
+  const attackScaleRaw = Number.isFinite(playerEhp) && playerEhp > 0 && BASELINE_DPS > 0
+    ? (playerEhp / TARGET_TTF) / BASELINE_DPS
+    : 1;
+  const attackScale = Number.isFinite(attackScaleRaw) && attackScaleRaw > 0 ? attackScaleRaw : 1;
+  const scaledAttack = baseAttack * attackScale;
+  enemy.attack = Number.isFinite(scaledAttack) ? scaledAttack : baseAttack;
+
+  return {
+    enemy,
+    hpScale,
+    attackScale,
+    baseline: getBaselinePowerMetrics({ hpScale, attackScale }),
+  };
+}
+
+function powerColor(enemyPP, playerPP) {
+  if (!Number.isFinite(enemyPP) || !Number.isFinite(playerPP)) {
+    return '#fbbf24';
+  }
+  const diff = enemyPP - playerPP;
+  if (diff > POWER_COLOR_THRESHOLD) return '#f87171';
+  if (diff < -POWER_COLOR_THRESHOLD) return '#4ade80';
   return '#fbbf24';
 }
 
@@ -385,8 +425,18 @@ export function updateBattleDisplay() {
       }
       const powerEl = document.getElementById('enemyPower');
       if (powerEl) {
-        powerEl.textContent = `Enemy Power: ${Math.round(enemy.EPP || 0)}`;
-        powerEl.style.color = powerColor(enemy.EPP || 0, getCurrentPP(S).PP);
+        const enemyPower = enemy.EPP || 0;
+        powerEl.textContent = `Enemy Power: ${Math.round(enemyPower)}`;
+        let playerReference = getCurrentPP(S).PP;
+        if (enemy.baseline) {
+          const { playerDps: livePlayerDps, playerEhp: livePlayerEhp } = getPlayerCombatPower(S);
+          const oppPct = enemy.baseline.dps > 0 ? 100 * (livePlayerDps / enemy.baseline.dps - 1) : 0;
+          const dppPct = enemy.baseline.ehp > 0 ? 100 * (livePlayerEhp / enemy.baseline.ehp - 1) : 0;
+          const normalizedOpp = Number.isFinite(oppPct) ? oppPct : 0;
+          const normalizedDpp = Number.isFinite(dppPct) ? dppPct : 0;
+          playerReference = W_O * normalizedOpp + W_D * normalizedDpp;
+        }
+        powerEl.style.color = powerColor(enemyPower, playerReference);
       }
       setText('enemyHealthText', `${Math.round(enemyHP)}/${Math.round(enemyMaxHP)}`);
     const enemyAtkEl = document.getElementById('enemyAttack');
@@ -1261,12 +1311,13 @@ export function startBossCombat() {
     attackRate: bossData.attackRate,
     resists: bossData.resists || {},
   };
-  const playerPower = getCurrentPP(S);
-  const dp = gatherDefense(S);
-  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
-  enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
-  const pow = enemyPP(enemyObj);
+  const { playerDps, playerEhp } = getPlayerCombatPower(S);
+  const tuned = tuneEnemyStats(enemyObj, playerDps, playerEhp);
+  enemyObj = tuned.enemy;
+  const baselineOverrides = tuned.baseline
+    ? { baselineDps: tuned.baseline.dps, baselineEhp: tuned.baseline.ehp }
+    : undefined;
+  const pow = enemyPP(enemyObj, baselineOverrides);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = true;
   S.adventure.currentEnemy = {
@@ -1276,6 +1327,7 @@ export function startBossCombat() {
     regen: h.regen,
     affixes: h.affixes,
     rarity,
+    baseline: tuned.baseline,
     EPP: pow.EPP,
     E_OPP: pow.E_OPP,
     E_DPP: pow.E_DPP,
@@ -1326,12 +1378,13 @@ export function startAdventureCombat() {
     attackRate: enemyData.attackRate,
     resists: enemyData.resists || {},
   };
-  const playerPower = getCurrentPP(S);
-  const dp = gatherDefense(S);
-  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
-  enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
-  const pow = enemyPP(enemyObj);
+  const { playerDps, playerEhp } = getPlayerCombatPower(S);
+  const tuned = tuneEnemyStats(enemyObj, playerDps, playerEhp);
+  enemyObj = tuned.enemy;
+  const baselineOverrides = tuned.baseline
+    ? { baselineDps: tuned.baseline.dps, baselineEhp: tuned.baseline.ehp }
+    : undefined;
+  const pow = enemyPP(enemyObj, baselineOverrides);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = false;
   S.adventure.currentEnemy = {
@@ -1341,6 +1394,7 @@ export function startAdventureCombat() {
     regen: h.regen,
     affixes: h.affixes,
     rarity,
+    baseline: tuned.baseline,
     EPP: pow.EPP,
     E_OPP: pow.E_OPP,
     E_DPP: pow.E_DPP,
@@ -1405,12 +1459,13 @@ function startDungeonEncounter() {
     attackRate: enemyData.attackRate,
     resists: enemyData.resists || {},
   };
-  const playerPower = getCurrentPP(S);
-  const dp = gatherDefense(S);
-  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
-  enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
-  const pow = enemyPP(enemyObj);
+  const { playerDps, playerEhp } = getPlayerCombatPower(S);
+  const tuned = tuneEnemyStats(enemyObj, playerDps, playerEhp);
+  enemyObj = tuned.enemy;
+  const baselineOverrides = tuned.baseline
+    ? { baselineDps: tuned.baseline.dps, baselineEhp: tuned.baseline.ehp }
+    : undefined;
+  const pow = enemyPP(enemyObj, baselineOverrides);
   S.adventure.inCombat = true;
   S.adventure.isBossFight = !!floor.boss;
   S.adventure.currentEnemy = {
@@ -1420,6 +1475,7 @@ function startDungeonEncounter() {
     regen: h.regen,
     affixes: h.affixes,
     rarity,
+    baseline: tuned.baseline,
     EPP: pow.EPP,
     E_OPP: pow.E_OPP,
     E_DPP: pow.E_DPP,

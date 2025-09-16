@@ -31,3 +31,27 @@ export function dEhpFromQiRegenPct(pct = 0) {
 export function dEhpFromMaxQiPct(pct = 0) {
   return pct / 100;
 }
+
+export function effectiveHP({
+  hp = 0,
+  armor = 0,
+  dodge = DODGE_BASE,
+  resists = {},
+  qiRegenPct = 0,
+  maxQiPct = 0,
+  accuracy = ACCURACY_BASE,
+} = {}) {
+  if (hp <= 0) return 0;
+  const dr = drFromArmor(armor);
+  const denom = 1 - dr;
+  if (denom <= 0) return Infinity;
+  const baseEhp = hp / denom;
+  let bonusPct = 0;
+  for (const val of Object.values(resists || {})) {
+    bonusPct += dEhpFromRes(val);
+  }
+  bonusPct += dEhpFromDodge(dodge, accuracy);
+  bonusPct += dEhpFromQiRegenPct(qiRegenPct);
+  bonusPct += dEhpFromMaxQiPct(maxQiPct);
+  return baseEhp * (1 + bonusPct);
+}
