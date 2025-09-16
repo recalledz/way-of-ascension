@@ -92,6 +92,27 @@ function shouldRollAdventureAffixes() {
 
 const TARGET_TTK = 11; // seconds to kill enemy
 const TARGET_TTF = 50; // seconds for enemy to defeat player
+const POWER_COLOR_THRESHOLD = 40;
+
+function getPlayerCombatPower(state = S) {
+  const playerPower = getCurrentPP(state);
+  const defense = gatherDefense(state);
+  const fallbackEhp = enemyEHP({
+    hpMax: defense.hp,
+    armor: defense.armor,
+    dodge: Math.max(0, (defense.dodge || 0) - DODGE_BASE),
+    resists: defense.resists,
+    qiRegenPct: defense.qiRegenPct,
+    maxQiPct: defense.maxQiPct,
+  });
+  const rawStats = playerPower.raw || {};
+  const rawDps = rawStats.dps ?? (rawStats.damagePerHit ?? 0) * (rawStats.attackRate ?? 0);
+  const playerDps = Number.isFinite(rawDps) ? rawDps : 0;
+  const playerEhp = Number.isFinite(rawStats.ehp)
+    ? rawStats.ehp
+    : (Number.isFinite(fallbackEhp) ? fallbackEhp : 0);
+  return { playerPower, playerDps, playerEhp };
+}
 
 function tuneEnemyStats(enemy, playerDps, playerEhp) {
   const baseHp = enemy.hpMax ?? enemy.hp ?? 0;
@@ -117,10 +138,13 @@ function tuneEnemyStats(enemy, playerDps, playerEhp) {
   return enemy;
 }
 
-function powerColor(epp, playerPP) {
-  const ratio = epp / (playerPP || 1);
-  if (ratio > 1.1) return '#f87171';
-  if (ratio < 0.9) return '#4ade80';
+function powerColor(enemyPP, playerPP) {
+  if (!Number.isFinite(enemyPP) || !Number.isFinite(playerPP)) {
+    return '#fbbf24';
+  }
+  const diff = enemyPP - playerPP;
+  if (diff > POWER_COLOR_THRESHOLD) return '#f87171';
+  if (diff < -POWER_COLOR_THRESHOLD) return '#4ade80';
   return '#fbbf24';
 }
 
@@ -1316,10 +1340,7 @@ export function startBossCombat() {
     attackRate: bossData.attackRate,
     resists: bossData.resists || {},
   };
-  const playerPower = getCurrentPP(S);
-  const dp = gatherDefense(S);
-  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const { playerDps, playerEhp } = getPlayerCombatPower(S);
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1384,10 +1405,7 @@ export function startAdventureCombat() {
     attackRate: enemyData.attackRate,
     resists: enemyData.resists || {},
   };
-  const playerPower = getCurrentPP(S);
-  const dp = gatherDefense(S);
-  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const { playerDps, playerEhp } = getPlayerCombatPower(S);
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1466,10 +1484,7 @@ function startDungeonEncounter() {
     attackRate: enemyData.attackRate,
     resists: enemyData.resists || {},
   };
-  const playerPower = getCurrentPP(S);
-  const dp = gatherDefense(S);
-  const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const { playerDps, playerEhp } = getPlayerCombatPower(S);
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
