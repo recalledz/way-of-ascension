@@ -16,6 +16,7 @@ import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
 import { updateQiDerivedStats } from '../inventory/logic.js';
 import { ENEMY_DATA } from './data/enemies.js';
+import { ENEMY_ABILITIES } from '../combat/data/enemyAbilities.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
 import { on, emit } from '../../shared/events.js';
 import { applyRandomAffixes } from '../affixes/logic.js';
@@ -143,6 +144,338 @@ function logEnemyResists(enemy) {
   }
 }
 
+function clearEnemyAbilityState() {
+  if (!S.adventure) return;
+  S.adventure.enemyAbilityState = {};
+  S.adventure.enemyAbilityStartTime = 0;
+}
+
+function resetEnemyAbilityState(enemy) {
+  if (!S.adventure) return;
+  const abilityState = {};
+  if (enemy?.abilities?.length) {
+    enemy.abilities.forEach(key => {
+      abilityState[key] = { lastUsed: 0, uses: 0 };
+    });
+  }
+  S.adventure.enemyAbilityState = abilityState;
+  S.adventure.enemyAbilityStartTime = Date.now();
+}
+
+function getEnemyAbilityStateMap() {
+  if (!S.adventure) return {};
+  if (!S.adventure.enemyAbilityState || typeof S.adventure.enemyAbilityState !== 'object') {
+    S.adventure.enemyAbilityState = {};
+  }
+  return S.adventure.enemyAbilityState;
+}
+
+function selectReadyEnemyAbility(now) {
+  const enemy = S.adventure?.currentEnemy;
+  if (!enemy || !Array.isArray(enemy.abilities) || enemy.abilities.length === 0) return null;
+  const abilityState = getEnemyAbilityStateMap();
+  const maxHp = S.adventure.enemyMaxHP || enemy.hpMax || enemy.hp || 0;
+  const hpPct = maxHp > 0 ? (S.adventure.enemyHP || 0) / maxHp : 1;
+  const startTime = S.adventure.enemyAbilityStartTime || 0;
+
+  let selectedKey = null;
+  let selectedPriority = -Infinity;
+  let bestReadyDuration = -Infinity;
+
+  for (const abilityKey of enemy.abilities) {
+    const ability = ENEMY_ABILITIES[abilityKey];
+    if (!ability) continue;
+    const state = abilityState[abilityKey] || (abilityState[abilityKey] = { lastUsed: 0, uses: 0 });
+    if (ability.once && state.uses > 0) continue;
+    if (ability.healthBelowPct != null && hpPct > ability.healthBelowPct) continue;
+    if (ability.healthAbovePct != null && hpPct < ability.healthAbovePct) continue;
+    if (ability.initialDelayMs && state.uses === 0) {
+      const elapsed = now - startTime;
+      if (elapsed < ability.initialDelayMs) continue;
+    }
+    if (ability.actionType === 'heal') {
+      if (maxHp > 0 && (S.adventure.enemyHP || 0) >= maxHp && !(ability.heal?.clearAilments?.length)) {
+        continue;
+      }
+    }
+    const cd = ability.cooldownMs ?? 0;
+    const lastUsed = state.lastUsed ?? 0;
+    if (cd > 0 && now < lastUsed + cd) continue;
+    const priority = ability.priority ?? 0;
+    const readyTime = lastUsed + cd;
+    const readyDuration = now - readyTime;
+    if (
+      !selectedKey ||
+      priority > selectedPriority ||
+      (priority === selectedPriority && readyDuration > bestReadyDuration)
+    ) {
+      selectedKey = abilityKey;
+      selectedPriority = priority;
+      bestReadyDuration = readyDuration;
+    }
+  }
+
+  return selectedKey;
+}
+
+function applyEnemyBuff(ability, enemy) {
+  if (!ability || !enemy) return;
+  S.adventure.combatLog = S.adventure.combatLog || [];
+  const message = ability.log || `${enemy.name} uses ${ability.name}!`;
+  if (message) S.adventure.combatLog.push(message);
+
+  const buff = ability.buff || {};
+  const detailParts = [];
+  if (buff.attackMult || buff.flatAttack) {
+    const before = enemy.attack || 0;
+    let updated = before;
+    if (buff.attackMult) updated *= buff.attackMult;
+    if (buff.flatAttack) updated += buff.flatAttack;
+    updated = Math.round(updated);
+    enemy.attack = updated;
+    if (enemy.stats) enemy.stats.attack = updated;
+    if (updated !== before) detailParts.push(`attack rises to ${updated}`);
+  }
+  if (buff.attackRateMult || typeof buff.attackRateAdd === 'number') {
+    const beforeRate = enemy.attackRate || 1;
+    let newRate = beforeRate;
+    if (buff.attackRateMult) newRate *= buff.attackRateMult;
+    if (typeof buff.attackRateAdd === 'number') newRate += buff.attackRateAdd;
+    enemy.attackRate = newRate;
+    if (enemy.stats) enemy.stats.attackRate = newRate;
+    if (Math.abs(newRate - beforeRate) > 1e-6) {
+      detailParts.push(`attack speed increases to ${newRate.toFixed(2)}/s`);
+    }
+  }
+  if (detailParts.length) {
+    S.adventure.combatLog.push(`${enemy.name}'s power surges: ${detailParts.join(', ')}.`);
+  }
+}
+
+function applyEnemyHeal(ability, enemy) {
+  if (!ability || !enemy) return;
+  S.adventure.combatLog = S.adventure.combatLog || [];
+  const message = ability.log || `${enemy.name} uses ${ability.name}!`;
+  if (message) S.adventure.combatLog.push(message);
+
+  const heal = ability.heal || {};
+  const maxHp = S.adventure.enemyMaxHP || enemy.hpMax || enemy.hp || 0;
+  const currentHp = S.adventure.enemyHP || 0;
+  let healAmount = 0;
+  if (heal.hpPct) healAmount += maxHp * heal.hpPct;
+  if (heal.flat) healAmount += heal.flat;
+  healAmount = Math.round(healAmount);
+  let healed = 0;
+  if (healAmount > 0 && maxHp > 0) {
+    const newHp = Math.min(maxHp, currentHp + healAmount);
+    healed = newHp - currentHp;
+    S.adventure.enemyHP = newHp;
+    if (typeof enemy.hp === 'number') enemy.hp = newHp;
+  }
+  if (healed > 0) {
+    S.adventure.combatLog.push(`${enemy.name} recovers ${healed} HP.`);
+  } else {
+    S.adventure.combatLog.push(`${enemy.name}'s recovery has no effect.`);
+  }
+  if (heal.clearAilments?.length && enemy.ailments) {
+    const cleared = [];
+    for (const key of heal.clearAilments) {
+      if (enemy.ailments[key]) {
+        delete enemy.ailments[key];
+        cleared.push(key);
+      }
+    }
+    if (cleared.length) {
+      S.adventure.combatLog.push(`${enemy.name} shrugs off ${cleared.join(', ')}.`);
+    }
+  }
+}
+
+function handlePlayerDefeat() {
+  if (!S.adventure || S.adventure.playerHP > 0) return;
+  try { triggerDeathBreak('player'); } catch (_) {}
+  S.adventure.inCombat = false;
+  clearEnemyAbilityState();
+  S.adventure.combatLog = S.adventure.combatLog || [];
+  S.adventure.combatLog.push('You have been defeated!');
+  log('Defeated in combat! Returning to safety...', 'bad');
+  forfeitSessionLoot();
+  updateLootTab();
+  S.qi = 0;
+  stopActivityMut(S, 'adventure');
+  const btn = document.getElementById('startBattleButton');
+  if (btn) {
+    btn.textContent = '⚔️ Start Battle';
+    btn.classList.remove('warn');
+    btn.classList.add('primary');
+    btn.disabled = false;
+  }
+  updateActivityAdventure();
+  const { gained, qiSpent } = refillShieldFromQi(S);
+  if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
+}
+
+function enemyPerformAttack(now, weapon, ability) {
+  if (!S.adventure || !S.adventure.currentEnemy) return false;
+  const enemy = S.adventure.currentEnemy;
+  const abilityData = ability?.actionType === 'attack' || !ability ? ability : null;
+  const attackConfig = abilityData?.attack || {};
+  S.adventure.combatLog = S.adventure.combatLog || [];
+  if (abilityData) {
+    const abilityMessage = abilityData.log || `${enemy.name} uses ${abilityData.name}!`;
+    if (abilityMessage) S.adventure.combatLog.push(abilityMessage);
+  }
+
+  const enemyAcc = attackConfig.accuracy ?? enemy.stats?.accuracy ?? enemy.accuracy ?? 0;
+  const playerDodge = S.derivedStats?.dodge || 0;
+  const skipHitRoll = attackConfig.skipHitRoll || abilityData?.guaranteedHit;
+  const hitChance = abilityData?.guaranteedHit ? 1 : chanceToHit(enemyAcc, playerDodge);
+  if (!skipHitRoll && Math.random() >= hitChance) {
+    const missText = abilityData
+      ? `${enemy.name}'s ${abilityData.name} misses you`
+      : `${enemy.name} misses you`;
+    S.adventure.combatLog.push(missText);
+    const playerEl = document.querySelector('.combatant.player');
+    if (playerEl) {
+      showFloatingText({ targetEl: playerEl, result: 'miss' });
+    }
+    return true;
+  }
+
+  const baseCrit =
+    attackConfig.critChance != null
+      ? attackConfig.critChance
+      : enemy.stats?.criticalChance ?? enemy.criticalChance ?? 0;
+  const critChance = Math.min(1, Math.max(0, baseCrit + (attackConfig.critChanceBonus || 0)));
+  const isCrit = attackConfig.forceCrit ? true : Math.random() < critChance;
+  const critMult = attackConfig.critMult ?? 2;
+  const baseDamage = Math.round(Number(enemy.attack) || 5);
+  const physMult = attackConfig.physPct ?? 1;
+  let physDamage = Math.round(baseDamage * physMult);
+  if (attackConfig.flatPhys) physDamage += Math.round(attackConfig.flatPhys);
+  if (attackConfig.minPhys != null) physDamage = Math.max(attackConfig.minPhys, physDamage);
+  if (attackConfig.maxPhys != null) physDamage = Math.min(attackConfig.maxPhys, physDamage);
+
+  const profile = { phys: Math.max(0, physDamage), elems: {} };
+  const inheritsBaseElems = attackConfig.inheritBaseElems !== false;
+  if (!abilityData || inheritsBaseElems) {
+    const baseElems = enemy.attackElems || {};
+    for (const [elem, val] of Object.entries(baseElems)) {
+      const amount = Math.round(val);
+      if (amount) profile.elems[elem] = (profile.elems[elem] || 0) + amount;
+    }
+  }
+  if (attackConfig.elemPct) {
+    for (const [elem, pct] of Object.entries(attackConfig.elemPct)) {
+      const amount = Math.round(baseDamage * pct);
+      if (amount) profile.elems[elem] = (profile.elems[elem] || 0) + amount;
+    }
+  }
+  if (attackConfig.flatElems) {
+    for (const [elem, val] of Object.entries(attackConfig.flatElems)) {
+      const amount = Math.round(val);
+      if (amount) profile.elems[elem] = (profile.elems[elem] || 0) + amount;
+    }
+  }
+  if (
+    abilityData &&
+    attackConfig.physPct === 0 &&
+    !attackConfig.flatPhys &&
+    (!inheritsBaseElems || !Object.keys(enemy.attackElems || {}).length)
+  ) {
+    profile.phys = 0;
+  }
+
+  const snap = S.adventure.playerAttackSnapshot || calculatePlayerAttackSnapshot(S);
+  const { total: taken, components } = processAttack(
+    profile,
+    undefined,
+    {
+      attacker: enemy,
+      target: S,
+      nowMs: now,
+      critChance: isCrit ? 1 : 0,
+      critMult,
+      attackSpeed: 1,
+      hitChance: 1,
+      targetDpTotal: snap.power?.dpFromCult || 0,
+    },
+    S
+  );
+
+  const parts = [];
+  if (components.phys) parts.push(`${components.phys} physical`);
+  for (const [elem, val] of Object.entries(components.elems)) {
+    parts.push(`${val} ${elem}`);
+  }
+  const compText = parts.length ? ` (${parts.join(', ')})` : '';
+  if (abilityData) {
+    S.adventure.combatLog.push(`${enemy.name}'s ${abilityData.name} hits you for ${taken}${compText}`);
+  } else {
+    S.adventure.combatLog.push(`${enemy.name} deals ${taken} damage to you${compText}`);
+  }
+
+  const playerEl = document.querySelector('.combatant.player');
+  if (playerEl) {
+    if (components.phys) {
+      showFloatingText({
+        targetEl: playerEl,
+        result: isCrit ? 'crit' : 'hit',
+        amount: components.phys,
+        element: 'phys',
+      });
+    }
+    for (const [elem, val] of Object.entries(components.elems)) {
+      if (val) {
+        showFloatingText({
+          targetEl: playerEl,
+          result: isCrit ? 'crit' : 'hit',
+          amount: val,
+          element: elem,
+        });
+      }
+    }
+  }
+
+  performAttack(enemy, S, { ability: abilityData, profile, isCrit, physDamage: components.phys }, S);
+  S.adventure.playerStunBar = S.stun?.value || 0;
+  if (weapon?.classKey === 'focus') {
+    const pos = getCombatPositions();
+    if (pos) {
+      setFxTint(pos.svg, weapon.animations?.tint || 'auto');
+      playShieldDome(pos.svg, pos.from, 25);
+    }
+  }
+  handlePlayerDefeat();
+  return true;
+}
+
+function tryUseEnemyAbility(now, weapon) {
+  if (!S.adventure?.currentEnemy) return false;
+  const abilityKey = selectReadyEnemyAbility(now);
+  if (!abilityKey) return false;
+  const ability = ENEMY_ABILITIES[abilityKey];
+  if (!ability) return false;
+  const abilityState = getEnemyAbilityStateMap();
+  const state = abilityState[abilityKey] || (abilityState[abilityKey] = { lastUsed: 0, uses: 0 });
+  state.lastUsed = now;
+  state.uses = (state.uses || 0) + 1;
+
+  const enemy = S.adventure.currentEnemy;
+  if (!enemy) return false;
+
+  if (ability.actionType === 'buff') {
+    applyEnemyBuff(ability, enemy);
+    return true;
+  }
+  if (ability.actionType === 'heal') {
+    applyEnemyHeal(ability, enemy);
+    return true;
+  }
+  enemyPerformAttack(now, weapon, ability);
+  return true;
+}
+
 function getCombatPositions() {
   const svg = document.getElementById('combatFx');
   const playerEl = document.querySelector('.combatant.player');
@@ -260,6 +593,8 @@ export function ensureAdventure() {
   if (!S.adventure.unlockedAreas) S.adventure.unlockedAreas = { "0-0": true };
   if (!S.adventure.discoveredDungeons) S.adventure.discoveredDungeons = [];
   if (!S.adventure.dungeonCooldowns) S.adventure.dungeonCooldowns = {};
+  if (!S.adventure.enemyAbilityState) S.adventure.enemyAbilityState = {};
+  if (typeof S.adventure.enemyAbilityStartTime !== 'number') S.adventure.enemyAbilityStartTime = 0;
 }
 
 function renderAilments(entity, id) {
@@ -307,6 +642,7 @@ export function selectAreaById(zoneId, areaId, areaIndex) {
 
   // Reset combat state
   S.adventure.currentEnemy = null;
+  clearEnemyAbilityState();
   S.adventure.enemyHP = 0;
   S.adventure.playerHP = S.hpMax;
 
@@ -972,98 +1308,8 @@ export function updateAdventureCombat() {
       const enemyAttackRate = S.adventure.currentEnemy.attackRate || 1.0;
       if (now - S.adventure.lastEnemyAttack >= (1000 / enemyAttackRate)) {
         S.adventure.lastEnemyAttack = now;
-        const enemyAcc = S.adventure.currentEnemy?.stats?.accuracy ?? S.adventure.currentEnemy?.accuracy ?? 0;
-        const playerDodge = S.derivedStats?.dodge || 0;
-        const hitP = chanceToHit(enemyAcc, playerDodge);
-        if (Math.random() < hitP) {
-          const critChance = S.adventure.currentEnemy?.stats?.criticalChance ?? S.adventure.currentEnemy?.criticalChance ?? 0;
-          const isCrit = Math.random() < critChance;
-          const baseDamage = Math.round(Number(S.adventure.currentEnemy.attack) || 5);
-          const enemyDamage = isCrit ? baseDamage * 2 : baseDamage;
-          const profile = {
-            phys: enemyDamage,
-            elems: { ...(S.adventure.currentEnemy.attackElems || {}) },
-          };
-          const snap = S.adventure.playerAttackSnapshot || calculatePlayerAttackSnapshot(S);
-          const { total: taken, components } = processAttack(
-            profile,
-            undefined,
-            {
-              attacker: S.adventure.currentEnemy,
-              target: S,
-              nowMs: now,
-              critChance: isCrit ? 1 : 0,
-              critMult: 2,
-              attackSpeed: 1,
-              hitChance: 1,
-              targetDpTotal: snap.power?.dpFromCult || 0,
-            },
-            S
-          );
-          const parts = [];
-          if (components.phys) parts.push(`${components.phys} physical`);
-          for (const [elem, val] of Object.entries(components.elems)) {
-            parts.push(`${val} ${elem}`);
-          }
-          const compText = parts.length ? ` (${parts.join(', ')})` : '';
-          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} deals ${taken} damage to you${compText}`);
-          const playerEl = document.querySelector('.combatant.player');
-          if (playerEl) {
-            if (components.phys) {
-              showFloatingText({
-                targetEl: playerEl,
-                result: isCrit ? 'crit' : 'hit',
-                amount: components.phys,
-                element: 'phys',
-              });
-            }
-            for (const [elem, val] of Object.entries(components.elems)) {
-              if (val) {
-                showFloatingText({
-                  targetEl: playerEl,
-                  result: isCrit ? 'crit' : 'hit',
-                  amount: val,
-                  element: elem,
-                });
-              }
-            }
-          }
-          performAttack(S.adventure.currentEnemy, S, { profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
-          S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
-          if (weapon.classKey === 'focus') {
-            const pos = getCombatPositions();
-            if (pos) {
-              setFxTint(pos.svg, weapon.animations?.tint || 'auto');
-              playShieldDome(pos.svg, pos.from, 25);
-            }
-          }
-          if (S.adventure.playerHP <= 0) {
-            // Subtle visual cue for player death
-            try { triggerDeathBreak('player'); } catch (_) {}
-            S.adventure.inCombat = false;
-            S.adventure.combatLog.push('You have been defeated!');
-            log('Defeated in combat! Returning to safety...', 'bad');
-            forfeitSessionLoot(); // EQUIP-CHAR-UI
-            updateLootTab(); // EQUIP-CHAR-UI
-            S.qi = 0;
-            stopActivityMut(S, 'adventure');
-            const btn = document.getElementById('startBattleButton');
-            if (btn) {
-              btn.textContent = '⚔️ Start Battle';
-              btn.classList.remove('warn');
-              btn.classList.add('primary');
-              btn.disabled = false;
-            }
-            updateActivityAdventure();
-            const { gained, qiSpent } = refillShieldFromQi(S);
-            if (gained > 0) log(`Your Qi reforms ${gained} shield (${qiSpent.toFixed(1)} Qi).`);
-          }
-        } else {
-          S.adventure.combatLog.push(`${S.adventure.currentEnemy.name} misses you`);
-          const playerEl = document.querySelector('.combatant.player');
-          if (playerEl) {
-            showFloatingText({ targetEl: playerEl, result: 'miss' });
-          }
+        if (!tryUseEnemyAbility(now, weapon)) {
+          enemyPerformAttack(now, weapon);
         }
       }
     }
@@ -1077,6 +1323,7 @@ export function updateAdventureCombat() {
 function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
   const enemy = S.adventure.currentEnemy;
+  clearEnemyAbilityState();
   // Subtle visual cue for enemy defeat
   try { triggerDeathBreak('enemy'); } catch (_) {}
   const isBoss = S.adventure.isBossFight;
@@ -1260,6 +1507,7 @@ export function generateBossEnemy() {
     hp: Math.round(baseEnemyData.hp * 2),
     attack: Math.round(baseEnemyData.attack * 2),
     attackRate: baseEnemyData.attackRate,
+    abilities: baseEnemyData.abilities ? [...baseEnemyData.abilities] : [],
     // Enhanced loot - double the quantities
     loot: {},
     drops: {}
@@ -1314,6 +1562,7 @@ export function startBossCombat() {
     hpMax: h.enemyMax,
     hp: h.enemyHP,
     attackRate: bossData.attackRate,
+    abilities: bossData.abilities ? [...bossData.abilities] : [],
     resists: bossData.resists || {},
   };
   const playerPower = getCurrentPP(S);
@@ -1345,6 +1594,7 @@ export function startBossCombat() {
   S.adventure.playerAttackSnapshot = calculatePlayerAttackSnapshot(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
+  resetEnemyAbilityState(S.adventure.currentEnemy);
   S.adventure.combatLog = S.adventure.combatLog || [];
   S.adventure.combatLog.push(`💀 A powerful ${bossData.name} emerges!`);
   log(`Boss challenge started: ${bossData.name}!`, 'excellent');
@@ -1382,6 +1632,7 @@ export function startAdventureCombat() {
     hpMax: h.enemyMax,
     hp: h.enemyHP,
     attackRate: enemyData.attackRate,
+    abilities: enemyData.abilities ? [...enemyData.abilities] : [],
     resists: enemyData.resists || {},
   };
   const playerPower = getCurrentPP(S);
@@ -1413,6 +1664,7 @@ export function startAdventureCombat() {
   S.adventure.playerAttackSnapshot = calculatePlayerAttackSnapshot(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
+  resetEnemyAbilityState(S.adventure.currentEnemy);
   S.adventure.combatLog = S.adventure.combatLog || [];
   const rarityLabel = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
   S.adventure.combatLog.push(`A ${rarityLabel}${enemyData.name} appears!`);
@@ -1448,7 +1700,13 @@ function startDungeonEncounter() {
     log(`Enemy data not found for ${enemyType}`, 'bad');
     return;
   }
-  const enemyData = { ...base, hp: base.hp * 2, attack: base.attack * 2, element: dungeon.element };
+  const enemyData = {
+    ...base,
+    hp: base.hp * 2,
+    attack: base.attack * 2,
+    element: dungeon.element,
+    abilities: base.abilities ? [...base.abilities] : [],
+  };
   const { enemyHP, enemyMax, atk, armor } = initializeFight(enemyData);
   const h = { enemyHP, enemyMax, eAtk: atk, eArmor: armor, regen: 0, affixes: [] };
   let affixCount = 0;
@@ -1464,6 +1722,7 @@ function startDungeonEncounter() {
     hpMax: h.enemyMax,
     hp: h.enemyHP,
     attackRate: enemyData.attackRate,
+    abilities: enemyData.abilities ? [...enemyData.abilities] : [],
     resists: enemyData.resists || {},
   };
   const playerPower = getCurrentPP(S);
@@ -1495,6 +1754,7 @@ function startDungeonEncounter() {
   S.adventure.playerAttackSnapshot = calculatePlayerAttackSnapshot(S);
   S.adventure.lastPlayerAttack = 0;
   S.adventure.lastEnemyAttack = 0;
+  resetEnemyAbilityState(S.adventure.currentEnemy);
   S.adventure.combatLog = [`Entering ${dungeon.name} - Floor ${ds.floor + 1}`];
   const rarityLabel = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
   S.adventure.combatLog.push(`A ${rarityLabel}${enemyData.name} appears!`);
@@ -1625,6 +1885,7 @@ export function retreatFromCombat() {
     S.hp = S.adventure.playerHP;
     S.adventure.inCombat = false;
     S.adventure.currentEnemy = null;
+    clearEnemyAbilityState();
     const { enemyHP, enemyMax } = initializeFight({ hp: 0 });
     S.adventure.enemyHP = enemyHP;
     S.adventure.enemyMaxHP = enemyMax;

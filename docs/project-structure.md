@@ -132,9 +132,9 @@ way-of-ascension/
 │   │   │   ├── data/
 │   │   │   │   ├── _balance.contract.js
 │   │   │   │   ├── ailments.js
+│   │   │   │   ├── enemyAbilities.js
 │   │   │   │   ├── status.js
-│   │   │   │   ├── statusesByElement.js
-│   │   │   │   └── ailments.js
+│   │   │   │   └── statusesByElement.js
 │   │   │   ├── hit.js
 │   │   │   ├── logic.js
 │   │   │   ├── migrations.js
@@ -1130,11 +1130,16 @@ Paths added:
 - `src/features/combat/data/status.js` – Definitions for all status effects.
 - `src/features/combat/data/statusesByElement.js` – Maps elements to their default status applications.
 - `src/features/combat/data/ailments.js` – Ailment definitions and their effects.
+- `src/features/combat/data/enemyAbilities.js` – Catalog of enemy ability templates with cooldowns, triggers, and effect metadata.
 - `src/features/combat/ui/combatStats.js` – Displays player and enemy combat statistics.
 
 #### `src/features/combat/data/ailments.js` - Ailment Definitions
 **Purpose**: Enumerates poison, burn, chill and other ailments with durations, stack limits and effect callbacks.
 **When to modify**: Add new ailments or adjust existing damage-over-time and debuff behaviour.
+
+#### `src/features/combat/data/enemyAbilities.js` - Enemy Ability Templates
+**Purpose**: Defines reusable enemy ability configurations (damage scaling, status application, cooldowns, health gates) referenced by adventure combat logic.
+**When to modify**: Introduce new enemy specials or tweak existing ability behaviour such as cooldowns, damage ratios, or status payloads.
 
 ### Karma Feature (`src/features/karma/`)
 - `src/features/karma/state.js` – Stores karma points and purchased bonuses.
