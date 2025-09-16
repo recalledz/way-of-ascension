@@ -73,6 +73,7 @@ way-of-ascension/
 │   │   ├── combat/
 │   │   │   └── stun.js
 │   │   ├── enemyPP.js
+│   │   ├── powerConstants.js
 │   │   ├── pp.js
 │   │   ├── ppHistory.js
 │   │   └── ppLog.js
@@ -1108,6 +1109,7 @@ Paths added:
 ### Engine (`src/engine/`)
 - `src/engine/combat/stun.js` – Handles stun accumulation, decay, and status application.
 - `src/engine/pp.js` – Computes offensive, defensive, and total power points for the player.
+- `src/engine/powerConstants.js` – Defines PP weight constants and derives the shared Forest Rabbit baseline stats.
 - `src/engine/enemyPP.js` – Enemy-focused power helpers mirroring player PP formulas.
 - `src/engine/ppHistory.js` – Maintains rolling PP samples for hourly and overall averages.
 - `src/engine/ppLog.js` – Logs PP events and supports downloading the log as CSV.

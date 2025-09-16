@@ -12,7 +12,7 @@ import {
   updateActivitySelectors,
   renderActiveActivity,
 } from '../../activity/ui/activityUI.js';
-import { computePP, gatherDefense, W_O } from '../../../engine/pp.js';
+import { computePP, gatherDefense, W_D, W_O } from '../../../engine/pp.js';
 import { logPPEvent } from '../../../engine/ppLog.js';
 import { configReport, featureFlags, devShowPP } from '../../../config.js';
 
@@ -439,8 +439,8 @@ async function buildTree() {
       }
       const after = computePP(sim, gatherDefense(sim));
       const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
-      const beforePP = W_O * before.OPP + before.DPP;
-      const afterPP = W_O * after.OPP + after.DPP;
+      const beforePP = W_O * before.OPP + W_D * before.DPP;
+      const afterPP = W_O * after.OPP + W_D * after.DPP;
       lines.push(
         `DEV:PP ${fmt(after.OPP - before.OPP)}/${fmt(after.DPP - before.DPP)}/${fmt(
           afterPP - beforePP
@@ -475,8 +475,8 @@ async function buildTree() {
         if (devShowPP && beforePP) {
           const afterPP = computePP(S, gatherDefense(S));
           const fmt = v => (v >= 0 ? '+' : '') + Math.round(v);
-          const prevTotal = W_O * beforePP.OPP + beforePP.DPP;
-          const nextTotal = W_O * afterPP.OPP + afterPP.DPP;
+          const prevTotal = W_O * beforePP.OPP + W_D * beforePP.DPP;
+          const nextTotal = W_O * afterPP.OPP + W_D * afterPP.DPP;
           console.log(
             `DEV:PP ${fmt(afterPP.OPP - beforePP.OPP)}/${fmt(afterPP.DPP - beforePP.DPP)}/${fmt(
               nextTotal - prevTotal
