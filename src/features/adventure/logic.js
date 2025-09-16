@@ -26,8 +26,15 @@ import { ZONES as ZONE_IDS } from './data/zoneIds.js';
 import { addSessionLoot, claimSessionLoot, forfeitSessionLoot } from '../loot/mutators.js'; // EQUIP-CHAR-UI
 import { updateLootTab } from '../loot/ui/lootTab.js';
 import { renderPillIcons } from '../alchemy/ui/pillIcons.js';
-import { getCurrentPP, gatherDefense } from '../../engine/pp.js';
+import { computePP, getCurrentPP, gatherDefense } from '../../engine/pp.js';
 import { enemyPP, enemyEHP } from '../../engine/enemyPP.js';
+import {
+  COMBO_WINDOW_MS,
+  getComboCount,
+  getComboDamageBonus,
+  recordComboHit,
+  resetCombo,
+} from '../../engine/combat/combo.js';
 import {
   playSlashArc,
   playThrustLine,
@@ -141,6 +148,14 @@ function logEnemyResists(enemy) {
     console.log('[resist]', enemy.type, enemy.resists);
     loggedResistTypes.add(enemy.type);
   }
+}
+
+function syncAdventureCombo(now = Date.now()) {
+  if (!S.adventure) return;
+  const count = getComboCount(S, now);
+  S.adventure.comboCount = count;
+  S.adventure.comboExpiresAt = S.combo?.expiresAt || 0;
+  S.adventure.comboWindowMs = COMBO_WINDOW_MS;
 }
 
 function getCombatPositions() {
@@ -806,6 +821,8 @@ function shakeAbilityCard(index) {
 export function updateAdventureCombat() {
   if (!S.adventure || !S.adventure.inCombat) return;
   processAbilityQueue(S);
+  const now = Date.now();
+  syncAdventureCombo(now);
   // If an ability reduced enemy HP to 0, resolve defeat immediately
   if (S.adventure.currentEnemy && S.adventure.enemyHP <= 0) {
     defeatEnemy();
@@ -818,7 +835,6 @@ export function updateAdventureCombat() {
     }
     const weapon = getEquippedWeapon(S);
     console.log('[weapon]', weapon.key); // WEAPONS-INTEGRATION
-    const now = Date.now();
     if (S.lightningStep && S.lightningStep.expiresAt <= now) {
       delete S.lightningStep;
     }
@@ -869,6 +885,7 @@ export function updateAdventureCombat() {
           profile.elems.metal = (profile.elems.metal || 0) + profile.phys;
           profile.phys = 0;
         }
+        globalPct += getComboDamageBonus(S, now);
         const isCrit = Math.random() < snap.critChance;
         const { total: dealt, components } = processAttack(
           profile,
@@ -920,6 +937,12 @@ export function updateAdventureCombat() {
         }
         S.adventure.enemyStunBar = S.adventure.currentEnemy.stun?.value || 0; // STATUS-REFORM
         performAttack(S, S.adventure.currentEnemy, { weapon, profile, isCrit, physDamage: components.phys }, S); // STATUS-REFORM
+        if (dealt > 0) {
+          recordComboHit(S.adventure.currentEnemy, now, S);
+        } else {
+          resetCombo(S);
+        }
+        syncAdventureCombo(now);
         const pos = getCombatPositions();
         if (pos) {
           setFxTint(pos.svg, weapon.animations?.tint || 'auto');
@@ -962,6 +985,8 @@ export function updateAdventureCombat() {
       } else {
         S.adventure.combatLog = S.adventure.combatLog || [];
         S.adventure.combatLog.push('You miss!');
+        resetCombo(S);
+        syncAdventureCombo(now);
         const enemyEl = document.querySelector('.combatant.enemy');
         if (enemyEl) {
           showFloatingText({ targetEl: enemyEl, result: 'miss' });
@@ -1043,6 +1068,8 @@ export function updateAdventureCombat() {
             S.adventure.inCombat = false;
             S.adventure.combatLog.push('You have been defeated!');
             log('Defeated in combat! Returning to safety...', 'bad');
+            resetCombo(S);
+            syncAdventureCombo(now);
             forfeitSessionLoot(); // EQUIP-CHAR-UI
             updateLootTab(); // EQUIP-CHAR-UI
             S.qi = 0;
@@ -1076,6 +1103,8 @@ export function updateAdventureCombat() {
 
 function defeatEnemy() {
   if (!S.adventure || !S.adventure.currentEnemy) return;
+  resetCombo(S);
+  syncAdventureCombo(Date.now());
   const enemy = S.adventure.currentEnemy;
   // Subtle visual cue for enemy defeat
   try { triggerDeathBreak('enemy'); } catch (_) {}
@@ -1319,7 +1348,9 @@ export function startBossCombat() {
   const playerPower = getCurrentPP(S);
   const dp = gatherDefense(S);
   const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const playerDps = Number.isFinite(playerPower?.dps)
+    ? playerPower.dps
+    : computePP(S, dp).dps || 0;
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1349,6 +1380,7 @@ export function startBossCombat() {
   S.adventure.combatLog.push(`💀 A powerful ${bossData.name} emerges!`);
   log(`Boss challenge started: ${bossData.name}!`, 'excellent');
   logEnemyResists(S.adventure.currentEnemy);
+  syncAdventureCombo(Date.now());
 }
 
 export function startAdventureCombat() {
@@ -1387,7 +1419,9 @@ export function startAdventureCombat() {
   const playerPower = getCurrentPP(S);
   const dp = gatherDefense(S);
   const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const playerDps = Number.isFinite(playerPower?.dps)
+    ? playerPower.dps
+    : computePP(S, dp).dps || 0;
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1417,6 +1451,7 @@ export function startAdventureCombat() {
   const rarityLabel = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
   S.adventure.combatLog.push(`A ${rarityLabel}${enemyData.name} appears!`);
   logEnemyResists(S.adventure.currentEnemy);
+  syncAdventureCombo(Date.now());
 }
 
 export function startDungeon(zoneId, dungeonId) {
@@ -1469,7 +1504,9 @@ function startDungeonEncounter() {
   const playerPower = getCurrentPP(S);
   const dp = gatherDefense(S);
   const playerEhp = enemyEHP({ hpMax: dp.hp, armor: dp.armor, dodge: dp.dodge - DODGE_BASE, resists: dp.resists });
-  const playerDps = playerPower.OPP * calculatePlayerAttackRate(S);
+  const playerDps = Number.isFinite(playerPower?.dps)
+    ? playerPower.dps
+    : computePP(S, dp).dps || 0;
   enemyObj = tuneEnemyStats(enemyObj, playerDps, playerEhp);
   const pow = enemyPP(enemyObj);
   S.adventure.inCombat = true;
@@ -1499,6 +1536,7 @@ function startDungeonEncounter() {
   const rarityLabel = rarity !== 'normal' ? `${rarity[0].toUpperCase()}${rarity.slice(1)} ` : '';
   S.adventure.combatLog.push(`A ${rarityLabel}${enemyData.name} appears!`);
   logEnemyResists(S.adventure.currentEnemy);
+  syncAdventureCombo(Date.now());
 }
 
 export function progressDungeonEncounter() {
@@ -1630,6 +1668,8 @@ export function retreatFromCombat() {
     S.adventure.enemyMaxHP = enemyMax;
     S.adventure.combatLog = S.adventure.combatLog || [];
     S.adventure.combatLog.push('You retreated from combat.');
+    resetCombo(S);
+    syncAdventureCombo(Date.now());
     claimSessionLoot(); // EQUIP-CHAR-UI
     updateLootTab(); // EQUIP-CHAR-UI
   }

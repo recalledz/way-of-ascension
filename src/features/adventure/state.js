@@ -1,3 +1,5 @@
+import { COMBO_WINDOW_MS } from '../../engine/combat/combo.js';
+
 export const adventureState = {
   currentZone: 0,
   currentArea: 0,
@@ -16,5 +18,8 @@ export const adventureState = {
   enemyMaxHP: 0,
   playerHP: 0,
   combatLog: [],
-  sessionLoot: []
+  sessionLoot: [],
+  comboCount: 0,
+  comboExpiresAt: 0,
+  comboWindowMs: COMBO_WINDOW_MS,
 };

@@ -11,6 +11,21 @@ import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { getStatEffects, calculatePlayerAttackSnapshot, qCap } from '../progression/selectors.js';
 import { getAbilityQiCost } from './selectors.js';
 import { emit } from '../../shared/events.js';
+import {
+  COMBO_WINDOW_MS,
+  getComboCount,
+  getComboDamageBonus,
+  recordComboHit,
+  resetCombo,
+} from '../../engine/combat/combo.js';
+
+function syncAbilityCombo(state, now = Date.now()) {
+  if (!state?.adventure) return;
+  const count = getComboCount(state, now);
+  state.adventure.comboCount = count;
+  state.adventure.comboExpiresAt = state.combo?.expiresAt || 0;
+  state.adventure.comboWindowMs = COMBO_WINDOW_MS;
+}
 
 export function tryCastAbility(abilityKey, state = S) {
   const ability = ABILITIES[abilityKey];
@@ -103,6 +118,8 @@ function applyAbilityResult(abilityKey, res, state) {
       const hitP = chanceToHit(state.derivedStats?.accuracy || 0, enemyDodge);
       if (Math.random() >= hitP) {
         logs?.push(`Your ${ability.displayName} missed!`);
+        resetCombo(state);
+        syncAbilityCombo(state, now);
         return;
       }
     }
@@ -132,7 +149,8 @@ function applyAbilityResult(abilityKey, res, state) {
         globalMult *= spellPowerMult * (1 + spellDamage / 100) * spellTreeMult;
       }
 
-      const globalPct = snap.globalPct + (globalMult - 1);
+      let globalPct = snap.globalPct + (globalMult - 1);
+      globalPct += getComboDamageBonus(state, now);
 
       const { total: dealt, components } = processAttack(
         profile,
@@ -162,6 +180,12 @@ function applyAbilityResult(abilityKey, res, state) {
       logs?.push(`You used ${ability.displayName} for ${dealt} damage${compText}.`);
 
       performAttack(state, atkTarget, { weapon, profile, physDamage: components.phys }, state);
+      if (dealt > 0) {
+        recordComboHit(atkTarget, now, state);
+      } else {
+        resetCombo(state);
+      }
+      syncAbilityCombo(state, now);
     }
 
     if (ability.status) {

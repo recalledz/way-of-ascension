@@ -60,6 +60,7 @@ export const defaultState = () => {
   astralPoints: 50,
   coin: 0,
   ppHistory: { samples: [], startedAt: 0, lastAt: 0 },
+  combo: { count: 0, expiresAt: 0, targetKey: null },
   ...initHp(baseHP),
   shield: { current: 0, max: 0 },
   autoFillShieldFromQi: true,

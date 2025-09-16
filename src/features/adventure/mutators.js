@@ -14,6 +14,7 @@ import { initializeFight } from '../combat/mutators.js';
 import { adventureState } from './state.js';
 import { log } from '../../shared/utils/dom.js';
 import { stopActivity as stopActivityMut } from '../activity/mutators.js';
+import { COMBO_WINDOW_MS } from '../../engine/combat/combo.js';
 
 export {
   selectZone,
@@ -38,6 +39,11 @@ export function startAdventure(state = S) {
       playerStunBar: 0,
       enemyStunBar: 0,
     };
+  }
+  if (state.adventure) {
+    state.adventure.comboCount = 0;
+    state.adventure.comboExpiresAt = 0;
+    state.adventure.comboWindowMs = COMBO_WINDOW_MS;
   }
   return state.adventure;
 }

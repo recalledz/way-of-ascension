@@ -1,6 +1,7 @@
 import { S } from '../../shared/state.js';
 import { initializeFight as baseInitializeFight, processAttack as baseProcessAttack } from './logic.js';
 import { applyStatus as baseApplyStatus, applyAilment as baseApplyAilment } from './statusEngine.js';
+import { resetCombo, COMBO_WINDOW_MS } from '../../engine/combat/combo.js';
 
 export function applyStatus(target, key, power, state = S, options) {
   return baseApplyStatus(target, key, power, state, options);
@@ -12,12 +13,16 @@ export function applyAilment(attacker, target, key, power, nowMs, state = S) {
 
 export function initializeFight(enemy, state = S) {
   const { enemyHP, enemyMax, atk, def } = baseInitializeFight(enemy);
+  resetCombo(state);
   if (state.adventure) {
     state.adventure.enemyHP = enemyHP;
     state.adventure.enemyMaxHP = enemyMax;
     state.adventure.currentEnemy = enemy;
     state.adventure.enemyStunBar = 0;
     state.adventure.playerStunBar = 0;
+    state.adventure.comboCount = 0;
+    state.adventure.comboExpiresAt = 0;
+    state.adventure.comboWindowMs = COMBO_WINDOW_MS;
   }
   return { enemyHP, enemyMax, atk, def };
 }

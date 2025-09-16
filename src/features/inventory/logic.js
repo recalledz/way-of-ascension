@@ -17,6 +17,7 @@ export function recomputePlayerTotals(player) {
   let critChance = 0;
   let critMult = 0;
   let hpBonus = 0;
+  let comboDamagePct = 0;
   const resists = {};
   const damagePct = {};
 
@@ -52,6 +53,9 @@ export function recomputePlayerTotals(player) {
       if (item.stats.critChancePct) critChance += item.stats.critChancePct / 100;
       if (item.stats.critDamagePct) critMult += item.stats.critDamagePct / 100;
       if (item.stats.critMult) critMult += item.stats.critMult;
+      if (typeof item.stats.comboDamagePct === 'number') {
+        comboDamagePct += item.stats.comboDamagePct;
+      }
       for (const [k, v] of Object.entries(item.stats)) {
         if (k.endsWith('DamagePct')) {
           const elem = k === 'physicalDamagePct' ? 'physical' : k.replace('DamagePct', '');
@@ -80,6 +84,9 @@ export function recomputePlayerTotals(player) {
       if (typeof item.bonuses.critDamagePct === 'number')
         critMult += item.bonuses.critDamagePct / 100;
       if (typeof item.bonuses.critMult === 'number') critMult += item.bonuses.critMult;
+      if (typeof item.bonuses.comboDamagePct === 'number') {
+        comboDamagePct += item.bonuses.comboDamagePct;
+      }
       if (typeof item.bonuses.hp === 'number') hpBonus += item.bonuses.hp;
       if (typeof item.bonuses.hpMax === 'number') hpBonus += item.bonuses.hpMax;
       for (const [k, v] of Object.entries(item.bonuses)) {
@@ -102,6 +109,7 @@ export function recomputePlayerTotals(player) {
     attackSpeedPct,
     critChance,
     critMult,
+    comboDamagePct,
     resists,
   };
   player.gearDamagePct = damagePct;
