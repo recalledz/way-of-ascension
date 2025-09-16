@@ -13,6 +13,7 @@ export function recomputePlayerTotals(player) {
   let qiRegenMult = 0;
   let dropRateMult = 0;
   let attackSpeedPct = 0;
+  let qiCostMult = 1;
   let critChance = 0;
   let critMult = 0;
   let hpBonus = 0;
@@ -41,6 +42,12 @@ export function recomputePlayerTotals(player) {
       if (item.stats.hpMax) hpBonus += item.stats.hpMax;
       if (item.stats.attackSpeedPct) attackSpeedPct += item.stats.attackSpeedPct;
       if (item.stats.attackRatePct) attackSpeedPct += item.stats.attackRatePct;
+      if (typeof item.stats.qiCostPct === 'number') {
+        qiCostMult *= 1 + item.stats.qiCostPct;
+      }
+      if (typeof item.stats.qiCostReductionPct === 'number') {
+        qiCostMult *= 1 - item.stats.qiCostReductionPct / 100;
+      }
       if (item.stats.criticalChance) critChance += item.stats.criticalChance;
       if (item.stats.critChancePct) critChance += item.stats.critChancePct / 100;
       if (item.stats.critDamagePct) critMult += item.stats.critDamagePct / 100;
@@ -61,6 +68,12 @@ export function recomputePlayerTotals(player) {
       qiRegenMult += item.bonuses.qiRegenMult || 0;
       dropRateMult += item.bonuses.dropRateMult || 0;
       attackSpeedPct += item.bonuses.attackRatePct || item.bonuses.attackSpeedPct || 0;
+      if (typeof item.bonuses.qiCostPct === 'number') {
+        qiCostMult *= 1 + item.bonuses.qiCostPct;
+      }
+      if (typeof item.bonuses.qiCostReductionPct === 'number') {
+        qiCostMult *= 1 - item.bonuses.qiCostReductionPct / 100;
+      }
       if (typeof item.bonuses.critChance === 'number') critChance += item.bonuses.critChance;
       if (typeof item.bonuses.critChancePct === 'number')
         critChance += item.bonuses.critChancePct / 100;
@@ -116,7 +129,33 @@ export function recomputePlayerTotals(player) {
     qiRegenMult,
     dropRateMult,
     attackRatePct: attackSpeedPct,
+    qiCostMult,
   };
+
+  updateQiDerivedStats(player);
+}
+
+export function updateQiDerivedStats(player) {
+  if (!player) return;
+  player.derivedStats = player.derivedStats || {};
+  player.attributes = player.attributes || {};
+  player.gearBonuses = player.gearBonuses || {};
+
+  const mind = Number(player.attributes.mind ?? 10);
+  const manualRegenPct = Number(player.derivedStats.qiRegen || 0);
+  const manualCostPct = Number(player.derivedStats.qiCost || 0);
+  const gearRegenMult = 1 + Number(player.gearBonuses.qiRegenMult || 0);
+  const gearCostMult = Number(player.gearBonuses.qiCostMult ?? 1);
+
+  const baseRegen = Math.max(0, 0.5 + mind * 0.05);
+  const manualRegenMult = 1 + manualRegenPct / 100;
+  player.derivedStats.qiRegenPerSec = baseRegen * manualRegenMult * gearRegenMult;
+
+  const mindReductionPct = Math.max(0, (mind - 10) * 0.3);
+  const mindMult = Math.max(0, 1 - mindReductionPct / 100);
+  const manualCostMult = 1 + manualCostPct / 100;
+  const totalCostMult = Math.max(0, mindMult * manualCostMult * gearCostMult);
+  player.derivedStats.qiCostReductionPct = Math.max(0, Math.min(100, (1 - totalCostMult) * 100));
 }
 
 // Determine if an item can be equipped and in which slot

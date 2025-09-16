@@ -2,7 +2,12 @@ import { S } from '../../shared/state.js';
 import { ABILITIES } from './data/abilities.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { resolveAbilityHit } from './logic.js';
-import { getStatEffects, calculatePlayerAttackSnapshot } from '../progression/selectors.js';
+import {
+  getStatEffects,
+  calculatePlayerAttackSnapshot,
+  getLawBonuses,
+} from '../progression/selectors.js';
+import { updateQiDerivedStats } from '../inventory/logic.js';
 
 export function getAbilityCooldowns(state = S) {
   return state.abilityCooldowns || {};
@@ -24,12 +29,13 @@ export function getAbilitySlots(state = S) {
       const meetsReq = def && (!def.requiresWeaponClass || def.requiresWeaponClass === weapon.classKey);
       if (meetsReq) {
         const cooldown = state.abilityCooldowns?.[abilityKey] || 0;
+        const qiCost = getAbilityQiCost(abilityKey, state);
         slots.push({
           keybind: i + 1,
           abilityKey,
-          isReady: cooldown <= 0 && state.qi >= def.costQi,
+          isReady: cooldown <= 0 && state.qi >= qiCost,
           cooldownRemainingMs: cooldown,
-          insufficientQi: state.qi < def.costQi,
+          insufficientQi: state.qi < qiCost,
         });
         continue;
       }
@@ -70,4 +76,21 @@ export function getAbilityDamage(abilityKey, state = S) {
   }
   const op = snap.power?.opFromCult || 0;
   return Math.round(total * (1 + snap.globalPct) * (1 + op));
+}
+
+export function getAbilityQiCost(abilityKey, state = S) {
+  const ability = ABILITIES[abilityKey];
+  if (!ability) return 0;
+
+  updateQiDerivedStats(state);
+  const baseCost = Number(ability.costQi) || 0;
+  if (baseCost <= 0) return 0;
+
+  const reductionPct = Number(state.derivedStats?.qiCostReductionPct || 0);
+  const derivedMult = Math.max(0, 1 - reductionPct / 100);
+  const lawMult = getLawBonuses(state).qiCost || 1;
+  const mods = state.abilityMods?.[abilityKey] || {};
+  const modMult = mods.costPct ? 1 + mods.costPct / 100 : 1;
+  const totalMult = Math.max(0, derivedMult * lawMult * modMult);
+  return baseCost * totalMult;
 }
