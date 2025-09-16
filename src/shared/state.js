@@ -41,6 +41,8 @@ export const defaultState = () => {
     armor: 0,           // Total armor from gear and bonuses
     accuracy: ACCURACY_BASE,        // Chance to hit with attacks
     dodge: DODGE_BASE,          // Chance to avoid attacks
+    qiRegenPerSec: 0,          // Combat Qi regeneration from stats
+    qiCostReductionPct: 0,     // Percentage reduction to ability Qi costs
     stunBuildMult: 0,           // Bonus stun build applied by attacker
     stunDurationMult: 0,        // Bonus stun duration applied by attacker
     stunResist: 0,              // Resistance to stun effects

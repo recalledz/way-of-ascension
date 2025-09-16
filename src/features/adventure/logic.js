@@ -1,9 +1,9 @@
 import { S, save } from '../../shared/state.js';
-import { calculatePlayerAttackSnapshot, calculatePlayerAttackRate, qCap } from '../progression/selectors.js';
+import { calculatePlayerAttackSnapshot, calculatePlayerAttackRate, qCap, getLawBonuses } from '../progression/selectors.js';
 import { initializeFight, processAttack } from '../combat/mutators.js';
 import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
-import { getAbilitySlots, getAbilityDamage } from '../ability/selectors.js';
+import { getAbilitySlots, getAbilityDamage, getAbilityQiCost } from '../ability/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
 import { rollLoot, toLootTableKey } from '../loot/logic.js'; // WEAPONS-INTEGRATION
 import { WEAPONS } from '../weaponGeneration/data/weapons.js'; // WEAPONS-INTEGRATION
@@ -14,6 +14,7 @@ import { performAttack } from '../combat/attack.js'; // STATUS-REFORM
 import { tickStunDecay, initStun, STUN_THRESHOLD, DECAY_PER_SECOND } from '../../engine/combat/stun.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { tryCastAbility, processAbilityQueue } from '../ability/mutators.js';
+import { updateQiDerivedStats } from '../inventory/logic.js';
 import { ENEMY_DATA } from './data/enemies.js';
 import { setText, setFill, log } from '../../shared/utils/dom.js';
 import { on, emit } from '../../shared/events.js';
@@ -547,6 +548,15 @@ function hideAbilityTooltip() {
   tooltipFromTouch = false;
 }
 
+function formatQiCost(cost) {
+  if (!Number.isFinite(cost)) return '0';
+  const rounded = Math.round(cost * 10) / 10;
+  if (Math.abs(rounded - Math.round(rounded)) < 0.05) {
+    return Math.round(rounded).toString();
+  }
+  return rounded.toFixed(1);
+}
+
 function showAbilityTooltip(anchor, abilityKey, fromTouch = false) {
   hideAbilityTooltip();
   const tooltip = document.createElement('div');
@@ -603,7 +613,12 @@ function abilityDetailsHTML(key) {
   );
   const dmg = getAbilityDamage(key, S);
   const rows = [];
-  rows.push(`<div class="stat-row"><span class="label">Qi Cost</span><span class="value">${def.costQi}</span></div>`);
+  const qiCost = getAbilityQiCost(key, S);
+  const formattedCost = formatQiCost(qiCost);
+  const costLabel = Math.abs(qiCost - def.costQi) > 0.05
+    ? `${formattedCost} (base ${def.costQi})`
+    : formattedCost;
+  rows.push(`<div class="stat-row"><span class="label">Qi Cost</span><span class="value">${costLabel}</span></div>`);
   if (castTimeMs > 0)
     rows.push(`<div class="stat-row"><span class="label">Cast</span><span class="value">${(castTimeMs / 1000).toFixed(2)}s</span></div>`);
   rows.push(`<div class="stat-row"><span class="label">Cooldown</span><span class="value">${(cooldownMs / 1000).toFixed(2)}s</span></div>`);
@@ -654,6 +669,7 @@ export function updateAbilityBar() {
           (1 + (S.astralTreeBonuses?.cooldownPct || 0) / 100) /
           speedMult
       );
+      const qiCost = getAbilityQiCost(slot.abilityKey, S);
       let content = `
         <div class="ability-title">
           <div class="ability-name">${def.displayName}</div>
@@ -661,7 +677,7 @@ export function updateAbilityBar() {
           ${castLine}
         </div>
         <div class="ability-icon">${renderAbilityIcon(def.icon)}</div>
-        <div class="qi-badge">${def.costQi} Qi</div>
+        <div class="qi-badge">${formatQiCost(qiCost)} Qi</div>
         <div class="keybind">[${i + 1}]</div>
       `;
       if (slot.cooldownRemainingMs > 0) {
@@ -741,7 +757,6 @@ export function updateAbilityBar() {
           }
           hideAbilityTooltip();
           if (tryCastAbility(data.abilityKey)) {
-            S.qi -= ABILITIES[data.abilityKey].costQi;
             flashAbilityCard(i + 1);
             updateAbilityBar();
           } else {
@@ -758,7 +773,6 @@ export function updateAbilityBar() {
         }
         hideAbilityTooltip();
         if (tryCastAbility(data.abilityKey)) {
-          S.qi -= ABILITIES[data.abilityKey].costQi;
           flashAbilityCard(i + 1);
           updateAbilityBar();
         } else {
@@ -810,6 +824,19 @@ export function updateAdventureCombat() {
     }
     const deltaTime = (now - (S.adventure.lastCombatTick || now)) / 1000; // STATUS-REFORM
     S.adventure.lastCombatTick = now; // STATUS-REFORM
+    updateQiDerivedStats(S);
+    const lawRegenMult = getLawBonuses(S).qiRegen || 1;
+    const regenRate = (S.derivedStats?.qiRegenPerSec || 0) * lawRegenMult;
+    const combatPaused =
+      S.adventure?.combatPaused === true ||
+      (S.adventure?.combatPausedUntil || 0) > now;
+    if (!combatPaused && regenRate > 0 && deltaTime > 0) {
+      const gained = regenRate * deltaTime;
+      if (gained > 0) {
+        const cap = qCap(S);
+        S.qi = Math.min(cap, (S.qi || 0) + gained);
+      }
+    }
     tickStunDecay(S, deltaTime, now); // STATUS-REFORM
     S.adventure.playerStunBar = S.stun?.value || 0; // STATUS-REFORM
     if (S.adventure.currentEnemy) {
@@ -1844,7 +1871,6 @@ document.addEventListener('keydown', e => {
     const slot = slots[num - 1];
     if (slot?.abilityKey) {
       if (tryCastAbility(slot.abilityKey)) {
-        S.qi -= ABILITIES[slot.abilityKey].costQi;
         flashAbilityCard(num);
         updateAbilityBar();
       } else {
