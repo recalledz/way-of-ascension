@@ -1,4 +1,8 @@
-import { calcArmor, calculatePlayerAttackSnapshot } from '../features/progression/logic.js';
+import {
+  calcArmor,
+  calculatePlayerAttackSnapshot,
+  calculatePlayerAttackRate,
+} from '../features/progression/logic.js';
 import { REALMS } from '../features/progression/data/realms.js';
 import {
   drFromArmor,
@@ -8,6 +12,7 @@ import {
   dEhpFromQiRegenPct,
   dEhpFromMaxQiPct,
 } from '../lib/power/ehp.js';
+import { BASELINE_HP, BASELINE_DPS } from '../lib/power/baseline.js';
 
 export const W_O = 0.6;
 export const W_D = 0.4;
@@ -34,19 +39,23 @@ export function gatherDefense(state) {
 
 export function computePP(state, overrides = {}) {
   const snap = calculatePlayerAttackSnapshot(state);
+  const attackRate = calculatePlayerAttackRate(state);
   const combinePct = elem =>
     (snap.gearPct?.all || 0) +
     (snap.gearPct?.[elem] || 0) +
     (snap.astralPct?.[elem] || 0) +
     (snap.globalPct || 0);
 
-  let OPP = snap.profile.phys * (1 + combinePct('physical'));
+  let damagePerAttack = snap.profile.phys * (1 + combinePct('physical'));
   for (const [elem, dmg] of Object.entries(snap.profile.elems || {})) {
-    OPP += dmg * (1 + combinePct(elem));
+    damagePerAttack += dmg * (1 + combinePct(elem));
   }
-  OPP *= 1 + (snap.critChance || 0) * ((snap.critMult || 1) - 1);
+  damagePerAttack *= 1 + (snap.critChance || 0) * ((snap.critMult || 1) - 1);
+  damagePerAttack *= 1 + (snap.power?.opFromCult || 0);
 
-  OPP *= 1 + (snap.power?.opFromCult || 0);
+  const playerDps = damagePerAttack * attackRate;
+  const baseDps = BASELINE_DPS || 1;
+  const OPP = baseDps > 0 ? ((playerDps / baseDps) - 1) * 100 : 0;
 
   const dp = { ...gatherDefense(state), ...overrides };
   const dr = drFromArmor(dp.armor);
@@ -57,23 +66,27 @@ export function computePP(state, overrides = {}) {
   ehpPct += dEhpFromDodge(dp.dodge);
   ehpPct += dEhpFromQiRegenPct(dp.qiRegenPct);
   ehpPct += dEhpFromMaxQiPct(dp.maxQiPct);
-  let DPP = ehpPct * 100 * W_D;
-  DPP *= 1 + (snap.power?.dpFromCult || 0);
-  return { OPP, DPP };
+  ehpPct *= 1 + (snap.power?.dpFromCult || 0);
+  const DPP = ehpPct * 100;
+  const baseHp = BASELINE_HP || 1;
+  const playerEhp = (1 + ehpPct) * baseHp;
+  return { OPP, DPP, dps: playerDps, ehp: playerEhp };
 }
 
 /**
  * Convenience selector for current total power points.
  *
  * @param {object} state Player or global state object
- * @returns {{ PP:number, OPP:number, DPP:number }}
+ * @returns {{ PP:number, OPP:number, DPP:number, dps:number, ehp:number }}
  */
 export function getCurrentPP(state) {
-  const { OPP, DPP } = computePP(state);
+  const { OPP, DPP, dps, ehp } = computePP(state);
   return {
     OPP,
     DPP,
-    PP: W_O * OPP + DPP,
+    dps,
+    ehp,
+    PP: W_O * OPP + W_D * DPP,
   };
 }
 
@@ -87,7 +100,7 @@ export function getCurrentPP(state) {
  */
 export function breakthroughPPSnapshot(state) {
   const before = computePP(state);
-  const beforePP = W_O * before.OPP + before.DPP;
+  const beforePP = W_O * before.OPP + W_D * before.DPP;
 
   // Deep clone relevant pieces to simulate the breakthrough
   const sim = JSON.parse(JSON.stringify(state));
@@ -104,7 +117,7 @@ export function breakthroughPPSnapshot(state) {
   }
 
   const after = computePP(sim);
-  const afterPP = W_O * after.OPP + after.DPP;
+  const afterPP = W_O * after.OPP + W_D * after.DPP;
   const diff = {
     OPP: after.OPP - before.OPP,
     DPP: after.DPP - before.DPP,
