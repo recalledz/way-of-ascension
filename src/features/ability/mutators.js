@@ -9,6 +9,7 @@ import { performAttack } from '../combat/attack.js';
 import { mergeStats } from '../../shared/utils/stats.js';
 import { chanceToHit, DODGE_BASE } from '../combat/hit.js';
 import { getStatEffects, calculatePlayerAttackSnapshot, qCap } from '../progression/selectors.js';
+import { getAbilityQiCost } from './selectors.js';
 import { emit } from '../../shared/events.js';
 
 export function tryCastAbility(abilityKey, state = S) {
@@ -23,7 +24,8 @@ export function tryCastAbility(abilityKey, state = S) {
   const mods = state.abilityMods?.[abilityKey] || {};
   const cd = state.abilityCooldowns?.[abilityKey] || 0;
   if (cd > 0) return false;
-  if (state.qi < ability.costQi) return false;
+  const qiCost = getAbilityQiCost(abilityKey, state);
+  if (state.qi < qiCost) return false;
   if (!state.abilityCooldowns) state.abilityCooldowns = {};
   const isSpell = ability.tags?.includes('spell');
   const speedMult =
@@ -58,6 +60,7 @@ export function tryCastAbility(abilityKey, state = S) {
     enqueue();
     processAbilityQueue(state);
   }
+  state.qi = Math.max(0, state.qi - qiCost);
   return true;
 }
 

@@ -5,6 +5,7 @@
 
 import { unlockRecipe } from '../alchemy/mutators.js';
 import { isAttributeStat } from '../../shared/utils/stats.js';
+import { updateQiDerivedStats } from '../inventory/logic.js';
 
 export function calcFromProficiency(profXp) {
   return Math.max(0, profXp) * 0.25;
@@ -143,5 +144,7 @@ export function applyManualEffects(player, manual, level) {
       player[key] = (player[key] || 0) + val;
     }
   }
+
+  updateQiDerivedStats(player);
 }
 

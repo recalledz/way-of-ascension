@@ -175,10 +175,15 @@ const STAT_INFO = {
     desc: 'Shield gained per point of Qi when refilling.',
     calc: 'Base 100% +1% per Mind level',
   },
+  qiRegenPerSec: {
+    name: 'Qi Regeneration',
+    desc: 'Qi recovered per second during combat.',
+    calc: 'Base scales with Mind plus bonuses from manuals, gear, and laws',
+  },
   qiCostReduction: {
     name: 'Qi Cost Reduction',
     desc: 'Reduces Qi cost of abilities.',
-    calc: 'Bonuses from gear, manuals and laws',
+    calc: 'Bonuses from Mind, gear, manuals and laws',
   },
   forgeSpeed: {
     name: 'Forge Speed',
@@ -336,11 +341,17 @@ function renderStats() {
       const cost = qiCostPerShield(mind);
       return QI_PER_SHIELD_BASE / cost;
     }, format: v => `${(v * 100).toFixed(0)}%` },
+    { id: 'qiRegenPerSec', value: () => {
+      const base = S.derivedStats?.qiRegenPerSec || 0;
+      const lawMult = getLawBonuses(S).qiRegen || 1;
+      return base * lawMult;
+    }, format: v => `${v.toFixed(1)}/s` },
     { id: 'qiCostReduction', value: () => {
-      const pct = S.derivedStats?.qiCost || 0;
+      const derived = S.derivedStats?.qiCostReductionPct || 0;
       const lawMult = getLawBonuses(S).qiCost || 1;
-      const total = (1 + pct / 100) * lawMult;
-      return 1 - total;
+      const derivedMult = Math.max(0, 1 - derived / 100);
+      const totalMult = Math.max(0, derivedMult * lawMult);
+      return 1 - totalMult;
     }, format: v => `${(v * 100).toFixed(1)}%` },
     { id: 'forgeSpeed', value: () => getAgilityBonuses(S).forgeSpeed - 1, format: v => `${(v * 100).toFixed(0)}%` },
     { id: 'spellDamage', value: () => S.derivedStats?.spellDamage || 0, format: v => `${v.toFixed(1)}%` },
