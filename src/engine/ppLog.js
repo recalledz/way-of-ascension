@@ -43,38 +43,29 @@ function stageEnemyPowerReferences(limit = STAGE_REFERENCE_LIMIT) {
   return stages;
 }
 
-function formatStageEnemySummary(stages) {
-  const fmt = value => (typeof value === 'number' ? value.toFixed(2) : '--');
-  return stages
-    .map(entry => {
-      const parts = [];
-      if (entry.stage === 1) {
-        if (entry.boss) {
-          parts.push(
-            `Stage 1 Boss (${entry.boss.name}): OPP ${fmt(entry.boss.OPP)} / DPP ${fmt(entry.boss.DPP)}`
-          );
-        } else {
-          parts.push('Stage 1 Boss: n/a');
-        }
-      } else {
-        if (entry.enemy) {
-          parts.push(
-            `Stage ${entry.stage} Enemy (${entry.enemy.name}): OPP ${fmt(entry.enemy.OPP)} / DPP ${fmt(entry.enemy.DPP)}`
-          );
-        } else {
-          parts.push(`Stage ${entry.stage} Enemy: n/a`);
-        }
-        if (entry.boss) {
-          parts.push(
-            `Stage ${entry.stage} Boss (${entry.boss.name}): OPP ${fmt(entry.boss.OPP)} / DPP ${fmt(entry.boss.DPP)}`
-          );
-        } else {
-          parts.push(`Stage ${entry.stage} Boss: n/a`);
-        }
-      }
-      return parts.join(' | ');
-    })
-    .join(' || ');
+function buildStageReferenceColumns(limit = STAGE_REFERENCE_LIMIT) {
+  const stages = stageEnemyPowerReferences(limit);
+  const columns = [];
+  const fmtNumber = value =>
+    typeof value === 'number' && Number.isFinite(value) ? value.toFixed(2) : '';
+  const fmtName = name => (name ? name : 'n/a');
+  const addEntityColumns = (prefix, entity) => {
+    columns.push({ header: `${prefix}Name`, value: fmtName(entity?.name) });
+    columns.push({ header: `${prefix}OPP`, value: fmtNumber(entity?.OPP) });
+    columns.push({ header: `${prefix}DPP`, value: fmtNumber(entity?.DPP) });
+  };
+
+  for (const entry of stages) {
+    const stageLabel = `stage${entry.stage}`;
+    if (entry.stage === 1) {
+      addEntityColumns(`${stageLabel}Boss`, entry.boss);
+    } else {
+      addEntityColumns(`${stageLabel}Enemy`, entry.enemy);
+      addEntityColumns(`${stageLabel}Boss`, entry.boss);
+    }
+  }
+
+  return columns;
 }
 
 /**
@@ -117,7 +108,7 @@ export function logPPEvent(state, kind, meta = {}) {
  */
 export function downloadPPLogCSV(state) {
   const log = state.ppLog || [];
-  const stageSummary = formatStageEnemySummary(stageEnemyPowerReferences());
+  const stageReferenceColumns = buildStageReferenceColumns();
   const header = [
     'time',
     'kind',
@@ -128,9 +119,10 @@ export function downloadPPLogCSV(state) {
     'deltaOPP',
     'deltaDPP',
     'meta',
-    'stageEnemyPower',
+    ...stageReferenceColumns.map(column => column.header),
   ];
-  const rows = [header.join(',')];
+  const rows = [header.map(csvEscape).join(',')];
+  const stageReferenceValues = stageReferenceColumns.map(column => column.value);
   for (const e of log) {
     const { time, kind, after, diff, meta } = e;
     rows.push([
@@ -143,7 +135,7 @@ export function downloadPPLogCSV(state) {
       diff?.OPP ?? '',
       diff?.DPP ?? '',
       JSON.stringify(meta || {}),
-      stageSummary,
+      ...stageReferenceValues,
     ].map(csvEscape).join(','));
   }
   const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
