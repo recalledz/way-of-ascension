@@ -1,5 +1,6 @@
 import { combatState } from "./state.js";
 import { tickAilments, tickStatuses } from "./statusEngine.js";
+import { tickComboState } from "./logic.js";
 import { registerFeature } from "../registry.js";
 
 export const CombatFeature = {
@@ -24,5 +25,6 @@ registerFeature({
       tickAilments(enemy, dtSec, state);
       tickStatuses(enemy, dtSec, state);
     }
+    tickComboState(state, stepMs, enemy);
   },
 });

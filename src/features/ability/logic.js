@@ -47,10 +47,14 @@ export function resolveAbilityHit(abilityKey, state) {
 
 function resolveFlowingPalm(state) {
   const weapon = getEquippedWeapon(state);
-  const attacks = buildWeaponAttacks(weapon, 1, state.adventure.currentEnemy);
+  const combo = state?.combat?.comboCount || 0;
+  const bonusStacks = Math.max(0, combo - 2);
+  const damageMult = 1 + Math.min(bonusStacks, 5) * 0.05;
+  const attacks = buildWeaponAttacks(weapon, damageMult, state.adventure.currentEnemy);
+  const stunBonus = 2 + Math.min(combo, 5) * 0.1;
   return {
     attacks,
-    stun: { mult: 2 },
+    stun: { mult: stunBonus },
   };
 }
 

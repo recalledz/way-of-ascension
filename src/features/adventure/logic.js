@@ -1,6 +1,6 @@
 import { S, save } from '../../shared/state.js';
 import { calculatePlayerAttackSnapshot, calculatePlayerAttackRate, qCap, getLawBonuses } from '../progression/selectors.js';
-import { initializeFight, processAttack } from '../combat/mutators.js';
+import { initializeFight, processAttack, registerComboMiss } from '../combat/mutators.js';
 import { refillShieldFromQi, ARMOR_K, ARMOR_CAP } from '../combat/logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getAbilitySlots, getAbilityDamage, getAbilityQiCost } from '../ability/selectors.js';
@@ -39,7 +39,8 @@ import {
   playSparkBurst,
   playFireball,
   setFxTint,
-  showFloatingText
+  showFloatingText,
+  updateComboDisplay,
 } from '../combat/ui/index.js';
 import { updateZoneButtons, updateAreaGrid } from './ui/zoneUI.js';
 import { updateAdventureProgressBar } from './ui/progressBar.js';
@@ -520,6 +521,7 @@ export function updateBattleDisplay() {
     combatLog.innerHTML = recentLogs.map(l => `<div class="log-entry">${l}</div>`).join('');
     combatLog.scrollTop = combatLog.scrollHeight;
   }
+  updateComboDisplay(S);
 }
 
 const ABILITY_ICON_MAP = {
@@ -966,6 +968,7 @@ export function updateAdventureCombat() {
         if (enemyEl) {
           showFloatingText({ targetEl: enemyEl, result: 'miss' });
         }
+        registerComboMiss(S);
       }
     }
     if (S.adventure.enemyHP > 0 && S.adventure.currentEnemy) {
@@ -1072,6 +1075,7 @@ export function updateAdventureCombat() {
   if (S.adventure.currentEnemy) {
     renderAilments(S.adventure.currentEnemy, 'enemyAilments');
   }
+  updateComboDisplay(S);
 }
 
 function defeatEnemy() {

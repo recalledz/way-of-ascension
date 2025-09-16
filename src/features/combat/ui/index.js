@@ -3,4 +3,5 @@
 
 export * from './fx.js';
 export * from './floatingText.js';
+export * from './comboDisplay.js';
 

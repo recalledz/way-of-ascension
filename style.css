@@ -4504,6 +4504,14 @@ tr:last-child td {
 .combat-hud .enemy-name{font-size:.75rem;font-weight:600}
 .combat-hud .enemy-power{font-size:.7rem}
 .combat-hud .player-name{font-size:.75rem;font-weight:600}
+.combo-display{background:rgba(17,17,26,.75);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;color:#f8f9ff;font-size:.75rem;display:flex;flex-direction:column;gap:4px;align-self:center;min-width:120px;transition:transform .15s ease,opacity .15s ease}
+.combo-display.active{opacity:1;box-shadow:0 0 12px rgba(255,215,0,.3)}
+.combo-display.inactive{opacity:.6}
+.combo-header{display:flex;justify-content:space-between;align-items:center;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.combo-count{font-size:1rem}
+.combo-bar{position:relative;width:100%;height:6px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+.combo-fill{height:100%;width:0;background:linear-gradient(90deg,#ffe066 0,#ff922b 100%);transition:width .1s ease}
+.combo-timer-text{font-size:.7rem;text-align:right;color:rgba(255,255,255,.8);font-variant-numeric:tabular-nums}
 .status-ailments{display:flex;gap:4px;margin-top:2px}
 .status-ailments .ailment{position:relative;width:20px;height:20px;font-size:16px;line-height:20px}
 .status-ailments .ailment .stack{position:absolute;bottom:-2px;right:-2px;font-size:10px;color:#fff;text-shadow:0 0 2px #000}

@@ -144,6 +144,7 @@ way-of-ascension/
 │   │   │   ├── statusEngine.js
 │   │   │   └── ui/
 │   │   │       ├── combatStats.js
+│   │   │       ├── comboDisplay.js
 │   │   │       ├── floatingText.js
 │   │   │       ├── fx.js
 │   │   │       └── index.js
@@ -949,6 +950,11 @@ function updateAll() {
 **Key Functions**: `showFloatingText()`, `setFloatingTextEnabled()`.
 **When to modify**: Change floating combat text behavior or styling.
 
+#### `src/features/combat/ui/comboDisplay.js` - Combo Gauge HUD
+**Purpose**: Creates and updates the combat combo gauge overlay, showing current combo stacks and the remaining decay window.
+**Key Functions**: `mountComboDisplay()` to ensure the HUD exists, `updateComboDisplay()` to refresh combo count and timer visuals.
+**When to modify**: Adjust combo HUD presentation or expose additional combo-related information.
+
 ### HTML Structure (`index.html`)
 **Purpose**: Main game interface structure
 **Key Elements**:
@@ -1016,6 +1022,7 @@ Paths added:
 - `src/features/automation/selectors.js` – automation selectors
 - `src/features/automation/state.js` – automation state slice
 - `src/features/combat/ui/floatingText.js` – floating combat text renderer
+- `src/features/combat/ui/comboDisplay.js` – combo gauge HUD overlay
 
 #### `src/game/GameController.js` - Game Orchestrator
 **Purpose**: Boots the game, runs the fixed-step loop, emits events and handles simple routing.
