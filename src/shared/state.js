@@ -13,6 +13,7 @@ import { catchingState } from '../features/catching/state.js';
 import { sideLocationState } from '../features/sideLocations/state.js';
 import { tutorialState } from '../features/tutorial/state.js';
 import { alchemyState } from '../features/alchemy/state.js';
+import { combatState } from '../features/combat/state.js';
 import { WEAPONS } from '../features/weaponGeneration/data/weapons.js';
 
 export function loadSave(){
@@ -114,6 +115,7 @@ export const defaultState = () => {
     expMax: 100,
     successBonus: 0,
   },
+  combat: structuredClone(combatState),
   adventure: {
     currentZone: 0,
     currentArea: 0,
@@ -231,6 +233,7 @@ S.agility = { ...structuredClone(agilityState), ...S.agility };
 S.catching = { ...structuredClone(catchingState), ...S.catching };
 S.sideLocations = { ...structuredClone(sideLocationState), ...S.sideLocations };
 S.tutorial = { ...structuredClone(tutorialState), ...S.tutorial };
+S.combat = { ...structuredClone(combatState), ...S.combat };
 recalculateBuildingBonuses(S);
 
 // Map resource properties to inventory entries so the inventory is the

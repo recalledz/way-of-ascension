@@ -40,10 +40,15 @@ export function processAttack(profile, weapon, options = {}, state = S) {
     currentHP = state.adventure.enemyHP;
   }
 
-  const result = baseProcessAttack(profile, weapon, {
-    ...options,
-    target,
-  });
+  const result = baseProcessAttack(
+    profile,
+    weapon,
+    {
+      ...options,
+      target,
+    },
+    state
+  );
 
   const newHP = Math.max(0, Math.round(currentHP - result.total));
 
