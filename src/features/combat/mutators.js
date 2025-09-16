@@ -1,5 +1,9 @@
 import { S } from '../../shared/state.js';
-import { initializeFight as baseInitializeFight, processAttack as baseProcessAttack } from './logic.js';
+import {
+  initializeFight as baseInitializeFight,
+  processAttack as baseProcessAttack,
+  registerComboMiss as baseRegisterComboMiss,
+} from './logic.js';
 import { applyStatus as baseApplyStatus, applyAilment as baseApplyAilment } from './statusEngine.js';
 
 export function applyStatus(target, key, power, state = S, options) {
@@ -53,5 +57,9 @@ export function processAttack(profile, weapon, options = {}, state = S) {
   }
 
   return result;
+}
+
+export function registerComboMiss(state = S) {
+  baseRegisterComboMiss(state);
 }
 

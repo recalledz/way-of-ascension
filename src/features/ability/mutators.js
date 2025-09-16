@@ -3,7 +3,7 @@ import { ABILITIES } from './data/abilities.js';
 import { resolveAbilityHit } from './logic.js';
 import { getEquippedWeapon } from '../inventory/selectors.js';
 import { getWeaponProficiencyBonuses } from '../proficiency/selectors.js';
-import { processAttack, applyStatus, applyAilment } from '../combat/mutators.js';
+import { processAttack, applyStatus, applyAilment, registerComboMiss } from '../combat/mutators.js';
 import { addStunPercent } from '../../engine/combat/stun.js';
 import { performAttack } from '../combat/attack.js';
 import { mergeStats } from '../../shared/utils/stats.js';
@@ -21,6 +21,16 @@ export function tryCastAbility(abilityKey, state = S) {
   if (ability.requiresWeaponClass && ability.requiresWeaponClass !== weapon.classKey) return false;
   const unlocked = weapon.abilityKeys?.includes(abilityKey) || state.manualAbilityKeys?.includes(abilityKey);
   if (!unlocked) return false;
+  const comboCount = state.combat?.comboCount || 0;
+  if (typeof ability.minCombo === 'number' && comboCount < ability.minCombo) {
+    if (state.adventure) {
+      state.adventure.combatLog = state.adventure.combatLog || [];
+      state.adventure.combatLog.push(
+        `You need Combo ${ability.minCombo} to use ${ability.displayName}.`
+      );
+    }
+    return false;
+  }
   const mods = state.abilityMods?.[abilityKey] || {};
   const cd = state.abilityCooldowns?.[abilityKey] || 0;
   if (cd > 0) return false;
@@ -103,6 +113,7 @@ function applyAbilityResult(abilityKey, res, state) {
       const hitP = chanceToHit(state.derivedStats?.accuracy || 0, enemyDodge);
       if (Math.random() >= hitP) {
         logs?.push(`Your ${ability.displayName} missed!`);
+        registerComboMiss(state);
         return;
       }
     }

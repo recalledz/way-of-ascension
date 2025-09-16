@@ -37,9 +37,11 @@ export const ABILITIES = {
     costQi: 0,
     cooldownMs: 5_000,
     castTimeMs: 0,
-    description: 'Strikes with stunning force, dealing weapon damage and applying a brief stun.',
+    description:
+      'Requires Combo 3. Strikes with stunning force, dealing weapon damage and applying a stun that grows with your combo.',
     tags: ['martial', 'physical'],
     requiresWeaponClass: 'palm',
+    minCombo: 3,
   },
   seventyFive: {
     key: 'seventyFive',

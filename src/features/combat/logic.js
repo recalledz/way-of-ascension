@@ -3,6 +3,12 @@ import { WEAPONS, WEAPON_CONFIG } from '../weaponGeneration/data/weapons.js'; //
 import { onPhysicalHit } from '../../engine/combat/stun.js';
 import { MODIFIERS } from '../gearGeneration/data/modifiers.js';
 
+const entityKeys = new WeakMap();
+let entityKeyCounter = 1;
+
+export const COMBO_WINDOW_MS = 600;
+export const COMBO_DAMAGE_PER_STACK = 0.1;
+
 /** Tunables */
 export const ARMOR_K = 10;           // how "strong" armor is vs damage size
 export const ARMOR_CAP = 0.90;       // 90% maximum mitigation
@@ -30,6 +36,64 @@ export function refillShieldFromQi(entity) {
   entity.qi -= spent;
   entity.shield.current += gained;
   return { gained, qiSpent: spent };
+}
+
+function getEntityKey(entity) {
+  if (!entity) return null;
+  if (typeof entity !== 'object') return String(entity);
+  let key = entityKeys.get(entity);
+  if (!key) {
+    key = `e${entityKeyCounter++}`;
+    entityKeys.set(entity, key);
+  }
+  return key;
+}
+
+function resetComboInternal(combo) {
+  combo.comboCount = 0;
+  combo.comboTimeoutMs = 0;
+  combo.comboTargetKey = null;
+  combo.comboResetQueued = false;
+}
+
+export function resetCombo(state = {}) {
+  const combo = state?.combat;
+  if (!combo) return;
+  resetComboInternal(combo);
+}
+
+export function registerComboMiss(state = {}) {
+  if (!state?.combat) return;
+  state.combat.comboResetQueued = true;
+  state.combat.comboTimeoutMs = 0;
+}
+
+export function tickComboState(state, stepMs, currentEnemy) {
+  const combo = state?.combat;
+  if (!combo) return;
+  if (!combo.comboCount || combo.comboCount <= 0) {
+    combo.comboCount = 0;
+    combo.comboTimeoutMs = 0;
+    combo.comboTargetKey = null;
+    combo.comboResetQueued = false;
+    return;
+  }
+
+  const targetKey = getEntityKey(currentEnemy);
+  if (!currentEnemy || (combo.comboTargetKey && targetKey && combo.comboTargetKey !== targetKey)) {
+    resetComboInternal(combo);
+    return;
+  }
+
+  if (combo.comboResetQueued) {
+    resetComboInternal(combo);
+    return;
+  }
+
+  combo.comboTimeoutMs = Math.max(0, (combo.comboTimeoutMs || 0) - stepMs);
+  if (combo.comboTimeoutMs <= 0) {
+    resetComboInternal(combo);
+  }
 }
 
 export function routeDamageThroughQiShield(incoming, target) {
@@ -132,7 +196,7 @@ export function applyResists(damage, element, target) {
   return dmg * (1 - resist);
 }
 
-export function processAttack(profile, weapon, options = {}) {
+export function processAttack(profile, weapon, options = {}, state) {
   const {
     target,
     onDamage,
@@ -150,6 +214,21 @@ export function processAttack(profile, weapon, options = {}) {
     opTotal = 0,
     targetDpTotal = 0,
   } = options;
+
+  const comboState = state?.combat;
+  const isPlayerAttack = Boolean(comboState && attacker && state && attacker === state);
+  if (isPlayerAttack && comboState.comboResetQueued) {
+    resetComboInternal(comboState);
+  }
+  let currentTargetKey = null;
+  if (isPlayerAttack && target) {
+    currentTargetKey = getEntityKey(target);
+    if (comboState.comboTargetKey && currentTargetKey && comboState.comboTargetKey !== currentTargetKey) {
+      resetComboInternal(comboState);
+    }
+  }
+  const startingCombo = isPlayerAttack ? comboState.comboCount || 0 : 0;
+  const comboDamageMult = isPlayerAttack ? 1 + startingCombo * COMBO_DAMAGE_PER_STACK : 1;
 
   const w = weapon && weapon.key ? weapon : WEAPONS[weapon] || WEAPONS.fist;
   // Base weapon damage without attacker modifiers
@@ -207,12 +286,13 @@ export function processAttack(profile, weapon, options = {}) {
       if (elem !== 'physical') components.elems[elem] = 0;
       continue;
     }
-    const dmg =
+    let dmg =
       base *
       (1 + bucketGet(weaponPct, elem === 'physical' ? 'physical' : elem)) *
       (1 + bucketGet(gear, elem === 'physical' ? 'physical' : elem)) *
       (1 + bucketGet(astralPct, elem === 'physical' ? 'physical' : elem)) *
       (1 + bucketGet(manualPct, elem === 'physical' ? 'physical' : elem));
+    dmg *= comboDamageMult;
     let afterCrit = dmg * critFactor * (1 + opTotal);
     if (elem === 'physical') {
       let amt = applyArmor(
@@ -238,12 +318,22 @@ export function processAttack(profile, weapon, options = {}) {
   let total = components.phys;
   for (const v of Object.values(components.elems)) total += v;
 
+  const perHitTotal = total;
+
   const aps =
     attackSpeed !== undefined
       ? attackSpeed
       : (w?.base?.rate || 1) * (1 + (attackSpeedPct + (atkStats.attackRatePct || 0)) / 100);
 
   total = Math.round(total * (1 + globalPct) * aps * hitChance);
+
+  if (isPlayerAttack && target && perHitTotal > 0) {
+    const targetKey = currentTargetKey ?? getEntityKey(target);
+    comboState.comboTargetKey = targetKey;
+    comboState.comboCount = (comboState.comboCount || 0) + 1;
+    comboState.comboTimeoutMs = COMBO_WINDOW_MS;
+    comboState.comboResetQueued = false;
+  }
 
   if (typeof onDamage === 'function' && hitChance >= 1) onDamage(total, components);
 
