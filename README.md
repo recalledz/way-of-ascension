@@ -1,6 +1,6 @@
 
 
-# Designing an Idle Cultivation Adventure with Depth and Customization
+# Idle Cultivation Adventure with Depth and Customization
 
 ## Overview
 
