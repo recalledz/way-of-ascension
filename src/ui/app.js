@@ -277,10 +277,41 @@ function setupMobileUI() {
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); (last || first).focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); (first || last).focus(); }
   }
-  function close(focusMenu = true) {
+  let openRaf = 0;
+  let hideListener;
+  function hideScrim(immediate = false) {
+    if (openRaf) {
+      cancelAnimationFrame(openRaf);
+      openRaf = 0;
+    }
+    if (hideListener) {
+      scrim.removeEventListener('transitionend', hideListener);
+      hideListener = null;
+    }
+    if (scrim.hidden) return;
+    if (immediate) {
+      scrim.hidden = true;
+      return;
+    }
+    const styles = getComputedStyle(scrim);
+    const hasTransition =
+      styles.transitionDuration.split(',').some(v => parseFloat(v)) ||
+      styles.transitionDelay.split(',').some(v => parseFloat(v));
+    if (!hasTransition) {
+      scrim.hidden = true;
+      return;
+    }
+    hideListener = (event) => {
+      if (event.target !== scrim) return;
+      scrim.hidden = true;
+      hideListener = null;
+    };
+    scrim.addEventListener('transitionend', hideListener, { once: true });
+  }
+  function close(focusMenu = true, immediate = false) {
     sidebar.classList.remove('open');
     scrim.classList.remove('active');
-    scrim.hidden = true;
+    hideScrim(immediate);
     document.body.classList.remove('drawer-open');
     menu.setAttribute('aria-expanded', 'false');
     sidebar.setAttribute('aria-hidden', 'true');
@@ -290,12 +321,20 @@ function setupMobileUI() {
   }
   function esc(e) { if (e.key === 'Escape') close(); }
   function open() {
+    if (sidebar.classList.contains('open')) return;
     const focusables = sidebar.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
     first = focusables[0];
     last = focusables[focusables.length - 1];
-    sidebar.classList.add('open');
+    if (hideListener) {
+      scrim.removeEventListener('transitionend', hideListener);
+      hideListener = null;
+    }
     scrim.hidden = false;
-    scrim.classList.add('active');
+    openRaf = requestAnimationFrame(() => {
+      openRaf = 0;
+      sidebar.classList.add('open');
+      scrim.classList.add('active');
+    });
     document.body.classList.add('drawer-open');
     menu.setAttribute('aria-expanded', 'true');
     sidebar.setAttribute('aria-hidden', 'false');
@@ -309,7 +348,7 @@ function setupMobileUI() {
     if (e.matches) {
       sidebar.setAttribute('role', 'dialog');
       sidebar.setAttribute('aria-modal', 'true');
-      close(false);
+      close(false, true);
     } else {
       sidebar.removeAttribute('aria-hidden');
       sidebar.removeAttribute('role');
