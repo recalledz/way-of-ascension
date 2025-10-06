@@ -1,15 +1,3 @@
-Great. I’ll design a robust and captivating gameplay loop that builds on your current structure—focusing on progression through cultivation, skills, and adventure. I’ll draw on lessons from games like NGU Idle, Melvor Idle, and Amazing Cultivation Simulator, and tailor the flow to your hybrid idle/active balance and current UI layout.
-
-I’ll return with a full concept document covering:
-
-* Core progression and feedback loops
-* Interlinking of training skills, cultivation, and adventure
-* Prestige and reincarnation flow
-* Customization pathways through paths, skills, and build choices
-* Integration of actives (like agility puzzles) with idle systems
-* Upgrade/buff systems like pills, merit, affinity
-
-Sit tight while I assemble everything for you.
 
 
 # Designing an Idle Cultivation Adventure with Depth and Customization
@@ -125,7 +113,5 @@ In conclusion, this game concept delivers an **engrossing idle RPG experience** 
 
 **Sources:**
 
-* Idle game progression concepts and rebirth mechanics (Idling to Rule the Gods official guide).
-* Equipment set collection and bonuses in adventure mode (NGU Idle Wiki).
 * Cultivation realms, stages, and breakthrough mechanics (Immortal Taoists Wiki).
 * Sect base building and resource management features (Immortal Taoists starting guide).
