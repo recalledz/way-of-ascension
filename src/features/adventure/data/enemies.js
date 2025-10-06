@@ -17,6 +17,7 @@ export const ENEMY_DATA = {
     attack: 4.48,
     accuracy: 50,
     attackRate: 0.9,
+    abilities: ['heavyStrike'],
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { stones: 4, ore: 1 }
   },
@@ -103,12 +104,13 @@ export const ENEMY_DATA = {
 
   // === DARK FOREST ===
   // Corrupted creatures infused with shadow essence
-  'Shadow Wolf': { 
+  'Shadow Wolf': {
     name: 'Shadow Wolf',
     hp: 450,
     attack: 25,
     accuracy: 65,
     attackRate: 1.2,
+    abilities: ['shadowEnrage'],
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { shadowEssence: 1, pelt: 2 },
     drops: { meat: 0.8 }
@@ -122,14 +124,15 @@ export const ENEMY_DATA = {
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { corruptedWood: 2, shadowEssence: 2 } 
   },
-  'Cursed Toad': { 
+  'Cursed Toad': {
     name: 'Cursed Toad',
     hp: 540,
     attack: 40,
     accuracy: 65,
     attackRate: 1.1,
+    abilities: ['venomSpit'],
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { venom: 3, shadowEssence: 1 } 
+    loot: { venom: 3, shadowEssence: 1 }
   },
   'Thorn Beast': {
     name: 'Thorn Beast',
@@ -182,8 +185,9 @@ export const ENEMY_DATA = {
     attack: 80,
     accuracy: 65,
     attackRate: 1.1,
+    abilities: ['shadowBolt'],
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
-    loot: { shadowEssence: 5, arcaneTome: 1 } 
+    loot: { shadowEssence: 5, arcaneTome: 1 }
   },
 
   // === SHADOW REALM ===
@@ -194,6 +198,7 @@ export const ENEMY_DATA = {
     attack: 100,
     accuracy: 70,
     attackRate: 1.5,
+    abilities: ['shadowBolt', 'shadowEnrage', 'darkRecovery'],
     resists: { fire: 0, water: 0, wood: 0, earth: 0, metal: 0 },
     loot: { shadowEssence: 10, darkCrystal: 1, ancientRelic: 5 }
   },
