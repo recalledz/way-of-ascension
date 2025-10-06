@@ -4018,7 +4018,10 @@ tr:last-child td {
 }
 
 .activity-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+  row-gap: 6px;
   align-items: center;
   padding: 10px 12px;
   margin-bottom: 4px;
@@ -4129,10 +4132,9 @@ tr:last-child td {
 /* Enhanced Progress Bars */
 .activity-progress-bar {
   position: relative;
-  /* Standardize width with left indent so bars align and don't jump */
+  grid-column: 2;
   box-sizing: border-box;
-  width: calc(100% - 32px);
-  margin-left: 32px; /* space between bar and left icon/label */
+  width: 100%;
   margin-top: 6px;
   height: 16px;
   background: rgba(0, 0, 0, 0.4);
@@ -4144,8 +4146,7 @@ tr:last-child td {
 /* Keep bar size stable on hover/active */
 .activity-item:hover .activity-progress-bar,
 .activity-item.active .activity-progress-bar {
-  width: calc(100% - 32px);
-  margin-left: 32px;
+  width: 100%;
 }
 
 .progress-fill {
@@ -4176,11 +4177,44 @@ tr:last-child td {
 }
 
 #cookingProgressFillSidebar {
-  background: linear-gradient(90deg, #22c55e, #16a34a) !important; /* Green for cooking */
+  background: linear-gradient(90deg, #fbbf24, #f59e0b) !important; /* Golden for cooking */
 }
 
 #adventureProgressFill {
   background: linear-gradient(90deg, #3b82f6, #2563eb) !important; /* Blue for adventure */
+}
+
+/* Sidebar Activity Progress Colors */
+#physiqueSelectorFill {
+  background: linear-gradient(90deg, #ef4444, #b91c1c) !important;
+}
+
+#agilitySelectorFill {
+  background: linear-gradient(90deg, #15803d, #166534) !important;
+}
+
+#mindSelectorFill {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8) !important;
+}
+
+#miningSelectorFill {
+  background: linear-gradient(90deg, #f59e0b, #b45309) !important;
+  width: 0%;
+}
+
+#gatheringSelectorFill {
+  background: linear-gradient(90deg, #4ade80, #16a34a) !important;
+  width: 0%;
+}
+
+#forgingProgressFillSidebar {
+  background: linear-gradient(90deg, #f97316, #c2410c) !important;
+  width: 0%;
+}
+
+#catchingProgressFill {
+  background: linear-gradient(90deg, #ec4899, #db2777) !important;
+  width: 0%;
 }
 
 .progress-fill::after {
