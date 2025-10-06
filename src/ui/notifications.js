@@ -1,24 +1,34 @@
 import { on, emit } from '../shared/events.js';
 
+function ensureNotifications(state) {
+  if (!Array.isArray(state.notifications)) {
+    state.notifications = [];
+  }
+  return state.notifications;
+}
+
 export function addNotification(state, notif) {
-  const idx = state.notifications.findIndex(n => n.id === notif.id);
+  const notifications = ensureNotifications(state);
+  const idx = notifications.findIndex(n => n.id === notif.id);
   if (idx !== -1) {
-    state.notifications[idx] = { ...state.notifications[idx], ...notif };
+    notifications[idx] = { ...notifications[idx], ...notif };
   } else {
-    state.notifications.push(notif);
+    notifications.push(notif);
   }
   emit('NOTIFICATIONS_CHANGED');
 }
 
 export function dismissNotification(state, id) {
-  const idx = state.notifications.findIndex(n => n.id === id);
-  if (idx !== -1 && state.notifications[idx].dismissible !== false) {
-    state.notifications.splice(idx, 1);
+  const notifications = ensureNotifications(state);
+  const idx = notifications.findIndex(n => n.id === id);
+  if (idx !== -1 && notifications[idx].dismissible !== false) {
+    notifications.splice(idx, 1);
     emit('NOTIFICATIONS_CHANGED');
   }
 }
 
 export function mountNotificationTray(state) {
+  const notifications = ensureNotifications(state);
   if (document.getElementById('notificationsOverlay')) return;
   const tray = document.getElementById('notificationTray');
   const header = document.getElementById('notificationHeader');
@@ -65,7 +75,7 @@ export function mountNotificationTray(state) {
   function renderTray() {
     if (!tray) return;
     tray.innerHTML = '';
-    state.notifications.slice(0, 3).forEach(n => {
+    notifications.slice(0, 3).forEach(n => {
       const item = document.createElement('div');
       item.className = 'notification';
       item.textContent = n.text;
@@ -93,7 +103,7 @@ export function mountNotificationTray(state) {
 
   function renderOverlay() {
     list.innerHTML = '';
-    state.notifications.forEach(n => {
+    notifications.forEach(n => {
       const row = document.createElement('div');
       row.className = 'notification';
       row.textContent = n.text;
