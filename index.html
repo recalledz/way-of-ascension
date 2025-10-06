@@ -1313,11 +1313,25 @@
 
   <script type="module" src="src/ui/app.js"></script>
   <script type="module">
-    import { mountDevQuickMenu } from "./src/ui/dev/devQuickMenu.js";
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => mountDevQuickMenu());
+    import { isProd } from "./src/config.js";
+
+    const onReady = (cb) => {
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", cb, { once: true });
+      } else {
+        cb();
+      }
+    };
+
+    if (isProd) {
+      onReady(() => {
+        const debugConsole = document.getElementById("debugConsole");
+        if (debugConsole) debugConsole.remove();
+      });
     } else {
-      mountDevQuickMenu();
+      import("./src/ui/dev/devQuickMenu.js").then(({ mountDevQuickMenu }) => {
+        onReady(mountDevQuickMenu);
+      });
     }
   </script>
 </body>
